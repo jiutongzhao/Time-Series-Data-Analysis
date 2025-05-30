@@ -39,7 +39,7 @@ Understanding the time-domain behavior of a system is important. However, it is 
 
 Imagine listening to an orchestra. The audio signal is a complex waveform. But your brain can distinguish individual notes — essentially doing spectral analysis!
 
-In **plasma physics**, spectral analysis helps resolve the basic properties of wave (e.g., amplitutde, compressibility) by revealing dominant frequencies in electric/magnetic field fluctuations.
+In **plasma physics**, spectral analysis helps resolve the basic properties of wave (e.g., amplitude, compressibility) by revealing dominant frequencies in electromagnetic field fluctuations.
 
 Spectral analysis helps to:
 
@@ -48,25 +48,52 @@ Spectral analysis helps to:
 3. **Understand system behavior** through resonance.
 4. **Filter or reduce noise**.
 
-## Nyquist Frequency and Aliasing
->### Nyquist–Shannon Sampling Theorem: 
->A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
->$$
->f_s \ge 2 f_{max}
->$$
+## Nyquist–Shannon Sampling Theorem
+A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
+$$
+f_s \ge 2f_{max}
+$$
+The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
+
+When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
+
+<p align = 'center'>
+<img src="figure_aliasing.png" alt="An example of DFT." width="100%"/>
+</p>
+<p align = 'center'>
+</p>
+
+Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
+
+This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
+
+## Fourier Transform
+
+Fourier transform provide the perfect way to convert the observed quantities into the dual space. Its definition can be written as follows
 $$
 \begin{align}
-X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, dt
+X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
 \end{align}
 $$
-However, in the real application, the signal is always discrete and finite, and 
-**Discrete Fourier Transform** is actually applied:
+Correspondingly, the inverse (continuous) Fourier transform can be given as:
+$$
+\begin{align}
+x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+\end{align}
+$$
+However, a real and physical signal can only be measured at finite and discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
+$$
+\begin{align}
+X(f)=\sum_{n=-\infty}^{+\infty} x[n \Delta t]\cdot e^{-i2\pi f (n\Delta t)}
+\end{align}
+$$
+where $x[n\Delta t]$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that appliable:
 $$
 \begin{align}
 X[k\Delta f] = \sum_{n=0}^N x[n\Delta t] e^{-2\pi i k\Delta f t} \, \Delta  t
 \end{align}
 $$
-Idealy, accroding to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the CFT coefficients by extending the original series along and anti-along the time axis.
+Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
 
 
 $$
@@ -83,43 +110,56 @@ $$
 <p align = 'center'>
 An example of DFT
 </p>
+It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
+$$
+\begin{align}
+X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi nf}\\
+X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i n k}
+\end{align}
+$$
+in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application.
+
 
 ```python
 # Generate a sinuous signal
-omega = 2 * np.pi * 5
+OMEGA = 2 * np.pi * 5
 time = np.arange(0, 1, 200)
-signal = np.sin(omega * time)
+signal = np.sin(OMEGA * time)
 
-dt = time[1] - time[0]
+DT = time[1] - time[0]
 # Complex coefficient
 coefs = np.fft.fft(signal)
 # Corresponding frequency with both zero, positive, and negative frequency
-freqs = np.fft.fftfreq(coefs.size, dt)
+freqs = np.fft.fftfreq(coefs.size, DT)
 ```
-Given a window length n and a sample spacing dt (i.e., `np.fft.fftfreq(n, dt)`):
+Given a window length n and a sample spacing `DT` (i.e., `np.fft.fftfreq(N, DT)`):
 
 ```python
-f = [0, 1, ...,   n/2-1,     -n/2, ..., -1] / (dt * n)   if n is even
-f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (dt * n)   if n is odd
+freqs # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (DT * N)   # if n is even
+freqs # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (DT * N)   # if n is odd
 ```
-So, the sinuous waves can still be well-decomposited by DFT. 
+The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
+
+For real input, the aforementioned `2N` redundancy allows you to get that `freqs[1 + i]` = `freqs[-i].conj` and therefore simplify the frequency spectrum but only adopt the positive frequency component.
 
 
 ```python
-f[::n // 2] = [0, 1, ...,   n/2-1] / (dt * n)   if n is even
-f[::n // 2] = [0, 1, ..., (n-1)/2] / (dt * n)   if n is odd
+freqs[::n // 2] # [0, 1, ...,   N/2-1] / (DT * N)   if n is even
+freqs[::n // 2] # [0, 1, ..., (N-1)/2] / (DT * N)   if n is odd
 ```
 
-For an even signal length *n*, the Nyquist Frequency and corresponding coefficient is actually ignored. So, it is suggested to use *numpy.fft.rfft (rfftfreq)* instead of *numpy.fft.fft (fftfreq)*, which intrinsically truncate the output coefficients and frequencies.
+Or, a more suggested way to use `numpy.fft.rfft (rfftfreq)` instead of `numpy.fft.fft (fftfreq)`, which is only designed for real input and intrinsically truncate the output coefficients and frequencies.
 
 ```python
 coefs = np.fft.rfft(signal)
 freqs = np.fft.rfftfreq(coefs.size, dt)
 ```
 
+Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
+
 ## Decibel
 
-***Decibel (dB)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
+***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
 
 <div align="center">
@@ -139,11 +179,9 @@ The adoption of decibel instead of the conventional physical unit has three adva
 - When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
-Product key: ZFPZRW-YW9P82-CHNEQK-KF3VRS
-
 ## Frequency Resolution
 
-Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is *DFT*. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
+Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is ***DFT***. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
 
 The yield spectrum contains the wave coefficient at the frequency of
 
@@ -228,9 +266,17 @@ coefs = np.fft.fft(signal, n = signal.size + N_PADDING)
 freqs = np.fft.fftfreq(coefs.size, dt)
 ```
 
-## Gibbs phenomenon
+## Spectral Reconstruction / Trigonometric interpolation
+
+Once the DFT coefficients are derived, one can actually reconstruct a Fourier series with continuous input and get a interpolation on the unsampled points.
 
 
+
+## Gibbs Phenomenon
+
+Use Although a discrete signal can be lossless Fourier transformed, some signal.
+
+The ultimate cause of the Gibbs phenomenon is that, the source of the 
 
 ## Uncertainty Principle
 
@@ -294,9 +340,7 @@ else:
     psd[1:] *= 2
 ```
 
-<p align = 'center'>
-<img src="figure_fft_normalization.png" alt="An example of DFT." width="100%"/>
-</p>
+
 $$
 \begin{align}
 |X(k\Delta f)| \propto f_s \cdot T
@@ -329,14 +373,18 @@ Still, the divide-and-conquer strategy fails when the signal length *N* consists
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
 $$
 \begin{align}
-N&=197=198-1=2^1\times3^2\times11^1,\ \ N=241=242-1=2^1\times11^2-1
+N&=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
+N&=241=242-1=2^1\times\boxed{11^2}-1
 \end{align}
 $$
 In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.
 
-However, some prime numbers (e.g.): 
+However, some prime numbers like: 
 $$
-N=199=200-1=2^3\times5^2-1, N=239=240-1=2^4\times3^1\times5^1-1
+\begin{align}
+N&=199=200-1=2^3\times5^2-1\\
+N&= 239=240-1=2^4\times3^1\times5^1-1
+\end{align}
 $$
 can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.
 
@@ -363,6 +411,30 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 `numpy.lib.stride_tricks.sliding_window_view(x, window_shape, axis=None, *, subok=False, writeable=False)` provides the function for re-organizing the signal into several sub-chunk. This function can only give a stride of one. For a customized stride, you need to use `numpy.lib.stride_tricks.as_strided(x, shape=None, strides=None, subok=False, writeable=True)`. This function can be unsafe and crash your program.  
 
 The `bottleneck` package, which is safer and more efficient,  is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the `bottleneck` functions and their expected results.
+
+## Derivation of FT
+
+A super powerful property of Fourier transform is that:
+$$
+\mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
+$$
+which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
+$$
+\begin{align}
+\frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
+&=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
+&=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
+\end{align}
+$$
+It can be denoted as 
+$$
+{{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
+$$
+One can also extend this property to
+$$
+({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
+$$
+In plasma physics, the conventional way to express the electromagnetic field 
 
 ## Noise
 
@@ -419,8 +491,6 @@ $$
 \hat X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
 
 \end{align}
-
-
 $$
 can be deemed as a weighted summation of the signal $x[n]$. When $x[n]$ are independent identically distributed random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary part, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires the real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
 
@@ -499,7 +569,7 @@ Apart from splitting the signal into several segments, one can also downsample t
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
 
-## (Auto)Correlation Function
+## Correlation Function
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
@@ -578,9 +648,17 @@ Moving-average and moving-median filters are essential tools for smoothing time 
 
 
 
+## Principal Component Analysis / Minimum Variance Analysis
+
+
+
 ## Cross-Spectral Density
 
 Cross-spectral density (CSD) quantifies the frequency-domain relationship between two signals, revealing shared oscillatory components and phase relationships. It forms the basis for advanced techniques such as coherence and transfer function estimation. This section covers the theory behind CSD, its estimation using Welch’s method, and real-world applications in system identification and geophysics.
+
+## Average of the Spectral Matrix
+
+
 
 ## Coherence
 
@@ -603,14 +681,53 @@ $$
 
 \end{align}
 $$
-As the electromagnetic field $\mathbf{E(r},t)$ and $\mathbf{B(r}, t)$ are square-integrable, Maxwell's equations can be naturally transformed into the $(\mathbf{k},\omega)$-space with the basic replacement from $\nabla \rightarrow i\mathbf{k}$ and $\partial/\partial t\rightarrow -i\omega$:
+As the electromagnetic field $\mathbf{E(r},t)$ and $\mathbf{B(r}, t)$ are square-integrable, Maxwell's equations can be naturally transformed into the $(\mathbf{k},\omega)$-space with the basic replacement from $\nabla \leftrightarrow i\mathbf{k}$ and $\partial/\partial t\leftrightarrow -i\omega$:
 $$
 \begin{align}
-i \mathbf{k\cdot \hat{E}(k,\omega)}=
+i \mathbf{k\cdot \hat{E}(k,\omega)}&=-\hat{\rho_e}/\varepsilon_0 \\
+i \mathbf{k\cdot \hat{B}(k,\omega)}&=0 \\
+i \mathbf{k\times \hat{E}(k,\omega)}&=i\omega\mathbf{\hat{B}(k,\omega)} \\
+i \mathbf{k\times \hat{B}(k,\omega)}&=\mu_0 \mathbf{\hat{J}(k,\omega)} -\mu_0 \varepsilon_0 i\omega\mathbf{\hat{E}(k,\omega)} \\
+
 \end{align}
 $$
 
+However, a single spacecraft measurement only allows you to observe a one-dimensional (time) signal at one position, i.e., the spacecraft position, which literally moves in the space. Thus, the signal can only be converted into the frequency space as $\mathbf{\hat{B}(\omega)}$. The second equation is the only parameter-free equation and states that the wave vector, $\mathbf{k}$ must be perpendicular to the magnetic field disturbance, $\mathbf{\hat{B}(\omega)}$. Obviously, $\mathbf{k=0}$ is a trivial, but not useful solution for satisfying the divergence-free theorem. By constraining the norm of $\mathbf{k}$ to be unity, $\boldsymbol{\kappa}\mathbf{:=k/}k$, a more meaningful solution comes out. When the real part, $\Re{\hat{\mathbf{B}}(\omega)}$ and imaginary part, $\Im{\hat{\mathbf{B}}(\omega)}$ of $\mathbf{\hat{B}(\omega)}$ are highly orthogonal, they can span a linear space whose normal vector is naturally $\boldsymbol{\kappa}$. 
+$$
+\boldsymbol{\kappa}=\frac{\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}}{|\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}|}
+$$
+which perfectly satisfy that $\boldsymbol{\kappa}\cdot\hat{\mathbf{B}}(\omega)=0$. 
 
+However,  
+$$
+\hat{S}_{ij}=\langle \hat{B}_i \hat{B}_j^* \rangle
+$$
+
+$$
+\mathbf{A} =
+\begin{pmatrix}
+\Re S_{11} & \Re S_{12} & \Re S_{13} \\
+\Re S_{12} & \Re S_{22} & \Re S_{23} \\
+\Re S_{13} & \Re S_{23} & \Re S_{33} \\
+0 & -\Im S_{12} & -\Im S_{13} \\
+\Im S_{12} & 0 & -\Im S_{23} \\
+\Im S_{13} & \Im S_{23} & 0 \\
+\end{pmatrix}
+$$
+
+
+
+The optimization problem
+$$
+\min\limits_{\Vert\boldsymbol{\kappa}\Vert=1} \mathbf{A\cdot k}
+$$
+This minimization problem is directly solvable by applying a ***singular value decomposition(SVD)*** to matrix $\mathbf{A}$
+$$
+{A}=U\cdot W\cdot V^T
+$$
+where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
+
+One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
 
 
 This section explores the synergy between spectral analysis and electromagnetic theory, demonstrating how to derive physical insights and constraints from both perspectives.
@@ -631,7 +748,7 @@ $$
 
 It can also be represented by 
 
-## Jargon Sheet
+## Jargon Sheet and Personal Naming Convention
 
 
 
