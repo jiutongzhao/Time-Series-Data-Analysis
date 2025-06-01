@@ -569,6 +569,59 @@ Apart from splitting the signal into several segments, one can also downsample t
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
 
+The basic idea of the Lomb-Scargle periodogram is to fit the observed time series by a sinusoidal function $A\mathrm{sin}{(2\pi ft)}+B\mathrm{cos}{(2\pi ft)}$ with frequency $f$ in the sense of mean square deviation. The yield coefficient A can be a estimate of the signal's magnitude at frequency $f$. 
+
+Minimize the residual sum of squares:
+
+$$
+\chi^2(A,B) = \sum_{n=1}^N \bigl[x_n - \bar x - A\cos(\omega t_n) - B\sin(\omega t_n)\bigr]^2.
+$$
+Setting $\partial\chi^2/\partial A = \partial\chi^2/\partial B = 0$ yields the normal equations:
+
+$$
+\begin{pmatrix} \sum\cos^2(\omega t_n) & \sum\cos(\omega t_n)\,\sin(\omega t_n)\\[0.5em] \sum\cos(\omega t_n)\,\sin(\omega t_n) & \sum\sin^2(\omega t_n) \end{pmatrix} \begin{pmatrix}A\\ B\end{pmatrix} = \begin{pmatrix} \sum (x_n-\bar x)\cos(\omega t_n)\\[0.25em] \sum (x_n-\bar x)\sin(\omega t_n) \end{pmatrix}.
+$$
+
+
+Define
+$$
+\begin{align}
+C &= \sum\cos^2(\omega t_n)\\
+S &= \sum\sin^2(\omega t_n)\\
+D &= \sum\cos(\omega t_n)\sin(\omega t_n)\\
+X_c &= \sum(x_n-\bar x)\cos(\omega t_n)\\
+X_s &= \sum(x_n-\bar x)\sin(\omega t_n)
+\end{align}
+$$
+Then
+
+$$
+A = \frac{X_c\,S - X_s\,D}{C\,S - D^2},  \quad B = \frac{X_s\,C - X_c\,D}{C\,S - D^2}.
+$$
+
+
+$P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
+
+Substituting the expressions for $A$ and $B$ yields a form that still involves the cross‐term $D$.
+
+## 5. Introducing the Phase Offset $\tau$
+
+To eliminate the cross‐term, shift the time origin:
+
+$t_n' = t_n - \tau,$
+
+and choose $\tau$ so that
+
+$\sum_{n=1}^N \sin\bigl(2\omega t_n'\bigr) = 0 \quad\Longleftrightarrow\quad \tan(2\omega\tau) = \frac{\sum_{n=1}^N \sin(2\omega t_n)}{\sum_{n=1}^N \cos(2\omega t_n)}.$
+
+This makes $\sum\cos(\omega t_n'),\sin(\omega t_n')=0$, diagonalizing the normal equations. The power then becomes
+
+$P(\omega) = \frac12\left[ \frac{\bigl[\sum (x_n-\bar x)\cos\!\bigl(\omega (t_n-\tau)\bigr)\bigr]^2} {\sum \cos^2\!\bigl(\omega (t_n-\tau)\bigr)} \;+\; \frac{\bigl[\sum (x_n-\bar x)\sin\!\bigl(\omega (t_n-\tau)\bigr)\bigr]^2} {\sum \sin^2\!\bigl(\omega (t_n-\tau)\bigr)} \right].$
+
+
+
+Compare with the original frequency spectrum, the Lomb-Scargle periodogram contains some irregular frequency leakage. The Lomb-Scargle periodogram finally converge to the Fourier periodogram when the sample time is uniformly distributed.
+
 ## Correlation Function
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
@@ -726,6 +779,23 @@ $$
 {A}=U\cdot W\cdot V^T
 $$
 where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
+
+The planarity can be defined as
+$$
+F=1-\sqrt{W_{2}/W_{0}}
+$$
+
+Without averaging the spectral matrix, the planarity $F(t,f)$ **<u>will be all one</u>**. It means that, when the observer only take one snapshot of the waves, it can not distinguish how does the waves propagate. After the averaging, the planarity actually describe that, **<u>whether the waves that observed at these time periods, frequencies share the common unitary wave vector.</u>**
+
+Similarly, based on the averaged spectral matrix, one may define the coherence (coherency) between different components:
+$$
+Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
+$$
+
+
+
+
+ 
 
 One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
 
