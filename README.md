@@ -567,15 +567,31 @@ Apart from splitting the signal into several segments, one can also downsample t
 
 ## Signal Over Noise
 
-The power spectrum of a signal composites with both sinuous signal and noise is always concerned in a more common sense, written as:
+A signal composed of a deterministic sinusoidal component and additive noise can be written as:
 $$
-x[t_n]=A\mathrm{sin}(\omega t_n) +{N}(\mu,\sigma)
+x(t) = s(t) + n(t)
 $$
-The Fourier coefficient is therefore
+The Fourier coefficient at frequency $f$ is:
 $$
-X[f_k]=\mathcal{F}[A\mathrm{sin}(\omega t_n)]+\mathcal{F}[N(\mu,\sigma)]
+\tilde{X}(f) = \tilde{S}(f) + \tilde{N}(f)
 $$
-and its norm can be written as 
+where $\tilde{S}(f)$ is the deterministic signal component (a fixed complex number), and $\tilde{N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
+$$
+\tilde{N}(f) \sim \mathcal{CN}(0, \sigma_n^2)
+$$
+That is, $\tilde{X}(f)$ is a complex Gaussian random variable:
+$$
+\tilde{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = \tilde{S}(f)
+$$
+The power spectrum estimate is:
+$$
+\hat{S}_x(f) = |\tilde{X}(f)|^2
+$$
+Since $|\tilde{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
+$$
+\hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
+$$
+In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
 ## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
