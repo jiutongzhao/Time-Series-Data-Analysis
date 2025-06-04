@@ -162,8 +162,6 @@ Yet, please remember that only real signal can be used as an input of `numpy.fft
 ***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
 
-<div align="center">
-
 |     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
 | :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
 |  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
