@@ -565,6 +565,18 @@ It should be keep in mind that these methods are all build based on the assumpti
 
 Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
 
+## Signal Over Noise
+
+The power spectrum of a signal composites with both sinuous signal and noise is always concerned in a more common sense, written as:
+$$
+x[t_n]=A\mathrm{sin}(\omega t_n) +{N}(\mu,\sigma)
+$$
+The Fourier coefficient is therefore
+$$
+X[f_k]=\mathcal{F}[A\mathrm{sin}(\omega t_n)]+\mathcal{F}[N(\mu,\sigma)]
+$$
+and its norm can be written as 
+
 ## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
@@ -711,6 +723,11 @@ Cross-spectral density (CSD) quantifies the frequency-domain relationship betwee
 
 ## Average of the Spectral Matrix
 
+A ***spectral matrix*** can be defined as 
+$$
+\hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
+$$
+
 
 
 ## Coherence
@@ -791,13 +808,7 @@ Similarly, based on the averaged spectral matrix, one may define the coherence (
 $$
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
 $$
-
-
-
-
- 
-
-One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
+ One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
 
 
 This section explores the synergy between spectral analysis and electromagnetic theory, demonstrating how to derive physical insights and constraints from both perspectives.
