@@ -162,8 +162,6 @@ Yet, please remember that only real signal can be used as an input of `numpy.fft
 ***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
 
-<div align="center">
-
 |     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
 | :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
 |  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
@@ -434,7 +432,15 @@ One can also extend this property to
 $$
 ({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
 $$
-In plasma physics, the conventional way to express the electromagnetic field 
+In plasma physics, the conventional way to express the electromagnetic field.
+
+It should be noted that this derivation property change a little bit for discrete Fourier transform:
+$$
+\frac{\Delta x(t)}{\Delta  t}=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+$$
+
+
+
 
 ## Noise
 
@@ -730,6 +736,68 @@ Moving-average and moving-median filters are essential tools for smoothing time 
 
 
 ## Principal Component Analysis / Minimum Variance Analysis
+
+Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction.
+
+------
+
+## 1. Core Idea
+
+- **PCA**: Rotate the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
+- **MVA**: Apply PCA to a 3 × * N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
+
+------
+
+## 2. Mathematical Formulation
+
+1. **Collect & demean** the data matrix
+   $$
+   \mathbf{X}
+   = \begin{bmatrix}
+     x_1 & x_2 & \dots & x_N \\
+     y_1 & y_2 & \dots & y_N \\
+     z_1 & z_2 & \dots & z_N
+   \end{bmatrix},
+   \qquad
+   \tilde{\mathbf{X}} = \mathbf{X} - \langle\mathbf{X}\rangle
+   $$
+
+2. **Form the covariance (spectral) matrix**
+   $$
+     \mathbf{C} \;=\; \frac{1}{N-1}\,\tilde{\mathbf{X}}\tilde{\mathbf{X}}^\mathsf{T}
+   $$
+
+3. **Solve the eigenproblem**
+   $$
+     \mathbf{C}\,\mathbf{e}_i \;=\; \lambda_i\,\mathbf{e}_i,
+     \quad
+     \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
+   $$
+
+4. **Interpretation**
+
+   - **PCA**: Project the data onto the top *k* eigenvectors $\{\mathbf{e}_1,\dots,\mathbf{e}_k\}$ for dimensionality reduction.
+   - **MVA**:
+     - $\mathbf{e}_1$: maximum‐variance direction (largest fluctuations)
+     - $\mathbf{e}_2$: intermediate direction
+     - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
+
+```python
+N = 2 ** 10
+time = np.linspace(0, 1, N, endpoint=False)
+omega = 2 * np.pi * 8.0
+
+signal_x = np.sin(omega * time + np.pi * 0.0) * (0.6 * np.hanning(time.size)) + np.random.randn(time.size) * 0.02
+signal_y = np.sin(omega * time + np.pi * 0.5) * (0.7 * np.hanning(time.size)) + np.random.randn(time.size) * 0.02
+signal_z = np.sin(omega * time + np.pi * 1.0) * (0.8 * np.hanning(time.size)) + np.random.randn(time.size) * 0.02
+
+signal = np.vstack((signal_x, signal_y, signal_z)).T
+pca = sklearn.decomposition.PCA(n_components=3)
+pca.fit(signal)
+
+eigenvalues = pca.singular_values_
+eigenvectors = pca.components_
+```
 
 
 
