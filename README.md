@@ -272,9 +272,9 @@ Once the DFT coefficients are derived, one can actually reconstruct a Fourier se
 
 ## Gibbs Phenomenon
 
-Use Although a discrete signal can be lossless Fourier transformed, some signal.
+Use Although a discrete signal can be lossless Fourier transformed, some signal. A continuous function with a infinitely sharp discontinuity introduce an infinite derivation at the discontinuity. However, any finite, discrete sampling of the continuous signal can not fully capture the complete, high frequency feature of the discontinuity. The discontinuity saw by the $\mathcal{F}$ operator is nothing but two samples with large variation, while, each adjacent samples can vary to some extent. Fourier transform can perfectly reconstruct the observed, discrete signal but is not able to perfectly represents the continuous function.
 
-The ultimate cause of the Gibbs phenomenon is that, the source of the 
+Mathematically speaking, a 
 
 ## Uncertainty Principle
 
@@ -812,6 +812,8 @@ $$
 \hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
 $$
 
+for a time series decomposite with both signal and noise, its Fourier coefficients follows the non-central chi-square distribution, as introduced in the previous section. Taking a 
+
 
 
 ## Coherence
@@ -820,7 +822,7 @@ Coherence measures the degree of linear correlation between two signals at each 
 
 To be honest, I feel very hard to understand what does *coherent/coherence* means in many of the magnetospheric ULF/VLF waves investigations. It can be easily understood the coherence between two individual light or signal. However, in the *in-situ* observation, the spacecraft can only measure one signal without further distinguishment or separation. In some literature, the coherence between $E_x$ and $B_y$ are used to measure whether the observed VLF waves are coherent. These VLF waves always propagate along the geomagnetic field line, which point to the north near the magnetic equator. It makes some sense as a high coherence suggests the waves have a stable wave vector during this interval. But, it is still hard to expect the occurrence of interference as both $E_x$ and $B_y$ may just be the presence of one single wave. While, some other literatures use the coherence between the magnetic field components to 
 
-## Combination with Maxwell's Equations
+## Combination with Maxwell's Equations: SVD Wave Analysis
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
 $$
@@ -850,15 +852,26 @@ However, a single spacecraft measurement only allows you to observe a one-dimens
 $$
 \boldsymbol{\kappa}=\frac{\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}}{|\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}|}
 $$
-which perfectly satisfy that $\boldsymbol{\kappa}\cdot\hat{\mathbf{B}}(\omega)=0$. 
+which perfectly satisfy that $\boldsymbol{\hat{\mathbf{B}}\cdot \kappa}=0$. 
 
-However,  
+However,  this $\mathbf{\hat{B}}$-based, namely, coefficient-based estimation may be influenced by the noise's contribution and thus is not so practical. Inspired by the Welch method, a spectral-based estimation is preferred as the spectral density is easily denoised. The spectral-based estimation can be given by refining the original proposition:
+$$
+(\hat{\mathbf{B}}^*\hat{\mathbf{B}})\cdot \boldsymbol{\kappa}=0
+$$
+
 $$
 \hat{S}_{ij}=\langle \hat{B}_i \hat{B}_j^* \rangle
 $$
 
+which can still be met by the original solution. After averaging the spectral matrix in time and frequency domain, this equation can not be perfectly satisfied any more. Thus, we will look for a weaker solution in the sense of minimization:
 $$
-\mathbf{A} =
+\begin{align}
+\min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} & ||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\ \Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} \{&{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}} + \underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
+\end{align}
+$$
+[McPherron et al. (1972)](https://doi.org/10.1007/BF00219165) and [Means (1972)](https://doi.org/10.1029/JA077i028p05551) adopts the real and imaginary part in the minimization optimization for the estimation of wave propagation direction, respectively. Both of these two optimization problem can be solved by eigenvalue decomposition. Then, [Santolík et al. (2003)](https://doi.org/10.1029/2000RS002523) combine both terms and construct an augmented matrix ${A}$:
+$$
+{A} =
 \begin{pmatrix}
 \Re S_{11} & \Re S_{12} & \Re S_{13} \\
 \Re S_{12} & \Re S_{22} & \Re S_{23} \\
@@ -873,20 +886,43 @@ $$
 
 The optimization problem
 $$
-\min\limits_{\Vert\boldsymbol{\kappa}\Vert=1} \mathbf{A\cdot k}
+\min\limits_{\Vert\boldsymbol{\kappa}\Vert_2^2=1} ||{A\cdot \mathbf{k}}||_2^2
 $$
-This minimization problem is directly solvable by applying a ***singular value decomposition(SVD)*** to matrix $\mathbf{A}$
+is directly solvable by applying a ***singular value decomposition(SVD)*** to matrix ${A}$
 $$
 {A}=U\cdot W\cdot V^T
 $$
 where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
 
-The planarity can be defined as
+- **<u>Compressibility</u>** describe the polarization 
+
+$$
+\begin{align}
+\mathrm{Compressibility}(f_k):=\frac{PSD(B_\parallel)}{\sum_i PSD(B_i)}
+\end{align}
+$$
+
+
+
+- **<u>Planarity</u>** 
+
 $$
 F=1-\sqrt{W_{2}/W_{0}}
 $$
 
 Without averaging the spectral matrix, the planarity $F(t,f)$ **<u>will be all one</u>**. It means that, when the observer only take one snapshot of the waves, it can not distinguish how does the waves propagate. After the averaging, the planarity actually describe that, **<u>whether the waves that observed at these time periods, frequencies share the common unitary wave vector.</u>**
+
+```python
+spec = np.einsum('fti,ftj->ftij', coef, coef.conj())
+spec = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
+spec = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
+
+spec_63 = np.concatenate([spec.real, spec.imag], axis=-2)
+u, s, vh = np.linalg.svd(spec_63, full_matrices=False)
+
+planarity = 1 - np.sqrt(s[:, :, 2] / s[:, :, 0])
+ellipticity_along_k = s[:, :, 1] / s[:, :, 0]
+```
 
 Similarly, based on the averaged spectral matrix, one may define the coherence (coherency) between different components:
 $$
@@ -901,17 +937,105 @@ This section explores the synergy between spectral analysis and electromagnetic 
 
 Polarization analysis examines the orientation and ellipticity of oscillatory signals, especially electromagnetic or plasma waves. By decomposing the signal into orthogonal components and analyzing their relative amplitude and phase, we can characterize wave mode, propagation direction, and physical source. This section introduces key polarization parameters, their spectral estimation, and relevant Python implementations.
 
-## Compressibility
+Ellipticity can be defined as the ratio of the semi-major and semi-minor, which is estimated by:
+$$
+\epsilon=\frac{W_1}{W_0}
+$$
+For a noisy signal, T and S 2019 propose an improved method with a estimation of the noise level based on the eigen decomposition. In this method, they noise level is inferred by decomposing the real part of the spectral density matrix and the maximum/intermediate eigenvalues of the complex spectral density represents the summation of wave power and noise power. Therefore, the improved ellipticity is derived:
+$$
+\epsilon^\prime=\sqrt{\frac{\lambda_{r1}-\lambda_1}{\lambda_{r0}-\lambda_1}}
+$$
+This improved ellipticity performs better than the original one when SNR is low but the still randomly deviates from the ground true. Thus, a moving average in the time or frequency domain is still required as it promote the SNR. 
 
-The wave compressibility refers to the energy ratio of the compressional component and the transverse component of the waves, i.e., 
+```python
+coef_wf = np.einsum('ijk,ijlk->ijl', coef, vh)
+spec_wf = np.einsum('fti,ftj->ftij', coef_wf, coef_wf.conj())
+spec_wf = bn.move_mean(spec_wf, window=freq_window, min_count=1, axis=0)
+spec_wf = bn.move_mean(spec_wf, window=time_window, min_count=1, axis=1)
+
+coherence = np.abs(spec_wf[:, :, 0, 1]) / np.sqrt(np.abs(spec_wf[:, :, 0, 0] * spec_wf[:, :, 1, 1]))
+
+eigenvalues_r, _ = np.linalg.eigh(spec_wf[:, :, :2, :2].real) # Ascending
+eigenvalues, _ = np.linalg.eigh(spec_wf[:, :, :2, :2]) # Ascending
+
+ellipticity_along_k = np.sqrt((eigenvalues_r[:, :, 0] - eigenvalues[:, :, 0]) \
+                              / (eigenvalues_r[:, :, 1] - eigenvalues[:, :, 0]))
+```
+
+
+
+Both above two ellipticities are unsigned as the singular/eigen values are always non-negative. Another, but not alternative definition of the ellipticity, is the ratio of left-handed polarized signal power to the right-handed polarized power. This definition is signed and the the ellipse is defined in the plane that perpendicular to the background magnetic field:
+$$
+\epsilon_B=\frac{|\hat{B}_L|^2-|\hat{B}_R|^2}{|\hat{B}_L|^2+|\hat{B}_R|^2}
+$$
+with $B_L$ and $B_R$ defines below:
 $$
 \begin{align}
-\mathrm{Compressibility}(f_k):=\frac{PSD[B_\parallel (f_k)]}{\sum_i PSD[B_i(f_k)]}
+B_L = \frac{1}{\sqrt{2}}(B_{\perp1}+iB_{\perp2})\\
+B_R = \frac{1}{\sqrt{2}}(B_{\perp1}-iB_{\perp2})
 \end{align}
 $$
+with $\mathbf{e_{\perp1}}$, $\mathbf{e_{\perp2}}$, and $\mathbf{e_\parallel }$ constitute a right-hand system, i.e., $\mathbf{e_{\perp1}\times e_{\perp2}=e_\parallel}$.
+
+It is also important as it may unveils the wave excitation mechanism (e.g., wave-particle resonance). This definition is totally irrelevant with the determination of the wave vector direction. Instead, field-aligned coordinates is required for its derivation.
+
+```python
+dir_para = (magf.T / np.linalg.norm(magf, axis = 1)).T
+# Find the reference direction that is furthest from the magnetic field direction
+dir_ref = np.eye(3)[np.argmin(np.abs(dir_para), axis = 1)]
+
+dir_perp_1 = np.cross(dir_para, dir_ref)
+dir_perp_1 = (dir_perp_1.T / np.linalg.norm(dir_perp_1, axis = 1)).T
+
+dir_perp_2 = np.cross(dir_para, dir_perp_1)
+dir_perp_2 = (dir_perp_2.T / np.linalg.norm(dir_perp_2, axis = 1)).T
+
+coef_para = np.einsum('ijk,jk->ij', coef, dir_para)
+coef_perp1 = np.einsum('ijk,jk->ij', coef, dir_perp_1)
+coef_perp2 = np.einsum('ijk,jk->ij', coef, dir_perp_2)
+
+coef_lh = (coef_perp1 - 1j * coef_perp2) / np.sqrt(2)
+coef_rh = (coef_perp1 + 1j * coef_perp2) / np.sqrt(2)
+
+ellipticity_along_b = (np.abs(coef_rh) - np.abs(coef_lh)) / (np.abs(coef_rh) + np.abs(coef_lh))
+compressibility = np.abs(coef_para) ** 2 / (np.abs(coef_para) ** 2 + np.abs(coef_lh) ** 2 + np.abs(coef_rh) ** 2)
+
+```
+
+## Degree of Polarization
+
+The **degree of polarization** quantifies the proportion of an electromagnetic fluctuation (such as a plasma wave) that is organized, or polarized, as opposed to random or unpolarized (noise-like) components. It is a fundamental parameter in space plasma physics, characterizing the coherence of observed wave signals.
+
+The degree of polarization is defined as the fraction of the total wave power that is associated with a perfectly polarized (coherent) component. It is mathematically expressed as:
+$$
+D_p = \frac{\text{power of the polarized component}}{\text{total power}}
+$$
+
+- $D_p = 1$: the signal is completely polarized.
+- $0 < D_p < 1$: the signal is partially polarized.
+- $D_p = 0$: the signal is totally unpolarized (random noise).
+
+A high degree of polarization indicates that the observed fluctuations are dominated by coherent wave processes, while a low degree suggests that random or turbulent components are significant. The degree of polarization is widely used to distinguish wave modes, to separate physical signals from instrumental or background noise, and to assess the reliability of wave analysis.
+
+In three-dimensional wave analysis, the **degree of polarization** quantifies how much of the measured signal is concentrated along a single, well-defined direction, versus being randomly distributed among all directions.
+
+The 3D eigenvalue-based degree of polarization is defined as:
+$$
+D_{p,3D} = \frac{\lambda_1 - \lambda_2}{\lambda_1 + \lambda_2 + \lambda_3}
+$$
+where $\lambda_1 \geq \lambda_2 \geq \lambda_3$ are the eigenvalues of the (power or spectral) matrix constructed from the three orthogonal components of the wave field.
+
+This definition is coordinate-invariant and widely used in space plasma physics to characterize the coherence and organization of wave signals in planetary magnetospheres and the solar wind. It is particularly powerful for distinguishing true wave modes from background turbulence or noise.
+
+```python
+w, v = np.linalg.eigh(spec)
+degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
+```
+
+- Notice: `np.linalg.eigh` and `np.linalg.svd` return the eigen/singular values in an ascending / descending order.
 
 
-It can also be represented by 
+
 
 ## Jargon Sheet and Personal Naming Convention
 
