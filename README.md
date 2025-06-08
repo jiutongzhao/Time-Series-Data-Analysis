@@ -15,7 +15,7 @@ Many familiar phenomena are naturally described as time series, including:
 
 - **Meteorology:** e.g. El-Nino Enso
 
-<img src="figure1_el_nino_enso.png" alt="Multivariate ENSO Index (MEI)" width="400"/>
+<img src="figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="400"/>
 
 - **Geophysics:** e.g. Seismic Waves
 
@@ -23,10 +23,7 @@ Many familiar phenomena are naturally described as time series, including:
 
 - **Solar Physics:** e.g. Sunspot Number
 
-<img src="figure3_sunspot_number.jpg" alt="Adopted from https://solarscience.msfc.nasa.gov/SunspotCycle.shtml" width="400"/>
-
-<!-- ![](figure2_seismic_waves.jpg) -->
-<!-- ![](figure1_el_nino_enso.png){width=60} -->
+<img src="figure_sunspot.png" width="400"/>
 
 
 Each of these is a time-domain description: we have a quantity (amplitude, voltage, etc.) **as a function of time**.
@@ -58,10 +55,11 @@ The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequen
 When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
 
 <p align = 'center'>
-<img src="figure_aliasing.png" alt="An example of DFT." width="100%"/>
+<img src="figure_aliasing.png" alt="An example of DFT." width="60%"/>
 </p>
 <p align = 'center'>
 </p>
+
 
 Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
 
@@ -200,13 +198,15 @@ where $$i=1,2,...,N$$ and $$\Delta T=N\Delta t$$ is the total duration of the si
 
 ### Periodic Extensions
 <p align = 'center'>
-<img src="figure_dft_periodic_extensions.png" alt="An example of DFT." width="100%"/>
+<img src="figure_dft_periodic_extensions.png" alt="An example of DFT." width="60%"/>
 </p>
+
 
 ### Windowing Effect
 <p align = 'center'>
-<img src="figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="100%"/>
+<img src="figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
 </p>
+
 
 ```python
 # Without Normalization
@@ -365,14 +365,15 @@ Most tutorials introduce the ***radix-2*** FFT, which splits the signal into ***
 Still, the divide-and-conquer strategy fails when the signal length *N* consists of at least one big prime number factor (e.g, 10007) as the signal is hard to split. In that situation, the ***Bluestein's algorithm***, which is essentially a ***Chirping-Z transform***, is used. This algorithm takes the $\mathcal{F}$ operation as a convolution and then uses the *convolution theorem* in the calculation of DFT coefficients. The convolution property allows us to extend the signal length to a proper, highly composite number with zero-padding (denoted as *M*), but the coefficients and frequency resolution remain unchanged. The final time complexity of *Bluestein's algorithm* goes to $\mathcal{O}(N+M\mathrm{log}M)$, where the first term originates from the iterate all the frequency component.
 
 <p align = 'center'>
-<img src="figure_fft_performance.png" alt="An example of DFT." width="100%"/>
+<img src="figure_numpy_fft_performance.png" alt="An example of DFT." width="100%"/>
 </p>
+
 
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
 $$
 \begin{align}
+N&=181=182-1=2^1\times\boxed{7^1\times13^1}-1\\
 N&=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
-N&=241=242-1=2^1\times\boxed{11^2}-1
 \end{align}
 $$
 In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.
@@ -380,8 +381,8 @@ In contrast, signals with highly composite number lengths (dark blue dots), such
 However, some prime numbers like: 
 $$
 \begin{align}
-N&=199=200-1=2^3\times5^2-1\\
-N&= 239=240-1=2^4\times3^1\times5^1-1
+N&=191=192-1=2^6\times3^1-1\\
+N&=199=200-1 = 2^3\times5^2-1
 \end{align}
 $$
 can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.
