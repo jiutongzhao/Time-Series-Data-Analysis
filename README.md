@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <title>Practical Spectral Analysis in Plasma Physics</title>
-</head>
-<body>
-
-
 # Practical Spectral Analysis with Python
 
 ## Preface
@@ -20,6 +11,10 @@ Returning to their desk, they dig out an old calculus textbook, flip through sev
 At this juncture, most students pragmatically pivot to google *"Fourier Analysis by xxx"*  and get an answer with some unfamiliar jargon from *StackOverflow*, grabbing a ready-made code snippet to forge ahead.
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
+
+[TOC]
+
+
 
 ## Chapter 1: Introduction & Signal Basics
 
@@ -73,8 +68,7 @@ When you measure a high frequency signal with a low cadence instrument, you will
 <p align = 'center'>
 <img src="figure_aliasing.png" width="60%"/>
 </p>
-<p align = 'center'>
-</p>
+
 
 
 
@@ -82,7 +76,7 @@ Such phenomenon is essentially unrelated to the Fourier transform as its frequen
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
-## How Do We See Frequencies in Data?
+## Chapter 2: How Do We See Frequencies in Data?
 
 ### Fourier Transform
 
@@ -379,7 +373,7 @@ $$
 
 
 
-## The performance of `numpy.fft.fft` and `scipy.signal.fft`
+### The performance of `numpy.fft.fft` and `scipy.signal.fft`
 
 The invention of the ***(Cooley–Tukey) Fast Fourier Transform (FFT) algorithm*** reduced the time complexity of DFT from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\mathrm{log}N)$ by efficiently decomposing the DFT into smaller computations, i.e., [divide-and-conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).  
 
@@ -415,11 +409,6 @@ Modern implementation of the FFT algorithm, such as `pocketfft`, combines the ab
 
 The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int, optional`* to assign the maximum number of workers to use for parallel computation. If negative, the value wraps around from `os.cpu_count()`. For parallel computation, you need to input a batch of signals with shape of $N\times K$.
 
-### <u>Takeaway Message</u>:
-
-1. For large-scale FFT computations, choose a proper signal size to speed up.
-2. Adopt `scipy.signal.fft(workers = -1)` when you want to do parallel computation.
-
 ***<u>Reference</u>**:*
 
 1. Cooley, James W., and John W. Tukey, 1965, “An algorithm for the machine calculation of complex Fourier series,” Math. Comput. 19: 297-301.
@@ -429,13 +418,13 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 
 
 
-## Sliding Window
+### Sliding Window
 
 `numpy.lib.stride_tricks.sliding_window_view(x, window_shape, axis=None, *, subok=False, writeable=False)` provides the function for re-organizing the signal into several sub-chunk. This function can only give a stride of one. For a customized stride, you need to use `numpy.lib.stride_tricks.as_strided(x, shape=None, strides=None, subok=False, writeable=True)`. This function can be unsafe and crash your program.  
 
 The `bottleneck` package, which is safer and more efficient,  is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the `bottleneck` functions and their expected results.
 
-## Derivation of FT
+### Derivation of FT
 
 A super powerful property of Fourier transform is that:
 $$
@@ -467,7 +456,7 @@ $$
 
 
 
-## Noise
+## Chapter 3: Noise
 
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
 
@@ -663,7 +652,7 @@ $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
 
 Substituting the expressions for $A$ and $B$ yields a form that still involves the cross‐term $D$.
 
-## 5. Introducing the Phase Offset $\tau$
+## Introducing the Phase Offset $\tau$
 
 To eliminate the cross‐term, shift the time origin:
 
