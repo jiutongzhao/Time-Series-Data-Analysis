@@ -7,7 +7,23 @@
 <body>
 
 
-# Practical Spectral Analysis in Plasma Physics
+# Practical Spectral Analysis with Python
+
+## Preface
+
+For many students—and even graduate researchers—their first real encounter with spectral analysis often unfolds like this:
+
+One day, they notice an intriguing phenomenon in a time-domain signal and eagerly share their discovery with an advisor or senior colleague. The response is calmly delivered: "You should try some Fourier or wavelet analysis."
+
+Returning to their desk, they dig out an old calculus textbook, flip through several pages, and quickly realize it won’t help. Next comes the trusted solution: a swift Google search for “Fourier Analysis tutorial". Eventually, they stumble upon a highly recommended *Digital Signal Processing* textbook with an impressive 9.8 book rating.  After a marathon weekend, they manage to read through the 50-plus pages of Chapter 1, Signals and Systems. However, by Chapter 2, Linear Time-Invariant Systems, fatigue sets in—only to realize that the actual Fourier series material is still more than 120 pages away.
+
+At this juncture, most students pragmatically pivot to google *"Fourier Analysis by xxx"*  and get an answer with some unfamiliar jargon from *StackOverflow*, grabbing a ready-made code snippet to forge ahead.
+
+Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
+
+## Chapter 1: Introduction & Signal Basics
+
+### Signals and Time Series
 
 In physics and engineering, we often deal with **signals** – functions that vary over time and represent some physical quantity. A signal can be any measurable quantity that changes with time: for example, an audio waveform, the voltage output of a sensor, or the magnetic field measured in a plasma experiment. When we record such a quantity at successive points in time, we get a **time series**.
 
@@ -19,7 +35,7 @@ Many familiar phenomena are naturally described as time series, including:
 
 - **Geophysics:** e.g. Seismic Waves
 
-<img src="figure2_seismic_waves.jpg" alt="drawing" width="400"/>
+<img src="figure_seismic_waves.png" width="400"/>
 
 - **Solar Physics:** e.g. Sunspot Number
 
@@ -30,7 +46,7 @@ Each of these is a time-domain description: we have a quantity (amplitude, volta
 
 Understanding the time-domain behavior of a system is important. However, it is often hard to tell **what underlying patterns or oscillations** are present. This is where **spectral analysis** becomes useful.
 
-## Why Do We Need Spectral Analysis?
+### Why Do We Need Spectral Analysis?
 
 **Spectral analysis** examines a signal in the frequency domain instead of the time domain.
 
@@ -45,7 +61,7 @@ Spectral analysis helps to:
 3. **Understand system behavior** through resonance.
 4. **Filter or reduce noise**.
 
-## Nyquist–Shannon Sampling Theorem
+### Nyquist–Shannon Sampling Theorem
 A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 $$
 f_s \ge 2f_{max}
@@ -55,17 +71,20 @@ The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequen
 When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
 
 <p align = 'center'>
-<img src="figure_aliasing.png" alt="An example of DFT." width="60%"/>
+<img src="figure_aliasing.png" width="60%"/>
 </p>
 <p align = 'center'>
 </p>
+
 
 
 Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
-## Fourier Transform
+## How Do We See Frequencies in Data?
+
+### Fourier Transform
 
 Fourier transform provide the perfect way to convert the observed quantities into the dual space. Its definition can be written as follows
 $$
@@ -155,7 +174,7 @@ freqs = np.fft.rfftfreq(coefs.size, dt)
 
 Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
 
-## Decibel
+### Decibel
 
 ***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
@@ -175,7 +194,7 @@ The adoption of decibel instead of the conventional physical unit has three adva
 - When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
-## Frequency Resolution
+### Frequency Resolution
 
 Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is ***DFT***. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
 
@@ -245,14 +264,16 @@ $$
 ### Fence Effect
 
 <p align = 'center'>
-<img src="figure_dft_picket_fence_effect.png" alt="An example of DFT." width="100%"/>
+<img src="figure_dft_picket_fence_effect.png" width="60%"/>
 </p>
+
 
 ### Zero-Padding
 
 <p align = 'center'>
-<img src="figure_dft_spectral_leakage_zero_padding.png" alt="An example of DFT." width="100%"/>
+<img src="figure_dft_spectral_leakage_zero_padding.png" width="60%"/>
 </p>
+
 
 ```python
 dt = time[1] - time[0]
@@ -270,17 +291,17 @@ Once the DFT coefficients are derived, one can actually reconstruct a Fourier se
 
 
 
-## Gibbs Phenomenon
+### Gibbs Phenomenon
 
 Use Although a discrete signal can be lossless Fourier transformed, some signal. A continuous function with a infinitely sharp discontinuity introduce an infinite derivation at the discontinuity. However, any finite, discrete sampling of the continuous signal can not fully capture the complete, high frequency feature of the discontinuity. The discontinuity saw by the $\mathcal{F}$ operator is nothing but two samples with large variation, while, each adjacent samples can vary to some extent. Fourier transform can perfectly reconstruct the observed, discrete signal but is not able to perfectly represents the continuous function.
 
 Mathematically speaking, a 
 
-## Uncertainty Principle
+### Uncertainty Principle
 
 In 
 
-## Parseval's Theorem and Energy Conservation
+### Parseval's Theorem and Energy Conservation
 
 > **Parseval's Theorem for CFT:**
 > $$
@@ -321,11 +342,13 @@ for DFT. Considering that DFT yields both positive and negative frequency, we ty
 
 $$
 \begin{align}
-&\sum_{k=0}^{N-1} PSD(k\Delta f) \Delta f =\\
-\mathrm{For\ Even \ }N:\ &\Delta f \left[PSD(f_0) + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD(k\Delta f) + PSD(f_{N/2})\right]\\
-\mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD(f_0) + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD(k\Delta f)\right]
+&\sum_{k=0}^{N-1} PSD[k\Delta f] \Delta f =\\
+\mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
+\mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f]\right]
 \end{align}
 $$
+
+
 
 ```python
 N = coef.size
@@ -365,8 +388,9 @@ Most tutorials introduce the ***radix-2*** FFT, which splits the signal into ***
 Still, the divide-and-conquer strategy fails when the signal length *N* consists of at least one big prime number factor (e.g, 10007) as the signal is hard to split. In that situation, the ***Bluestein's algorithm***, which is essentially a ***Chirping-Z transform***, is used. This algorithm takes the $\mathcal{F}$ operation as a convolution and then uses the *convolution theorem* in the calculation of DFT coefficients. The convolution property allows us to extend the signal length to a proper, highly composite number with zero-padding (denoted as *M*), but the coefficients and frequency resolution remain unchanged. The final time complexity of *Bluestein's algorithm* goes to $\mathcal{O}(N+M\mathrm{log}M)$, where the first term originates from the iterate all the frequency component.
 
 <p align = 'center'>
-<img src="figure_numpy_fft_performance.png" alt="An example of DFT." width="100%"/>
+<img src="figure_numpy_fft_performance.png" width="60%"/>
 </p>
+
 
 
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
