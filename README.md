@@ -12,36 +12,36 @@ At this juncture, most students pragmatically pivot to google *"Fourier Analysis
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
 
-[TOC]
-
-
-
-## Chapter 1: Introduction & Signal Basics
+## Chapter 1: Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
 
-In physics and engineering, we often deal with **signals** – functions that vary over time and represent some physical quantity. A signal can be any measurable quantity that changes with time: for example, an audio waveform, the voltage output of a sensor, or the magnetic field measured in a plasma experiment. When we record such a quantity at successive points in time, we get a **time series**.
+In physics and engineering, we often deal with **signals** – functions that vary over time and represent some physical quantity. A signal can be any measurable quantity that changes with time: for example, an audio waveform, the voltage output of a sensor, or the magnetic field measured in a plasma experiment. In many contexts, a ***time series*** is the observation of a signal over time
 
 Many familiar phenomena are naturally described as time series, including:
 
 - **Meteorology:** e.g. El-Nino Enso
 
+<p align = 'center'>
 <img src="figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="400"/>
+</p>
 
 - **Geophysics:** e.g. Seismic Waves
 
+<p align = 'center'>
 <img src="figure_seismic_waves.png" width="400"/>
+</p>
 
 - **Solar Physics:** e.g. Sunspot Number
 
-<img src="figure_sunspot.png" width="400"/>
+<p align = 'center'><img src="figure_sunspot.png" width="400"/></p>
 
 
 Each of these is a time-domain description: we have a quantity (amplitude, voltage, etc.) **as a function of time**.
 
 Understanding the time-domain behavior of a system is important. However, it is often hard to tell **what underlying patterns or oscillations** are present. This is where **spectral analysis** becomes useful.
 
-### Why Do We Need Spectral Analysis?
+### Understand the Signal from Frequency Domain
 
 **Spectral analysis** examines a signal in the frequency domain instead of the time domain.
 
@@ -68,10 +68,6 @@ When you measure a high frequency signal with a low cadence instrument, you will
 <p align = 'center'>
 <img src="figure_aliasing.png" width="60%"/>
 </p>
-
-
-
-
 Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
@@ -114,13 +110,10 @@ X[k\Delta f] & = \lim_{M\rightarrow+\infty} \frac{1}{M} \sum_{n=-(M-1)\times N}^
 \end{align}
 $$
 
+<p align = 'center'>
+<img src="figure_dft.png" width="100%"/>
+</p>
 
-<p align = 'center'>
-<img src="figure_dft.png" alt="An example of DFT." width="100%"/>
-</p>
-<p align = 'center'>
-An example of DFT
-</p>
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
 $$
 \begin{align}
@@ -242,18 +235,36 @@ $$
 \end{align}
 $$
 
-|        Window Functions        |              Expression              | Energy Normalization Factor |
-| :----------------------------: | :----------------------------------: | :-------------------------: |
-| Bartlett [*numpy.bartlett(M)*] | 1 - $\left|\frac{n-N/2}{L/2}\right|$ |                             |
-| Blackman [*numpy.blackman(M)*] |                                      |                             |
-|            Hamming             |                                      |                             |
-|            Hanning             |                                      |                             |
-|             Kaiser             |                                      |                             |
-|                                |                                      |                             |
+| **Name and Function / NumPy/SciPy Function**                 | **w[n]**                                                     | **Amplitude Normalization mean**                             | **Power Normalization **                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Rectangular (Boxcar) / `np.ones(N)` or `scipy.signal.windows.boxcar(N)` | $w[n] = 1$                                                   | $1$                                                          | $1$                                                          |
+| Hann (Hanning) / `np.hanning(N)` or `scipy.signal.windows.hann(N)` | $w[n] = 0.5\left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)$ | $\frac{1}{2}$                                                | $\sqrt{\frac{3}{8}}$                                         |
+| Hamming / `np.hamming(N)` or `scipy.signal.windows.hamming(N)` | $w[n] = 0.54 - 0.46\cos\left(\frac{2\pi n}{N-1}\right)$      | $0.54$                                                       | $\sqrt{0.397}$                                               |
+| Blackman / `np.blackman(N)` or `scipy.signal.windows.blackman(N)` | $w[n] = 0.42 - 0.5\cos\left(\frac{2\pi n}{N-1}\right) + 0.08\cos\left(\frac{4\pi n}{N-1}\right)$ | $0.42$                                                       | $\sqrt{0.274}$                                               |
+| Kaiser / `scipy.signal.windows.kaiser(N, beta)`              | $w[n] = \frac{I_0\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}$ | $\frac{1}{2I_0(\beta)}\int_{-1}^{1} I_0\left(\beta\sqrt{1-x^2}\right) dx$ | $\sqrt{\frac{1}{2}\int_{-1}^{1} \left[\frac{I_0\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^2 dx}$ |
+| Tukey / `scipy.signal.windows.tukey(N, alpha)`               | $w[n] = 0.5\left(1 + \cos\left(\frac{\pi(2n)}{\alpha N} - 1\right)\right)$ (for edges) | $1 - \frac{\alpha}{2}$                                       | $\sqrt{1 - \frac{\alpha}{2} + \frac{\alpha}{4}}$             |
+| Gaussian / `scipy.signal.windows.gaussian(N, std)`           | $w[n] = \exp\left(-\frac{1}{2}\left(\frac{n-\frac{N-1}{2}}{\sigma\frac{N-1}{2}}\right)^2\right)$ | $\sigma\sqrt{\frac{\pi}{2}}$                                 | $\sigma\sqrt{\frac{\pi}{4}}$                                 |
+| Bartlett / `np.bartlett(N)` or `scipy.signal.windows.bartlett(N)` | $w[n] = 1 - \frac{2\left|n-\frac{N-1}{2}\right|}{N-1}$       | $\frac{1}{2}$                                                | $\sqrt{\frac{1}{3}}$                                         |
 
+## Definitions
 
+- **Amplitude Normalization (Coherent Gain)**: $\text{mean}{w[n]}$ - preserves amplitude of coherent signals (DC component)
+- **Power Normalization (Energy)**: $\sqrt{\text{mean}{w[n]^2}}$ - preserves power of incoherent signals (noise)
+- Use amplitude normalization for spectral analysis of tones/periodic signals
+- Use power normalization for power spectral density estimation of random signals
 
+## Analytic Values
 
+- **Hamming coefficients**: $0.54 = \frac{25}{46} \approx 0.5435$, $0.46 = \frac{21}{46} \approx 0.4565$
+- **Blackman coefficients**: $0.42 = \frac{21}{50}$, $0.5 = \frac{1}{2}$, $0.08 = \frac{2}{25}$
+- **Power normalization factors**:
+  - Hamming: $\sqrt{0.397} = \sqrt{\frac{25^2 + 21^2}{2 \cdot 46^2}} = \sqrt{\frac{1066}{4232}} \approx 0.630$
+  - Blackman: $\sqrt{0.274} = \sqrt{\frac{21^2 + 25^2 + 4^2}{2 \cdot 50^2}} = \sqrt{\frac{1066}{5000}} \approx 0.462$
+- $\text{mean}{w[n]} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]$ and $\text{mean}{w[n]^2} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]^2$
+- Kaiser and Gaussian expressions involve integrals that depend on shape parameters
+- For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
+- For Kaiser: $I_0$ is the modified Bessel function of the first kind
+- Gaussian approximations assume the window is appropriately scaled
 
 ### Fence Effect
 
@@ -279,7 +290,9 @@ coefs = np.fft.fft(signal, n = signal.size + N_PADDING)
 freqs = np.fft.fftfreq(coefs.size, dt)
 ```
 
-## Spectral Reconstruction / Trigonometric interpolation
+## Chapter 3: Rebuild the data from the frequency domain
+
+### Spectral Reconstruction / Trigonometric interpolation
 
 Once the DFT coefficients are derived, one can actually reconstruct a Fourier series with continuous input and get a interpolation on the unsampled points.
 
@@ -476,7 +489,8 @@ In audio engineering, electronics, physics, and many other fields, the color of 
 
 The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
 
-## How to generate a colored noise?
+### How to generate a colored noise?
+
 ### Method 1: Approximate $$\mathrm{d}x/\mathrm{d}t$$ by $$\Delta x/\Delta t$$
 According to the property of Fourier transform, the convolution in the .
 ```python
@@ -509,7 +523,7 @@ violet_noise = np.fft.irfft(violet_noise_fft)
 
 Besides these two method, one can also get a colored noise by filtering a white noise. An colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though, this 
 
-## "Noise" of Noise
+### "Noise" of Noise
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
 
 The Fourier coefficient computed as 
@@ -535,7 +549,7 @@ It should be noted that the wave signals like $\mathrm{sin}\omega t$ are not *i.
 
 To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
 
-## Welch Method [*scipy.signal.welch*]
+### Welch Method [*scipy.signal.welch*]
 Welch proposed that the averaging the power spectral density instead of the coefficient can largely reduce the flutuation levels of the spectrum. Therefore, we may just get a.
 
 The averaging operation must be taken after the conversion from coefficient to power other wise the averaged coefficients are actually unchanged.
@@ -580,7 +594,7 @@ The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / 
 
 In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at unity, which means every segement has no overlapping with each other. It can be regarded as a special case of the *Welch Method* while it is actually proposed earlier.
 
-## Blackman-Tukey Method
+### Blackman-Tukey Method
 
 ***Blackman-Tukey method*** gives another approach to a high SNR estimation of *PSD* based on the *W.S.S* properties of the signal and *Wiener–Khinchin theorem*. This method consists of three steps:
 
@@ -598,7 +612,7 @@ Apart from splitting the signal into several segments, one can also downsample t
 <img src="figure_noise_blackman_tukey.png" width="50%"/>
 </p>
 
-## Signal Over Noise
+### Signal Over Noise
 
 A signal composed of a deterministic sinusoidal component and additive noise can be written as:
 $$
@@ -628,9 +642,9 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 
 
 
+## Chapter 4: Faulty  Sample
 
-
-## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
+### Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
 
@@ -673,7 +687,7 @@ Substituting the expressions for $A$ and $B$ yields a form that still involves t
 <img src="figure_lombscargle.png" alt="An example of DFT." width="50%"/>
 </p>
 
-## Introducing the Phase Offset $\tau$
+### Introducing the Phase Offset $\tau$
 
 To eliminate the cross‐term, shift the time origin:
 
@@ -691,7 +705,7 @@ $P(\omega) = \frac12\left[ \frac{\bigl[\sum (x_n-\bar x)\cos\!\bigl(\omega (t_n-
 
 Compare with the original frequency spectrum, the Lomb-Scargle periodogram contains some irregular frequency leakage. The Lomb-Scargle periodogram finally converge to the Fourier periodogram when the sample time is uniformly distributed.
 
-## Correlation Function
+### Correlation Function
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
@@ -710,7 +724,7 @@ $$
 $$
 If $$X$$ is a wide-sense stationary signal, then $${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$$ for arbitrary $$t_1, t_2,$$ and $$\tau$$. Thus, the autocorrelation function can be written as a single-variate function $$R_{XX}(\tau)=R_{XX}(t, t + \tau)$$.
 
-## Wiener–Khinchin theorem
+### Wiener–Khinchin theorem
 For a wide-sense stationary signal, its power spectral density is equal to the the fourier transform of its autocorrelation function, i.e.,:
 
 $$
@@ -720,7 +734,7 @@ PSD(f)=\int_{-\infty}^{\infty}R_{XX}(\tau) e^{-2\pi i f \tau} \mathrm{d} \tau
 $$
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contraposition claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
 
-## Hilbert Transform [*scipy.signal.hilbert*]
+### Hilbert Transform [*scipy.signal.hilbert*]
 
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
@@ -738,13 +752,13 @@ signal_ht = scipy.signal.hilbert(signal)
 signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 ```
 
-## Digital Filter
+### Digital Filter
 
-## Cepstrum
+### Cepstrum
 
 Cepstral analysis provides a unique perspective by applying a Fourier transform to the logarithm of the spectrum. The resulting “Cepstrum” is widely used for echo detection, speech processing, and seismic reflection analysis. This section explains the underlying theory, physical meaning, and demonstrates how to perform cepstral analysis in Python.
 
-## Short-Time Fourier Transform
+### Short-Time Fourier Transform
 
 The Short-Time Fourier Transform (STFT) extends traditional Fourier analysis to non-stationary signals by introducing time localization via windowing. This allows us to track how the frequency content of a signal evolves over time. This section explains the trade-off between time and frequency resolution, the role of window functions, and practical implementation with `scipy.signal.shortTimeFFT`. It should be noted that function `scipy.signal.stft` is considered legacy and will no longer receive updates. While `scipy` currently have no plans to remove it, they recommend that new code uses more modern alternatives `shortTimeFFT` instead.
 
@@ -760,30 +774,30 @@ stft_frequency = np.fft.rfftfreq(window, d=dt)  # frequency vector for STFT
 
 
 
-## Wavelet Analysis
+### Wavelet Analysis
 
 Wavelet analysis offers a versatile framework for multi-resolution time-frequency analysis, especially for signals with localized features or abrupt transitions. By decomposing a signal into wavelets, we gain simultaneous insight into both frequency and time domains. This section introduces the fundamentals of wavelet theory, common wavelet families, and hands-on examples using Python packages such as `pywt`, `scipy`, and `squeezzeypy`.
 
-## Moving-Average and Moving-Median
+### Moving-Average and Moving-Median
 
 Moving-average and moving-median filters are essential tools for smoothing time series and removing high-frequency noise. They are simple yet effective for trend extraction, baseline correction, and outlier suppression. This section compares these techniques, discusses their strengths and limitations, and provides Python code snippets for practical use. `bottleneck` and `numpy.sliding_window`.
 
+## Chapter 5: Multi-Dimensional Signal
 
-
-## Principal Component Analysis / Minimum Variance Analysis
+### Principal Component Analysis / Minimum Variance Analysis
 
 Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction.
 
 ------
 
-## 1. Core Idea
+#### 1. Core Idea
 
 - **PCA**: Rotate the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
 - **MVA**: Apply PCA to a 3 × * N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
 
 ------
 
-## 2. Mathematical Formulation
+#### 2. Mathematical Formulation
 
 1. **Collect & demean** the data matrix
    $$
@@ -843,11 +857,11 @@ eigenvectors = pca.components_
 
 
 
-## Cross-Spectral Density
+### Cross-Spectral Density
 
 Cross-spectral density (CSD) quantifies the frequency-domain relationship between two signals, revealing shared oscillatory components and phase relationships. It forms the basis for advanced techniques such as coherence and transfer function estimation. This section covers the theory behind CSD, its estimation using Welch’s method, and real-world applications in system identification and geophysics.
 
-## Average of the Spectral Matrix
+### Average of the Spectral Matrix
 
 A ***spectral matrix*** can be defined as 
 $$
@@ -858,13 +872,13 @@ for a time series decomposite with both signal and noise, its Fourier coefficien
 
 
 
-## Coherence
+### Coherence
 
 Coherence measures the degree of linear correlation between two signals at each frequency, serving as a frequency-resolved analog of correlation coefficient. High coherence indicates a strong, consistent relationship, which is crucial for studies of wave propagation, coupled systems, and causality analysis. Here, we explain how to calculate and interpret coherence with Python tools.
 
 To be honest, I feel very hard to understand what does *coherent/coherence* means in many of the magnetospheric ULF/VLF waves investigations. It can be easily understood the coherence between two individual light or signal. However, in the *in-situ* observation, the spacecraft can only measure one signal without further distinguishment or separation. In some literature, the coherence between $E_x$ and $B_y$ are used to measure whether the observed VLF waves are coherent. These VLF waves always propagate along the geomagnetic field line, which point to the north near the magnetic equator. It makes some sense as a high coherence suggests the waves have a stable wave vector during this interval. But, it is still hard to expect the occurrence of interference as both $E_x$ and $B_y$ may just be the presence of one single wave. While, some other literatures use the coherence between the magnetic field components to 
 
-## Combination with Maxwell's Equations: SVD Wave Analysis
+### Combination with Maxwell's Equations: SVD Wave Analysis
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
 $$
@@ -979,7 +993,7 @@ One should keep in mind that all interpretation about the observed waves is in t
 
 This section explores the synergy between spectral analysis and electromagnetic theory, demonstrating how to derive physical insights and constraints from both perspectives.
 
-## Polarization
+#### Polarization
 
 Polarization analysis examines the orientation and ellipticity of oscillatory signals, especially electromagnetic or plasma waves. By decomposing the signal into orthogonal components and analyzing their relative amplitude and phase, we can characterize wave mode, propagation direction, and physical source. This section introduces key polarization parameters, their spectral estimation, and relevant Python implementations.
 
@@ -1048,7 +1062,7 @@ compressibility = np.abs(coef_para) ** 2 / (np.abs(coef_para) ** 2 + np.abs(coef
 
 ```
 
-## Degree of Polarization
+#### Degree of Polarization
 
 The **degree of polarization** quantifies the proportion of an electromagnetic fluctuation (such as a plasma wave) that is organized, or polarized, as opposed to random or unpolarized (noise-like) components. It is a fundamental parameter in space plasma physics, characterizing the coherence of observed wave signals.
 
