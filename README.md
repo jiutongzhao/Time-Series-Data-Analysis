@@ -291,9 +291,17 @@ Use Although a discrete signal can be lossless Fourier transformed, some signal.
 
 Mathematically speaking, a 
 
+<p align = 'center'>
+<img src="figure_gibbs.png" width="50%"/>
+</p>
+
 ### Uncertainty Principle
 
 In 
+
+<p align = 'center'>
+<img src="figure_uncertainty_principle.png" width="50%"/>
+</p>
 
 ### Parseval's Theorem and Energy Conservation
 
@@ -566,8 +574,9 @@ $$
 The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
 
 <p align = 'center'>
-<img src="figure_gamma_distribution.png" alt="An example of DFT." width="50%"/>
+<img src="figure_gamma_distribution.png" width="50%"/>
 </p>
+
 
 In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at unity, which means every segement has no overlapping with each other. It can be regarded as a special case of the *Welch Method* while it is actually proposed earlier.
 
@@ -584,6 +593,10 @@ In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at 
 It should be keep in mind that these methods are all build based on the assumption of wide-sense stationarity of the signal.[Explain WSS here]. A noise signal, no matter its color, is wide-sense stationary. However, a real time series of a physics quantity cannot gurantee its wide-sense stationarity. Since W.S.S is the only presumption of these method, they are also termed ***Nonparametric Estimator***.
 
 Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
+
+<p align = 'center'>
+<img src="figure_noise_blackman_tukey.png" width="50%"/>
+</p>
 
 ## Signal Over Noise
 
@@ -612,6 +625,10 @@ $$
 \hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
 $$
 In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
+
+
+
+
 
 ## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
@@ -651,6 +668,10 @@ $$
 $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
 
 Substituting the expressions for $A$ and $B$ yields a form that still involves the cross‐term $D$.
+
+<p align = 'center'>
+<img src="figure_lombscargle.png" alt="An example of DFT." width="50%"/>
+</p>
 
 ## Introducing the Phase Offset $\tau$
 
@@ -791,10 +812,17 @@ Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are close
 4. **Interpretation**
 
    - **PCA**: Project the data onto the top *k* eigenvectors $\{\mathbf{e}_1,\dots,\mathbf{e}_k\}$ for dimensionality reduction.
+   
    - **MVA**:
      - $\mathbf{e}_1$: maximum‐variance direction (largest fluctuations)
+     
      - $\mathbf{e}_2$: intermediate direction
+     
      - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
+     
+       <p align = 'center'>
+       <img src="figure_pca.png" alt="An example of DFT." width="50%"/>
+       </p>
 
 ```python
 N = 2 ** 10
@@ -942,7 +970,11 @@ Similarly, based on the averaged spectral matrix, one may define the coherence (
 $$
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
 $$
- One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
+<p align = 'center'>
+<img src="figure_coherency.png" alt="An example of DFT." width="50%"/>
+</p>
+
+One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
 
 
 This section explores the synergy between spectral analysis and electromagnetic theory, demonstrating how to derive physical insights and constraints from both perspectives.
@@ -1022,7 +1054,7 @@ The **degree of polarization** quantifies the proportion of an electromagnetic f
 
 The degree of polarization is defined as the fraction of the total wave power that is associated with a perfectly polarized (coherent) component. It is mathematically expressed as:
 $$
-D_p = \frac{\text{power of the polarized component}}{\text{total power}}
+D_p = \frac{\text{Power of the Polarized Component}}{\text{Total Power}}
 $$
 
 - $D_p = 1$: the signal is completely polarized.
