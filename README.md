@@ -12,7 +12,7 @@ At this juncture, most students pragmatically pivot to google *"Fourier Analysis
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
 
-## Chapter 1: Why Do We Need Spectral Analysis?
+## Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
 
@@ -23,18 +23,19 @@ Many familiar phenomena are naturally described as time series, including:
 - **Meteorology:** e.g. El-Nino Enso
 
 <p align = 'center'>
-<img src="figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="400"/>
+<img src="figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
 </p>
+
 
 - **Geophysics:** e.g. Seismic Waves
 
 <p align = 'center'>
-<img src="figure_seismic_waves.png" width="400"/>
+<img src="figure_seismic_waves.png" width="60%"/>
 </p>
 
 - **Solar Physics:** e.g. Sunspot Number
 
-<p align = 'center'><img src="figure_sunspot.png" width="400"/></p>
+<p align = 'center'><img src="figure_sunspot.png" width="60%"/></p>
 
 
 Each of these is a time-domain description: we have a quantity (amplitude, voltage, etc.) **as a function of time**.
@@ -72,7 +73,7 @@ Such phenomenon is essentially unrelated to the Fourier transform as its frequen
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
-## Chapter 2: How Do We See Frequencies in Data?
+## How Do We See Frequencies in Data?
 
 ### Fourier Transform
 
@@ -111,7 +112,7 @@ X[k\Delta f] & = \lim_{M\rightarrow+\infty} \frac{1}{M} \sum_{n=-(M-1)\times N}^
 $$
 
 <p align = 'center'>
-<img src="figure_dft.png" width="100%"/>
+<img src="figure_dft.png" width="60%"/>
 </p>
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
@@ -160,26 +161,6 @@ freqs = np.fft.rfftfreq(coefs.size, dt)
 ```
 
 Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
-
-### Decibel
-
-***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
-
-
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
-
-
-
-Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
-
-The adoption of decibel instead of the conventional physical unit has three advantage:
-
-- It allows the direction addition when compare the amplitude of the signal.
-- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
-- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
 ### Frequency Resolution
 
@@ -246,14 +227,14 @@ $$
 | Gaussian / `scipy.signal.windows.gaussian(N, std)`           | $w[n] = \exp\left(-\frac{1}{2}\left(\frac{n-\frac{N-1}{2}}{\sigma\frac{N-1}{2}}\right)^2\right)$ | $\sigma\sqrt{\frac{\pi}{2}}$                                 | $\sigma\sqrt{\frac{\pi}{4}}$                                 |
 | Bartlett / `np.bartlett(N)` or `scipy.signal.windows.bartlett(N)` | $w[n] = 1 - \frac{2\left|n-\frac{N-1}{2}\right|}{N-1}$       | $\frac{1}{2}$                                                | $\sqrt{\frac{1}{3}}$                                         |
 
-## Definitions
+### Definitions
 
 - **Amplitude Normalization (Coherent Gain)**: $\text{mean}{w[n]}$ - preserves amplitude of coherent signals (DC component)
 - **Power Normalization (Energy)**: $\sqrt{\text{mean}{w[n]^2}}$ - preserves power of incoherent signals (noise)
 - Use amplitude normalization for spectral analysis of tones/periodic signals
 - Use power normalization for power spectral density estimation of random signals
 
-## Analytic Values
+### Analytic Values
 
 - **Hamming coefficients**: $0.54 = \frac{25}{46} \approx 0.5435$, $0.46 = \frac{21}{46} \approx 0.4565$
 - **Blackman coefficients**: $0.42 = \frac{21}{50}$, $0.5 = \frac{1}{2}$, $0.08 = \frac{2}{25}$
@@ -290,7 +271,27 @@ coefs = np.fft.fft(signal, n = signal.size + N_PADDING)
 freqs = np.fft.fftfreq(coefs.size, dt)
 ```
 
-## Chapter 3: Rebuild the data from the frequency domain
+### Decibel
+
+***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
+
+
+|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
+| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
+| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+
+
+
+Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
+
+The adoption of decibel instead of the conventional physical unit has three advantage:
+
+- It allows the direction addition when compare the amplitude of the signal.
+- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
+- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
+
+## Rebuild the data from the frequency domain
 
 ### Spectral Reconstruction / Trigonometric interpolation
 
@@ -305,7 +306,7 @@ Use Although a discrete signal can be lossless Fourier transformed, some signal.
 Mathematically speaking, a 
 
 <p align = 'center'>
-<img src="figure_gibbs.png" width="50%"/>
+<img src="figure_gibbs.png" width="60%"/>
 </p>
 
 ### Uncertainty Principle
@@ -313,7 +314,7 @@ Mathematically speaking, a
 In 
 
 <p align = 'center'>
-<img src="figure_uncertainty_principle.png" width="50%"/>
+<img src="figure_uncertainty_principle.png" width="60%"/>
 </p>
 
 ### Parseval's Theorem and Energy Conservation
@@ -477,12 +478,12 @@ $$
 
 
 
-## Chapter 3: Noise
+## Noise
 
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
 
 <p align = 'center'>
-<img src="figure_noise.png" alt="An example of DFT." width="50%"/>
+<img src="figure_noise.png" alt="An example of DFT." width="60%"/>
 </p>
 
 In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
@@ -539,7 +540,7 @@ can be deemed as a weighted summation of the signal $x[n]$. When $x[n]$ are inde
 
 
 <p align = 'center'>
-<img src="figure_noise_hist.png" alt="An example of DFT." width="50%"/>
+<img src="figure_noise_hist.png" alt="An example of DFT." width="60%"/>
 </p>
 It should be noted that the wave signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**
 
@@ -549,7 +550,7 @@ It should be noted that the wave signals like $\mathrm{sin}\omega t$ are not *i.
 
 To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
 
-### Welch Method [*scipy.signal.welch*]
+### Welch Method [`scipy.signal.welch`]
 Welch proposed that the averaging the power spectral density instead of the coefficient can largely reduce the flutuation levels of the spectrum. Therefore, we may just get a.
 
 The averaging operation must be taken after the conversion from coefficient to power other wise the averaged coefficients are actually unchanged.
@@ -574,7 +575,7 @@ Except for averaging, one can also  choose the median of the PSD across differen
 For each segement, you can also chose the window function to reduce the spectral leakage. The result of this method is shown below:
 
 <p align = 'center'>
-<img src="figure_noise_welch.png" alt="From Wikipedia [Gamma Distribution]." width="50%"/>
+<img src="figure_noise_welch.png" alt="From Wikipedia [Gamma Distribution]." width="60%"/>
 </p>
 
 One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
@@ -588,7 +589,7 @@ $$
 The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
 
 <p align = 'center'>
-<img src="figure_gamma_distribution.png" width="50%"/>
+<img src="figure_gamma_distribution.png" width="60%"/>
 </p>
 
 
@@ -609,7 +610,7 @@ It should be keep in mind that these methods are all build based on the assumpti
 Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
 
 <p align = 'center'>
-<img src="figure_noise_blackman_tukey.png" width="50%"/>
+<img src="figure_noise_blackman_tukey.png" width="60%"/>
 </p>
 
 ### Signal Over Noise
@@ -642,7 +643,7 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 
 
 
-## Chapter 4: Faulty  Sample
+## Faulty  Sample
 
 ### Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
@@ -684,7 +685,7 @@ $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
 Substituting the expressions for $A$ and $B$ yields a form that still involves the cross‐term $D$.
 
 <p align = 'center'>
-<img src="figure_lombscargle.png" alt="An example of DFT." width="50%"/>
+<img src="figure_lombscargle.png" alt="An example of DFT." width="60%"/>
 </p>
 
 ### Introducing the Phase Offset $\tau$
@@ -739,7 +740,7 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its c
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
 <p align = 'center'>
-<img src="figure_hilbert.png" alt="An example of DFT." width="50%"/>
+<img src="figure_hilbert.png" alt="An example of DFT." width="60%"/>
 </p>
 
 ```python
@@ -757,6 +758,8 @@ signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 ### Cepstrum
 
 Cepstral analysis provides a unique perspective by applying a Fourier transform to the logarithm of the spectrum. The resulting “Cepstrum” is widely used for echo detection, speech processing, and seismic reflection analysis. This section explains the underlying theory, physical meaning, and demonstrates how to perform cepstral analysis in Python.
+
+## Time-Frequency Spectrum
 
 ### Short-Time Fourier Transform
 
@@ -782,7 +785,7 @@ Wavelet analysis offers a versatile framework for multi-resolution time-frequenc
 
 Moving-average and moving-median filters are essential tools for smoothing time series and removing high-frequency noise. They are simple yet effective for trend extraction, baseline correction, and outlier suppression. This section compares these techniques, discusses their strengths and limitations, and provides Python code snippets for practical use. `bottleneck` and `numpy.sliding_window`.
 
-## Chapter 5: Multi-Dimensional Signal
+## Multi-Dimensional Signal
 
 ### Principal Component Analysis / Minimum Variance Analysis
 
@@ -835,7 +838,7 @@ Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are close
      - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
      
        <p align = 'center'>
-       <img src="figure_pca.png" alt="An example of DFT." width="50%"/>
+       <img src="figure_pca.png" alt="An example of DFT." width="60%"/>
        </p>
 
 ```python
@@ -985,7 +988,7 @@ $$
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
 $$
 <p align = 'center'>
-<img src="figure_coherency.png" alt="An example of DFT." width="50%"/>
+<img src="figure_coherency.png" alt="An example of DFT." width="60%"/>
 </p>
 
 One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
