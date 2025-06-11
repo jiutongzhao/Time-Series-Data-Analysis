@@ -740,8 +740,9 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its c
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
 <p align = 'center'>
-<img src="Figure/figure_hilbert.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_hilbert.png" width="60%"/>
 </p>
+
 
 ```python
 omega = 2 * np.pi * 8.0
@@ -755,9 +756,15 @@ signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 
 ### Digital Filter
 
+
+
 ### Cepstrum
 
 Cepstral analysis provides a unique perspective by applying a Fourier transform to the logarithm of the spectrum. The resulting “Cepstrum” is widely used for echo detection, speech processing, and seismic reflection analysis. This section explains the underlying theory, physical meaning, and demonstrates how to perform cepstral analysis in Python.
+
+<p align = 'center'>
+<img src="Figure/figure_cepstrum.png" width="90%"/>
+</p>
 
 ## Time-Frequency Spectrum
 
