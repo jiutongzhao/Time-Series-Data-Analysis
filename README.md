@@ -23,7 +23,7 @@ Many familiar phenomena are naturally described as time series, including:
 - **Meteorology:** e.g. El-Nino Enso
 
 <p align = 'center'>
-<img src="Figure/figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
+<img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
 </p>
 
 
