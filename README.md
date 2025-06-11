@@ -23,19 +23,19 @@ Many familiar phenomena are naturally described as time series, including:
 - **Meteorology:** e.g. El-Nino Enso
 
 <p align = 'center'>
-<img src="figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
+<img src="Figure/figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
 </p>
 
 
 - **Geophysics:** e.g. Seismic Waves
 
 <p align = 'center'>
-<img src="figure_seismic_waves.png" width="60%"/>
+<img src="Figure/figure_seismic_waves.png" width="60%"/>
 </p>
 
 - **Solar Physics:** e.g. Sunspot Number
 
-<p align = 'center'><img src="figure_sunspot.png" width="60%"/></p>
+<p align = 'center'><img src="Figure/figure_sunspot.png" width="60%"/></p>
 
 
 Each of these is a time-domain description: we have a quantity (amplitude, voltage, etc.) **as a function of time**.
@@ -67,7 +67,7 @@ The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequen
 When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
 
 <p align = 'center'>
-<img src="figure_aliasing.png" width="60%"/>
+<img src="Figure/figure_aliasing.png" width="60%"/>
 </p>
 Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
 
@@ -112,7 +112,7 @@ X[k\Delta f] & = \lim_{M\rightarrow+\infty} \frac{1}{M} \sum_{n=-(M-1)\times N}^
 $$
 
 <p align = 'center'>
-<img src="figure_dft.png" width="60%"/>
+<img src="Figure/figure_dft.png" width="60%"/>
 </p>
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
@@ -185,13 +185,13 @@ where $$i=1,2,...,N$$ and $$\Delta T=N\Delta t$$ is the total duration of the si
 
 ### Periodic Extensions
 <p align = 'center'>
-<img src="figure_dft_periodic_extensions.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_dft_periodic_extensions.png" alt="An example of DFT." width="60%"/>
 </p>
 
 
 ### Windowing Effect
 <p align = 'center'>
-<img src="figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
 </p>
 
 
@@ -250,14 +250,14 @@ $$
 ### Fence Effect
 
 <p align = 'center'>
-<img src="figure_dft_picket_fence_effect.png" width="60%"/>
+<img src="Figure/figure_dft_picket_fence_effect.png" width="60%"/>
 </p>
 
 
 ### Zero-Padding
 
 <p align = 'center'>
-<img src="figure_dft_spectral_leakage_zero_padding.png" width="60%"/>
+<img src="Figure/figure_dft_spectral_leakage_zero_padding.png" width="60%"/>
 </p>
 
 
@@ -306,7 +306,7 @@ Use Although a discrete signal can be lossless Fourier transformed, some signal.
 Mathematically speaking, a 
 
 <p align = 'center'>
-<img src="figure_gibbs.png" width="60%"/>
+<img src="Figure/figure_gibbs.png" width="60%"/>
 </p>
 
 ### Uncertainty Principle
@@ -314,7 +314,7 @@ Mathematically speaking, a
 In 
 
 <p align = 'center'>
-<img src="figure_uncertainty_principle.png" width="60%"/>
+<img src="Figure/figure_uncertainty_principle.png" width="60%"/>
 </p>
 
 ### Parseval's Theorem and Energy Conservation
@@ -404,7 +404,7 @@ Most tutorials introduce the ***radix-2*** FFT, which splits the signal into ***
 Still, the divide-and-conquer strategy fails when the signal length *N* consists of at least one big prime number factor (e.g, 10007) as the signal is hard to split. In that situation, the ***Bluestein's algorithm***, which is essentially a ***Chirping-Z transform***, is used. This algorithm takes the $\mathcal{F}$ operation as a convolution and then uses the *convolution theorem* in the calculation of DFT coefficients. The convolution property allows us to extend the signal length to a proper, highly composite number with zero-padding (denoted as *M*), but the coefficients and frequency resolution remain unchanged. The final time complexity of *Bluestein's algorithm* goes to $\mathcal{O}(N+M\mathrm{log}M)$, where the first term originates from the iterate all the frequency component.
 
 <p align = 'center'>
-<img src="figure_numpy_fft_performance.png" width="60%"/>
+<img src="Figure/figure_numpy_fft_performance.png" width="60%"/>
 </p>
 
 
@@ -483,7 +483,7 @@ $$
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
 
 <p align = 'center'>
-<img src="figure_noise.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_noise.png" alt="An example of DFT." width="60%"/>
 </p>
 
 In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
@@ -540,7 +540,7 @@ can be deemed as a weighted summation of the signal $x[n]$. When $x[n]$ are inde
 
 
 <p align = 'center'>
-<img src="figure_noise_hist.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_noise_hist.png" alt="An example of DFT." width="60%"/>
 </p>
 It should be noted that the wave signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**
 
@@ -575,7 +575,7 @@ Except for averaging, one can also  choose the median of the PSD across differen
 For each segement, you can also chose the window function to reduce the spectral leakage. The result of this method is shown below:
 
 <p align = 'center'>
-<img src="figure_noise_welch.png" alt="From Wikipedia [Gamma Distribution]." width="60%"/>
+<img src="Figure/figure_noise_welch.png" alt="From Wikipedia [Gamma Distribution]." width="60%"/>
 </p>
 
 One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
@@ -589,7 +589,7 @@ $$
 The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
 
 <p align = 'center'>
-<img src="figure_gamma_distribution.png" width="60%"/>
+<img src="Figure/figure_gamma_distribution.png" width="60%"/>
 </p>
 
 
@@ -610,7 +610,7 @@ It should be keep in mind that these methods are all build based on the assumpti
 Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
 
 <p align = 'center'>
-<img src="figure_noise_blackman_tukey.png" width="60%"/>
+<img src="Figure/figure_noise_blackman_tukey.png" width="60%"/>
 </p>
 
 ### Signal Over Noise
@@ -685,7 +685,7 @@ $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
 Substituting the expressions for $A$ and $B$ yields a form that still involves the cross‐term $D$.
 
 <p align = 'center'>
-<img src="figure_lombscargle.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_lombscargle.png" alt="An example of DFT." width="60%"/>
 </p>
 
 ### Introducing the Phase Offset $\tau$
@@ -740,7 +740,7 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its c
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
 <p align = 'center'>
-<img src="figure_hilbert.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_hilbert.png" alt="An example of DFT." width="60%"/>
 </p>
 
 ```python
@@ -838,7 +838,7 @@ Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are close
      - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
      
        <p align = 'center'>
-       <img src="figure_pca.png" alt="An example of DFT." width="60%"/>
+       <img src="Figure/figure_pca.png" alt="An example of DFT." width="60%"/>
        </p>
 
 ```python
@@ -988,7 +988,7 @@ $$
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
 $$
 <p align = 'center'>
-<img src="figure_coherency.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_coherency.png" alt="An example of DFT." width="60%"/>
 </p>
 
 One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
