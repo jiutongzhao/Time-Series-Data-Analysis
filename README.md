@@ -641,7 +641,9 @@ $$
 $$
 In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
-
+<p align = 'center'>
+<img src="Figure/figure_no.png" width="60%"/>
+</p>
 
 ## Faulty  Sample
 
