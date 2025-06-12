@@ -784,11 +784,17 @@ stft_time = np.arange(0, stft_psd.shape[1]) * STFT.hop / fs - STFT.win.size / 2 
 stft_frequency = np.fft.rfftfreq(window, d=dt)  # frequency vector for STFT
 ```
 
-
+<p align = 'center'>
+<img src="Figure/figure_stft.png" alt="An example of DFT." width="60%"/>
+</p>
 
 ### Wavelet Analysis
 
 Wavelet analysis offers a versatile framework for multi-resolution time-frequency analysis, especially for signals with localized features or abrupt transitions. By decomposing a signal into wavelets, we gain simultaneous insight into both frequency and time domains. This section introduces the fundamentals of wavelet theory, common wavelet families, and hands-on examples using Python packages such as `pywt`, `scipy`, and `squeezzeypy`.
+
+<p align = 'center'>
+<img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
+</p>
 
 ### Moving-Average and Moving-Median
 
