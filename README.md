@@ -388,7 +388,7 @@ The adoption of decibel instead of the conventional physical unit has three adva
 - When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
-## Rebuild the data from the frequency domain
+## What Should We be Careful about the DFT/FFT?
 
 ### Spectral Reconstruction / Trigonometric interpolation
 
@@ -575,8 +575,8 @@ $$
 | Property                             | Continuous-time FT                                       | Length-$N$ DFT (circular, arbitrary $T_s$)                   |
 | ------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------ |
 | **Linearity**                        | $\mathcal F\{a\,x+b\,y\}=a\,X+b\,Y$                      | $a\,x[n]+b\,y[n]\;\xrightarrow{\text{DFT}}\;a\,X[k]+b\,Y[k]$ |
-| **Time shift**                       | $x(t-t_0)\;\longrightarrow\;e^{-j2\pi f t_0}X(f)$        | $x[(n-n_0)\!\!\!\!\bmod\!N]\;\xrightarrow{\text{DFT}}\;e^{-j2\pi k n_0/N}\,X[k]$ ($\Delta t=n_0T_s$) |
-| **Frequency shift / Modulation**     | $e^{j2\pi f_0 t}x(t)\;\longrightarrow\;X(f-f_0)$         | $e^{j2\pi f_0 nT_s}x[n]\;\xrightarrow{\text{DFT}}\;X[(k-k_0)\!\!\!\!\bmod\!N]$, $k_0=\dfrac{f_0 N}{f_s}$ |
+| **Time shift**                       | $x(t-t_0)\;\longrightarrow\;e^{-j2\pi f t_0}X(f)$        | $x[(n-n_0)\bmod N]\;\xrightarrow{\text{DFT}}\;e^{-j2\pi k n_0/N}\,X[k]$ ($\Delta t=n_0T_s$) |
+| **Frequency shift / Modulation**     | $e^{j2\pi f_0 t}x(t)\;\longrightarrow\;X(f-f_0)$         | $e^{j2\pi f_0 nT_s}x[n]\;\xrightarrow{\text{DFT}}\;X[(k-k_0)\bmod N]$, $k_0=\dfrac{f_0 N}{f_s}$ |
 | **Time scaling**                     | (x(a t);\longrightarrow;\tfrac1{                         | a                                                            |
 | **Conjugation & Symmetry**           | Real $x(t)$ ⇒ $X(-f)=X^{*}(f)$                           | Real $x[n]$ ⇒ $X[(N-k)\!\!\!\!\bmod\!N]=X^{*}[k]$            |
 | **Convolution theorem**              | $h=x*y\;\Rightarrow\;\mathcal F\{h\}=X\,Y$               | Circular convolution: $x\!\circledast\!y\;\xrightarrow{\text{DFT}}\;X[k]\,Y[k]$ |
@@ -598,9 +598,9 @@ In audio engineering, electronics, physics, and many other fields, the color of 
 
 The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
 
-### How to generate a colored noise?
+### Artificial Noise Generation
 
-### Method 1: Approximate $$\mathrm{d}x/\mathrm{d}t$$ by $$\Delta x/\Delta t$$
+#### Method 1: Approximate $$\mathrm{d}x/\mathrm{d}t$$ by $$\Delta x/\Delta t$$
 According to the property of Fourier transform, the convolution in the .
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -611,7 +611,7 @@ brownian_noise = np.cumsum(np.random.randn(time.size)) * dt
 violet_noise = np.diff(np.random.randn(time.size + 1)) / dt
 ```
 
-### Method 2: Rescale the frequency spectrum of the white noise
+#### Method 2: Rescale the frequency spectrum of the white noise [Suggested]
 
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -630,7 +630,7 @@ violet_noise_fft[0] = 0
 violet_noise = np.fft.irfft(violet_noise_fft)
 ```
 
-Besides these two method, one can also get a colored noise by filtering a white noise. An colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though, this 
+Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
 
 ### "Noise" of Noise
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
@@ -639,22 +639,21 @@ The Fourier coefficient computed as
 $$
 \begin{align}
 
-\hat X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
+X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
 
 \end{align}
 $$
-can be deemed as a weighted summation of the signal $x[n]$. When $x[n]$ are independent identically distributed random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary part, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires the real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
+can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n]$ are independent identically distributed (*i.i.d*) random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary parts, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires that he real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
 
 
 
 <p align = 'center'>
-<img src="Figure/figure_noise_hist.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_noise_hist.png" width="60%"/>
 </p>
-It should be noted that the wave signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**
+
+It should be noted that the periodic signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**  can not guarantee their Fourier coefficients converged to a Normal distribution. Commonly, its *PDF* still follows a bell-shaped curves but the mean and variance dependent on the *SNR*.
 
 [^1]: which proved that independent but not identical distributed random variables satisfy the CLT.
-
- can not guarantee their Fourier coefficients converged to a Normal distribution. Commonly, its *PDF* still follows a bell-shaped curves but the mean and variance dependent on the *SNR*.
 
 To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
 
@@ -708,10 +707,18 @@ In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at 
 ***Blackman-Tukey method*** gives another approach to a high SNR estimation of *PSD* based on the *W.S.S* properties of the signal and *Wiener–Khinchin theorem*. This method consists of three steps:
 
 1. Calculate the (***double-sided***) ACF of the signal
-
 2. Apply a window function to the ACF
-
 3. Do DFT to the windowed ACF.
+
+```mermaid
+graph LR;
+    A[Signal] --> B[ACF];
+    B --> C[Window];
+    C --> D[DFT];
+    D --> E[PSD];
+```
+
+
 
 It should be keep in mind that these methods are all build based on the assumption of wide-sense stationarity of the signal.[Explain WSS here]. A noise signal, no matter its color, is wide-sense stationary. However, a real time series of a physics quantity cannot gurantee its wide-sense stationarity. Since W.S.S is the only presumption of these method, they are also termed ***Nonparametric Estimator***.
 
@@ -750,8 +757,9 @@ $$
 In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
 <p align = 'center'>
-<img src="Figure/figure_no.png" width="60%"/>
+<img src="Figure/figure_signal_over_noise_hist.png" width="60%"/>
 </p>
+
 
 ## Faulty  Sample
 
@@ -798,7 +806,7 @@ Substituting the expressions for $A$ and $B$ yields a form that still involves t
 <img src="Figure/figure_lombscargle.png" alt="An example of DFT." width="60%"/>
 </p>
 
-### Introducing the Phase Offset $\tau$
+#### Introducing the Phase Offset $\tau$
 
 To eliminate the cross‐term, shift the time origin:
 
@@ -866,7 +874,43 @@ signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 
 ### Digital Filter
 
+Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. In essence, a digital filter is a mathematical algorithm that modifies the amplitude and/or phase of certain frequency components of a discrete signal. Filters can be designed to remove noise, isolate trends, block out-of-band interference, or even simulate the response of a physical system. Anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.
 
+Digital filters are divided into two main types:
+
+- **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.
+- **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase.
+
+#### Example: Low-pass FIR Filtering
+
+Suppose we want to smooth a time series by attenuating frequencies above a certain threshold (e.g., removing noise above 50 Hz). This can be accomplished with an FIR filter designed using `scipy.signal.firwin`:
+
+```python
+import numpy as np
+from scipy.signal import firwin, lfilter
+
+fs = 200.0  # Sampling frequency (Hz)
+nyq = fs / 2.0
+cutoff = 50.0  # Desired cutoff frequency (Hz)
+numtaps = 101  # Filter length (number of coefficients)
+
+# Design FIR low-pass filter
+fir_coeff = firwin(numtaps, cutoff / nyq)
+# Apply to data
+filtered_signal = lfilter(fir_coeff, 1.0, raw_signal)
+```
+
+For IIR filters (such as Butterworth, Chebyshev), the `scipy.signal.butter` function is commonly used. **Note:** Filtering can introduce edge effects—always inspect the beginning and end of the filtered signal.
+
+#### Frequency Response and Interpretation
+
+The effect of a digital filter can be fully characterized by its *frequency response*, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
+
+#### Practical Tips
+
+- **Zero-phase Filtering:** Use `scipy.signal.filtfilt` for zero-phase filtering to avoid phase distortion, especially for waveform analysis.
+- **Edge Effects:** Discard a small number of samples at both ends after filtering, or pad the signal before filtering to reduce transient effects.
+- **Causality:** Standard filters are causal (output depends only on current and past inputs). Non-causal (zero-phase) filtering requires processing both forward and backward in time, and is not physically realizable in real-time applications.
 
 ### Cepstrum
 
@@ -992,13 +1036,7 @@ eigenvalues = pca.singular_values_
 eigenvectors = pca.components_
 ```
 
-
-
-### Cross-Spectral Density
-
-Cross-spectral density (CSD) quantifies the frequency-domain relationship between two signals, revealing shared oscillatory components and phase relationships. It forms the basis for advanced techniques such as coherence and transfer function estimation. This section covers the theory behind CSD, its estimation using Welch’s method, and real-world applications in system identification and geophysics.
-
-### Average of the Spectral Matrix
+### Spectral Matrix
 
 A ***spectral matrix*** can be defined as 
 $$
@@ -1007,7 +1045,14 @@ $$
 
 for a time series decomposed with both signal and noise, its Fourier coefficients follow the ***non-central chi-square distribution***, as introduced in the previous section. Taking a moving-average in the time or frequency domain helps improving the SNR as we did in the Welch method. 
 
+```python
+spec = np.einsum('fti,ftj->ftij', coef, coef.conj())
 
+# Average in time or frequency domain
+spec_avg = np.copy(spec_avg)
+spec_avg = bn.move_mean(spec_avg, window=time_window, min_count=1, axis=1)
+spec_avg = bn.move_mean(spec_avg, window=freq_window, min_count=1, axis=0)
+```
 
 ### Coherence
 
@@ -1132,7 +1177,7 @@ One should keep in mind that all interpretation about the observed waves is in t
 
 This section explores the synergy between spectral analysis and electromagnetic theory, demonstrating how to derive physical insights and constraints from both perspectives.
 
-#### Polarization
+#### Ellipticity along $\mathbf{k}$
 
 Polarization analysis examines the orientation and ellipticity of oscillatory signals, especially electromagnetic or plasma waves. By decomposing the signal into orthogonal components and analyzing their relative amplitude and phase, we can characterize wave mode, propagation direction, and physical source. This section introduces key polarization parameters, their spectral estimation, and relevant Python implementations.
 
@@ -1163,6 +1208,8 @@ ellipticity_along_k = np.sqrt((eigenvalues_r[:, :, 0] - eigenvalues[:, :, 0]) \
 
 
 
+#### Ellipticity along $\mathbf{B}$
+
 Both above two ellipticities are unsigned as the singular/eigen values are always non-negative. Another, but not alternative definition of the ellipticity, is the ratio of left-handed polarized signal power to the right-handed polarized power. This definition is signed and the the ellipse is defined in the plane that perpendicular to the background magnetic field:
 $$
 \epsilon_B=\frac{|\hat{B}_L|^2-|\hat{B}_R|^2}{|\hat{B}_L|^2+|\hat{B}_R|^2}
@@ -1178,10 +1225,18 @@ with $\mathbf{e_{\perp1}}$, $\mathbf{e_{\perp2}}$, and $\mathbf{e_\parallel }$ c
 
 It is also important as it may unveils the wave excitation mechanism (e.g., wave-particle resonance). This definition is totally irrelevant with the determination of the wave vector direction. Instead, field-aligned coordinates is required for its derivation.
 
+#### Field-Aligned Coordinate
+
+Field-Aligned Coordinates (FAC) are a specialized coordinate system used in space physics to analyze data collected along the geomagnetic field lines. By transforming measurements into FAC, we can isolate field-aligned structures and dynamics, such as auroral currents and plasma waves. This section explains the transformation process, its physical significance, and practical applications in magnetospheric studies. 
+
+To transform a three-dimensional vector field $\mathbf{B}$ into FAC, we first need to calculate the unit vector along the magnetic field line, $\mathbf{b} = \mathbf{B}/|\mathbf{B}|$. The FAC system is then defined as follows:
+
 ```python
-dir_para = (magf.T / np.linalg.norm(magf, axis = 1)).T
-# Find the reference direction that is furthest from the magnetic field direction
-dir_ref = np.eye(3)[np.argmin(np.abs(dir_para), axis = 1)]
+magf = np.array([bx, by, bz])
+magf_avg = bn.move_mean(magf, axis=0)
+
+dir_ref = np.array([1., 0., 0.])
+dir_para = (magf_avg.T / np.linalg.norm(magf_avg, axis = 1)).T
 
 dir_perp_1 = np.cross(dir_para, dir_ref)
 dir_perp_1 = (dir_perp_1.T / np.linalg.norm(dir_perp_1, axis = 1)).T
@@ -1189,17 +1244,27 @@ dir_perp_1 = (dir_perp_1.T / np.linalg.norm(dir_perp_1, axis = 1)).T
 dir_perp_2 = np.cross(dir_para, dir_perp_1)
 dir_perp_2 = (dir_perp_2.T / np.linalg.norm(dir_perp_2, axis = 1)).T
 
-coef_para = np.einsum('ijk,jk->ij', coef, dir_para)
-coef_perp1 = np.einsum('ijk,jk->ij', coef, dir_perp_1)
-coef_perp2 = np.einsum('ijk,jk->ij', coef, dir_perp_2)
+# Amplitude Projection
+magf_para = np.einsum(magf, dir_para, 'ij,ij ->i')
+magf_perp_1 = np.einsum(magf, dir_perp_1, 'ij,ij ->i')
+magf_perp_2 = np.einsum(magf, dir_perp_2, 'ij,ij ->i')
 
-coef_lh = (coef_perp1 - 1j * coef_perp2) / np.sqrt(2)
-coef_rh = (coef_perp1 + 1j * coef_perp2) / np.sqrt(2)
+# Coefficient Projection
+coef_para = np.einsum('ijk,jk->ij', coef, dir_para)
+coef_perp_1 = np.einsum('ijk,jk->ij', coef, dir_perp_1)
+coef_perp_2 = np.einsum('ijk,jk->ij', coef, dir_perp_2)
+compressibility = np.abs(coef_para) ** 2 / (np.abs(coef_para) ** 2 + np.abs(coef_perp_1) ** 2 + np.abs(coef_perp_2) ** 2)
+
+# Polarization
+coef_lh = (coef_perp_1 - 1j * coef_perp_2) / np.sqrt(2)
+coef_rh = (coef_perp_1 + 1j * coef_perp_2) / np.sqrt(2)
 
 ellipticity_along_b = (np.abs(coef_rh) - np.abs(coef_lh)) / (np.abs(coef_rh) + np.abs(coef_lh))
-compressibility = np.abs(coef_para) ** 2 / (np.abs(coef_para) ** 2 + np.abs(coef_lh) ** 2 + np.abs(coef_rh) ** 2)
-
 ```
+
+
+
+
 
 #### Degree of Polarization
 
@@ -1233,7 +1298,9 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 - Notice: `np.linalg.eigh` and `np.linalg.svd` return the eigen/singular values in an ascending / descending order.
 
-
+<p align = 'center'>
+<img src="Figure/figure_svd.png" alt="An example of DFT." width="100%"/>
+</p>
 
 
 ## Jargon Sheet and Personal Naming Convention
