@@ -57,11 +57,14 @@ Spectral analysis helps to:
 3. **Understand system behavior** through resonance.
 4. **Filter or reduce noise**.
 
-### Nyquist–Shannon Sampling Theorem
-A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
-$$
-f_s \ge 2f_{max}
-$$
+### Sampling
+
+> **Nyquist-Shannon Sampling Theorem:**A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
+> $$
+> f_s \ge 2f_{max}
+> $$
+> 
+
 The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
 
 When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
@@ -79,13 +82,18 @@ This effect always happens when you (down-)sampling the signal, a common way to 
 
 ### Fourier Transform
 
-Fourier transform provide the perfect way to convert the observed quantities into the dual space. Its definition can be written as follows
-$$
-\begin{align}
-X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
-\end{align}
-$$
-Correspondingly, the inverse (continuous) Fourier transform can be given as:
+> Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
+> $$
+> \begin{align}
+> X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
+> \end{align}
+> $$
+> 
+
+
+
+> Correspondingly, the inverse (continuous) Fourier transform can be given as:
+
 $$
 \begin{align}
 x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
@@ -108,8 +116,8 @@ Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually ca
 
 $$
 \begin{align}
-X[k\Delta f] & = \lim_{M\rightarrow+\infty} \frac{1}{M} \sum_{n=-(M-1)\times N}^{M \times N} x[n\Delta t] e^{-2\pi i k\Delta f t} \, \Delta  t\\
-&\approx \int_{-\infty}^{+\infty} x_{ext}[n\Delta t] \, d t
+X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
+&\approx \int_{-\infty}^{+\infty} x_{ext}[n] \, d t
 \end{align}
 $$
 
@@ -164,6 +172,25 @@ freqs = np.fft.rfftfreq(coefs.size, dt)
 
 Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
 
+
+
+```mermaid
+graph LR
+A(["*2N Real Signal 
+x[n]*"]) -->|"*np.fft.fft*"| B(["*2N Complex Coefficients X[k]*
+with *X[k] = conj{X[2N-k]}*"])
+A -->|"*np.fft.rfft*"| C(["*N Complex Coefficients
+X[k]*"])
+
+D(["*2N Complex Signal*"]) -->|"*np.fft.fft*"| E(["*2N Complex Coefficients X[k]*"])
+```
+
+
+
+
+
+
+
 ### Frequency Resolution
 
 Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is ***DFT***. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
@@ -192,6 +219,72 @@ where $$i=1,2,...,N$$ and $$\Delta T=N\Delta t$$ is the total duration of the si
 
 
 ### Windowing Effect
+
+
+
+```mermaid
+graph LR
+
+A(["$$x[n]$$"]) -->|Window 
+Function|B@{ shape: rect, label: "$$x_W[n]$$" }
+
+A-->|Zero
+Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
+
+C -->|Window
+Function|B
+
+B -->|Fourier
+Transform|D@{shape: rect, label: "$$X[k]$$"}
+
+D -->|"$$\frac{1}{Nf_s}X[k]^2$$"|H["$$psd[k]$$"]
+
+D --> E(Window
+Compensation)
+
+E --> F(Single-Side
+Compensation)
+
+F --> G@{ shape: lean-r, label: "$$X[k]$$"}
+
+
+H --> E(Window
+Compensation)
+
+F --> K@{ shape: lean-r, label: "$$psd[k]$$"}
+
+```
+
+
+
+```mermaid
+graph LR
+
+A(["$$x[n]$$"]) --> B[Zero<br>Padding]
+
+B --> C[Window<br>Function]
+
+C --> D[Discrete<br>Fourier<br>Transform]
+
+D --> E[Window<br>Compensation]
+
+E --> F[Single-Side<br>Compensation]
+
+F --> G(["$$X[k]$$"])
+
+D --> H[Power<br>Spectral<br>Density]
+
+H --> I[Window<br>Compensation]
+
+I --> J[Single-Side<br>Compensation]
+
+J --> K(["$$psd[k]$$"])
+```
+
+
+
+
+
 <p align = 'center'>
 <img src="Figure/figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
 </p>
@@ -248,6 +341,8 @@ $$
 - For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
 - For Kaiser: $I_0$ is the modified Bessel function of the first kind
 - Gaussian approximations assume the window is appropriately scaled
+
+<u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
 
 ### Fence Effect
 
@@ -331,7 +426,7 @@ In
 
 > **Parseval's Theorem for DFT:**
 > $$
-> \sum_{n=0}^{N-1}|x(n\Delta t)|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X(k\Delta f)|^2
+> \sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
 > $$
 
 In the physical world, the square power of the ampltitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is propotional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
@@ -477,7 +572,18 @@ $$
 \frac{\Delta x(t)}{\Delta  t}=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
 $$
 
-
+| Property                             | Continuous-time FT                                       | Length-$N$ DFT (circular, arbitrary $T_s$)                   |
+| ------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------ |
+| **Linearity**                        | $\mathcal F\{a\,x+b\,y\}=a\,X+b\,Y$                      | $a\,x[n]+b\,y[n]\;\xrightarrow{\text{DFT}}\;a\,X[k]+b\,Y[k]$ |
+| **Time shift**                       | $x(t-t_0)\;\longrightarrow\;e^{-j2\pi f t_0}X(f)$        | $x[(n-n_0)\!\!\!\!\bmod\!N]\;\xrightarrow{\text{DFT}}\;e^{-j2\pi k n_0/N}\,X[k]$ ($\Delta t=n_0T_s$) |
+| **Frequency shift / Modulation**     | $e^{j2\pi f_0 t}x(t)\;\longrightarrow\;X(f-f_0)$         | $e^{j2\pi f_0 nT_s}x[n]\;\xrightarrow{\text{DFT}}\;X[(k-k_0)\!\!\!\!\bmod\!N]$, $k_0=\dfrac{f_0 N}{f_s}$ |
+| **Time scaling**                     | (x(a t);\longrightarrow;\tfrac1{                         | a                                                            |
+| **Conjugation & Symmetry**           | Real $x(t)$ ⇒ $X(-f)=X^{*}(f)$                           | Real $x[n]$ ⇒ $X[(N-k)\!\!\!\!\bmod\!N]=X^{*}[k]$            |
+| **Convolution theorem**              | $h=x*y\;\Rightarrow\;\mathcal F\{h\}=X\,Y$               | Circular convolution: $x\!\circledast\!y\;\xrightarrow{\text{DFT}}\;X[k]\,Y[k]$ |
+| **Correlation theorem**              | $h=x\star y\;\Rightarrow\;\mathcal F\{h\}=X^{*}\,Y$      | Circular correlation: $x\!\star\!y\;\xrightarrow{\text{DFT}}\;X^{*}[k]\,Y[k]$ |
+| **Differentiation / Multiplication** | $\tfrac{d^n x}{dt^n}\;\longrightarrow\;(j2\pi f)^n X(f)$ | Multiply $X[k]$ by $\left(j2\pi k f_s/N\right)^n$; conversely, $nT_s\,x[n]$ maps to a discrete derivative of $X[k]$. |
+| **Parseval / Plancherel**            | (\displaystyle\int_{-\infty}^{\infty}                    | x(t)                                                         |
+| **Duality & Inversion**              | $\mathcal F^2\{x\}=x(-t),\;\;\mathcal F^4=\text{Id}$     | IDFT = DFT with sign reversal + $1/N$; two successive DFTs yield $N\,x[(-n)\!\!\!\!\bmod\!N]$. |
 
 
 ## Noise
@@ -766,6 +872,17 @@ signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 
 Cepstral analysis provides a unique perspective by applying a Fourier transform to the logarithm of the spectrum. The resulting “Cepstrum” is widely used for echo detection, speech processing, and seismic reflection analysis. This section explains the underlying theory, physical meaning, and demonstrates how to perform cepstral analysis in Python.
 
+```mermaid
+flowchart LR
+A@{ shape: lean-r, label: "$$x[n]$$"} --Fourier<br>Transform--> B["$$X[k]$$"] --abs<br>+<br>log--> C["$$\mathrm{log|X[k]|}$$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
+```
+
+
+
+
+
+
+
 <p align = 'center'>
 <img src="Figure/figure_cepstrum.png" width="90%"/>
 </p>
@@ -813,7 +930,7 @@ Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are close
 #### 1. Core Idea
 
 - **PCA**: Rotate the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
-- **MVA**: Apply PCA to a 3 × * N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
+- **MVA**: Apply PCA to a 3 × N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
 
 ------
 
@@ -1122,6 +1239,31 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 ## Jargon Sheet and Personal Naming Convention
 
 - When creating a `numpy.ndarray` for a signal, I will always 
+
+  |      Notation       | Variable Name |                   Explanation                   |
+  | :-----------------: | :-----------: | :---------------------------------------------: |
+  |     $(t), (f)$      |       -       | Continuous input, frequency ($f$) or time ($t$) |
+  |     $[t], [f]$      |       -       |                 Discrete input                  |
+  |       $x(t)$        |       -       | Continuous signal x as a function of time ($t$) |
+  | $x[n],x[t],x[nT_S]$ |      `x`      |           An evenly sample of $x(t)$            |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
+  |                     |               |                                                 |
 
 ## Acknowledgement
 
