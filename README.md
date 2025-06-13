@@ -73,6 +73,8 @@ Such phenomenon is essentially unrelated to the Fourier transform as its frequen
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
+<div STYLE="page-break-after: always;"></div>
+
 ## How Do We See Frequencies in Data?
 
 ### Fourier Transform
@@ -446,7 +448,7 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 
 The `bottleneck` package, which is safer and more efficient,  is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the `bottleneck` functions and their expected results.
 
-### Derivation of FT
+### Properties of Fourier Transform
 
 A super powerful property of Fourier transform is that:
 $$
@@ -886,7 +888,7 @@ $$
 \hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
 $$
 
-for a time series decomposite with both signal and noise, its Fourier coefficients follows the non-central chi-square distribution, as introduced in the previous section. Taking a 
+for a time series decomposed with both signal and noise, its Fourier coefficients follow the ***non-central chi-square distribution***, as introduced in the previous section. Taking a moving-average in the time or frequency domain helps improving the SNR as we did in the Welch method. 
 
 
 
@@ -895,6 +897,8 @@ for a time series decomposite with both signal and noise, its Fourier coefficien
 Coherence measures the degree of linear correlation between two signals at each frequency, serving as a frequency-resolved analog of correlation coefficient. High coherence indicates a strong, consistent relationship, which is crucial for studies of wave propagation, coupled systems, and causality analysis. Here, we explain how to calculate and interpret coherence with Python tools.
 
 To be honest, I feel very hard to understand what does *coherent/coherence* means in many of the magnetospheric ULF/VLF waves investigations. It can be easily understood the coherence between two individual light or signal. However, in the *in-situ* observation, the spacecraft can only measure one signal without further distinguishment or separation. In some literature, the coherence between $E_x$ and $B_y$ are used to measure whether the observed VLF waves are coherent. These VLF waves always propagate along the geomagnetic field line, which point to the north near the magnetic equator. It makes some sense as a high coherence suggests the waves have a stable wave vector during this interval. But, it is still hard to expect the occurrence of interference as both $E_x$ and $B_y$ may just be the presence of one single wave. While, some other literatures use the coherence between the magnetic field components to 
+
+- Coherency is meaningless without taking an average. 
 
 ### Combination with Maxwell's Equations: SVD Wave Analysis
 
@@ -940,12 +944,7 @@ $$
 which can still be met by the original solution. After averaging the spectral matrix in time and frequency domain, this equation can not be perfectly satisfied any more. Thus, we will look for a weaker solution in the sense of minimization:
 $$
 \begin{align}
-\min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}}  &||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\
-
-\Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} &\{{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}}\qquad + &\underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
-
-&\mathrm{McPherron72} & \mathrm{Mean72}\\
-
+\min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} & ||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\ \Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} \{&{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}} + \underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
 \end{align}
 $$
 [McPherron et al. (1972)](https://doi.org/10.1007/BF00219165) and [Means (1972)](https://doi.org/10.1029/JA077i028p05551) adopts the real and imaginary part in the minimization optimization for the estimation of wave propagation direction, respectively. Both of these two optimization problem can be solved by eigenvalue decomposition. Then, [Santolík et al. (2003)](https://doi.org/10.1029/2000RS002523) combine both terms and construct an augmented matrix ${A}$:
@@ -971,9 +970,9 @@ is directly solvable by applying a ***singular value decomposition(SVD)*** to ma
 $$
 {A}=U\cdot W\cdot V^T
 $$
-where $U$ is a $6\times3`$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
+where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
 
-- ##### **<u>Compressibility()</u>** describe the polarization
+- **<u>Compressibility</u>** describe the polarization 
 
 $$
 \begin{align}
@@ -1122,7 +1121,11 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 ## Jargon Sheet and Personal Naming Convention
 
+- When creating a `numpy.ndarray` for a signal, I will always 
 
+## Acknowledgement
+
+This document is finished with the help of ChatGPT and Copilot. I thank my supervisor, Dr. Weijie Sun, and my laboratory, Space Sciences Laboratory, UC Berkeley, for their support in my development of writing habits. 
 
 </body>
 </html>
