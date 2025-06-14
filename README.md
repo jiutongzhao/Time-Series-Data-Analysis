@@ -122,8 +122,9 @@ X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \tim
 $$
 
 <p align = 'center'>
-<img src="Figure/figure_dft.png" width="60%"/>
+<img src="Figure/figure_signal.png" width="60%"/>
 </p>
+
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
 $$
@@ -134,24 +135,34 @@ X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i n k}
 $$
 in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application.
 
+<p align = 'center'>
+<img src="Figure/figure_fft_single_side.png" width="60%"/>
+</p>
+
+<p align = 'center'>
+<img src="Figure/figure_fft_double_side.png" width="60%"/>
+</p>
+
+
+
 
 ```python
 # Generate a sinuous signal
-OMEGA = 2 * np.pi * 5
+omega = 2 * np.pi * 5
 time = np.arange(0, 1, 200)
-signal = np.sin(OMEGA * time)
+signal = np.sin(omega * time)
 
-DT = time[1] - time[0]
+dt = time[1] - time[0]
 # Complex coefficient
 coefs = np.fft.fft(signal)
 # Corresponding frequency with both zero, positive, and negative frequency
-freqs = np.fft.fftfreq(coefs.size, DT)
+freqs = np.fft.fftfreq(coefs.size, dt)
 ```
-Given a window length n and a sample spacing `DT` (i.e., `np.fft.fftfreq(N, DT)`):
+Given a window length n and a sample spacing `dt` (i.e., `np.fft.fftfreq(N, dt)`):
 
 ```python
-freqs # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (DT * N)   # if n is even
-freqs # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (DT * N)   # if n is odd
+freqs # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
+freqs # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
 ```
 The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
 
@@ -344,18 +355,13 @@ $$
 
 <u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
 
-### Fence Effect
+### Fence Effect and Zero-Padding
 
 <p align = 'center'>
 <img src="Figure/figure_dft_picket_fence_effect.png" width="60%"/>
 </p>
 
 
-### Zero-Padding
-
-<p align = 'center'>
-<img src="Figure/figure_dft_spectral_leakage_zero_padding.png" width="60%"/>
-</p>
 
 
 ```python
@@ -911,6 +917,155 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 - **Zero-phase Filtering:** Use `scipy.signal.filtfilt` for zero-phase filtering to avoid phase distortion, especially for waveform analysis.
 - **Edge Effects:** Discard a small number of samples at both ends after filtering, or pad the signal before filtering to reduce transient effects.
 - **Causality:** Standard filters are causal (output depends only on current and past inputs). Non-causal (zero-phase) filtering requires processing both forward and backward in time, and is not physically realizable in real-time applications.
+
+### Interpolation
+
+#### Interpolation
+
+**Interpolation** is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.
+
+##### Why Do We Need Interpolation?
+
+- **Resampling:** Convert irregularly sampled data to a regular time grid for spectral analysis.
+- **Filling Gaps:** Restore missing or corrupted data in a time series.
+- **Temporal Alignment:** Synchronize data from different sources with differing sampling rates.
+- **Upsampling/Downsampling:** Increase or decrease data resolution, e.g., for visualization or model input.
+
+##### Common Interpolation Methods
+
+###### 1. Nearest-Neighbor Interpolation
+
+Selects the value of the nearest known data point. Simple and fast, but produces a “blocky” or step-like signal.
+
+###### 2. Linear Interpolation
+
+Connects data points with straight lines. Produces continuous, piecewise linear results; widely used for fast, low-artifact resampling.
+
+###### 3. Spline Interpolation
+
+Fits smooth polynomial curves (usually cubic) through the data. Produces smooth and visually appealing results, but can introduce overshoot or ringing near sharp transitions.
+
+###### 4. Polynomial Interpolation
+
+Fits a single polynomial of specified degree to all data points. Suitable only for small datasets; otherwise, prone to oscillation (Runge’s phenomenon).
+
+###### 5. Fourier Interpolation
+
+Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
+
+###### 6. Sinc Interpolation
+
+**Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
+$$
+x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - nT_s}{T_s}\right)
+$$
+where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = \frac{\sin(\pi x)}{\pi x}$.
+
+- **Perfect for band-limited, uniformly sampled signals** (theoretical limit).
+- **Preserves all frequency content up to the Nyquist frequency.**
+- The interpolation kernel is infinitely wide (non-local), so true sinc interpolation is not practically achievable (requires truncation or windowing).
+- In practice, *windowed sinc* or a finite sum is used.
+
+##### Implementation in Python
+
+Scipy does **not** provide a built-in sinc interpolation function, but it is straightforward to implement for moderate data sizes. Here is a simple example for upsampling a signal:
+
+```
+pythonCopyEditimport numpy as np
+
+def sinc_interp(x, s, u):
+    """
+    Sinc interpolation for 1D uniformly sampled signal.
+    x: sampled values at positions s
+    u: new sample positions
+    """
+    # Broadcasting: u[:,None] - s[None,:]
+    return np.dot(np.sinc(u[:, None] - s[None, :]), x)
+
+# Example usage
+N = 32
+s = np.arange(N)
+x = np.sin(2 * np.pi * s / N)
+u = np.linspace(0, N - 1, 8 * N)
+y_sinc = sinc_interp(x, s, u)
+```
+
+- **Truncation:** In real applications, the infinite sum must be truncated to a reasonable window around each target point to avoid performance issues.
+- **Windowed Sinc:** To reduce artifacts from truncation, multiply the sinc kernel by a window function (e.g., Hamming, Blackman).
+- **Comparison with Other Methods:** Sinc interpolation is ideal for frequency preservation, outperforming linear, cubic, or spline interpolation for band-limited signals.
+
+#### Interpolation in Python (`scipy.interpolate`)
+
+The `scipy.interpolate` module provides flexible functions for 1D and multidimensional interpolation.
+
+```
+pythonCopyEditimport numpy as np
+from scipy.interpolate import interp1d, CubicSpline
+
+# Sample data
+x = np.linspace(0, 10, 11)
+y = np.sin(x)
+
+# Linear interpolation
+f_linear = interp1d(x, y, kind='linear')
+y_new = f_linear(np.linspace(0, 10, 101))
+
+# Cubic spline interpolation
+f_spline = CubicSpline(x, y)
+y_spline = f_spline(np.linspace(0, 10, 101))
+```
+
+Other interpolation classes include `BarycentricInterpolator`, `PchipInterpolator`, and multidimensional methods such as `griddata` (for scattered data) and `RectBivariateSpline` (for 2D grids).
+
+#### Interpolation and the Frequency Domain
+
+**Interpolation in the time domain directly impacts the signal’s frequency content:**
+
+- **Nearest-neighbor** acts as a zero-order hold, introducing high-frequency artifacts.
+- **Linear** acts as a convolution with a triangle (sinc² in frequency), attenuating high-frequency components.
+- **Spline/Polynomial** offers smoother spectra but can still introduce artifacts at sharp features.
+- **Sinc interpolation** and **Fourier interpolation** (i.e., zero-padding in the frequency domain) yield the most faithful reconstruction for band-limited signals.
+
+> **Tip:**
+>  For spectral analysis, prefer linear, sinc, or Fourier interpolation for uniformly sampled, band-limited signals. Spline interpolation is suitable for smooth, low-noise signals, but beware of overshoot and frequency artifacts.
+
+#### Typical Use Cases
+
+- **Resampling spacecraft data** to a common time base for multi-instrument analysis.
+- **Gap filling** in geomagnetic or solar wind time series for uninterrupted spectra.
+- **High-resolution reconstruction** for visualization of waveforms.
+
+Example: Fourier Interpolation by Zero-padding
+
+```
+import numpy as np
+
+N = 128
+t = np.linspace(0, 1, N, endpoint=False)
+sig = np.sin(2 * np.pi * 5 * t)
+sig_fft = np.fft.fft(sig)
+# Zero-pad in frequency domain for higher time resolution
+sig_fft_pad = np.pad(sig_fft, (0, 3 * N))
+sig_highres = np.fft.ifft(sig_fft_pad).real
+```
+
+### Comparison of Interpolation Methods
+
+| Method           | `scipy` Function / Implementation       | Smoothness | Preserves Frequencies         | Typical Use                   |
+| ---------------- | --------------------------------------- | ---------- | ----------------------------- | ----------------------------- |
+| Nearest Neighbor | `interp1d(kind='nearest')`              | Discrete   | No                            | Quick gap fill, step signals  |
+| Linear           | `interp1d(kind='linear')`               | Continuous | Partially                     | Standard resampling           |
+| Cubic Spline     | `CubicSpline`, `interp1d(kind='cubic')` | Smooth     | Mostly                        | Smooth signals, visualization |
+| **Sinc**         | *custom, see above*                     | Smoothest  | **Yes (ideal, band-limited)** | Band-limited, uniform samples |
+| Fourier          | Zero-padding FFT                        | Smoothest  | Yes                           | Band-limited, periodic        |
+| Polynomial       | `BarycentricInterpolator`               | Varies     | No (oscillation risk)         | Small datasets only           |
+
+
+
+------
+
+> **Takeaway:**
+>  Interpolation bridges the gaps between discrete samples, but every method comes with assumptions and spectral consequences. Sinc and Fourier interpolation are the gold standards for band-limited signals, while linear and spline interpolation provide practical, efficient alternatives for most scientific applications. Always match your interpolation choice to the physical characteristics and analysis goals of your data.
 
 ### Cepstrum
 
