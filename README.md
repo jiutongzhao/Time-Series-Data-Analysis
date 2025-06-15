@@ -884,8 +884,35 @@ Digital filters are fundamental tools for shaping, extracting, or suppressing sp
 
 Digital filters are divided into two main types:
 
-- **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.
-- **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase.
+- **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.  A general FIR digital filter is implemented as:
+  $$
+  y[n] = \sum_{k=0}^{M} h[k]\, x[n-k]
+  $$
+
+  - $x[n], y[n]$: Input, Output signal
+  - $h[k]$: Filter coefficients (impulse response), length $M+1$
+  - $M$: Filter order
+
+- **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion:
+  $$
+  y[n] = \sum_{k=0}^{M} b[k]\, x[n-k] - \sum_{l=1}^{N} a[l]\, y[n-l]
+  $$
+
+  - $b[k]$: Feedforward (input) coefficients
+  - $a[l]$: Feedback (output) coefficients, usually $a[0] = 1$
+  - $M, N$: Orders for input and output
+
+#### Example: Moving Average
+
+The **moving average filter** is actually a simple FIR filter. For a window length $L$, the coefficients are:
+$$
+h[k] = \frac{1}{L},\quad k = 0, 1, \ldots, L-1
+$$
+So the output is:
+$$
+y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
+$$
+That is, the output is the **average of the most recent $L$ input samples**. **Therefore, the moving average filter is an FIR filter whose coefficients are all equal.**
 
 #### Example: Low-pass FIR Filtering
 
@@ -912,6 +939,25 @@ For IIR filters (such as Butterworth, Chebyshev), the `scipy.signal.butter` func
 
 The effect of a digital filter can be fully characterized by its *frequency response*, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
 
+| Filter Type    | Function (`scipy.signal`) | Main Features                | Use Case                  |
+| -------------- | ------------------------- | ---------------------------- | ------------------------- |
+| FIR (window)   | `firwin`, `firwin2`       | Stable, linear phase         | Smoothing, band selection |
+| Butterworth    | `butter`                  | Smooth, monotonic response   | General purpose           |
+| Chebyshev I/II | `cheby1`, `cheby2`        | Sharper cutoff, ripples      | Strong suppression        |
+| Elliptic       | `ellip`                   | Fastest cutoff, both ripples | Selective, small band     |
+| Bessel         | `bessel`                  | Linear phase, slow rolloff   | Transient preservation    |
+| Median         | `medfilt`, `medfilt1d`    | Nonlinear, preserves edges   | Spike removal             |
+
+
+
+<p align = 'center'>
+<img src="Figure/figure_filters.png" width="60%"/>
+</p>
+
+<p align = 'center'>
+<img src="Figure/figure_filters_response.png" width="60%"/>
+</p>
+
 #### Practical Tips
 
 - **Zero-phase Filtering:** Use `scipy.signal.filtfilt` for zero-phase filtering to avoid phase distortion, especially for waveform analysis.
@@ -920,40 +966,38 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 
 ### Interpolation
 
-#### Interpolation
-
 **Interpolation** is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.
 
-##### Why Do We Need Interpolation?
+#### Why Do We Need Interpolation?
 
 - **Resampling:** Convert irregularly sampled data to a regular time grid for spectral analysis.
 - **Filling Gaps:** Restore missing or corrupted data in a time series.
 - **Temporal Alignment:** Synchronize data from different sources with differing sampling rates.
 - **Upsampling/Downsampling:** Increase or decrease data resolution, e.g., for visualization or model input.
 
-##### Common Interpolation Methods
+#### Common Interpolation Methods
 
-###### 1. Nearest-Neighbor Interpolation
+##### 1. Nearest-Neighbor Interpolation
 
 Selects the value of the nearest known data point. Simple and fast, but produces a “blocky” or step-like signal.
 
-###### 2. Linear Interpolation
+##### 2. Linear Interpolation
 
 Connects data points with straight lines. Produces continuous, piecewise linear results; widely used for fast, low-artifact resampling.
 
-###### 3. Spline Interpolation
+##### 3. Spline Interpolation
 
 Fits smooth polynomial curves (usually cubic) through the data. Produces smooth and visually appealing results, but can introduce overshoot or ringing near sharp transitions.
 
-###### 4. Polynomial Interpolation
+##### 4. Polynomial Interpolation
 
 Fits a single polynomial of specified degree to all data points. Suitable only for small datasets; otherwise, prone to oscillation (Runge’s phenomenon).
 
-###### 5. Fourier Interpolation
+##### 5. Fourier Interpolation
 
 Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
 
-###### 6. Sinc Interpolation
+##### 6. Sinc Interpolation
 
 **Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
 $$
@@ -966,33 +1010,7 @@ where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = \frac{\sin(\pi x)}
 - The interpolation kernel is infinitely wide (non-local), so true sinc interpolation is not practically achievable (requires truncation or windowing).
 - In practice, *windowed sinc* or a finite sum is used.
 
-##### Implementation in Python
 
-Scipy does **not** provide a built-in sinc interpolation function, but it is straightforward to implement for moderate data sizes. Here is a simple example for upsampling a signal:
-
-```
-pythonCopyEditimport numpy as np
-
-def sinc_interp(x, s, u):
-    """
-    Sinc interpolation for 1D uniformly sampled signal.
-    x: sampled values at positions s
-    u: new sample positions
-    """
-    # Broadcasting: u[:,None] - s[None,:]
-    return np.dot(np.sinc(u[:, None] - s[None, :]), x)
-
-# Example usage
-N = 32
-s = np.arange(N)
-x = np.sin(2 * np.pi * s / N)
-u = np.linspace(0, N - 1, 8 * N)
-y_sinc = sinc_interp(x, s, u)
-```
-
-- **Truncation:** In real applications, the infinite sum must be truncated to a reasonable window around each target point to avoid performance issues.
-- **Windowed Sinc:** To reduce artifacts from truncation, multiply the sinc kernel by a window function (e.g., Hamming, Blackman).
-- **Comparison with Other Methods:** Sinc interpolation is ideal for frequency preservation, outperforming linear, cubic, or spline interpolation for band-limited signals.
 
 #### Interpolation in Python (`scipy.interpolate`)
 
@@ -1016,6 +1034,12 @@ y_spline = f_spline(np.linspace(0, 10, 101))
 ```
 
 Other interpolation classes include `BarycentricInterpolator`, `PchipInterpolator`, and multidimensional methods such as `griddata` (for scattered data) and `RectBivariateSpline` (for 2D grids).
+
+
+
+<p align = 'center'>
+<img src="Figure/figure_interpolation.png" width="60%"/>
+</p>
 
 #### Interpolation and the Frequency Domain
 
