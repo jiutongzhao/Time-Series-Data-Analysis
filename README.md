@@ -360,10 +360,6 @@ $$
 <p align = 'center'>
 <img src="Figure/figure_dft_picket_fence_effect.png" width="60%"/>
 </p>
-
-
-
-
 ```python
 dt = time[1] - time[0]
 n = signal.size
@@ -374,25 +370,7 @@ coefs = np.fft.fft(signal, n = signal.size + N_PADDING)
 freqs = np.fft.fftfreq(coefs.size, dt)
 ```
 
-### Decibel
 
-***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
-
-
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
-
-
-
-Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
-
-The adoption of decibel instead of the conventional physical unit has three advantage:
-
-- It allows the direction addition when compare the amplitude of the signal.
-- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
-- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
 ## What Should We be Careful about the DFT/FFT?
 
@@ -603,6 +581,26 @@ Noise refers to random or unwanted fluctuations that obscure the true underlying
 In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
 
 The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
+
+### Signal-to-Noise Ratio and Decibel
+
+***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
+
+
+|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
+| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
+| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+
+
+
+Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
+
+The adoption of decibel instead of the conventional physical unit has three advantage:
+
+- It allows the direction addition when compare the amplitude of the signal.
+- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
+- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
 ### Artificial Noise Generation
 
@@ -956,6 +954,9 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 
 <p align = 'center'>
 <img src="Figure/figure_filters_response.png" width="60%"/>
+</p>
+<p align = 'center'>
+<img src="Figure/figure_filtered_noise.png" width="60%"/>
 </p>
 
 #### Practical Tips
