@@ -1,4 +1,4 @@
-# Practical Time Series and Spectral Analysis with Python
+# Practical Spectral Analysis with Python
 
 ## Preface
 
@@ -16,11 +16,9 @@ Yet, a few determined souls persist—spending days gathering materials, watchin
 
 ### Signals and Time Series
 
-In physics and engineering, we often deal with **signals** – functions that vary over time and represent some physical quantity. A signal can be any measurable quantity that changes with time: for example, an audio waveform, the voltage output of a sensor, or the magnetic field measured in a plasma experiment. In many contexts, a ***time series*** is the observation of a signal over time
+In physics and engineering, we frequently encounter **signals**—mathematical functions representing physical quantities that vary continuously or discretely over time. A signal can be any measurable quantity exhibiting temporal variation, such as an audio waveform, the voltage output from a sensor, or the magnetic field recorded during a plasma experiment. When signals are observed, sampled, and recorded sequentially, they form a **time series**, capturing how these quantities evolve. Many familiar phenomena can naturally be described as time series, including:
 
-Many familiar phenomena are naturally described as time series, including:
-
-- **Meteorology:** e.g. El-Nino Enso
+- **Meteorology:** e.g. El-Nino ENSO Index
 
 <p align = 'center'>
 <img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
@@ -37,10 +35,9 @@ Many familiar phenomena are naturally described as time series, including:
 
 <p align = 'center'><img src="Figure/figure_sunspot.png" width="60%"/></p>
 
+Each of these examples is described in the **time domain**—meaning we specify a physical quantity (such as amplitude, voltage, or magnetic field strength) explicitly **as a function of time**.
 
-Each of these is a time-domain description: we have a quantity (amplitude, voltage, etc.) **as a function of time**.
-
-Understanding the time-domain behavior of a system is important. However, it is often hard to tell **what underlying patterns or oscillations** are present. This is where **spectral analysis** becomes useful.
+While understanding the time-domain behavior of a system is fundamental, it can sometimes be challenging to discern **underlying patterns, periodicities, or oscillatory features** directly from time-domain data. This is precisely where **spectral analysis** proves invaluable, as it allows us to examine signals in the frequency domain, clearly identifying and characterizing these hidden structures.
 
 ### Understand the Signal from Frequency Domain
 
@@ -59,7 +56,7 @@ Spectral analysis helps to:
 
 ### Sampling
 
-> **Nyquist-Shannon Sampling Theorem:**A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
+> **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 > $$
 > f_s \ge 2f_{max}
 > $$
@@ -130,7 +127,7 @@ This effect always happens when you (down-)sampling the signal, a common way to 
 
 ------
 
-### Common Waveform Functions in `scipy.signal`
+### Built-in Waveform Functions in `scipy.signal`
 
 In addition to sine waves, there are some other commonly used waveforms built-in functions that are provided by `scipy.signal` module. These functions can be used to generate various types of signals for testing, simulation, and analysis purposes. Below is a brief overview of some typical waveforms:
 
@@ -138,7 +135,7 @@ In addition to sine waves, there are some other commonly used waveforms built-in
 <img src="Figure/figure_typical_signals.png" width="60%"/>
 </p>
 
-#### 1. **Chirp Waveform (`chirp`)**
+#### **1. Chirp Waveform (`chirp`)**
 
 Generates a swept-frequency (chirp) signal, which is often used in radar, sonar, and frequency response analysis.
 
@@ -174,7 +171,7 @@ scipy.signal.gausspulse(t, fc=1000, bw=0.5, bwr=-6, tpr=-60, retquad=False, rete
 
 ------
 
-#### 3. **Square Wave (`square`)**
+#### **3. Square Wave (`square`)**
 
 Generates a square waveform, useful in digital signal simulations, PWM applications, and modulation experiments.
 
@@ -188,7 +185,7 @@ scipy.signal.square(t, duty=0.5)
 
 ------
 
-#### 4. **Sawtooth Wave (`sawtooth`)**
+#### **4. Sawtooth Wave (`sawtooth`)**
 
 Generates a sawtooth waveform, widely used in signal synthesis and electronics simulations.
 
@@ -202,7 +199,7 @@ scipy.signal.sawtooth(t, width=1)
 
 ------
 
-#### 5. **Unit Impulse (`unit_impulse`)**
+#### **5. Unit Impulse (`unit_impulse`)**
 
 Generates a discrete-time impulse (Dirac delta function), fundamental for impulse response analysis.
 
@@ -227,24 +224,21 @@ scipy.signal.unit_impulse(shape, idx=None, dtype=float)
 > X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
 > \end{align}
 > $$
-> 
-
-
-
+>
 > Correspondingly, the inverse (continuous) Fourier transform can be given as:
+> $$
+> \begin{align}
+> x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+> \end{align}
+> $$
 
-$$
-\begin{align}
-x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
-\end{align}
-$$
-However, a real and physical signal can only be measured at finite and discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
+However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
 $$
 \begin{align}
 X(f)=\sum_{n=-\infty}^{+\infty} x[n \Delta t]\cdot e^{-i2\pi f (n\Delta t)}
 \end{align}
 $$
-where $x[n\Delta t]$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that appliable:
+where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
 $$
 \begin{align}
 X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
@@ -269,7 +263,7 @@ X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi fn}\\
 X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i kn}
 \end{align}
 $$
-in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application.
+in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application—The absolute value matters!
 
 <p align = 'center'>
 <img src="Figure/figure_fft_single_side.png" width="60%"/>
@@ -278,41 +272,20 @@ in most other tutorial. Nevertheless, this tutorial will keep that term as the c
 <p align = 'center'>
 <img src="Figure/figure_fft_double_side.png" width="60%"/>
 </p>
-
-
-
+With `numpy`, you can implement DFT through `numpy.fft.fft`:
 
 ```python
-coef = np.fft.fft(signal)
+coef = np.fft.fft(sig)
 # Corresponding frequency with both zero, positive, and negative frequency
-f = np.fft.fftfreq(coefs.size, dt)
 ```
 Given a window length n and a sample spacing `dt` (i.e., `np.fft.fftfreq(N, dt)`):
 
 ```python
-f # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
-f # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
+freq = np.fft.fftfreq(coef.size, dt)
+# [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
+# [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
 ```
 The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
-
-For real input, the aforementioned `2N` redundancy allows you to get that `freqs[1 + i]` = `freqs[-i].conj` and therefore simplify the frequency spectrum but only adopt the positive frequency component.
-
-
-```python
-freqs[::n // 2] # [0, 1, ...,   N/2-1] / (DT * N)   if n is even
-freqs[::n // 2] # [0, 1, ..., (N-1)/2] / (DT * N)   if n is odd
-```
-
-Or, a more suggested way to use `numpy.fft.rfft (rfftfreq)` instead of `numpy.fft.fft (fftfreq)`, which is only designed for real input and intrinsically truncate the output coefficients and frequencies.
-
-```python
-coefs = np.fft.rfft(signal)
-freqs = np.fft.rfftfreq(coefs.size, dt)
-```
-
-Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
-
-
 
 ```mermaid
 graph LR
@@ -327,40 +300,97 @@ D(["*2N Complex Signal*"]) -->|"*np.fft.fft*"| E(["*2N Complex Coefficients X[k]
 
 
 
+For real input, the aforementioned `2N` redundancy allows you to get that `freqs[1 + i]` = `freqs[-i].conj` and therefore simplify the frequency spectrum but only adopt the positive frequency component.
 
 
+```python
+freq[::n // 2]
+# [0, 1, ...,   N/2-1] / (DT * N)   if n is even
+# [0, 1, ..., (N-1)/2] / (DT * N)   if n is odd
+```
 
+Or, a more suggested way to use `numpy.fft.rfft` (`numpy.fft.rfftfreq`) instead of `numpy.fft.fft` (`numpy.fft.fftfreq`), which is only designed for real input and intrinsically truncate the output coefficients and frequencies.
 
-- Frequency Resolution
+```python
+coef = np.fft.rfft(sig)
+freq = np.fft.rfftfreq(coef.size, dt)
+```
 
-Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is ***DFT***. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
-
-The yield spectrum contains the wave coefficient at the frequency of
-
-
-$$
-
-$$
-
-$$
-\begin{align}
-\frac{i}{N}\frac{f_s}{2}=\frac{i/2}{N\Delta t}=\frac{i/2}{\Delta T}
-\end{align}
-$$
-
-
-
-where $$i=1,2,...,N$$ and $$\Delta T=N\Delta t$$ is the total duration of the signal.
-
-### Periodic Extensions
-<p align = 'center'>
-<img src="Figure/figure_dft_periodic_extensions.png" alt="An example of DFT." width="60%"/>
-</p>
-
+Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
 
 ### Windowing Effect
 
+When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary.
 
+<p align = 'center'>
+<img src="Figure/figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
+</p>
+
+This artificial discontinuity introduces **spectral leakage**, causing energy from specific frequency components to spread into adjacent frequencies, thereby distorting the true spectral content. To mitigate this issue, a **window function**—typically denoted $\mathcal{W}(t)$—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.
+
+Typically, the wave function is a bell-shaped function with all non-negative values. Different window functions (e.g., rectangular, Hamming, Hanning, Blackman) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). Choosing the appropriate window is essential for ensuring accurate and interpretable spectral results.
+
+Here after, we are going to give an example of window function, the Hanning window, which is written as:
+$$
+\begin{align}
+w(x)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi x)\right]\\
+w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
+\end{align}
+$$
+It can be implemented in `numpy` as follow:
+
+```python
+sig *= np.hanning(sig.size)
+```
+
+However, applying a window modifies the signal’s amplitude and energy characteristics. This can introduce ambiguity when interpreting the resulting spectrum or comparing analyses across different window shapes. To ensure physical and quantitative consistency, **normalization** of the window function is often necessary. **Amplitude normalization** ensures that the peak value of the window is one, preserving the local signal scale. **Energy normalization** adjusts the window so that the total energy of the signal—defined as the sum of squared values—remains unchanged after windowing. The choice of normalization method depends on the analytical goals, and plays a crucial role in ensuring accurate and meaningful spectral results.
+
+```python
+# With Normalization
+sig *= np.hanning(sig.size) * np.sqrt(8 / 3)
+```
+
+it has an average amplitude of $1/2=\int_0^1 w(x)\mathrm{d}x$ and average energy of 
+$$
+\begin{align}
+\int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
+\end{align}
+$$
+
+| **Name and Function / NumPy/SciPy Function**                 | **w[n]**                                                     | **Amplitude Normalization**                                  | **Power Normalization **                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Rectangular (Boxcar) / `np.ones(N)` or `scipy.signal.windows.boxcar(N)` | $w[n] = 1$                                                   | $1$                                                          | $1$                                                          |
+| Hann (Hanning) / `np.hanning(N)` or `scipy.signal.windows.hann(N)` | $w[n] = 0.5\left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)$ | $\frac{1}{2}$                                                | $\sqrt{\frac{3}{8}}$                                         |
+| Hamming / `np.hamming(N)` or `scipy.signal.windows.hamming(N)` | $w[n] = 0.54 - 0.46\cos\left(\frac{2\pi n}{N-1}\right)$      | $0.54$                                                       | $\sqrt{0.397}$                                               |
+| Blackman / `np.blackman(N)` or `scipy.signal.windows.blackman(N)` | $w[n] = 0.42 - 0.5\cos\left(\frac{2\pi n}{N-1}\right) + 0.08\cos\left(\frac{4\pi n}{N-1}\right)$ | $0.42$                                                       | $\sqrt{0.274}$                                               |
+| Kaiser / `scipy.signal.windows.kaiser(N, beta)`              | $w[n] = \frac{I_0\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}$ | $\frac{1}{2I_0(\beta)}\int_{-1}^{1} I_0\left(\beta\sqrt{1-x^2}\right) dx$ | $\sqrt{\frac{1}{2}\int_{-1}^{1} \left[\frac{I_0\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^2 dx}$ |
+| Tukey / `scipy.signal.windows.tukey(N, alpha)`               | $w[n] = 0.5\left(1 + \cos\left(\frac{\pi(2n)}{\alpha N} - 1\right)\right)$ (for edges) | $1 - \frac{\alpha}{2}$                                       | $\sqrt{1 - \frac{\alpha}{2} + \frac{\alpha}{4}}$             |
+| Gaussian / `scipy.signal.windows.gaussian(N, std)`           | $w[n] = \exp\left(-\frac{1}{2}\left(\frac{n-\frac{N-1}{2}}{\sigma\frac{N-1}{2}}\right)^2\right)$ | $\sigma\sqrt{\frac{\pi}{2}}$                                 | $\sigma\sqrt{\frac{\pi}{4}}$                                 |
+| Bartlett / `np.bartlett(N)` or `scipy.signal.windows.bartlett(N)` | $w[n] = 1 - \frac{2\left|n-\frac{N-1}{2}\right|}{N-1}$       | $\frac{1}{2}$                                                | $\sqrt{\frac{1}{3}}$                                         |
+
+### Definitions
+
+- **Amplitude Normalization (Coherent Gain)**: $\langle{w[n]}\rangle$ - preserves amplitude of coherent signals (DC component)
+- **Power Normalization (Energy)**: $\langle w^2[n]\rangle$ - preserves power of incoherent signals (noise)
+- Use amplitude normalization for spectral analysis of tones/periodic signals
+- Use power normalization for power spectral density estimation of random signals
+
+### Analytic Values
+
+- **Hamming coefficients**: $0.54 = \frac{25}{46} \approx 0.5435$, $0.46 = \frac{21}{46} \approx 0.4565$
+- **Blackman coefficients**: $0.42 = \frac{21}{50}$, $0.5 = \frac{1}{2}$, $0.08 = \frac{2}{25}$
+- **Power normalization factors**:
+  - Hamming: $\sqrt{0.397} = \sqrt{\frac{25^2 + 21^2}{2 \cdot 46^2}} = \sqrt{\frac{1066}{4232}} \approx 0.630$
+  - Blackman: $\sqrt{0.274} = \sqrt{\frac{21^2 + 25^2 + 4^2}{2 \cdot 50^2}} = \sqrt{\frac{1066}{5000}} \approx 0.462$
+- $\text{mean}{w[n]} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]$ and $\text{mean}{w[n]^2} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]^2$
+- Kaiser and Gaussian expressions involve integrals that depend on shape parameters
+- For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
+- For Kaiser: $I_0$ is the modified Bessel function of the first kind
+- Gaussian approximations assume the window is appropriately scaled
+
+<u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
+
+In the end, we show the complete data processing diagram for ***windowed Fourier transform (WFT)***.
 
 ```mermaid
 graph LR
@@ -377,7 +407,7 @@ Function|B
 B -->|Fourier
 Transform|D@{shape: rect, label: "$$X[k]$$"}
 
-D -->|"$$\frac{1}{Nf_s}X[k]^2$$"|H["$$psd[k]$$"]
+D -->H["$$P[k]:=|X[k]|^2$$"]
 
 D --> E(Window
 Compensation)
@@ -397,123 +427,37 @@ F --> K@{ shape: lean-r, label: "$$psd[k]$$"}
 
 
 
-```mermaid
-graph LR
-
-A(["$$x[n]$$"]) --> B[Zero<br>Padding]
-
-B --> C[Window<br>Function]
-
-C --> D[Discrete<br>Fourier<br>Transform]
-
-D --> E[Window<br>Compensation]
-
-E --> F[Single-Side<br>Compensation]
-
-F --> G(["$$X[k]$$"])
-
-D --> H[Power<br>Spectral<br>Density]
-
-H --> I[Window<br>Compensation]
-
-I --> J[Single-Side<br>Compensation]
-
-J --> K(["$$psd[k]$$"])
-```
-
-
-
-
-
-<p align = 'center'>
-<img src="Figure/figure_dft_spectral_leakage_window.png" alt="An example of DFT." width="60%"/>
-</p>
-
-
-```python
-# Without Normalization
-signal *= np.hanning(signal.size)
-# With Normalization
-signal *= np.hanning(signal.size) * np.sqrt(8 / 3)
-```
-
-The Hanning window is written as:
-$$
-\begin{align}
-w(x)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi x)\right]\\
-w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
-\end{align}
-$$
-which has an average energy of 
-$$
-\begin{align}
-\int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
-\end{align}
-$$
-
-| **Name and Function / NumPy/SciPy Function**                 | **w[n]**                                                     | **Amplitude Normalization mean**                             | **Power Normalization **                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Rectangular (Boxcar) / `np.ones(N)` or `scipy.signal.windows.boxcar(N)` | $w[n] = 1$                                                   | $1$                                                          | $1$                                                          |
-| Hann (Hanning) / `np.hanning(N)` or `scipy.signal.windows.hann(N)` | $w[n] = 0.5\left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)$ | $\frac{1}{2}$                                                | $\sqrt{\frac{3}{8}}$                                         |
-| Hamming / `np.hamming(N)` or `scipy.signal.windows.hamming(N)` | $w[n] = 0.54 - 0.46\cos\left(\frac{2\pi n}{N-1}\right)$      | $0.54$                                                       | $\sqrt{0.397}$                                               |
-| Blackman / `np.blackman(N)` or `scipy.signal.windows.blackman(N)` | $w[n] = 0.42 - 0.5\cos\left(\frac{2\pi n}{N-1}\right) + 0.08\cos\left(\frac{4\pi n}{N-1}\right)$ | $0.42$                                                       | $\sqrt{0.274}$                                               |
-| Kaiser / `scipy.signal.windows.kaiser(N, beta)`              | $w[n] = \frac{I_0\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}$ | $\frac{1}{2I_0(\beta)}\int_{-1}^{1} I_0\left(\beta\sqrt{1-x^2}\right) dx$ | $\sqrt{\frac{1}{2}\int_{-1}^{1} \left[\frac{I_0\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^2 dx}$ |
-| Tukey / `scipy.signal.windows.tukey(N, alpha)`               | $w[n] = 0.5\left(1 + \cos\left(\frac{\pi(2n)}{\alpha N} - 1\right)\right)$ (for edges) | $1 - \frac{\alpha}{2}$                                       | $\sqrt{1 - \frac{\alpha}{2} + \frac{\alpha}{4}}$             |
-| Gaussian / `scipy.signal.windows.gaussian(N, std)`           | $w[n] = \exp\left(-\frac{1}{2}\left(\frac{n-\frac{N-1}{2}}{\sigma\frac{N-1}{2}}\right)^2\right)$ | $\sigma\sqrt{\frac{\pi}{2}}$                                 | $\sigma\sqrt{\frac{\pi}{4}}$                                 |
-| Bartlett / `np.bartlett(N)` or `scipy.signal.windows.bartlett(N)` | $w[n] = 1 - \frac{2\left|n-\frac{N-1}{2}\right|}{N-1}$       | $\frac{1}{2}$                                                | $\sqrt{\frac{1}{3}}$                                         |
-
-### Definitions
-
-- **Amplitude Normalization (Coherent Gain)**: $\text{mean}{w[n]}$ - preserves amplitude of coherent signals (DC component)
-- **Power Normalization (Energy)**: $\sqrt{\text{mean}{w[n]^2}}$ - preserves power of incoherent signals (noise)
-- Use amplitude normalization for spectral analysis of tones/periodic signals
-- Use power normalization for power spectral density estimation of random signals
-
-### Analytic Values
-
-- **Hamming coefficients**: $0.54 = \frac{25}{46} \approx 0.5435$, $0.46 = \frac{21}{46} \approx 0.4565$
-- **Blackman coefficients**: $0.42 = \frac{21}{50}$, $0.5 = \frac{1}{2}$, $0.08 = \frac{2}{25}$
-- **Power normalization factors**:
-  - Hamming: $\sqrt{0.397} = \sqrt{\frac{25^2 + 21^2}{2 \cdot 46^2}} = \sqrt{\frac{1066}{4232}} \approx 0.630$
-  - Blackman: $\sqrt{0.274} = \sqrt{\frac{21^2 + 25^2 + 4^2}{2 \cdot 50^2}} = \sqrt{\frac{1066}{5000}} \approx 0.462$
-- $\text{mean}{w[n]} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]$ and $\text{mean}{w[n]^2} = \frac{1}{N}\sum_{n=0}^{N-1} w[n]^2$
-- Kaiser and Gaussian expressions involve integrals that depend on shape parameters
-- For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
-- For Kaiser: $I_0$ is the modified Bessel function of the first kind
-- Gaussian approximations assume the window is appropriately scaled
-
-<u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
-
 ### Fence Effect and Zero-Padding
+
+To further improve the interpretability of spectral results, addressing spectral leakage alone is not enough. Another source of distortion arises from the discretization of the frequency axis itself. When a signal's frequency component does not align exactly with the frequency bins defined by the DFT, its energy spreads into neighboring bins—a phenomenon known as the **fence effect**. To reduce this effect and achieve smoother spectral representations, we often apply a technique known as **zero-padding**, which is discussed below.
+
+When using the Discrete Fourier Transform (DFT), we effectively project the signal onto a set of discrete frequency bins. If the actual frequency of a signal component does not align precisely with one of these bins, the energy spreads across multiple nearby bins—an artifact known as the **fence effect**. This leads to inaccurate spectral peak positions and broadening, especially when analyzing short-duration signals or signals with non-integer frequency components.
+
+A common technique to mitigate the visual and analytical impact of the fence effect is **zero-padding**—extending the time-domain signal by appending zeros beyond its original length. While zero-padding does not increase the inherent frequency resolution, it interpolates the spectrum between the original DFT bins, producing a smoother and more detailed frequency-domain representation. This can help in better locating spectral peaks and distinguishing closely spaced features.
+
+Zero-padding is particularly useful in peak detection, cross-spectral analysis, and visualization, where enhanced frequency granularity improves interpretability even though it doesn’t extract new information from the signal itself.
 
 <p align = 'center'>
 <img src="Figure/figure_dft_picket_fence_effect.png" width="60%"/>
 </p>
 ```python
-dt = time[1] - time[0]
-n = signal.size
+n_padding = 29
 
-N_PADDING = 29
-
-coefs = np.fft.fft(signal, n = signal.size + N_PADDING)
-freqs = np.fft.fftfreq(coefs.size, dt)
+coef = np.fft.rfft(sig, n = signal.size + n_padding)
+freq = np.fft.rfftfreq(coef.size, dt)
 ```
 
-
-
-## What Should We be Careful about the DFT/FFT?
-
-### Spectral Reconstruction / Trigonometric interpolation
-
-Once the DFT coefficients are derived, one can actually reconstruct a Fourier series with continuous input and get a interpolation on the unsampled points.
-
-
+## What Else Should You Know About the DFT and FFT?
 
 ### Gibbs Phenomenon
 
-Use Although a discrete signal can be lossless Fourier transformed, some signal. A continuous function with a infinitely sharp discontinuity introduce an infinite derivation at the discontinuity. However, any finite, discrete sampling of the continuous signal can not fully capture the complete, high frequency feature of the discontinuity. The discontinuity saw by the $\mathcal{F}$ operator is nothing but two samples with large variation, while, each adjacent samples can vary to some extent. Fourier transform can perfectly reconstruct the observed, discrete signal but is not able to perfectly represents the continuous function.
+Although a discrete signal can be losslessly transformed using the Fourier transform, it still faces limitations when attempting to represent continuous functions with sharp discontinuities. A continuous function with an infinitely steep jump introduces an infinite derivative at the discontinuity. However, any finite, discrete sampling of that function cannot fully capture its high-frequency behavior near the jump.
 
-Mathematically speaking, a 
+From the perspective of the Fourier operator , the discontinuity is perceived as two adjacent sample points with a large difference, and a finite Fourier series will attempt to approximate this using a limited set of basis sinusoids. This leads to **overshooting and ringing** near the discontinuity—an effect known as the **Gibbs phenomenon**.
+
+Mathematically speaking, even though the Fourier transform converges to the correct function almost everywhere, at the discontinuity itself it overshoots by a fixed percentage (~9%) regardless of how many harmonics are included. The oscillatory artifacts do not vanish with more terms; they merely become narrower and more localized.
+
+The Gibbs phenomenon is not a numerical artifact but an intrinsic property of the Fourier basis when approximating non-smooth functions. In practical signal processing, techniques such as windowing, filtering, or switching to other basis functions (e.g., wavelets) are used to reduce its visible impact.
 
 <p align = 'center'>
 <img src="Figure/figure_gibbs.png" width="60%"/>
@@ -535,14 +479,13 @@ In
 > \int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
 > \end{align}
 > $$
-
-
-> **Parseval's Theorem for DFT:**
+> **for DFT:**
 > $$
 > \sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
 > $$
+> 
 
-In the physical world, the square power of the ampltitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is propotional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
+In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is proportional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
 
 $$
 \begin{align}
@@ -570,17 +513,17 @@ for DFT. Considering that DFT yields both positive and negative frequency, we ty
 $$
 \begin{align}
 &\sum_{k=0}^{N-1} PSD[k\Delta f] \Delta f =\\
-\mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
+\mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{N}/{2}-1} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
 \mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f]\right]
 \end{align}
 $$
 
-
+$PSD[0]$ represents the DC component and is ignored in the spectral analysis for the most(but not all) time.
 
 ```python
 N = coef.size
-FS = 1 / dt
-psd = (np.abs(coef) ** 2) / (N * FS)
+fs = 1 / dt
+psd = (np.abs(coef) ** 2) / (N * fs)
 
 if N % 2 == 0:
     psd[1:-1] *= 2
@@ -588,23 +531,14 @@ else:
     psd[1:] *= 2
 ```
 
+According to the lineairty of $$\mathcal{F}$$, $$X[k]$$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
 
 $$
 \begin{align}
-|X(k\Delta f)| \propto f_s \cdot T
-\end{align}
-$$
-
-According to the lineairty of $$\mathcal{F}$$, $$X(k\Delta f)$$ should also be propotional to the signal ampltitude. Easily catch that the coefficient at the exact wave frequency has the form of 
-
-$$
-\begin{align}
-|X(k\Delta f)| = \frac{1}{2}A(k\Delta f) \cdot f_s \cdot T 
+|X[k]| = \frac{1}{2}A_k \cdot f_s \cdot T 
 \end{align}
 $$
 1/2 in this equation arises from the fact that $$\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$$.
-
-
 
 ### The performance of `numpy.fft.fft` and `scipy.signal.fft`
 
@@ -699,8 +633,9 @@ $$
 | **Parseval / Plancherel**            | (\displaystyle\int_{-\infty}^{\infty}                    | x(t)                                                         |
 | **Duality & Inversion**              | $\mathcal F^2\{x\}=x(-t),\;\;\mathcal F^4=\text{Id}$     | IDFT = DFT with sign reversal + $1/N$; two successive DFTs yield $N\,x[(-n)\bmod\!N]$. |
 
+## How to Deal With Noise?
 
-## How should we understand Noise?
+### What is Noise?
 
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
 
@@ -1112,21 +1047,43 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 
 Selects the value of the nearest known data point. Simple and fast, but produces a “blocky” or step-like signal.
 
+```python
+nearest_interp = scipy.interpolate.interp1d(t, sig, kind = 'nearest', bounds_error = False)
+```
+
 ##### 2. Linear Interpolation
 
 Connects data points with straight lines. Produces continuous, piecewise linear results; widely used for fast, low-artifact resampling.
+
+```python
+linear_interp = scipy.interpolate.interp1d(t, sig, bounds_error = False)
+```
 
 ##### 3. Spline Interpolation
 
 Fits smooth polynomial curves (usually cubic) through the data. Produces smooth and visually appealing results, but can introduce overshoot or ringing near sharp transitions.
 
-##### 4. Polynomial Interpolation
+```python
+cubic_interp = scipy.interpolate.CubicSpline(t, sig)
+```
 
-Fits a single polynomial of specified degree to all data points. Suitable only for small datasets; otherwise, prone to oscillation (Runge’s phenomenon).
+##### 4. Akima Interpolation
+
+Akima interpolation is a piecewise method based on fitting local polynomials between data points using adaptive slopes that depend on the trends of neighboring intervals. Unlike cubic splines, it does not enforce global smoothness but instead focuses on avoiding oscillations and overshoots near sharp transitions. This makes Akima interpolation particularly effective for datasets with non-uniform behavior or outliers, where traditional spline methods may produce unwanted ringing. It maintains a good balance between smoothness and stability and is especially useful in applications requiring visually reliable curve fitting without excessive global influence.
+
+Assumes that the data is periodic and uniformly sampled. The signal is extended using its discrete Fourier transform (DFT), and interpolation is performed in the frequency domain by zero-padding and inverse transforming. Fourier interpolation is ideal for band-limited signals and preserves the frequency content, but it may introduce artifacts if the periodicity assumption is violated.
+
+```python
+akima_interp = scipy.interpolate.Akima1DInterpolator(t, sig)
+```
 
 ##### 5. Fourier Interpolation
 
 Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
+
+```pyt
+sig_interpolated = scipy.signal.resample(sig, t_interp.size)
+```
 
 ##### 6. Sinc Interpolation
 
@@ -1141,32 +1098,13 @@ where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = \frac{\sin(\pi x)}
 - The interpolation kernel is infinitely wide (non-local), so true sinc interpolation is not practically achievable (requires truncation or windowing).
 - In practice, *windowed sinc* or a finite sum is used.
 
+```python
+def sinc_interp(t_interp):
+    weight = np.sinc((t_interp[:, None] - t[None, :]) / dt)
+    return weight @ sig
 
-
-#### Interpolation in Python (`scipy.interpolate`)
-
-The `scipy.interpolate` module provides flexible functions for 1D and multidimensional interpolation.
-
+sinc_interp(t_interp)
 ```
-pythonCopyEditimport numpy as np
-from scipy.interpolate import interp1d, CubicSpline
-
-# Sample data
-x = np.linspace(0, 10, 11)
-y = np.sin(x)
-
-# Linear interpolation
-f_linear = interp1d(x, y, kind='linear')
-y_new = f_linear(np.linspace(0, 10, 101))
-
-# Cubic spline interpolation
-f_spline = CubicSpline(x, y)
-y_spline = f_spline(np.linspace(0, 10, 101))
-```
-
-Other interpolation classes include `BarycentricInterpolator`, `PchipInterpolator`, and multidimensional methods such as `griddata` (for scattered data) and `RectBivariateSpline` (for 2D grids).
-
-
 
 <p align = 'center'>
 <img src="Figure/figure_interpolation.png" width="60%"/>
@@ -1190,37 +1128,18 @@ Other interpolation classes include `BarycentricInterpolator`, `PchipInterpolato
 - **Gap filling** in geomagnetic or solar wind time series for uninterrupted spectra.
 - **High-resolution reconstruction** for visualization of waveforms.
 
-Example: Fourier Interpolation by Zero-padding
-
-```
-import numpy as np
-
-N = 128
-t = np.linspace(0, 1, N, endpoint=False)
-sig = np.sin(2 * np.pi * 5 * t)
-sig_fft = np.fft.fft(sig)
-# Zero-pad in frequency domain for higher time resolution
-sig_fft_pad = np.pad(sig_fft, (0, 3 * N))
-sig_highres = np.fft.ifft(sig_fft_pad).real
-```
-
 ### Comparison of Interpolation Methods
 
-| Method           | `scipy` Function / Implementation       | Smoothness | Preserves Frequencies         | Typical Use                   |
-| ---------------- | --------------------------------------- | ---------- | ----------------------------- | ----------------------------- |
-| Nearest Neighbor | `interp1d(kind='nearest')`              | Discrete   | No                            | Quick gap fill, step signals  |
-| Linear           | `interp1d(kind='linear')`               | Continuous | Partially                     | Standard resampling           |
-| Cubic Spline     | `CubicSpline`, `interp1d(kind='cubic')` | Smooth     | Mostly                        | Smooth signals, visualization |
-| **Sinc**         | *custom, see above*                     | Smoothest  | **Yes (ideal, band-limited)** | Band-limited, uniform samples |
-| Fourier          | Zero-padding FFT                        | Smoothest  | Yes                           | Band-limited, periodic        |
-| Polynomial       | `BarycentricInterpolator`               | Varies     | No (oscillation risk)         | Small datasets only           |
+| Method           | `scipy` Function / Implementation       | Smoothness | Preserves Frequencies         | Typical Use                            |
+| ---------------- | --------------------------------------- | ---------- | ----------------------------- | -------------------------------------- |
+| Nearest Neighbor | `interp1d(kind='nearest')`              | Discrete   | No                            | Quick gap fill, step signals           |
+| Linear           | `interp1d(kind='linear')`               | Continuous | Partially                     | Standard resampling                    |
+| Cubic Spline     | `CubicSpline`, `interp1d(kind='cubic')` | Smooth     | Mostly                        | Smooth signals, visualization          |
+| **Sinc**         | *custom, see above*                     | Smoothest  | **Yes (ideal, band-limited)** | Band-limited, uniform samples          |
+| Fourier          | Zero-padding FFT                        | Smoothest  | Yes                           | Band-limited, periodic                 |
+| Akima            | `Akima1DInterpolator`                   | Moderate   | No                            | Robust fitting with minimal overshoot. |
 
 
-
-------
-
-> **Takeaway:**
->  Interpolation bridges the gaps between discrete samples, but every method comes with assumptions and spectral consequences. Sinc and Fourier interpolation are the gold standards for band-limited signals, while linear and spline interpolation provide practical, efficient alternatives for most scientific applications. Always match your interpolation choice to the physical characteristics and analysis goals of your data.
 
 ### Cepstrum
 
@@ -1268,27 +1187,58 @@ Wavelet analysis offers a versatile framework for multi-resolution time-frequenc
 <p align = 'center'>
 <img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
 </p>
+```python
+scales = 2 ** np.linspace(4, 12, 160, endpoint = False)
 
-### Moving-Average and Moving-Median
+bandwidth = 12.0
+central_frequency = 1.0
 
-Moving-average and moving-median filters are essential tools for smoothing time series and removing high-frequency noise. They are simple yet effective for trend extraction, baseline correction, and outlier suppression. This section compares these techniques, discusses their strengths and limitations, and provides Python code snippets for practical use. `bottleneck` and `numpy.sliding_window`.
+# Way 1: pywavelets
+wavelet = 'cmor%.1f-%.1f' % (bandwidth, central_frequency)
+coef, f = pywt.cwt(sig, scales, wavelet, dt, method = 'fft')
+coef *= np.sqrt(np.sqrt(bandwidth) * np.sqrt(2 * np.pi))  # amplitude normalization for Morlet
+psd = (np.abs(coef) ** 2) * (2 * dt)
+df = (f[0] / f[1] - 1) * f / np.sqrt(f[0] / f[1])
+
+# Way 2: ssqueezepy
+coef, scales = ssqueezepy.cwt(sig, ('morlet', {'mu': bandwidth}), scales = bandwidth / (2 * np.pi) * scales.astype(np.float32), fs = 1 / dt, l1_norm = False)
+f = bandwidth / (2 * np.pi) / dt / scales
+df = (f[0] / f[1] - 1) * f / np.sqrt(f[0] / f[1])
+psd = (np.abs(coef) ** 2) * (2 * dt)
+
+# Way 3:
+# There is a cwt function provided by scipy.signal. However, this function is deprecated since version 1.12.0. They recommend using PyWavelets instead.
+
+# widths = bandwidth * scales / (2 * np.pi)
+# coef = scipy.signal.cwt(
+#     signal,
+#     scipy.signal.morlet2,
+#     widths = widths,
+#     w = bandwidth,
+#     dtype = np.complex128
+# )
+# frequency = 1 / dt / scales
+
+# Cone of Influence (COI)
+coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
+```
+
+
 
 ## Multi-Dimensional Signal
 
 ### Principal Component Analysis / Minimum Variance Analysis
 
-Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction.
+Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction. 
 
-------
-
-#### 1. Core Idea
+The central ideas of these two methods are:
 
 - **PCA**: Rotate the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
 - **MVA**: Apply PCA to a 3 × N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
 
 ------
 
-#### 2. Mathematical Formulation
+#### Mathematical Formulation
 
 1. **Collect & demean** the data matrix
    $$
@@ -1621,13 +1571,14 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
   | :---------------: | :-----------: | :----------------------------------------------------------: |
   |    $(t), (f)$     |    `t, f`     |       Continuous input, frequency ($f$) or time ($t$)        |
   |    $[t], [f]$     |    `t, f`     |                        Discrete input                        |
+  |     $\omega$      |    `omega`    |             Angular frequency, $\omega = 2\pi f$             |
   |      $x(t)$       |       -       |       Continuous signal x as a function of time ($t$)        |
   | $x[n] = x(nf_S)$  |     `sig`     | An even sample of $x(t)$, the intensity is termed as ***Amplitude*** |
   | $X[k]=X(kT^{-1})$ |    `coef`     | Fourier Transform Coefficient of $x(t)$, the intensity is termed as ***Magnitude*** |
   |   $\mathcal{F}$   |       -       |                  Fourier Transform Operator                  |
   |        $N$        |      `N`      |                        Signal length                         |
   |        Arb        |       -       |                        Arbitrary Unit                        |
-  |      $w[n]$       |   `window`    |                             use                              |
+  |      $w[n]$       |   `window`    |                                                              |
   |                   |               |                                                              |
   |                   |               |                                                              |
   |                   |               |                                                              |
@@ -1644,7 +1595,7 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 ## Acknowledgement
 
-This document is finished with the help of ChatGPT and Copilot. I thank my supervisor, Dr. Weijie Sun, and my laboratory, Space Sciences Laboratory, UC Berkeley, for their support in my development of writing habits. 
+ This document is finished with the help of ChatGPT and Copilot.
 
 </body>
 </html>
