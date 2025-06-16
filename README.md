@@ -1,4 +1,4 @@
-# Practical Spectral Analysis with Python
+# Practical Time Series and Spectral Analysis with Python
 
 ## Preface
 
@@ -6,7 +6,7 @@ For many students—and even graduate researchers—their first real encounter w
 
 One day, they notice an intriguing phenomenon in a time-domain signal and eagerly share their discovery with an advisor or senior colleague. The response is calmly delivered: "You should try some Fourier or wavelet analysis."
 
-Returning to their desk, they dig out an old calculus textbook, flip through several pages, and quickly realize it won’t help. Next comes the trusted solution: a swift Google search for “Fourier Analysis tutorial". Eventually, they stumble upon a highly recommended *Digital Signal Processing* textbook with an impressive 9.8 book rating.  After a marathon weekend, they manage to read through the 50-plus pages of Chapter 1, Signals and Systems. However, by Chapter 2, Linear Time-Invariant Systems, fatigue sets in—only to realize that the actual Fourier series material is still more than 120 pages away.
+Returning to their desk, they dig out an old calculus textbook, flip through several pages, and quickly realize it won’t help. Next comes the trusted solution: a swift Google search for “Fourier Analysis tutorial". Eventually, they stumble upon a highly recommended *Digital Signal Processing* textbook with an impressive 4.3/5.0 book rating.  After a marathon weekend, they manage to read through the 50-plus pages of Chapter 1, *Signals and Systems*. However, by Chapter 2, Linear Time-Invariant Systems, fatigue sets in—only to realize that the actual Fourier series material is still more than 120 pages away.
 
 At this juncture, most students pragmatically pivot to google *"Fourier Analysis by xxx"*  and get an answer with some unfamiliar jargon from *StackOverflow*, grabbing a ready-made code snippet to forge ahead.
 
@@ -76,6 +76,145 @@ Such phenomenon is essentially unrelated to the Fourier transform as its frequen
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
+- **Generate the Timestamps**
+
+  ```python
+  import numpy as np
+  
+  # Length of signal, N
+  n = 100
+  fs = 10
+  T = 1.0
+  
+  dt = 1 / fs
+  
+  # Way 1: Given sampling frequency, fs
+  t =	 np.arange(0, n) / fs 
+  # t = 0.0, 0.1, 0.2, ..., 9.9
+  
+  # Way 2: Given sampling period, dt
+  t =	 np.arange(0, n) / fs 
+  
+  # Way 3: Given Signal Duration, T
+  t = np.linspace(0, T, n, endpoint = False)
+  
+  ```
+
+  - Tips: Set `endpoint = False` so that the last point is not included in the time array, which ensures that the sampling frequency is equal to $$f_s$$.
+
+- **Generate the Signal**
+
+  ```python
+  # Assign wave (angular) frequency (omega = 2 * np.pi * frequency)
+  f0 = 3
+  f1 = 6
+  amp1 = 1
+  amp2 = 2
+  omega0 = 2 * np.pi * f0
+  omega1 = 2 * np.pi * f1
+  
+  # Way 1: Directly generate the signal
+  sig = amp1 * np.sin(omega0 * t) + amp2 * np.sin(omega1 * t)
+  
+  # Way 2: Generate a complex function and then take the real (cosine) or imaginary (sine) part
+  sig = (amp1 * np.exp(1j * omega0 * t) + amp2 * np.exp(1j * omega1 * t)).imag
+  
+  # Way 3: Use a function or anonymous function to generate the signal
+  def sig_func(t):
+      return amp1 * np.sin(omega0 * t) + amp2 * np.sin(omega1 * t)
+  # or
+  sig_func = lambda t: amp1 * np.sin(omega0 * t) + amp2 * np.sin(omega1 * t)
+  
+  sig = sig_func(t)
+  ```
+
+------
+
+### Common Waveform Functions in `scipy.signal`
+
+In addition to sine waves, there are some other commonly used waveforms built-in functions that are provided by `scipy.signal` module. These functions can be used to generate various types of signals for testing, simulation, and analysis purposes. Below is a brief overview of some typical waveforms:
+
+<p align = 'center'>
+<img src="Figure/figure_typical_signals.png" width="60%"/>
+</p>
+
+#### 1. **Chirp Waveform (`chirp`)**
+
+Generates a swept-frequency (chirp) signal, which is often used in radar, sonar, and frequency response analysis.
+
+```python
+scipy.signal.chirp(t, f0, t1, f1, method='linear', phi=0)
+```
+
+- **Parameters**:
+  - `t`: Time array.
+  - `f0`: Initial frequency at time `t=0`.
+  - `t1`: Final time for frequency sweep.
+  - `f1`: Final frequency at time `t1`.
+  - `method`: Type of frequency sweep (`linear`, `quadratic`, `logarithmic`, or `hyperbolic`).
+  - `phi`: Initial phase in degrees.
+
+------
+
+#### 2. **Gaussian Pulse (`gausspulse`)**
+
+Generates a Gaussian-modulated sinusoidal pulse, commonly used in ultrasound and narrow-band radar simulations.
+
+```python
+scipy.signal.gausspulse(t, fc=1000, bw=0.5, bwr=-6, tpr=-60, retquad=False, retenv=False)
+```
+
+- **Parameters**:
+  - `t`: Time array.
+  - `fc`: Center frequency of the Gaussian pulse.
+  - `bw`: Fractional bandwidth (typically `0.5`).
+  - `bwr`: Bandwidth reference level (in dB, commonly `-6 dB`).
+  - `retquad`: Return quadrature (complex) component if `True`.
+  - `retenv`: Return envelope if `True`.
+
+------
+
+#### 3. **Square Wave (`square`)**
+
+Generates a square waveform, useful in digital signal simulations, PWM applications, and modulation experiments.
+
+```python
+scipy.signal.square(t, duty=0.5)
+```
+
+- **Parameters**:
+  - `t`: Time array.
+  - `duty`: Duty cycle, ratio of pulse duration to total period (0 to 1).
+
+------
+
+#### 4. **Sawtooth Wave (`sawtooth`)**
+
+Generates a sawtooth waveform, widely used in signal synthesis and electronics simulations.
+
+```python
+scipy.signal.sawtooth(t, width=1)
+```
+
+- **Parameters**:
+  - `t`: Time array.
+  - `width`: Fraction of the waveform period occupied by the rising ramp (0 to 1). Setting `width=1` yields a fully rising ramp.
+
+------
+
+#### 5. **Unit Impulse (`unit_impulse`)**
+
+Generates a discrete-time impulse (Dirac delta function), fundamental for impulse response analysis.
+
+```python
+scipy.signal.unit_impulse(shape, idx=None, dtype=float)
+```
+
+- **Parameters**:
+  - `shape`: Shape of the output array.
+  - `idx`: Index of the impulse position (default is 0).
+  - `dtype`: Data type of the output array.
+
 <div STYLE="page-break-after: always;"></div>
 
 ## How Do We See Frequencies in Data?
@@ -108,7 +247,8 @@ $$
 where $x[n\Delta t]$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that appliable:
 $$
 \begin{align}
-X[k\Delta f] = \sum_{n=0}^N x[n\Delta t] e^{-2\pi i k\Delta f t} \, \Delta  t
+X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
+& = \sum_{n=0}^N x[n] e^{-2\pi i k\Delta f t} \, \Delta  t
 \end{align}
 $$
 Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
@@ -117,20 +257,16 @@ Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually ca
 $$
 \begin{align}
 X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
-&\approx \int_{-\infty}^{+\infty} x_{ext}[n] \, d t
+& \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t
 \end{align}
 $$
-
-<p align = 'center'>
-<img src="Figure/figure_signal.png" width="60%"/>
-</p>
-
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
 $$
 \begin{align}
-X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi nf}\\
-X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i n k}
+X(f) &= \int_{-\infty}^{+\infty} x(t)\cdot e^{-i2\pi ft} \mathrm{d}t\\
+X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi fn}\\
+X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i kn}
 \end{align}
 $$
 in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application.
@@ -147,22 +283,15 @@ in most other tutorial. Nevertheless, this tutorial will keep that term as the c
 
 
 ```python
-# Generate a sinuous signal
-omega = 2 * np.pi * 5
-time = np.arange(0, 1, 200)
-signal = np.sin(omega * time)
-
-dt = time[1] - time[0]
-# Complex coefficient
-coefs = np.fft.fft(signal)
+coef = np.fft.fft(signal)
 # Corresponding frequency with both zero, positive, and negative frequency
-freqs = np.fft.fftfreq(coefs.size, dt)
+f = np.fft.fftfreq(coefs.size, dt)
 ```
 Given a window length n and a sample spacing `dt` (i.e., `np.fft.fftfreq(N, dt)`):
 
 ```python
-freqs # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
-freqs # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
+f # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
+f # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
 ```
 The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
 
@@ -202,7 +331,7 @@ D(["*2N Complex Signal*"]) -->|"*np.fft.fft*"| E(["*2N Complex Coefficients X[k]
 
 
 
-### Frequency Resolution
+- Frequency Resolution
 
 Assuming you already get a prepared signal, a common way to extract the periodicity from the signal is ***DFT***. By this transformation, you can perfectly convert the signal to the frequency domain without any loss of the physical information.
 
@@ -432,7 +561,8 @@ $$
 \begin{align}
 P&=\frac{1}{N\Delta t}\sum_{n=0}^{N-1}|x(n\Delta t)|^2 \Delta t\\
 &=\frac{1}{N^2\Delta f}\sum_{k=0}^{N-1}|X(k\Delta f)|^2 \Delta f \\
-&=\sum_{k=0}^{N-1} \boxed{\frac{1}{Nf_s} |X(k\Delta f)|^2}\, \Delta f
+&=\sum_{k=0}^{N-1} \boxed{\frac{1}{Nf_s} |X(k\Delta f)|^2}\, \Delta f\\
+&=\sum_{k=0}^{N-1}PSD[k]\Delta f
 \end{align}
 $$
 for DFT. Considering that DFT yields both positive and negative frequency, we typically fold the DFT result. Naturally, the definition of *power spectral density (PSD)* is given as:
@@ -567,10 +697,10 @@ $$
 | **Correlation theorem**              | $h=x\star y\;\Rightarrow\;\mathcal F\{h\}=X^{*}\,Y$      | Circular correlation: $x\!\star\!y\;\xrightarrow{\text{DFT}}\;X^{*}[k]\,Y[k]$ |
 | **Differentiation / Multiplication** | $\tfrac{d^n x}{dt^n}\;\longrightarrow\;(j2\pi f)^n X(f)$ | Multiply $X[k]$ by $\left(j2\pi k f_s/N\right)^n$; conversely, $nT_s\,x[n]$ maps to a discrete derivative of $X[k]$. |
 | **Parseval / Plancherel**            | (\displaystyle\int_{-\infty}^{\infty}                    | x(t)                                                         |
-| **Duality & Inversion**              | $\mathcal F^2\{x\}=x(-t),\;\;\mathcal F^4=\text{Id}$     | IDFT = DFT with sign reversal + $1/N$; two successive DFTs yield $N\,x[(-n)\!\!\!\!\bmod\!N]$. |
+| **Duality & Inversion**              | $\mathcal F^2\{x\}=x(-t),\;\;\mathcal F^4=\text{Id}$     | IDFT = DFT with sign reversal + $1/N$; two successive DFTs yield $N\,x[(-n)\bmod\!N]$. |
 
 
-## Noise
+## How should we understand Noise?
 
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
 
@@ -1487,30 +1617,30 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 - When creating a `numpy.ndarray` for a signal, I will always 
 
-  |      Notation       | Variable Name |                   Explanation                   |
-  | :-----------------: | :-----------: | :---------------------------------------------: |
-  |     $(t), (f)$      |       -       | Continuous input, frequency ($f$) or time ($t$) |
-  |     $[t], [f]$      |       -       |                 Discrete input                  |
-  |       $x(t)$        |       -       | Continuous signal x as a function of time ($t$) |
-  | $x[n],x[t],x[nT_S]$ |      `x`      |           An evenly sample of $x(t)$            |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
-  |                     |               |                                                 |
+  |     Notation      | Variable Name |                         Explanation                          |
+  | :---------------: | :-----------: | :----------------------------------------------------------: |
+  |    $(t), (f)$     |    `t, f`     |       Continuous input, frequency ($f$) or time ($t$)        |
+  |    $[t], [f]$     |    `t, f`     |                        Discrete input                        |
+  |      $x(t)$       |       -       |       Continuous signal x as a function of time ($t$)        |
+  | $x[n] = x(nf_S)$  |     `sig`     | An even sample of $x(t)$, the intensity is termed as ***Amplitude*** |
+  | $X[k]=X(kT^{-1})$ |    `coef`     | Fourier Transform Coefficient of $x(t)$, the intensity is termed as ***Magnitude*** |
+  |   $\mathcal{F}$   |       -       |                  Fourier Transform Operator                  |
+  |        $N$        |      `N`      |                        Signal length                         |
+  |        Arb        |       -       |                        Arbitrary Unit                        |
+  |      $w[n]$       |   `window`    |                             use                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
+  |                   |               |                                                              |
 
 ## Acknowledgement
 
