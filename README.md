@@ -57,9 +57,11 @@ Spectral analysis helps to:
 ### Sampling
 
 > **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
-> $$
+>
+> ```math
 > f_s \ge 2f_{max}
-> $$
+> ```
+>
 > 
 
 The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
