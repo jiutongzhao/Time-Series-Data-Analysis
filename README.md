@@ -442,7 +442,6 @@ Zero-padding is particularly useful in peak detection, cross-spectral analysis, 
 </p>
 ```python
 n_padding = 29
-
 coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
