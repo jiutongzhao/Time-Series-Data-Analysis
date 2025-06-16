@@ -447,6 +447,8 @@ coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
 
+
+
 ## What Else Should You Know About the DFT and FFT?
 
 ### Gibbs Phenomenon
@@ -540,6 +542,51 @@ $$
 $$
 1/2 in this equation arises from the fact that $$\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$$.
 
+### More Properties of Fourier Transform
+
+A super powerful property of Fourier transform is that:
+$$
+\mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
+$$
+which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
+$$
+\begin{align}
+\frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
+&=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
+&=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
+\end{align}
+$$
+It can be denoted as 
+$$
+{{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
+$$
+One can also extend this property to
+$$
+({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
+$$
+In plasma physics, the conventional way to express the electromagnetic field.
+
+It should be noted that this derivation property change a little bit for discrete Fourier transform:
+$$
+\frac{\Delta x(t)}{\Delta  t}=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+$$
+
+
+
+| Property                   | Continuous-Time Fourier Transform (FT)                 | Discrete Fourier Transform (DFT/FFT)                         |
+| -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| Linearity                  | $\mathcal{F}\{a\,x(t) + b\,y(t)\} = a\,X(f) + b\,Y(f)$ | $\mathrm{DFT}\{a\,x[n] + b\,y[n]\} = a\,X[k] + b\,Y[k]$      |
+| Time Shift                 | $x(t - t_0) \rightarrow X(f)\,e^{-j 2\pi f t_0}$       | $x[n - n_0] \rightarrow X[k]\,e^{-j 2\pi k n_0 / N}$         |
+| Frequency Shift            | $x(t)\,e^{j 2\pi f_0 t} \rightarrow X(f - f_0)$        | $x[n]\,e^{j 2\pi k_0 n / N} \rightarrow X[(k - k_0)\bmod N]$ |
+| Time-Domain Convolution    | $x(t) * h(t) \rightarrow X(f)\,H(f)$                   | $x[n] \circledast h[n] \rightarrow X[k]\,H[k]$ (circular)    |
+| Time-Domain Multiplication | $x(t)\,h(t) \rightarrow X(f) * H(f)$                   | $x[n]\,h[n] \rightarrow X[k] * H[k] / N$                     |
+| Derivative (Time Domain)   | $\frac{d^n x(t)}{dt^n} \rightarrow (j 2 \pi f)^n X(f)$ | $\Delta^n x[n] \rightarrow X[k] \cdot (e^{j 2 \pi k / N} - 1)^n$ |
+| Conjugate Symmetry         | $x(t) \in \mathbb{R} \Rightarrow X(-f) = X^*(f)$       | $x[n] \in \mathbb{R} \Rightarrow X[N - k] = X^*[k]$          |
+| Parseval's Theorem         | $\int |x(t)|^2\,dt = \int |X(f)|^2\,df$                | $\sum |x[n]|^2 = \frac{1}{N} \sum |X[k]|^2$                  |
+| Frequency Resolution       | Continuous (infinitesimal)                             | $\Delta f = \frac{f_s}{N}$                                   |
+| Spectral Periodicity       | $X(f)$ not periodic                                    | $X[k]$ is periodic with period $N$                           |
+| Periodic Input Duality     | Periodic $x(t) \Rightarrow$ discrete $X(f)$            | Periodic $x[n] \Rightarrow$ sparse $X[k]$                    |
+
 ### The performance of `numpy.fft.fft` and `scipy.signal.fft`
 
 The invention of the ***(Cooley–Tukey) Fast Fourier Transform (FFT) algorithm*** reduced the time complexity of DFT from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\mathrm{log}N)$ by efficiently decomposing the DFT into smaller computations, i.e., [divide-and-conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).  
@@ -591,47 +638,34 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 
 The `bottleneck` package, which is safer and more efficient,  is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the `bottleneck` functions and their expected results.
 
-### Properties of Fourier Transform
+```python
+# -------------------------------
+# Method 1: sliding_window_view (fixed stride = 1)
+# -------------------------------
+window_size = 4
+windows_stride1 = sliding_window_view(sig, window_shape=window_size)
 
-A super powerful property of Fourier transform is that:
-$$
-\mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
-$$
-which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
-$$
-\begin{align}
-\frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
-&=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
-&=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
-\end{align}
-$$
-It can be denoted as 
-$$
-{{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
-$$
-One can also extend this property to
-$$
-({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
-$$
-In plasma physics, the conventional way to express the electromagnetic field.
+# -------------------------------
+# Method 2: as_strided (custom stride, use with caution!)
+# -------------------------------
+custom_stride = 2
+n_windows = (len(sig) - window_size) // custom_stride + 1
+shape = (n_windows, window_size)
+strides = (sig.strides[0] * custom_stride, sig.strides[0])
 
-It should be noted that this derivation property change a little bit for discrete Fourier transform:
-$$
-\frac{\Delta x(t)}{\Delta  t}=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
-$$
+windows_custom = as_strided(sig, shape=shape, strides=strides)
 
-| Property                             | Continuous-time FT                                       | Length-$N$ DFT (circular, arbitrary $T_s$)                   |
-| ------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------ |
-| **Linearity**                        | $\mathcal F\{a\,x+b\,y\}=a\,X+b\,Y$                      | $a\,x[n]+b\,y[n]\;\xrightarrow{\text{DFT}}\;a\,X[k]+b\,Y[k]$ |
-| **Time shift**                       | $x(t-t_0)\;\longrightarrow\;e^{-j2\pi f t_0}X(f)$        | $x[(n-n_0)\bmod N]\;\xrightarrow{\text{DFT}}\;e^{-j2\pi k n_0/N}\,X[k]$ ($\Delta t=n_0T_s$) |
-| **Frequency shift / Modulation**     | $e^{j2\pi f_0 t}x(t)\;\longrightarrow\;X(f-f_0)$         | $e^{j2\pi f_0 nT_s}x[n]\;\xrightarrow{\text{DFT}}\;X[(k-k_0)\bmod N]$, $k_0=\dfrac{f_0 N}{f_s}$ |
-| **Time scaling**                     | (x(a t);\longrightarrow;\tfrac1{                         | a                                                            |
-| **Conjugation & Symmetry**           | Real $x(t)$ ⇒ $X(-f)=X^{*}(f)$                           | Real $x[n]$ ⇒ $X[(N-k)\!\!\!\!\bmod\!N]=X^{*}[k]$            |
-| **Convolution theorem**              | $h=x*y\;\Rightarrow\;\mathcal F\{h\}=X\,Y$               | Circular convolution: $x\!\circledast\!y\;\xrightarrow{\text{DFT}}\;X[k]\,Y[k]$ |
-| **Correlation theorem**              | $h=x\star y\;\Rightarrow\;\mathcal F\{h\}=X^{*}\,Y$      | Circular correlation: $x\!\star\!y\;\xrightarrow{\text{DFT}}\;X^{*}[k]\,Y[k]$ |
-| **Differentiation / Multiplication** | $\tfrac{d^n x}{dt^n}\;\longrightarrow\;(j2\pi f)^n X(f)$ | Multiply $X[k]$ by $\left(j2\pi k f_s/N\right)^n$; conversely, $nT_s\,x[n]$ maps to a discrete derivative of $X[k]$. |
-| **Parseval / Plancherel**            | (\displaystyle\int_{-\infty}^{\infty}                    | x(t)                                                         |
-| **Duality & Inversion**              | $\mathcal F^2\{x\}=x(-t),\;\;\mathcal F^4=\text{Id}$     | IDFT = DFT with sign reversal + $1/N$; two successive DFTs yield $N\,x[(-n)\bmod\!N]$. |
+# -------------------------------
+# Method 3: bottleneck (safe, NaN-aware window functions)
+# -------------------------------
+print("\n[3] bottleneck window functions:")
+ma = bn.move_mean(sig, window=3, min_count=1)
+mm = bn.move_max(sig, window=3, min_count=1)
+std = bn.move_std(sig, window=3, min_count=1)
+
+```
+
+
 
 ## How to Deal With Noise?
 
@@ -648,6 +682,31 @@ In audio engineering, electronics, physics, and many other fields, the color of 
 The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
 
 ### Signal-to-Noise Ratio and Decibel
+
+Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
+
+#### Definition
+
+The SNR is defined as the ratio of the power of the signal to the power of the noise:
+$$
+\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
+$$
+where $P_{\text{signal}}$ is the average power of the signal, and $P_{\text{noise}}$ is the average power of the noise.
+
+Since this ratio can span several orders of magnitude, it is often expressed in **decibels (dB)**:
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
+$$
+For amplitude-based SNR (when measuring signal and noise in terms of root-mean-square (RMS) amplitude), the formula becomes:
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
+$$
+
+#### Interpretation
+
+- **Higher SNR** indicates a cleaner, more detectable signal.
+- **0 dB** means the signal and noise power are equal.
+- **Negative SNR** indicates the noise power exceeds signal power.
 
 ***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
