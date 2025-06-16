@@ -221,50 +221,62 @@ scipy.signal.unit_impulse(shape, idx=None, dtype=float)
 ### Fourier Transform
 
 > Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
-> $$
-> \begin{align}
+>
+> ```math
 > X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
-> \end{align}
-> $$
+> ```
+>
+> 
 >
 > Correspondingly, the inverse (continuous) Fourier transform can be given as:
-> $$
+> ```math
 > \begin{align}
 > x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
 > \end{align}
-> $$
+> ```
+>
+> 
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
-$$
+```math
 \begin{align}
 X(f)=\sum_{n=-\infty}^{+\infty} x[n \Delta t]\cdot e^{-i2\pi f (n\Delta t)}
 \end{align}
-$$
+```
+
 where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
-$$
+```math
 \begin{align}
 X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
 & = \sum_{n=0}^N x[n] e^{-2\pi i k\Delta f t} \, \Delta  t
 \end{align}
-$$
+```
+
+
+
 Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
 
-
-$$
+```math
 \begin{align}
 X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
 & \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t
 \end{align}
-$$
+```
+
+
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
-$$
+
+```math
 \begin{align}
 X(f) &= \int_{-\infty}^{+\infty} x(t)\cdot e^{-i2\pi ft} \mathrm{d}t\\
 X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi fn}\\
 X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i kn}
 \end{align}
-$$
+```
+
+
+
 in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application—The absolute value matters!
 
 <p align = 'center'>
@@ -333,12 +345,15 @@ This artificial discontinuity introduces **spectral leakage**, causing energy fr
 Typically, the wave function is a bell-shaped function with all non-negative values. Different window functions (e.g., rectangular, Hamming, Hanning, Blackman) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). Choosing the appropriate window is essential for ensuring accurate and interpretable spectral results.
 
 Here after, we are going to give an example of window function, the Hanning window, which is written as:
-$$
+```math
 \begin{align}
 w(x)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi x)\right]\\
 w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 \end{align}
-$$
+```
+
+
+
 It can be implemented in `numpy` as follow:
 
 ```python
@@ -353,11 +368,13 @@ sig *= np.hanning(sig.size) * np.sqrt(8 / 3)
 ```
 
 it has an average amplitude of $1/2=\int_0^1 w(x)\mathrm{d}x$ and average energy of 
-$$
+```math
 \begin{align}
 \int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
 \end{align}
-$$
+```
+
+
 
 | **Name and Function / NumPy/SciPy Function**                 | **w[n]**                                                     | **Amplitude Normalization**                                  | **Power Normalization **                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -477,49 +494,60 @@ In
 ### Parseval's Theorem and Energy Conservation
 
 > **Parseval's Theorem for CFT:**
-> $$
+> ```math
 > \begin{align}
 > \int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
 > \end{align}
-> $$
+> ```
+>
+> 
+>
 > **for DFT:**
-> $$
+> ```math
 > \sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
-> $$
+> ```
+>
 > 
 
 In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is proportional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
 
-$$
-\begin{align}
+```math
 u=u_E + u_B=\frac{1}{2}(\varepsilon_0 \mathit{E}^2 + \frac{1}{\mu_0}\mathit{B}^2)
-\end{align}
-$$
+```
+
+
+
 In this case, the ***energy*** of the signal naturally linked with the ***energy*** of the electromagnetic field. Nevertheless, the energy of a signal is an extensive property as it linearly increases with the length of the sample. In the ordinary investigation, the signal energy is always further converted as signal ***power***, which is an intensive property that describe the amplitude and is independent of signal length. The defition of power, *P*, can be written as:
 
-$$
-\begin{align}
+```math
 P&= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t\\
-\end{align}
-$$
+```
+
+
+
 or 
-$$
+```math
 \begin{align}
 P&=\frac{1}{N\Delta t}\sum_{n=0}^{N-1}|x(n\Delta t)|^2 \Delta t\\
 &=\frac{1}{N^2\Delta f}\sum_{k=0}^{N-1}|X(k\Delta f)|^2 \Delta f \\
 &=\sum_{k=0}^{N-1} \boxed{\frac{1}{Nf_s} |X(k\Delta f)|^2}\, \Delta f\\
 &=\sum_{k=0}^{N-1}PSD[k]\Delta f
 \end{align}
-$$
+```
+
+
+
 for DFT. Considering that DFT yields both positive and negative frequency, we typically fold the DFT result. Naturally, the definition of *power spectral density (PSD)* is given as:
 
-$$
+```math
 \begin{align}
 &\sum_{k=0}^{N-1} PSD[k\Delta f] \Delta f =\\
 \mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{N}/{2}-1} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
 \mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f]\right]
 \end{align}
-$$
+```
+
+
 
 $PSD[0]$ represents the DC component and is ignored in the spectral analysis for the most(but not all) time.
 
@@ -536,41 +564,60 @@ else:
 
 According to the lineairty of $$\mathcal{F}$$, $$X[k]$$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
 
-$$
+```math
 \begin{align}
 |X[k]| = \frac{1}{2}A_k \cdot f_s \cdot T 
 \end{align}
-$$
+```
+
+
+
 1/2 in this equation arises from the fact that $$\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$$.
 
 ### More Properties of Fourier Transform
 
 A super powerful property of Fourier transform is that:
-$$
+```math
 \mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
-$$
+```
+
+
+
 which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
-$$
+```math
 \begin{align}
 \frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
 &=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
 \end{align}
-$$
+```
+
+
+
 It can be denoted as 
-$$
+```math
 {{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
-$$
+```
+
+
+
 One can also extend this property to
-$$
+```math
 ({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
-$$
+```
+
+
+
 In plasma physics, the conventional way to express the electromagnetic field.
 
 It should be noted that this derivation property change a little bit for discrete Fourier transform:
-$$
-\frac{\Delta x(t)}{\Delta  t}=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
-$$
+
+```math
+\frac{\Delta x(t)}{\Delta  t}&=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
+&=\mathcal{F}^{-1}[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)]
+```
+
+
 
 
 
