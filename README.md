@@ -650,21 +650,21 @@ Still, the divide-and-conquer strategy fails when the signal length *N* consists
 
 
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
-$$
+```math
 \begin{align}
 N&=181=182-1=2^1\times\boxed{7^1\times13^1}-1\\
 N&=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
 \end{align}
-$$
+```
 In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.
 
 However, some prime numbers like: 
-$$
+```math
 \begin{align}
 N&=191=192-1=2^6\times3^1-1\\
 N&=199=200-1 = 2^3\times5^2-1
 \end{align}
-$$
+```
 can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.
 
 Modern implementation of the FFT algorithm, such as `pocketfft`, combines the above two methods (*Cooley–Tukey* and *Bluestein*). This *C++* package is used in both `numpy` and `scipy(1.4.0+)`  for their FFT implementation. Besides, `fftw`, which stands for the somewhat whimsical title of *"Fastest Fourier Transform in the West"*, is also very popular and used in the `fft/ifft` functions of *MATLAB*. Its *Python* implementation  can be found in the `pyfftw` package.
@@ -736,19 +736,19 @@ Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a si
 #### Definition
 
 The SNR is defined as the ratio of the power of the signal to the power of the noise:
-$$
+```math
 \mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
-$$
+```
 where $P_{\text{signal}}$ is the average power of the signal, and $P_{\text{noise}}$ is the average power of the noise.
 
 Since this ratio can span several orders of magnitude, it is often expressed in **decibels (dB)**:
-$$
+```math
 \mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
-$$
+```
 For amplitude-based SNR (when measuring signal and noise in terms of root-mean-square (RMS) amplitude), the formula becomes:
-$$
+```math
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
-$$
+```
 
 #### Interpretation
 
@@ -812,13 +812,13 @@ Besides these two methods, one can also get colored noise by filtering white noi
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
 
 The Fourier coefficient computed as 
-$$
+```math
 \begin{align}
 
 X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
 
 \end{align}
-$$
+```
 can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n]$ are independent identically distributed (*i.i.d*) random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary parts, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires that he real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
 
 
@@ -863,11 +863,11 @@ For each segement, you can also chose the window function to reduce the spectral
 
 One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
 
-$$
+```math
 \begin{align}
 PDF(x; \alpha, \lambda)=\frac{\lambda^\alpha}{\Gamma(\alpha)} x ^{\alpha - 1} e^{-\lambda x}
 \end{align}
-$$
+```
 
 The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
 
@@ -907,29 +907,29 @@ Apart from splitting the signal into several segments, one can also downsample t
 ### Signal Over Noise
 
 A signal composed of a deterministic sinusoidal component and additive noise can be written as:
-$$
+```math
 x(t) = s(t) + n(t)
-$$
+```
 The Fourier coefficient at frequency $f$ is:
-$$
+```math
 \tilde{X}(f) = \tilde{S}(f) + \tilde{N}(f)
-$$
+```
 where $\tilde{S}(f)$ is the deterministic signal component (a fixed complex number), and $\tilde{N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
-$$
+```math
 \tilde{N}(f) \sim \mathcal{CN}(0, \sigma_n^2)
-$$
+```
 That is, $\tilde{X}(f)$ is a complex Gaussian random variable:
-$$
+```math
 \tilde{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = \tilde{S}(f)
-$$
+```
 The power spectrum estimate is:
-$$
+```math
 \hat{S}_x(f) = |\tilde{X}(f)|^2
-$$
+```
 Since $|\tilde{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
-$$
+```math
 \hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
-$$
+```
 In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
 <p align = 'center'>
@@ -947,18 +947,18 @@ The basic idea of the Lomb-Scargle periodogram is to fit the observed time serie
 
 Minimize the residual sum of squares:
 
-$$
+```math
 \chi^2(A,B) = \sum_{n=1}^N \bigl[x_n - \bar x - A\cos(\omega t_n) - B\sin(\omega t_n)\bigr]^2.
-$$
+```
 Setting $\partial\chi^2/\partial A = \partial\chi^2/\partial B = 0$ yields the normal equations:
 
-$$
+```math
 \begin{pmatrix} \sum\cos^2(\omega t_n) & \sum\cos(\omega t_n)\,\sin(\omega t_n)\\[0.5em] \sum\cos(\omega t_n)\,\sin(\omega t_n) & \sum\sin^2(\omega t_n) \end{pmatrix} \begin{pmatrix}A\\ B\end{pmatrix} = \begin{pmatrix} \sum (x_n-\bar x)\cos(\omega t_n)\\[0.25em] \sum (x_n-\bar x)\sin(\omega t_n) \end{pmatrix}.
-$$
+```
 
 
 Define
-$$
+```math
 \begin{align}
 C &= \sum\cos^2(\omega t_n)\\
 S &= \sum\sin^2(\omega t_n)\\
@@ -966,12 +966,12 @@ D &= \sum\cos(\omega t_n)\sin(\omega t_n)\\
 X_c &= \sum(x_n-\bar x)\cos(\omega t_n)\\
 X_s &= \sum(x_n-\bar x)\sin(\omega t_n)
 \end{align}
-$$
+```
 Then
 
-$$
+```math
 A = \frac{X_c\,S - X_s\,D}{C\,S - D^2},  \quad B = \frac{X_s\,C - X_c\,D}{C\,S - D^2}.
-$$
+```
 
 
 $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
@@ -1004,29 +1004,29 @@ Compare with the original frequency spectrum, the Lomb-Scargle periodogram conta
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
-$$
+```math
 \begin{align}
 {R_{XY}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{Y(t + \tau)} \right]
 \end{align}
-$$
+```
 
 where the overline represents the complex conjugate operation when $$X$$ and $$Y$$ are complex signal. Specifically, the correlation function between $$X$$ and itself is called autocorrelation function:
 
-$$
+```math
 \begin{align}
 {R_{XX}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{X(t + \tau)} \right]
 \end{align}
-$$
+```
 If $$X$$ is a wide-sense stationary signal, then $${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$$ for arbitrary $$t_1, t_2,$$ and $$\tau$$. Thus, the autocorrelation function can be written as a single-variate function $$R_{XX}(\tau)=R_{XX}(t, t + \tau)$$.
 
 ### Wiener–Khinchin theorem
 For a wide-sense stationary signal, its power spectral density is equal to the the fourier transform of its autocorrelation function, i.e.,:
 
-$$
+```math
 \begin{align}
 PSD(f)=\int_{-\infty}^{\infty}R_{XX}(\tau) e^{-2\pi i f \tau} \mathrm{d} \tau
 \end{align}
-$$
+```
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contraposition claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
 
 ### Hilbert Transform [*scipy.signal.hilbert*]
@@ -1055,18 +1055,18 @@ Digital filters are fundamental tools for shaping, extracting, or suppressing sp
 Digital filters are divided into two main types:
 
 - **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.  A general FIR digital filter is implemented as:
-  $$
+  ```math
   y[n] = \sum_{k=0}^{M} h[k]\, x[n-k]
-  $$
+  ```
 
   - $x[n], y[n]$: Input, Output signal
   - $h[k]$: Filter coefficients (impulse response), length $M+1$
   - $M$: Filter order
 
 - **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion:
-  $$
+  ```math
   y[n] = \sum_{k=0}^{M} b[k]\, x[n-k] - \sum_{l=1}^{N} a[l]\, y[n-l]
-  $$
+  ```
 
   - $b[k]$: Feedforward (input) coefficients
   - $a[l]$: Feedback (output) coefficients, usually $a[0] = 1$
@@ -1075,13 +1075,13 @@ Digital filters are divided into two main types:
 #### Example: Moving Average
 
 The **moving average filter** is actually a simple FIR filter. For a window length $L$, the coefficients are:
-$$
+```math
 h[k] = \frac{1}{L},\quad k = 0, 1, \ldots, L-1
-$$
+```
 So the output is:
-$$
+```math
 y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
-$$
+```
 That is, the output is the **average of the most recent $L$ input samples**. **Therefore, the moving average filter is an FIR filter whose coefficients are all equal.**
 
 #### Example: Low-pass FIR Filtering
@@ -1195,9 +1195,9 @@ sig_interpolated = scipy.signal.resample(sig, t_interp.size)
 ##### 6. Sinc Interpolation
 
 **Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
-$$
+```math
 x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - nT_s}{T_s}\right)
-$$
+```
 where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = \frac{\sin(\pi x)}{\pi x}$.
 
 - **Perfect for band-limited, uniformly sampled signals** (theoretical limit).
@@ -1348,7 +1348,7 @@ The central ideas of these two methods are:
 #### Mathematical Formulation
 
 1. **Collect & demean** the data matrix
-   $$
+   ```math
    \mathbf{X}
    = \begin{bmatrix}
      x_1 & x_2 & \dots & x_N \\
@@ -1357,19 +1357,19 @@ The central ideas of these two methods are:
    \end{bmatrix},
    \qquad
    \tilde{\mathbf{X}} = \mathbf{X} - \langle\mathbf{X}\rangle
-   $$
+   ```
 
 2. **Form the covariance (spectral) matrix**
-   $$
+   ```math
      \mathbf{C} \;=\; \frac{1}{N-1}\,\tilde{\mathbf{X}}\tilde{\mathbf{X}}^\mathsf{T}
-   $$
+   ```
 
 3. **Solve the eigenproblem**
-   $$
+   ```math
      \mathbf{C}\,\mathbf{e}_i \;=\; \lambda_i\,\mathbf{e}_i,
      \quad
      \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
-   $$
+   ```
 
 4. **Interpretation**
 
@@ -1406,9 +1406,9 @@ eigenvectors = pca.components_
 ### Spectral Matrix
 
 A ***spectral matrix*** can be defined as 
-$$
+```math
 \hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
-$$
+```
 
 for a time series decomposed with both signal and noise, its Fourier coefficients follow the ***non-central chi-square distribution***, as introduced in the previous section. Taking a moving-average in the time or frequency domain helps improving the SNR as we did in the Welch method. 
 
@@ -1432,7 +1432,7 @@ To be honest, I feel very hard to understand what does *coherent/coherence* mean
 ### Combination with Maxwell's Equations: SVD Wave Analysis
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
-$$
+```math
 \begin{align}
 \nabla \cdot \mathbf{E}(\mathbf{r},t) & = -\frac{\rho}{\varepsilon_0}\\
 
@@ -1443,9 +1443,9 @@ $$
 \nabla \times \mathbf{B}(\mathbf{r},t) & = \mu_0 \mathbf{J}(\mathbf{r},t)+\mu_0\varepsilon_0 \frac{\partial\mathbf{E}(\mathbf{r},t)}{\partial t}
 
 \end{align}
-$$
+```
 As the electromagnetic field $\mathbf{E(r},t)$ and $\mathbf{B(r}, t)$ are square-integrable, Maxwell's equations can be naturally transformed into the $(\mathbf{k},\omega)$-space with the basic replacement from $\nabla \leftrightarrow i\mathbf{k}$ and $\partial/\partial t\leftrightarrow -i\omega$:
-$$
+```math
 \begin{align}
 i \mathbf{k\cdot \hat{E}(k,\omega)}&=-\hat{\rho_e}/\varepsilon_0 \\
 i \mathbf{k\cdot \hat{B}(k,\omega)}&=0 \\
@@ -1453,31 +1453,29 @@ i \mathbf{k\times \hat{E}(k,\omega)}&=i\omega\mathbf{\hat{B}(k,\omega)} \\
 i \mathbf{k\times \hat{B}(k,\omega)}&=\mu_0 \mathbf{\hat{J}(k,\omega)} -\mu_0 \varepsilon_0 i\omega\mathbf{\hat{E}(k,\omega)} \\
 
 \end{align}
-$$
+```
 
 However, a single spacecraft measurement only allows you to observe a one-dimensional (time) signal at one position, i.e., the spacecraft position, which literally moves in the space. Thus, the signal can only be converted into the frequency space as $\mathbf{\hat{B}(\omega)}$. The second equation is the only parameter-free equation and states that the wave vector, $\mathbf{k}$ must be perpendicular to the magnetic field disturbance, $\mathbf{\hat{B}(\omega)}$. Obviously, $\mathbf{k=0}$ is a trivial, but not useful solution for satisfying the divergence-free theorem. By constraining the norm of $\mathbf{k}$ to be unity, $\boldsymbol{\kappa}\mathbf{:=k/}k$, a more meaningful solution comes out. When the real part, $\Re{\hat{\mathbf{B}}(\omega)}$ and imaginary part, $\Im{\hat{\mathbf{B}}(\omega)}$ of $\mathbf{\hat{B}(\omega)}$ are highly orthogonal, they can span a linear space whose normal vector is naturally $\boldsymbol{\kappa}$. 
-$$
+```math
 \boldsymbol{\kappa}=\frac{\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}}{|\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}|}
-$$
+```
 which perfectly satisfy that $\boldsymbol{\hat{\mathbf{B}}\cdot \kappa}=0$. 
 
 However,  this $\mathbf{\hat{B}}$-based, namely, coefficient-based estimation may be influenced by the noise's contribution and thus is not so practical. Inspired by the Welch method, a spectral-based estimation is preferred as the spectral density is easily denoised. The spectral-based estimation can be given by refining the original proposition:
-$$
-(\hat{\mathbf{B}}^*\hat{\mathbf{B}})\cdot \boldsymbol{\kappa}=0
-$$
+```math``$$
 
-$$
+```math
 \hat{S}_{ij}=\langle \hat{B}_i \hat{B}_j^* \rangle
-$$
+```
 
 which can still be met by the original solution. After averaging the spectral matrix in time and frequency domain, this equation can not be perfectly satisfied any more. Thus, we will look for a weaker solution in the sense of minimization:
-$$
+```math
 \begin{align}
 \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} & ||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\ \Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} \{&{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}} + \underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
 \end{align}
-$$
+```
 [McPherron et al. (1972)](https://doi.org/10.1007/BF00219165) and [Means (1972)](https://doi.org/10.1029/JA077i028p05551) adopts the real and imaginary part in the minimization optimization for the estimation of wave propagation direction, respectively. Both of these two optimization problem can be solved by eigenvalue decomposition. Then, [Santolík et al. (2003)](https://doi.org/10.1029/2000RS002523) combine both terms and construct an augmented matrix ${A}$:
-$$
+```math
 {A} =
 \begin{pmatrix}
 \Re S_{11} & \Re S_{12} & \Re S_{13} \\
@@ -1487,35 +1485,35 @@ $$
 \Im S_{12} & 0 & -\Im S_{23} \\
 \Im S_{13} & \Im S_{23} & 0 \\
 \end{pmatrix}
-$$
+```
 
 
 
 The optimization problem
-$$
+```math
 \min\limits_{\Vert\boldsymbol{\kappa}\Vert_2^2=1} ||{A\cdot \mathbf{k}}||_2^2
-$$
+```
 is directly solvable by applying a ***singular value decomposition(SVD)*** to matrix ${A}$
-$$
+```math
 {A}=U\cdot W\cdot V^T
-$$
+```
 where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
 
 - **<u>Compressibility</u>** describe the polarization 
 
-$$
+```math
 \begin{align}
 \mathrm{Compressibility}(f_k):=\frac{PSD(B_\parallel)}{\sum_i PSD(B_i)}
 \end{align}
-$$
+```
 
 
 
 - **<u>Planarity</u>** 
 
-$$
+```math
 F=1-\sqrt{W_{2}/W_{0}}
-$$
+```
 
 Without averaging the spectral matrix, the planarity $F(t,f)$ **<u>will be all one</u>**. It means that, when the observer only take one snapshot of the waves, it can not distinguish how does the waves propagate. After the averaging, the planarity actually describe that, **<u>whether the waves that observed at these time periods, frequencies share the common unitary wave vector.</u>**
 
@@ -1532,9 +1530,9 @@ ellipticity_along_k = s[:, :, 1] / s[:, :, 0]
 ```
 
 Similarly, based on the averaged spectral matrix, one may define the coherence (coherency) between different components:
-$$
+```math
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
-$$
+```
 <p align = 'center'>
 <img src="Figure/figure_coherency.png" alt="An example of DFT." width="60%"/>
 </p>
@@ -1549,13 +1547,13 @@ This section explores the synergy between spectral analysis and electromagnetic 
 Polarization analysis examines the orientation and ellipticity of oscillatory signals, especially electromagnetic or plasma waves. By decomposing the signal into orthogonal components and analyzing their relative amplitude and phase, we can characterize wave mode, propagation direction, and physical source. This section introduces key polarization parameters, their spectral estimation, and relevant Python implementations.
 
 Ellipticity can be defined as the ratio of the semi-major and semi-minor, which is estimated by:
-$$
+```math
 \epsilon=\frac{W_1}{W_0}
-$$
+```
 For a noisy signal, T and S 2019 propose an improved method with a estimation of the noise level based on the eigen decomposition. In this method, they noise level is inferred by decomposing the real part of the spectral density matrix and the maximum/intermediate eigenvalues of the complex spectral density represents the summation of wave power and noise power. Therefore, the improved ellipticity is derived:
-$$
+```math
 \epsilon^\prime=\sqrt{\frac{\lambda_{r1}-\lambda_1}{\lambda_{r0}-\lambda_1}}
-$$
+```
 This improved ellipticity performs better than the original one when SNR is low but the still randomly deviates from the ground true. Thus, a moving average in the time or frequency domain is still required as it promote the SNR. 
 
 ```python
@@ -1578,16 +1576,16 @@ ellipticity_along_k = np.sqrt((eigenvalues_r[:, :, 0] - eigenvalues[:, :, 0]) \
 #### Ellipticity along $\mathbf{B}$
 
 Both above two ellipticities are unsigned as the singular/eigen values are always non-negative. Another, but not alternative definition of the ellipticity, is the ratio of left-handed polarized signal power to the right-handed polarized power. This definition is signed and the the ellipse is defined in the plane that perpendicular to the background magnetic field:
-$$
+```math
 \epsilon_B=\frac{|\hat{B}_L|^2-|\hat{B}_R|^2}{|\hat{B}_L|^2+|\hat{B}_R|^2}
-$$
+```
 with $B_L$ and $B_R$ defines below:
-$$
+```math
 \begin{align}
 B_L = \frac{1}{\sqrt{2}}(B_{\perp1}+iB_{\perp2})\\
 B_R = \frac{1}{\sqrt{2}}(B_{\perp1}-iB_{\perp2})
 \end{align}
-$$
+```
 with $\mathbf{e_{\perp1}}$, $\mathbf{e_{\perp2}}$, and $\mathbf{e_\parallel }$ constitute a right-hand system, i.e., $\mathbf{e_{\perp1}\times e_{\perp2}=e_\parallel}$.
 
 It is also important as it may unveils the wave excitation mechanism (e.g., wave-particle resonance). This definition is totally irrelevant with the determination of the wave vector direction. Instead, field-aligned coordinates is required for its derivation.
@@ -1638,9 +1636,9 @@ ellipticity_along_b = (np.abs(coef_rh) - np.abs(coef_lh)) / (np.abs(coef_rh) + n
 The **degree of polarization** quantifies the proportion of an electromagnetic fluctuation (such as a plasma wave) that is organized, or polarized, as opposed to random or unpolarized (noise-like) components. It is a fundamental parameter in space plasma physics, characterizing the coherence of observed wave signals.
 
 The degree of polarization is defined as the fraction of the total wave power that is associated with a perfectly polarized (coherent) component. It is mathematically expressed as:
-$$
+```math
 D_p = \frac{\text{Power of the Polarized Component}}{\text{Total Power}}
-$$
+```
 
 - $D_p = 1$: the signal is completely polarized.
 - $0 < D_p < 1$: the signal is partially polarized.
@@ -1651,9 +1649,9 @@ A high degree of polarization indicates that the observed fluctuations are domin
 In three-dimensional wave analysis, the **degree of polarization** quantifies how much of the measured signal is concentrated along a single, well-defined direction, versus being randomly distributed among all directions.
 
 The 3D eigenvalue-based degree of polarization is defined as:
-$$
+```math
 D_{p,3D} = \frac{\lambda_1 - \lambda_2}{\lambda_1 + \lambda_2 + \lambda_3}
-$$
+```
 where $\lambda_1 \geq \lambda_2 \geq \lambda_3$ are the eigenvalues of the (power or spectral) matrix constructed from the three orthogonal components of the wave field.
 
 This definition is coordinate-invariant and widely used in space plasma physics to characterize the coherence and organization of wave signals in planetary magnetospheres and the solar wind. It is particularly powerful for distinguishing true wave modes from background turbulence or noise.
