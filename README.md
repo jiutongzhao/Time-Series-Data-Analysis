@@ -418,8 +418,8 @@ In the end, we show the complete data processing diagram for ***windowed Fourier
 ```mermaid
 graph LR
 
-A(["$$x[n]$$"]) -->|Window 
-Function|B@{ shape: rect, label: "$$x_W[n]$$" }
+A(["*x[n]*"]) -->|Window 
+Function|B@{ shape: rect, label: "x_windowed[n]" }
 
 A-->|Zero
 Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
