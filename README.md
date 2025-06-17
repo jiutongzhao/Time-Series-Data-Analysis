@@ -18,7 +18,9 @@ Yet, a few determined souls persist—spending days gathering materials, watchin
 
 ### Signals and Time Series
 
-In physics and engineering, we frequently encounter **signals**—mathematical functions representing physical quantities that vary continuously or discretely over time. A signal can be any measurable quantity exhibiting temporal variation, such as an audio waveform, the voltage output from a sensor, or the magnetic field recorded during a plasma experiment. When signals are observed, sampled, and recorded sequentially, they form a **time series**, capturing how these quantities evolve. Many familiar phenomena can naturally be described as time series, including:
+In physics and engineering, we frequently encounter **signals**—mathematical functions representing physical quantities that vary continuously or discretely over time. A signal can be any measurable quantity exhibiting temporal variation, such as an audio waveform, the voltage output from a sensor, or the magnetic field recorded during a plasma experiment. When signals are observed, sampled, and recorded sequentially, they form a **time series**, capturing how these quantities evolve.
+
+Many familiar phenomena can naturally be described as time series, including:
 
 - **Meteorology:** e.g. El-Nino ENSO Index
 
@@ -680,6 +682,51 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 3. https://dsp.stackexchange.com/questions/24375/fastest-implementation-of-fft-in-c
 4. https://www.fftw.org/
 
+### What Is Power Spectral Density?
+
+For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
+$$
+R_x(\tau) = \mathbb{E}[x(t)\,x(t + \tau)]
+$$
+The **power spectral density** is defined as the **Fourier transform** of the autocorrelation function:
+$$
+S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
+$$
+This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components.
+
+### Why Stationarity Is Essential
+
+Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two independent time variables rather than just the lag $\tau$. In such cases, the Fourier transform of the autocorrelation no longer represents a meaningful or consistent frequency-domain power measure.
+
+> **Therefore, only stationary processes have a well-defined power spectral density, and only then can the spectrum be interpreted as the distribution of power over frequency.**
+
+This condition separates **deterministic Fourier transforms** (which apply to individual signals) from **statistical spectral analysis** (which applies to ensembles of signals or realizations of random processes).
+
+### Contrast: Deterministic vs Statistical Fourier Analysis
+
+| Aspect                 | Deterministic Signal       | Random Process (WSS)                  |
+| ---------------------- | -------------------------- | ------------------------------------- |
+| Assumes randomness?    | ❌ No                       | ✅ Yes                                 |
+| Fourier Transform (FT) | Always defined             | Requires WSS for PSD                  |
+| Purpose                | Frequency decomposition    | Power distribution estimation         |
+| Output                 | Complex amplitude spectrum | Power spectral density (non-negative) |
+| Requires stationarity? | ❌ Not required             | ✅ Required for meaningful PSD         |
+
+
+
+### What If the Signal Is Not Stationary?
+
+For nonstationary signals, the PSD is ill-defined or misleading. In such cases, time-frequency analysis techniques such as:
+
+- **Short-Time Fourier Transform (STFT)**: analyzes local frequency content assuming approximate stationarity within short windows;
+- **Wavelet Transform**: offers multi-scale, adaptive analysis of transient and time-varying features;
+
+can be used to track how the spectrum evolves over time, even though no stationary PSD exists.
+
+### Summary
+
+Power spectral density is only meaningful for wide-sense stationary processes, where it provides a frequency-domain representation of signal power. For nonstationary signals, other tools such as STFT or wavelets must be used, as the classical notion of "power at a given frequency" no longer applies.
+
 
 
 ### Sliding Window
@@ -721,7 +768,9 @@ std = bn.move_std(sig, window=3, min_count=1)
 
 ### What is Noise?
 
-Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty).
+Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty). 
+
+When the underlying process is **stochastic**—that is, governed by probabilistic rules—each individual time series obtained through measurement is called a **realization** (or sample path) of the underlying random process. While the random process describes the full ensemble of possible outcomes, a realization is a single, concrete instance that we analyze in practice.
 
 <p align = 'center'>
 <img src="Figure/figure_noise.png" alt="An example of DFT." width="60%"/>
@@ -734,8 +783,6 @@ The practice of naming kinds of noise after colors started with white noise, a s
 ### Signal-to-Noise Ratio and Decibel
 
 Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
-
-#### Definition
 
 The SNR is defined as the ratio of the power of the signal to the power of the noise:
 ```math
@@ -1152,49 +1199,63 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 
 #### Common Interpolation Methods
 
-##### 1. Nearest-Neighbor Interpolation
+##### 1. Nearest-Neighbor and Linear Interpolation
 
 Selects the value of the nearest known data point. Simple and fast, but produces a “blocky” or step-like signal.
 
 ```python
-nearest_interp = scipy.interpolate.interp1d(t, sig, kind = 'nearest', bounds_error = False)
+scipy.interpolate.interp1d(
+    x: array_like,           # 1D array of independent variable (e.g., time)
+    y: array_like,           # N-D array of dependent data values
+    kind: str = 'linear',    # 'linear', 'nearest', 'cubic', etc.
+    axis: int = -1,          
+    fill_value: Union[str, float, tuple] = 'extrapolate',
+    bounds_error: bool = False
+)
 ```
 
-##### 2. Linear Interpolation
-
-Connects data points with straight lines. Produces continuous, piecewise linear results; widely used for fast, low-artifact resampling.
-
-```python
-linear_interp = scipy.interpolate.interp1d(t, sig, bounds_error = False)
-```
-
-##### 3. Spline Interpolation
+##### 2. Spline Interpolation
 
 Fits smooth polynomial curves (usually cubic) through the data. Produces smooth and visually appealing results, but can introduce overshoot or ringing near sharp transitions.
 
 ```python
-cubic_interp = scipy.interpolate.CubicSpline(t, sig)
+scipy.interpolate.CubicSpline(
+    x: array_like,                      # 1D array of increasing x-values
+    y: array_like,                      # 1D or 2D array of values to interpolate
+    bc_type: Union[str, tuple] = 'not-a-knot',  # Boundary condition type
+    extrapolate: Union[bool, str] = True
+)
 ```
 
-##### 4. Akima Interpolation
+##### 3. Akima Interpolation
 
 Akima interpolation is a piecewise method based on fitting local polynomials between data points using adaptive slopes that depend on the trends of neighboring intervals. Unlike cubic splines, it does not enforce global smoothness but instead focuses on avoiding oscillations and overshoots near sharp transitions. This makes Akima interpolation particularly effective for datasets with non-uniform behavior or outliers, where traditional spline methods may produce unwanted ringing. It maintains a good balance between smoothness and stability and is especially useful in applications requiring visually reliable curve fitting without excessive global influence.
 
 Assumes that the data is periodic and uniformly sampled. The signal is extended using its discrete Fourier transform (DFT), and interpolation is performed in the frequency domain by zero-padding and inverse transforming. Fourier interpolation is ideal for band-limited signals and preserves the frequency content, but it may introduce artifacts if the periodicity assumption is violated.
 
 ```python
-akima_interp = scipy.interpolate.Akima1DInterpolator(t, sig)
+scipy.interpolate.Akima1DInterpolator(
+    x: array_like,       # 1D array of x data
+    y: array_like        # 1D array of y data
+)
 ```
 
-##### 5. Fourier Interpolation
+##### 4. Fourier Interpolation
 
 Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
 
 ```pyt
-sig_interpolated = scipy.signal.resample(sig, t_interp.size)
+scipy.signal.resample(
+    x: array_like,           # Input 1D array (signal)
+    num: int,                # Number of samples in output
+    t: Optional[array_like] = None,   # Original time vector (optional)
+    axis: int = 0,
+    window: Union[str, tuple, array_like, callable] = None,
+    domain: str = 'time'     # 'time' or 'freq'
+)
 ```
 
-##### 6. Sinc Interpolation
+##### 5. Sinc Interpolation
 
 **Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
 ```math
