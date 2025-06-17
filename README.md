@@ -133,7 +133,7 @@ This effect always happens when you (down-)sampling the signal, a common way to 
 
 ------
 
-### Built-in Waveform Functions in `scipy.signal`
+### Common Waveforms
 
 In addition to sine waves, there are some other commonly used waveforms built-in functions that are provided by `scipy.signal` module. These functions can be used to generate various types of signals for testing, simulation, and analysis purposes. Below is a brief overview of some typical waveforms:
 
@@ -986,7 +986,7 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 </p>
 
 
-## Faulty  Sample
+## Faulty Sample
 
 ### Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
@@ -1154,6 +1154,12 @@ filtered_signal = lfilter(fir_coeff, 1.0, raw_signal)
 
 For IIR filters (such as Butterworth, Chebyshev), the `scipy.signal.butter` function is commonly used. **Note:** Filtering can introduce edge effects—always inspect the beginning and end of the filtered signal.
 
+<p align = 'center'>
+<img src="Figure/figure_filters.png" width="60%"/>
+</p>
+
+
+
 #### Frequency Response and Interpretation
 
 The effect of a digital filter can be fully characterized by its *frequency response*, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
@@ -1170,12 +1176,11 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 
 
 <p align = 'center'>
-<img src="Figure/figure_filters.png" width="60%"/>
-</p>
-
-<p align = 'center'>
 <img src="Figure/figure_filters_response.png" width="60%"/>
 </p>
+
+It is not suggested to apply a filter with an over-narrow bandwidth unless you are already confident about the central frequency and waveform of the signal. Like, if you apply a 5-Butterworth 6-10 Hz bandpass filter to a pure white noise, you are going to get a filtered signal that looks like a sine wave with a frequency around 8 Hz. Thus, you are introducing artificial waves into the signal.
+
 <p align = 'center'>
 <img src="Figure/figure_filtered_noise.png" width="60%"/>
 </p>
@@ -1486,7 +1491,61 @@ spec_avg = bn.move_mean(spec_avg, window=freq_window, min_count=1, axis=0)
 
 ### Coherence
 
-Coherence measures the degree of linear correlation between two signals at each frequency, serving as a frequency-resolved analog of correlation coefficient. High coherence indicates a strong, consistent relationship, which is crucial for studies of wave propagation, coupled systems, and causality analysis. Here, we explain how to calculate and interpret coherence with Python tools.
+Coherence (or coherency in some literature) measures the degree of linear correlation between two signals at each frequency, serving as a frequency-resolved analog of the correlation coefficient. High coherence indicates a strong, consistent relationship, which is crucial for studies of wave propagation, coupled systems, and causality analysis. 
+
+The mathematical definition of coherence is the ratio of the cross-spectral density to the product of the individual power spectral densities:
+```math
+C_{XY}(f) = \frac{|\hat{S}_{XY}(f)|^2}{\hat{S}_{XX}(f) \hat{S}_{YY}(f)}
+```
+
+where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $X$ and $Y$, and $\hat{S}_{XX}(f)$, $\hat{S}_{YY}(f)$ are the power spectral densities of $X$ and $Y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
+
+```python
+scipy.signal.coherence(x, y, fs=1.0, window='hann', nperseg=None, noverlap=None, nfft=None, detrend='constant', axis=-1)
+```
+#### **Parameters**
+
+
+- **`x, y`**: Input signals (1D or 2D arrays). These are the signals for which coherence is calculated.
+- **`fs`**: Sampling frequency of the signals. Default is `1.0`.
+- **`window`**: Desired window function to apply to each segment. Default is `'hann'`.
+- **`nperseg`**: Length of each segment for the FFT. If `None`, defaults to 256.
+- **`noverlap`**: Number of points to overlap between segments. If `None`, defaults to `nperseg // 2`.
+- **`nfft`**: Number of FFT points. If `None`, defaults to `nperseg`.
+- **`detrend`**: Specifies how to detrend each segment. Default is `'constant'`.
+- **`axis`**: Axis along which the coherence is computed. Default is `-1`.
+
+#### **Returns**
+
+- **`f`**: Array of sample frequencies.
+- **`Cxy`**: Magnitude-squared coherence values, ranging from 0 (no correlation) to 1 (perfect correlation).
+
+
+
+</details>
+
+
+
+
+#### **Parameters**
+
+- **`x, y`**: Input signals (1D or 2D arrays). These are the signals for which coherence is calculated.
+- **`fs`**: Sampling frequency of the signals. Default is `1.0`.
+- **`window`**: Desired window function to apply to each segment. Default is `'hann'`.
+- **`nperseg`**: Length of each segment for the FFT. If `None`, defaults to 256.
+- **`noverlap`**: Number of points to overlap between segments. If `None`, defaults to `nperseg // 2`.
+- **`nfft`**: Number of FFT points. If `None`, defaults to `nperseg`.
+- **`detrend`**: Specifies how to detrend each segment. Default is `'constant'`.
+- **`axis`**: Axis along which the coherence is computed. Default is `-1`.
+
+#### **Returns**
+
+- **`f`**: Array of sample frequencies.
+- **`Cxy`**: Magnitude-squared coherence values, ranging from 0 (no correlation) to 1 (perfect correlation).
+
+</details>
+
+
 
 To be honest, I feel very hard to understand what does *coherent/coherence* means in many of the magnetospheric ULF/VLF waves investigations. It can be easily understood the coherence between two individual light or signal. However, in the *in-situ* observation, the spacecraft can only measure one signal without further distinguishment or separation. In some literature, the coherence between $E_x$ and $B_y$ are used to measure whether the observed VLF waves are coherent. These VLF waves always propagate along the geomagnetic field line, which point to the north near the magnetic equator. It makes some sense as a high coherence suggests the waves have a stable wave vector during this interval. But, it is still hard to expect the occurrence of interference as both $E_x$ and $B_y$ may just be the presence of one single wave. While, some other literatures use the coherence between the magnetic field components to 
 
