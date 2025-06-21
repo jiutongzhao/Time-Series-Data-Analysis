@@ -727,6 +727,8 @@ can be used to track how the spectrum evolves over time, even though no stationa
 
 Power spectral density is only meaningful for wide-sense stationary processes, where it provides a frequency-domain representation of signal power. For nonstationary signals, other tools such as STFT or wavelets must be used, as the classical notion of "power at a given frequency" no longer applies.
 
+### Polynomial Trend as Seen by DFT
+
 
 
 ### Sliding Window
@@ -1249,7 +1251,7 @@ scipy.interpolate.Akima1DInterpolator(
 
 Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
 
-```pyt
+```python
 scipy.signal.resample(
     x: array_like,           # Input 1D array (signal)
     num: int,                # Number of samples in output
@@ -1433,12 +1435,13 @@ The central ideas of these two methods are:
    ```
 
 3. **Solve the eigenproblem**
+   
    ```math
      \mathbf{C}\,\mathbf{e}_i \;=\; \lambda_i\,\mathbf{e}_i,
      \quad
      \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
    ```
-
+   
 4. **Interpretation**
 
    - **PCA**: Project the data onto the top *k* eigenvectors $\{\mathbf{e}_1,\dots,\mathbf{e}_k\}$ for dimensionality reduction.
@@ -1503,26 +1506,7 @@ where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $X$ and $Y
 ```python
 scipy.signal.coherence(x, y, fs=1.0, window='hann', nperseg=None, noverlap=None, nfft=None, detrend='constant', axis=-1)
 ```
-#### **Parameters**
 
-
-- **`x, y`**: Input signals (1D or 2D arrays). These are the signals for which coherence is calculated.
-- **`fs`**: Sampling frequency of the signals. Default is `1.0`.
-- **`window`**: Desired window function to apply to each segment. Default is `'hann'`.
-- **`nperseg`**: Length of each segment for the FFT. If `None`, defaults to 256.
-- **`noverlap`**: Number of points to overlap between segments. If `None`, defaults to `nperseg // 2`.
-- **`nfft`**: Number of FFT points. If `None`, defaults to `nperseg`.
-- **`detrend`**: Specifies how to detrend each segment. Default is `'constant'`.
-- **`axis`**: Axis along which the coherence is computed. Default is `-1`.
-
-#### **Returns**
-
-- **`f`**: Array of sample frequencies.
-- **`Cxy`**: Magnitude-squared coherence values, ranging from 0 (no correlation) to 1 (perfect correlation).
-
-
-
-</details>
 
 
 
