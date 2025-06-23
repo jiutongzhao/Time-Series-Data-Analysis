@@ -14,6 +14,8 @@ At this juncture, most students pragmatically pivot to google *"Fourier Analysis
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
 
+<div STYLE="page-break-after: always;"></div>
+
 ## Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
@@ -60,13 +62,10 @@ Spectral analysis helps to:
 
 ### Sampling
 
-> **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
->
-> ```math
-> f_s \ge 2f_{max}
-> ```
->
-> 
+> **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
+$$
+f_s \ge 2f_{max}
+$$
 
 The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
 
@@ -103,7 +102,7 @@ This effect always happens when you (down-)sampling the signal, a common way to 
   
   ```
 
-  - Tips: Set `endpoint = False` so that the last point is not included in the time array, which ensures that the sampling frequency is equal to $$f_s$$.
+  - Tips: Set `endpoint = False` so that the last point is not included in the time array, which ensures that the sampling frequency is equal to $f_s$.
 
 - **Generate the Signal**
 
@@ -222,58 +221,56 @@ scipy.signal.unit_impulse(
 
 > Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
 >
-> ```math
-> X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
-> ```
+$$
+X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
+$$
 >
 > 
 >
 > Correspondingly, the inverse (continuous) Fourier transform can be given as:
-> ```math
-> \begin{align}
-> x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
-> \end{align}
-> ```
->
-> 
+$$
+\begin{align}
+x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+\end{align}
+$$
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
-```math
+$$
 \begin{align}
 X(f)=\sum_{n=-\infty}^{+\infty} x[n \Delta t]\cdot e^{-i2\pi f (n\Delta t)}
 \end{align}
-```
+$$
 
 where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
-```math
+$$
 \begin{align}
 X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
 & = \sum_{n=0}^N x[n] e^{-2\pi i k\Delta f t} \, \Delta  t
 \end{align}
-```
+$$
 
 
 
-Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
+Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
 
-```math
+$$
 \begin{align}
 X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
 & \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t
 \end{align}
-```
+$$
 
 
 
 It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
 
-```math
+$$
 \begin{align}
 X(f) &= \int_{-\infty}^{+\infty} x(t)\cdot e^{-i2\pi ft} \mathrm{d}t\\
 X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi fn}\\
 X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i kn}
 \end{align}
-```
+$$
 
 
 
@@ -346,12 +343,12 @@ This artificial discontinuity introduces **spectral leakage**, causing energy fr
 Typically, the wave function is a bell-shaped function with all non-negative values. Different window functions (e.g., rectangular, Hamming, Hanning, Blackman) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). Choosing the appropriate window is essential for ensuring accurate and interpretable spectral results.
 
 Here after, we are going to give an example of window function, the Hanning window, which is written as:
-```math
+$$
 \begin{align}
 w(x)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi x)\right]\\
 w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 \end{align}
-```
+$$
 
 It can be implemented in `numpy` as follow:
 
@@ -363,11 +360,11 @@ sig *= np.hanning(sig.size)
 However, applying a window modifies the signal’s amplitude and energy characteristics. This can introduce ambiguity when interpreting the resulting spectrum or comparing analyses across different window shapes. To ensure physical and quantitative consistency, **normalization** of the window function is often necessary. **Amplitude normalization** ensures that the peak value of the window is one, preserving the local signal scale. **Power normalization** adjusts the window so that the total energy of the signal—defined as the sum of squared values—remains unchanged after windowing. The amplitude and power normalization is also named <u>**$L_1$ and $L_2$ normalization**</u> as the amplitude and power can is proportional to the $L_1$ and $L_2$ norm of the signal, respectively. The choice of normalization method depends on the analytical goals, and plays a crucial role in ensuring accurate and meaningful spectral results.
 
 The Hanning window has an average amplitude of $1/2=\int_0^1 w(x)\mathrm{d}x$ and an average power of 
-```math
+$$
 \begin{align}
 \int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
 \end{align}
-```
+$$
 
 A more quantitative estimation of the signal amplitude or power can be given by using a normalized window function.
 
@@ -417,15 +414,15 @@ A(["*x[n]*"]) -->|Window
 Function|B@{ shape: rect, label: "x_windowed[n]" }
 
 A-->|Zero
-Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
+Padding|C@{shape:rect, label: "$x_{ZP}[n]$"}
 
 C -->|Window
 Function|B
 
 B -->|Fourier
-Transform|D@{shape: rect, label: "$$X[k]$$"}
+Transform|D@{shape: rect, label: "$X[k]$"}
 
-D -->H["$$P[k]:=|X[k]|^2$$"]
+D -->H["$P[k]:=|X[k]|^2$"]
 
 D --> E(Window
 Compensation)
@@ -433,13 +430,13 @@ Compensation)
 E --> F(Single-Side
 Compensation)
 
-F --> G@{ shape: lean-r, label: "$$X[k]$$"}
+F --> G@{ shape: lean-r, label: "$X[k]$"}
 
 
 H --> E(Window
 Compensation)
 
-F --> K@{ shape: lean-r, label: "$$psd[k]$$"}
+F --> K@{ shape: lean-r, label: "$psd[k]$"}
 
 ```
 
@@ -463,6 +460,8 @@ n_padding = 29
 coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
+
+<div STYLE="page-break-after: always;"></div>
 
 ## What Else Should You Know About the DFT and FFT?
 
@@ -491,58 +490,58 @@ In
 ### Parseval's Theorem and Energy Conservation
 
 > **Parseval's Theorem for CFT:**
-> ```math
+> $$
 > \begin{align}
 > \int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
 > \end{align}
-> ```
+> $$
 >
 > 
 >
 > **for DFT:**
-> ```math
+> $$
 > \sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
-> ```
+> $$
 >
 > 
 
-In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is proportional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
+In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($u$) written as 
 
-```math
+$$
 u=u_E + u_B=\frac{1}{2}(\varepsilon_0 \mathit{E}^2 + \frac{1}{\mu_0}\mathit{B}^2)
-```
+$$
 
 
 
 In this case, the ***energy*** of the signal naturally linked with the ***energy*** of the electromagnetic field. Nevertheless, the energy of a signal is an extensive property as it linearly increases with the length of the sample. In the ordinary investigation, the signal energy is always further converted as signal ***power***, which is an intensive property that describe the amplitude and is independent of signal length. The defition of power, *P*, can be written as:
 
-```math
+$$
 P&= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t\\
-```
+$$
 
 
 
 or 
-```math
+$$
 \begin{align}
 P&=\frac{1}{N\Delta t}\sum_{n=0}^{N-1}|x(n\Delta t)|^2 \Delta t\\
 &=\frac{1}{N^2\Delta f}\sum_{k=0}^{N-1}|X(k\Delta f)|^2 \Delta f \\
 &=\sum_{k=0}^{N-1} \boxed{\frac{1}{Nf_s} |X(k\Delta f)|^2}\, \Delta f\\
 &=\sum_{k=0}^{N-1}PSD[k]\Delta f
 \end{align}
-```
+$$
 
 
 
 for DFT. Considering that DFT yields both positive and negative frequency, we typically fold the DFT result. Naturally, the definition of *power spectral density (PSD)* is given as:
 
-```math
+$$
 \begin{align}
 &\sum_{k=0}^{N-1} PSD[k\Delta f] \Delta f =\\
 \mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{N}/{2}-1} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
 \mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f]\right]
 \end{align}
-```
+$$
 
 
 
@@ -559,49 +558,49 @@ else:
     psd[1:] *= 2
 ```
 
-According to the lineairty of $$\mathcal{F}$$, $$X[k]$$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
+According to the lineairty of $\mathcal{F}$, $X[k]$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
 
-```math
+$$
 \begin{align}
 |X[k]| = \frac{1}{2}A_k \cdot f_s \cdot T 
 \end{align}
-```
+$$
 
 
 
-1/2 in this equation arises from the fact that $$\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$$.
+1/2 in this equation arises from the fact that $\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$.
 
 ### More Properties of Fourier Transform
 
 A super powerful property of Fourier transform is that:
-```math
+$$
 \mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
-```
+$$
 
 
 
 which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
-```math
+$$
 \begin{align}
 \frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
 &=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
 \end{align}
-```
+$$
 
 
 
 It can be denoted as 
-```math
+$$
 {{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
-```
+$$
 
 
 
 One can also extend this property to
-```math
+$$
 ({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
-```
+$$
 
 
 
@@ -609,10 +608,10 @@ In plasma physics, the conventional way to express the electromagnetic field.
 
 It should be noted that this derivation property change a little bit for discrete Fourier transform:
 
-```math
+$$
 \frac{\Delta x(t)}{\Delta  t}&=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)]
-```
+$$
 
 
 
@@ -647,21 +646,21 @@ Still, the divide-and-conquer strategy fails when the signal length *N* consists
 
 
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
-```math
+$$
 \begin{align}
 N&=181=182-1=2^1\times\boxed{7^1\times13^1}-1\\
 N&=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
 \end{align}
-```
+$$
 In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.
 
 However, some prime numbers like: 
-```math
+$$
 \begin{align}
 N&=191=192-1=2^6\times3^1-1\\
 N&=199=200-1 = 2^3\times5^2-1
 \end{align}
-```
+$$
 can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.
 
 Modern implementation of the FFT algorithm, such as `pocketfft`, combines the above two methods (*Cooley–Tukey* and *Bluestein*). This *C++* package is used in both `numpy` and `scipy(1.4.0+)`  for their FFT implementation. Besides, `fftw`, which stands for the somewhat whimsical title of *"Fastest Fourier Transform in the West"*, is also very popular and used in the `fft/ifft` functions of *MATLAB*. Its *Python* implementation  can be found in the `pyfftw` package.
@@ -678,13 +677,13 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 ### Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
-$$
+$
 R_x(\tau) = \mathbb{E}[x(t)\,x(t + \tau)]
-$$
+$
 The **power spectral density** is defined as the **Fourier transform** of the autocorrelation function:
-$$
+$
 S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
-$$
+$
 This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components. The relationship between PSD and the Fourier coefficients has been introduced in the previous section.
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
@@ -699,11 +698,11 @@ Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two indep
 
 This condition separates **deterministic Fourier transforms** (which apply to individual signals) from **statistical spectral analysis** (which applies to ensembles of signals or realizations of random processes).
 
-```math
+$$
 x(t) = A_1 \mathrm{sin}(\omega_1 t) + A_2 \mathrm{sin} \left (\omega_2t + \frac{1}{2}\beta t^2\right )
-```
+$$
 
-```math
+$$
 \begin{align}
 
 R_x(t_1, t_2) & = \mathbb{E}[{x(t_1)x(t_2)}]\\
@@ -711,13 +710,13 @@ R_x(t_1, t_2) & = \mathbb{E}[{x(t_1)x(t_2)}]\\
  & + A_0 A_1 \left\{ \mathbb{E}\left[\mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right ) + \mathrm{sin}(\omega_1 t_2)\mathrm{sin}\left(\omega_2 t_1 + \frac{1}{2}\beta t_1^2 \right ) \right] \right\}
 
 \end{align}
-```
+$$
 
 Assuming the window length $T\gt \tau=t_2-t_1\gg 1/f_0$, the square term can be converted to an univariate function of $\tau = t_2-t_1$ by product-to-sum identity. The cross terms can be treated in a similar way ***unless*** $\omega_1 \approx \omega_2+\beta t$, in which condition the 
 
-```math
+$$
 \mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right )=\frac{1}{2} \left[ \mathrm{cos}\left( \omega_1 t_1 -\omega_2 t_2-\frac{1}{2}\beta t_2^2 \right) - \mathrm{cos}\left( \omega_1 t_1 + \omega_2 t_2+\frac{1}{2}\beta t_2^2 \right) \right]
-```
+$$
 
 The second terms traverse the whole wave phase from $0$ to $2\pi$ therefore has a expectation of zero. As $\omega_1 t_1-\omega_2 t_2-\frac{1}{2}\beta t_2^2\approx \omega_1 (t_1-t_2) + \frac{1}{2}\beta t_2^2$, the first term can neither written as a function of $\tau$ nor converge to zero in the statistical sense. Thus, it is not wide-sense stationary. When $\omega_1$ is well separated with $\omega_2+\beta t$, the first term again traverse the whole wave phase and the signal return to wide-sense stationary. 
 
@@ -769,7 +768,7 @@ std = bn.move_std(sig, window=3, min_count=1)
 
 ```
 
-
+<div STYLE="page-break-after: always;"></div>
 
 ## How to Deal With Noise?
 
@@ -785,26 +784,26 @@ When the underlying process is **stochastic**—that is, governed by probabilist
 
 In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
 
-The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
+The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $1/f^\beta$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($\beta$ = 0), while flicker or pink noise has $\beta$ = 1, and Brownian noise has $\beta$ = 2. Blue noise has $\beta$ = -1.
 
 ### Signal-to-Noise Ratio and Decibel
 
 Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
 
 The SNR is defined as the ratio of the power of the signal to the power of the noise:
-```math
+$$
 \mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
-```
+$$
 where $P_{\text{signal}}$ is the average power of the signal, and $P_{\text{noise}}$ is the average power of the noise.
 
 Since this ratio can span several orders of magnitude, it is often expressed in **decibels (dB)**:
-```math
+$$
 \mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
-```
+$$
 For amplitude-based SNR (when measuring signal and noise in terms of root-mean-square (RMS) amplitude), the formula becomes:
-```math
+$$
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
-```
+$$
 
 #### Interpretation
 
@@ -832,7 +831,7 @@ The adoption of decibel instead of the conventional physical unit has three adva
 
 ### Artificial Noise Generation
 
-#### Method 1: Approximate $$\mathrm{d}x/\mathrm{d}t$$ by $$\Delta x/\Delta t$$
+#### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
 According to the property of Fourier transform, the convolution in the .
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -868,13 +867,13 @@ Besides these two methods, one can also get colored noise by filtering white noi
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
 
 The Fourier coefficient computed as 
-```math
+$$
 \begin{align}
 
 X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
 
 \end{align}
-```
+$$
 can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n]$ are independent identically distributed (*i.i.d*) random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary parts, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires that he real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
 
 
@@ -919,13 +918,13 @@ For each segement, you can also chose the window function to reduce the spectral
 
 One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
 
-```math
+$$
 \begin{align}
 PDF(x; \alpha, \lambda)=\frac{\lambda^\alpha}{\Gamma(\alpha)} x ^{\alpha - 1} e^{-\lambda x}
 \end{align}
-```
+$$
 
-The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
+The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \lambda^2$. When the number of segments ($\alpha$) decrease/increase to 1/$+\infty$, the Gamma distribution degenerate to exponential/normal distribution.
 
 <p align = 'center'>
 <img src="Figure/figure_gamma_distribution.png" width="60%"/>
@@ -954,7 +953,7 @@ graph LR;
 
 It should be keep in mind that these methods are all build based on the assumption of wide-sense stationarity of the signal.[Explain WSS here]. A noise signal, no matter its color, is wide-sense stationary. However, a real time series of a physics quantity cannot gurantee its wide-sense stationarity. Since W.S.S is the only presumption of these method, they are also termed ***Nonparametric Estimator***.
 
-Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
+Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $(N\Delta t)^{-1}$. 
 
 <p align = 'center'>
 <img src="Figure/figure_noise_blackman_tukey.png" width="60%"/>
@@ -963,35 +962,37 @@ Apart from splitting the signal into several segments, one can also downsample t
 ### Signal Over Noise
 
 A signal composed of a deterministic sinusoidal component and additive noise can be written as:
-```math
+$$
 x(t) = s(t) + n(t)
-```
+$$
 The Fourier coefficient at frequency $f$ is:
-```math
+$$
 \tilde{X}(f) = \tilde{S}(f) + \tilde{N}(f)
-```
+$$
 where $\tilde{S}(f)$ is the deterministic signal component (a fixed complex number), and $\tilde{N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
-```math
+$$
 \tilde{N}(f) \sim \mathcal{CN}(0, \sigma_n^2)
-```
+$$
 That is, $\tilde{X}(f)$ is a complex Gaussian random variable:
-```math
+$$
 \tilde{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = \tilde{S}(f)
-```
+$$
 The power spectrum estimate is:
-```math
+$$
 \hat{S}_x(f) = |\tilde{X}(f)|^2
-```
+$$
 Since $|\tilde{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
-```math
+$$
 \hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
-```
+$$
 In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
 <p align = 'center'>
 <img src="Figure/figure_signal_over_noise_hist.png" width="60%"/>
 </p>
 
+
+<div STYLE="page-break-after: always;"></div>
 
 ## Faulty Sample
 
@@ -1003,18 +1004,18 @@ The basic idea of the Lomb-Scargle periodogram is to fit the observed time serie
 
 Minimize the residual sum of squares:
 
-```math
+$$
 \chi^2(A,B) = \sum_{n=1}^N \bigl[x_n - \bar x - A\cos(\omega t_n) - B\sin(\omega t_n)\bigr]^2.
-```
+$$
 Setting $\partial\chi^2/\partial A = \partial\chi^2/\partial B = 0$ yields the normal equations:
 
-```math
+$$
 \begin{pmatrix} \sum\cos^2(\omega t_n) & \sum\cos(\omega t_n)\,\sin(\omega t_n)\\[0.5em] \sum\cos(\omega t_n)\,\sin(\omega t_n) & \sum\sin^2(\omega t_n) \end{pmatrix} \begin{pmatrix}A\\ B\end{pmatrix} = \begin{pmatrix} \sum (x_n-\bar x)\cos(\omega t_n)\\[0.25em] \sum (x_n-\bar x)\sin(\omega t_n) \end{pmatrix}.
-```
+$$
 
 
 Define
-```math
+$$
 \begin{align}
 C &= \sum\cos^2(\omega t_n)\\
 S &= \sum\sin^2(\omega t_n)\\
@@ -1022,12 +1023,12 @@ D &= \sum\cos(\omega t_n)\sin(\omega t_n)\\
 X_c &= \sum(x_n-\bar x)\cos(\omega t_n)\\
 X_s &= \sum(x_n-\bar x)\sin(\omega t_n)
 \end{align}
-```
+$$
 Then
 
-```math
+$$
 A = \frac{X_c\,S - X_s\,D}{C\,S - D^2},  \quad B = \frac{X_s\,C - X_c\,D}{C\,S - D^2}.
-```
+$$
 
 
 $P(\omega) \;=\; \frac12\bigl(A^2 + B^2\bigr).$
@@ -1060,20 +1061,20 @@ Compare with the original frequency spectrum, the Lomb-Scargle periodogram conta
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
-```math
+$$
 \begin{align}
 {R_{XY}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{Y(t + \tau)} \right]
 \end{align}
-```
+$$
 
-where the overline represents the complex conjugate operation when $$X$$ and $$Y$$ are complex signal. Specifically, the correlation function between $$X$$ and itself is called autocorrelation function:
+where the overline represents the complex conjugate operation when $X$ and $Y$ are complex signal. Specifically, the correlation function between $X$ and itself is called autocorrelation function:
 
-```math
+$$
 \begin{align}
 {R_{XX}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{X(t + \tau)} \right]
 \end{align}
-```
-If $$X$$ is a wide-sense stationary signal, then $${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$$ for arbitrary $$t_1, t_2,$$ and $$\tau$$. Thus, the autocorrelation function can be written as a single-variate function $$R_{XX}(\tau)=R_{XX}(t, t + \tau)$$.
+$$
+If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
 
 ### Hilbert Transform [*scipy.signal.hilbert*]
 
@@ -1101,18 +1102,18 @@ Digital filters are fundamental tools for shaping, extracting, or suppressing sp
 Digital filters are divided into two main types:
 
 - **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.  A general FIR digital filter is implemented as:
-  ```math
+  $$
   y[n] = \sum_{k=0}^{M} h[k]\, x[n-k]
-  ```
+  $$
 
   - $x[n], y[n]$: Input, Output signal
   - $h[k]$: Filter coefficients (impulse response), length $M+1$
   - $M$: Filter order
 
 - **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion:
-  ```math
+  $$
   y[n] = \sum_{k=0}^{M} b[k]\, x[n-k] - \sum_{l=1}^{N} a[l]\, y[n-l]
-  ```
+  $$
 
   - $b[k]$: Feedforward (input) coefficients
   - $a[l]$: Feedback (output) coefficients, usually $a[0] = 1$
@@ -1121,13 +1122,13 @@ Digital filters are divided into two main types:
 #### Example: Moving Average
 
 The **moving average filter** is actually a simple FIR filter. For a window length $L$, the coefficients are:
-```math
+$$
 h[k] = \frac{1}{L},\quad k = 0, 1, \ldots, L-1
-```
+$$
 So the output is:
-```math
+$$
 y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
-```
+$$
 That is, the output is the **average of the most recent $L$ input samples**. **Therefore, the moving average filter is an FIR filter whose coefficients are all equal.**
 
 #### Example: Low-pass FIR Filtering
@@ -1260,9 +1261,9 @@ scipy.signal.resample(
 ##### 5. Sinc Interpolation
 
 **Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
-```math
+$$
 x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - nT_s}{T_s}\right)
-```
+$$
 where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = {\sin(\pi x)}/{\pi x}$.
 
 - **Perfect for band-limited, uniformly sampled signals** (theoretical limit).
@@ -1310,32 +1311,32 @@ Inspiring by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the
 
 ```mermaid
 flowchart LR
-A@{ shape: lean-r, label: "$$x[n]$$"} --Fourier<br>Transform--> B["$$X[k]$$"] --abs<br>+<br>log--> C["$$\mathrm{log|X[k]|}$$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
+A@{ shape: lean-r, label: "$x[n]$"} --Fourier<br>Transform--> B["$X[k]$"] --abs<br>+<br>log--> C["$\mathrm{log|X[k]|}$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
 ```
 
 This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
 
 The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as:
 
-```math
+$$
 y(t) = x(t) +\alpha x(t-\tau)
-```
+$$
 
 which has a Fourier transform of
 
-```math
+$$
 \begin{align}
 Y(f) &= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
 |Y(f)|^2 &= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
 \end{align}
-```
+$$
 
-```math
+$$
 \begin{align}
 \mathrm{log}(|Y(f)|^2) &= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
 & \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
 \end{align}
-```
+$$
 
 Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
 
@@ -1359,6 +1360,7 @@ df = freq[1] - freq[0]
 quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 ```
 
+<div STYLE="page-break-after: always;"></div>
 
 ## Time-Frequency Spectrum
 
@@ -1387,6 +1389,7 @@ Wavelet analysis offers a versatile framework for multi-resolution time-frequenc
 <p align = 'center'>
 <img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
 </p>
+
 ```python
 scales = 2 ** np.linspace(4, 12, 160, endpoint = False)
 
@@ -1427,7 +1430,7 @@ coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 
 #### Continuous and Discrete Wavelet
 
-
+<div STYLE="page-break-after: always;"></div>
 
 ## Multi-Dimensional Signal
 
@@ -1445,7 +1448,7 @@ The central ideas of these two methods are:
 #### Mathematical Formulation
 
 1. **Collect & demean** the data matrix
-   ```math
+   $$
    \mathbf{X}
    = \begin{bmatrix}
      x_1 & x_2 & \dots & x_N \\
@@ -1454,20 +1457,20 @@ The central ideas of these two methods are:
    \end{bmatrix},
    \qquad
    \tilde{\mathbf{X}} = \mathbf{X} - \langle\mathbf{X}\rangle
-   ```
+   $$
 
 2. **Form the covariance (spectral) matrix**
-   ```math
+   $$
      \mathbf{C} \;=\; \frac{1}{N-1}\,\tilde{\mathbf{X}}\tilde{\mathbf{X}}^\mathsf{T}
-   ```
+   $$
 
 3. **Solve the eigenproblem**
    
-   ```math
+   $$
      \mathbf{C}\,\mathbf{e}_i \;=\; \lambda_i\,\mathbf{e}_i,
      \quad
      \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
-   ```
+   $$
    
 4. **Interpretation**
 
@@ -1504,9 +1507,9 @@ eigenvectors = pca.components_
 ### Spectral Matrix
 
 A ***spectral matrix*** can be defined as 
-```math
+$$
 \hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
-```
+$$
 
 for a time series decomposed with both signal and noise, its Fourier coefficients follow the ***non-central chi-square distribution***, as introduced in the previous section. Taking a moving-average in the time or frequency domain helps improving the SNR as we did in the Welch method. 
 
@@ -1524,9 +1527,10 @@ spec_avg = bn.move_mean(spec_avg, window=freq_window, min_count=1, axis=0)
 Coherence (or coherency in some literature) measures the degree of linear correlation between two signals at each frequency, serving as a frequency-resolved analog of the correlation coefficient. High coherence indicates a strong, consistent relationship, which is crucial for studies of wave propagation, coupled systems, and causality analysis. 
 
 The mathematical definition of coherence is the ratio of the cross-spectral density to the product of the individual power spectral densities:
-```math
+$$
 C_{XY}(f) = \frac{|\hat{S}_{XY}(f)|^2}{\hat{S}_{XX}(f) \hat{S}_{YY}(f)}
-```
+$$
+
 
 where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $X$ and $Y$, and $\hat{S}_{XX}(f)$, $\hat{S}_{YY}(f)$ are the power spectral densities of $X$ and $Y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
 
@@ -1557,7 +1561,8 @@ To be honest, I feel very hard to understand what does *coherent/coherence* mean
 ### Combination with Maxwell's Equations: SVD Wave Analysis
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
-```math
+$$
+
 \begin{align}
 \nabla \cdot \mathbf{E}(\mathbf{r},t) & = -\frac{\rho}{\varepsilon_0}\\
 
@@ -1568,9 +1573,10 @@ Spectral analysis gains further physical meaning when interpreted alongside Maxw
 \nabla \times \mathbf{B}(\mathbf{r},t) & = \mu_0 \mathbf{J}(\mathbf{r},t)+\mu_0\varepsilon_0 \frac{\partial\mathbf{E}(\mathbf{r},t)}{\partial t}
 
 \end{align}
-```
+$$
+
 As the electromagnetic field $\mathbf{E(r},t)$ and $\mathbf{B(r}, t)$ are square-integrable, Maxwell's equations can be naturally transformed into the $(\mathbf{k},\omega)$-space with the basic replacement from $\nabla \leftrightarrow i\mathbf{k}$ and $\partial/\partial t\leftrightarrow -i\omega$:
-```math
+$$
 \begin{align}
 i \mathbf{k\cdot \hat{E}(k,\omega)}&=-\hat{\rho_e}/\varepsilon_0 \\
 i \mathbf{k\cdot \hat{B}(k,\omega)}&=0 \\
@@ -1578,30 +1584,29 @@ i \mathbf{k\times \hat{E}(k,\omega)}&=i\omega\mathbf{\hat{B}(k,\omega)} \\
 i \mathbf{k\times \hat{B}(k,\omega)}&=\mu_0 \mathbf{\hat{J}(k,\omega)} -\mu_0 \varepsilon_0 i\omega\mathbf{\hat{E}(k,\omega)} \\
 
 \end{align}
-```
+$$
 
 However, a single spacecraft measurement only allows you to observe a one-dimensional (time) signal at one position, i.e., the spacecraft position, which literally moves in the space. Thus, the signal can only be converted into the frequency space as $\mathbf{\hat{B}(\omega)}$. The second equation is the only parameter-free equation and states that the wave vector, $\mathbf{k}$ must be perpendicular to the magnetic field disturbance, $\mathbf{\hat{B}(\omega)}$. Obviously, $\mathbf{k=0}$ is a trivial, but not useful solution for satisfying the divergence-free theorem. By constraining the norm of $\mathbf{k}$ to be unity, $\boldsymbol{\kappa}\mathbf{:=k/}k$, a more meaningful solution comes out. When the real part, $\Re{\hat{\mathbf{B}}(\omega)}$ and imaginary part, $\Im{\hat{\mathbf{B}}(\omega)}$ of $\mathbf{\hat{B}(\omega)}$ are highly orthogonal, they can span a linear space whose normal vector is naturally $\boldsymbol{\kappa}$. 
-```math
+$$
 \boldsymbol{\kappa}=\frac{\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}}{|\Re{\hat{\mathbf{B}}(\omega)}\times{\Im\hat{\mathbf{B}}(\omega)}|}
-```
+$$
 which perfectly satisfy that $\boldsymbol{\hat{\mathbf{B}}\cdot \kappa}=0$. 
 
 However,  this $\mathbf{\hat{B}}$-based, namely, coefficient-based estimation may be influenced by the noise's contribution and thus is not so practical. Inspired by the Welch method, a spectral-based estimation is preferred as the spectral density is easily denoised. The spectral-based estimation can be given by refining the original proposition:
-```math``$$
 
-```math
+$$
 \hat{S}_{ij}=\langle \hat{B}_i \hat{B}_j^* \rangle
-```
+$$
 
 which can still be met by the original solution. After averaging the spectral matrix in time and frequency domain, this equation can not be perfectly satisfied any more. Thus, we will look for a weaker solution in the sense of minimization:
-```math
+$$
 \begin{align}
 \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} & ||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\ \Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} \{&{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}} + \underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
 \end{align}
-```
+$$
 [McPherron et al. (1972)](https://doi.org/10.1007/BF00219165) and [Means (1972)](https://doi.org/10.1029/JA077i028p05551) adopts the real and imaginary part in the minimization optimization for the estimation of wave propagation direction, respectively. Both of these two optimization problem can be solved by eigenvalue decomposition. Then, [Santolík et al. (2003)](https://doi.org/10.1029/2000RS002523) combine both terms and construct an augmented matrix ${A}$:
 
-```math
+$$
 {A} =
 \begin{pmatrix}
 \Re S_{11} & \Re S_{12} & \Re S_{13} \\
@@ -1611,35 +1616,35 @@ which can still be met by the original solution. After averaging the spectral ma
 \Im S_{12} & 0 & -\Im S_{23} \\
 \Im S_{13} & \Im S_{23} & 0 \\
 \end{pmatrix}
-```
+$$
 
 
 
 The optimization problem
-```math
+$$
 \min\limits_{\Vert\boldsymbol{\kappa}\Vert_2^2=1} ||{A\cdot \mathbf{k}}||_2^2
-```
+$$
 is directly solvable by applying a ***singular value decomposition(SVD)*** to matrix ${A}$
-```math
+$$
 {A}=U\cdot W\cdot V^T
-```
+$$
 where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
 
 - **<u>Compressibility</u>** describe the polarization 
 
-```math
+$$
 \begin{align}
 \mathrm{Compressibility}(t,f):=\frac{PSD(B_\parallel)}{\sum_i PSD(B_i)}
 \end{align}
-```
+$$
 
 
 
 - **<u>Planarity</u>** 
 
-```math
+$$
 F=1-\sqrt{W_{2}/W_{0}}
-```
+$$
 
 Without averaging the spectral matrix, the planarity $F(t,f)$ **<u>will be all one</u>**. It means that, when the observer only take one snapshot of the waves, it can not distinguish how does the waves propagate. After the averaging, the planarity actually describe that, **<u>whether the waves that observed at these time periods, frequencies share the common unitary wave vector.</u>**
 
@@ -1656,9 +1661,9 @@ ellipticity_along_k = s[:, :, 1] / s[:, :, 0]
 ```
 
 Similarly, based on the averaged spectral matrix, one may define the coherence (coherency) between different components:
-```math
+$$
 Coherency:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
-```
+$$
 <p align = 'center'>
 <img src="Figure/figure_coherency.png" alt="An example of DFT." width="60%"/>
 </p>
@@ -1673,13 +1678,13 @@ This section explores the synergy between spectral analysis and electromagnetic 
 Polarization analysis examines the orientation and ellipticity of oscillatory signals, especially electromagnetic or plasma waves. By decomposing the signal into orthogonal components and analyzing their relative amplitude and phase, we can characterize wave mode, propagation direction, and physical source. This section introduces key polarization parameters, their spectral estimation, and relevant Python implementations.
 
 Ellipticity can be defined as the ratio of the semi-major and semi-minor, which is estimated by:
-```math
+$$
 \epsilon=\frac{W_1}{W_0}
-```
+$$
 For a noisy signal, T and S 2019 propose an improved method with a estimation of the noise level based on the eigen decomposition. In this method, they noise level is inferred by decomposing the real part of the spectral density matrix and the maximum/intermediate eigenvalues of the complex spectral density represents the summation of wave power and noise power. Therefore, the improved ellipticity is derived:
-```math
+$$
 \epsilon^\prime=\sqrt{\frac{\lambda_{r1}-\lambda_1}{\lambda_{r0}-\lambda_1}}
-```
+$$
 This improved ellipticity performs better than the original one when SNR is low but the still randomly deviates from the ground true. Thus, a moving average in the time or frequency domain is still required as it promote the SNR. 
 
 ```python
@@ -1702,16 +1707,16 @@ ellipticity_along_k = np.sqrt((eigenvalues_r[:, :, 0] - eigenvalues[:, :, 0]) \
 #### Ellipticity along $\mathbf{B}$
 
 Both above two ellipticities are unsigned as the singular/eigen values are always non-negative. Another, but not alternative definition of the ellipticity, is the ratio of left-handed polarized signal power to the right-handed polarized power. This definition is signed and the the ellipse is defined in the plane that perpendicular to the background magnetic field:
-```math
+$$
 \epsilon_B=\frac{|\hat{B}_L|^2-|\hat{B}_R|^2}{|\hat{B}_L|^2+|\hat{B}_R|^2}
-```
+$$
 with $B_L$ and $B_R$ defines below:
-```math
+$$
 \begin{align}
 B_L = \frac{1}{\sqrt{2}}(B_{\perp1}+iB_{\perp2})\\
 B_R = \frac{1}{\sqrt{2}}(B_{\perp1}-iB_{\perp2})
 \end{align}
-```
+$$
 with $\mathbf{e_{\perp1}}$, $\mathbf{e_{\perp2}}$, and $\mathbf{e_\parallel }$ constitute a right-hand system, i.e., $\mathbf{e_{\perp1}\times e_{\perp2}=e_\parallel}$.
 
 It is also important as it may unveils the wave excitation mechanism (e.g., wave-particle resonance). This definition is totally irrelevant with the determination of the wave vector direction. Instead, field-aligned coordinates is required for its derivation.
@@ -1762,9 +1767,9 @@ ellipticity_along_b = (np.abs(coef_rh) - np.abs(coef_lh)) / (np.abs(coef_rh) + n
 The **degree of polarization** quantifies the proportion of an electromagnetic fluctuation (such as a plasma wave) that is organized, or polarized, as opposed to random or unpolarized (noise-like) components. It is a fundamental parameter in space plasma physics, characterizing the coherence of observed wave signals.
 
 The degree of polarization is defined as the fraction of the total wave power that is associated with a perfectly polarized (coherent) component. It is mathematically expressed as:
-```math
+$$
 D_p = \frac{\text{Power of the Polarized Component}}{\text{Total Power}}
-```
+$$
 
 - $D_p = 1$: the signal is completely polarized.
 - $0 < D_p < 1$: the signal is partially polarized.
@@ -1775,9 +1780,9 @@ A high degree of polarization indicates that the observed fluctuations are domin
 In three-dimensional wave analysis, the **degree of polarization** quantifies how much of the measured signal is concentrated along a single, well-defined direction, versus being randomly distributed among all directions.
 
 The 3D eigenvalue-based degree of polarization is defined as:
-```math
+$$
 D_{p,3D} = \frac{\lambda_1 - \lambda_2}{\lambda_1 + \lambda_2 + \lambda_3}
-```
+$$
 where $\lambda_1 \geq \lambda_2 \geq \lambda_3$ are the eigenvalues of the (power or spectral) matrix constructed from the three orthogonal components of the wave field.
 
 This definition is coordinate-invariant and widely used in space plasma physics to characterize the coherence and organization of wave signals in planetary magnetospheres and the solar wind. It is particularly powerful for distinguishing true wave modes from background turbulence or noise.
@@ -1792,7 +1797,7 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 <p align = 'center'>
 <img src="Figure/figure_svd.png" alt="An example of DFT." width="100%"/>
 </p>
-
+<div STYLE="page-break-after: always;"></div>
 
 ## Appendix
 
@@ -1829,10 +1834,6 @@ When create the
 |                    |                   |                                                              |
 |                    |                   |                                                              |
 |                    |                   |                                                              |
-
-## Acknowledgement
-
- This document is finished with the help of ChatGPT and Copilot.
 
 </body>
 </html>
