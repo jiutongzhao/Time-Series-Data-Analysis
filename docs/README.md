@@ -14,6 +14,8 @@ At this juncture, most students pragmatically pivot to google *"Fourier Analysis
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
 
+<div STYLE="page-break-after: always;"></div>
+
 ## Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
@@ -459,6 +461,8 @@ coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
 
+<div STYLE="page-break-after: always;"></div>
+
 ## What Else Should You Know About the DFT and FFT?
 
 ### Gibbs Phenomenon
@@ -764,7 +768,7 @@ std = bn.move_std(sig, window=3, min_count=1)
 
 ```
 
-
+<div STYLE="page-break-after: always;"></div>
 
 ## How to Deal With Noise?
 
@@ -987,6 +991,8 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 <img src="Figure/figure_signal_over_noise_hist.png" width="60%"/>
 </p>
 
+
+<div STYLE="page-break-after: always;"></div>
 
 ## Faulty Sample
 
@@ -1354,6 +1360,7 @@ df = freq[1] - freq[0]
 quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 ```
 
+<div STYLE="page-break-after: always;"></div>
 
 ## Time-Frequency Spectrum
 
@@ -1382,6 +1389,7 @@ Wavelet analysis offers a versatile framework for multi-resolution time-frequenc
 <p align = 'center'>
 <img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
 </p>
+
 ```python
 scales = 2 ** np.linspace(4, 12, 160, endpoint = False)
 
@@ -1422,7 +1430,7 @@ coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 
 #### Continuous and Discrete Wavelet
 
-
+<div STYLE="page-break-after: always;"></div>
 
 ## Multi-Dimensional Signal
 
@@ -1787,7 +1795,7 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 <p align = 'center'>
 <img src="Figure/figure_svd.png" alt="An example of DFT." width="100%"/>
 </p>
-
+<div STYLE="page-break-after: always;"></div>
 
 ## Appendix
 
@@ -1824,10 +1832,6 @@ When create the
 |                    |                   |                                                              |
 |                    |                   |                                                              |
 |                    |                   |                                                              |
-
-## Acknowledgement
-
- This document is finished with the help of ChatGPT and Copilot.
 
 </body>
 </html>
