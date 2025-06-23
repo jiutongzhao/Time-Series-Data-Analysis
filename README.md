@@ -675,7 +675,7 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 3. https://dsp.stackexchange.com/questions/24375/fastest-implementation-of-fft-in-c
 4. https://www.fftw.org/
 
-### What Is Power Spectral Density?
+### Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
 $$
@@ -685,9 +685,11 @@ The **power spectral density** is defined as the **Fourier transform** of the au
 $$
 S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
 $$
-This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components.
+This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components. The relationship between PSD and the Fourier coefficients has been introduced in the previous section.
 
-### Why Stationarity Is Essential
+This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
+
+### Wide-Sense Stationarity
 
 Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two independent time variables rather than just the lag $\tau$. In such cases, the Fourier transform of the autocorrelation no longer represents a meaningful or consistent frequency-domain power measure.
 
@@ -695,15 +697,27 @@ Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two indep
 
 This condition separates **deterministic Fourier transforms** (which apply to individual signals) from **statistical spectral analysis** (which applies to ensembles of signals or realizations of random processes).
 
-### Contrast: Deterministic vs Statistical Fourier Analysis
+```math
+x(t) = A_1 \mathrm{sin}(\omega_1 t) + A_2 \mathrm{sin} \left (\omega_2t + \frac{1}{2}\beta t^2\right )
+```
 
-| Aspect                 | Deterministic Signal       | Random Process (WSS)                  |
-| ---------------------- | -------------------------- | ------------------------------------- |
-| Assumes randomness?    | ❌ No                       | ✅ Yes                                 |
-| Fourier Transform (FT) | Always defined             | Requires WSS for PSD                  |
-| Purpose                | Frequency decomposition    | Power distribution estimation         |
-| Output                 | Complex amplitude spectrum | Power spectral density (non-negative) |
-| Requires stationarity? | ❌ Not required             | ✅ Required for meaningful PSD         |
+```math
+\begin{align}
+
+R_x(t_1, t_2) & = \mathbb{E}[{x(t_1)x(t_2)}]\\
+& = \mathbb{E} \left [A_1^2 \cdot \mathrm{sin}(\omega_1 t_1) \cdot \mathrm{sin}(\omega_1 t_2) + A_2^2 \cdot \mathrm{sin}\left(\omega_2 t_1 + \frac{1}{2}\beta t_1^2 \right ) \cdot \mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right ) \right] \\
+ & + A_0 A_1 \left\{ \mathbb{E}\left[\mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right ) + \mathrm{sin}(\omega_1 t_2)\mathrm{sin}\left(\omega_2 t_1 + \frac{1}{2}\beta t_1^2 \right ) \right] \right\}
+
+\end{align}
+```
+
+Assuming the window length $T\gt \tau=t_2-t_1\gg 1/f_0$, the square term can be converted to an univariate function of $\tau = t_2-t_1$ by product-to-sum identity. The cross terms can be treated in a similar way ***unless*** $\omega_1 \approx \omega_2+\beta t$, in which condition the 
+
+```math
+\mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right )=\frac{1}{2} \left[ \mathrm{cos}\left( \omega_1 t_1 -\omega_2 t_2-\frac{1}{2}\beta t_2^2 \right) - \mathrm{cos}\left( \omega_1 t_1 + \omega_2 t_2+\frac{1}{2}\beta t_2^2 \right) \right]
+```
+
+The second terms traverse the whole wave phase from $0$ to $2\pi$ therefore has a expectation of zero. As $\omega_1 t_1-\omega_2 t_2-\frac{1}{2}\beta t_2^2\approx \omega_1 (t_1-t_2) + \frac{1}{2}\beta t_2^2$, the first term can neither written as a function of $\tau$ nor converge to zero in the statistical sense. Thus, it is not wide-sense stationary. When $\omega_1$ is well separated with $\omega_2+\beta t$, the first term again traverse the whole wave phase and the signal return to wide-sense stationary. 
 
 
 
@@ -715,10 +729,6 @@ For nonstationary signals, the PSD is ill-defined or misleading. In such cases, 
 - **Wavelet Transform**: offers multi-scale, adaptive analysis of transient and time-varying features;
 
 can be used to track how the spectrum evolves over time, even though no stationary PSD exists.
-
-### Summary
-
-Power spectral density is only meaningful for wide-sense stationary processes, where it provides a frequency-domain representation of signal power. For nonstationary signals, other tools such as STFT or wavelets must be used, as the classical notion of "power at a given frequency" no longer applies.
 
 ### Polynomial Trend as Seen by DFT
 
@@ -1062,16 +1072,6 @@ where the overline represents the complex conjugate operation when $$X$$ and $$Y
 \end{align}
 ```
 If $$X$$ is a wide-sense stationary signal, then $${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$$ for arbitrary $$t_1, t_2,$$ and $$\tau$$. Thus, the autocorrelation function can be written as a single-variate function $$R_{XX}(\tau)=R_{XX}(t, t + \tau)$$.
-
-### Wiener–Khinchin theorem
-For a wide-sense stationary signal, its power spectral density is equal to the the fourier transform of its autocorrelation function, i.e.,:
-
-```math
-\begin{align}
-PSD(f)=\int_{-\infty}^{\infty}R_{XX}(\tau) e^{-2\pi i f \tau} \mathrm{d} \tau
-\end{align}
-```
-This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contraposition claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
 
 ### Hilbert Transform [*scipy.signal.hilbert*]
 
@@ -1792,37 +1792,41 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 </p>
 
 
-## Jargon Sheet and Personal Naming Convention
+## Appendix
 
-- When creating a `numpy.ndarray` for a signal, I will always 
+### NDArray Shaping
 
-  |      Notation      |   Variable Name   |                         Explanation                          |
-  | :----------------: | :---------------: | :----------------------------------------------------------: |
-  |     $(t), (f)$     |      `t, f`       |       Continuous input, frequency ($f$) or time ($t$)        |
-  |     $[t], [f]$     |      `t, f`       |                        Discrete input                        |
-  |      $\omega$      |      `omega`      |             Angular frequency, $\omega = 2\pi f$             |
-  |       $x(t)$       |         -         |       Continuous signal x as a function of time ($t$)        |
-  |  $x[n] = x(nf_S)$  |       `sig`       | An even sample of $x(t)$, the intensity is termed as ***Amplitude*** |
-  | $X[k]=X(kT^{-1})$  |      `coef`       | Fourier Transform Coefficient of $x(t)$, the intensity is termed as ***Magnitude*** |
-  |   $\mathcal{F}$    |         -         |                  Fourier Transform Operator                  |
-  |        $N$         |        `N`        |                        Signal length                         |
-  |        Arb         |         -         |                        Arbitrary Unit                        |
-  |       $w[n]$       |     `window`      |                                                              |
-  |    $\hat{B}_i$     |      `coef`       |                     Fourier Coefficient                      |
-  |      $S_{ij}$      |      `spec`       |                       Spectral Matrix                        |
-  |         -          |      `*_wf`       |                       Wave Frame (WF)                        |
-  |         -          |      `*_ma`       |                     Moving Average (MA)                      |
-  |         -          | `*_lh` and `*_rh` |            Left Handed (LH) and Right Handed (RH)            |
-  | $\mathrm{\Delta}t$ |       `dt`        |                       Sampling Period                        |
-  |       $f_s$        |       `fs`        |                      Sampling Frequency                      |
-  |   $\mathrm{Amp}$   |       `amp`       |                          Amplitude                           |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
-  |                    |                   |                                                              |
+When create the 
+
+### Jargon Sheet
+
+|      Notation      |   Variable Name   |                         Explanation                          |
+| :----------------: | :---------------: | :----------------------------------------------------------: |
+|     $(t), (f)$     |      `t, f`       |       Continuous input, frequency ($f$) or time ($t$)        |
+|     $[t], [f]$     |      `t, f`       |                        Discrete input                        |
+|      $\omega$      |      `omega`      |             Angular frequency, $\omega = 2\pi f$             |
+|       $x(t)$       |         -         |      Continuous signal $x$ as a function of time ($t$)       |
+|  $x[n] = x(nf_S)$  |       `sig`       | An even sample of $x(t)$, the intensity is termed as ***Amplitude*** |
+| $X[k]=X(kT^{-1})$  |      `coef`       | Fourier Transform Coefficient of $x(t)$, the intensity is termed as ***Magnitude*** |
+|   $\mathcal{F}$    |         -         |                  Fourier Transform Operator                  |
+|        $N$         |        `N`        |                        Signal length                         |
+|        Arb         |         -         |                        Arbitrary Unit                        |
+|       $w[n]$       |     `window`      |                       Window Function                        |
+|    $\hat{B}_i$     |      `coef`       |                     Fourier Coefficient                      |
+|      $S_{ij}$      |      `spec`       |                       Spectral Matrix                        |
+|         -          |      `*_wf`       |                       Wave Frame (WF)                        |
+|         -          |      `*_ma`       |                     Moving Average (MA)                      |
+|         -          | `*_lh` and `*_rh` |            Left Handed (LH) and Right Handed (RH)            |
+| $\mathrm{\Delta}t$ |       `dt`        |                       Sampling Period                        |
+|       $f_s$        |       `fs`        |                      Sampling Frequency                      |
+|   $\mathrm{Amp}$   |       `amp`       |                          Amplitude                           |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
+|                    |                   |                                                              |
 
 ## Acknowledgement
 
