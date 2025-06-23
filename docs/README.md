@@ -14,8 +14,6 @@ At this juncture, most students pragmatically pivot to google *"Fourier Analysis
 
 Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
 
-<div STYLE="page-break-after: always;"></div>
-
 ## Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
@@ -62,10 +60,13 @@ Spectral analysis helps to:
 
 ### Sampling
 
-> **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
-$$
-f_s \ge 2f_{max}
-$$
+> **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $$x(t)$$ containing no frequency components higher than $$f_{max}$$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
+>
+> ```math
+> f_s \ge 2f_{max}
+> ```
+>
+> 
 
 The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
 
@@ -102,7 +103,7 @@ This effect always happens when you (down-)sampling the signal, a common way to 
   
   ```
 
-  - Tips: Set `endpoint = False` so that the last point is not included in the time array, which ensures that the sampling frequency is equal to $f_s$.
+  - Tips: Set `endpoint = False` so that the last point is not included in the time array, which ensures that the sampling frequency is equal to $$f_s$$.
 
 - **Generate the Signal**
 
@@ -221,18 +222,20 @@ scipy.signal.unit_impulse(
 
 > Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
 >
-$$
-X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
-$$
+> ```math
+> X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
+> ```
 >
 > 
 >
 > Correspondingly, the inverse (continuous) Fourier transform can be given as:
-$$
-\begin{align}
-x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
-\end{align}
-$$
+> ```math
+> \begin{align}
+> x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+> \end{align}
+> ```
+>
+> 
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
 ```math
@@ -251,7 +254,7 @@ X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \De
 
 
 
-Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
+Ideally, according to the periodicity of $$e^{-2\pi i ft}$$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
 
 ```math
 \begin{align}
@@ -414,15 +417,15 @@ A(["*x[n]*"]) -->|Window
 Function|B@{ shape: rect, label: "x_windowed[n]" }
 
 A-->|Zero
-Padding|C@{shape:rect, label: "$x_{ZP}[n]$"}
+Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
 
 C -->|Window
 Function|B
 
 B -->|Fourier
-Transform|D@{shape: rect, label: "$X[k]$"}
+Transform|D@{shape: rect, label: "$$X[k]$$"}
 
-D -->H["$P[k]:=|X[k]|^2$"]
+D -->H["$$P[k]:=|X[k]|^2$$"]
 
 D --> E(Window
 Compensation)
@@ -430,13 +433,13 @@ Compensation)
 E --> F(Single-Side
 Compensation)
 
-F --> G@{ shape: lean-r, label: "$X[k]$"}
+F --> G@{ shape: lean-r, label: "$$X[k]$$"}
 
 
 H --> E(Window
 Compensation)
 
-F --> K@{ shape: lean-r, label: "$psd[k]$"}
+F --> K@{ shape: lean-r, label: "$$psd[k]$$"}
 
 ```
 
@@ -460,8 +463,6 @@ n_padding = 29
 coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
-
-<div STYLE="page-break-after: always;"></div>
 
 ## What Else Should You Know About the DFT and FFT?
 
@@ -505,7 +506,7 @@ In
 >
 > 
 
-In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($u$) written as 
+In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($$x$$) of a spring, $$x^2$$ is proportional to the elastic potential energy ($$kx^2/2$$, where $$k$$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($$u$$) written as 
 
 ```math
 u=u_E + u_B=\frac{1}{2}(\varepsilon_0 \mathit{E}^2 + \frac{1}{\mu_0}\mathit{B}^2)
@@ -558,7 +559,7 @@ else:
     psd[1:] *= 2
 ```
 
-According to the lineairty of $\mathcal{F}$, $X[k]$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
+According to the lineairty of $$\mathcal{F}$$, $$X[k]$$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
 
 ```math
 \begin{align}
@@ -568,7 +569,7 @@ According to the lineairty of $\mathcal{F}$, $X[k]$ should also be proportional 
 
 
 
-1/2 in this equation arises from the fact that $\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$.
+1/2 in this equation arises from the fact that $$\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$$.
 
 ### More Properties of Fourier Transform
 
@@ -677,13 +678,13 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 ### Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
-$
+$$
 R_x(\tau) = \mathbb{E}[x(t)\,x(t + \tau)]
-$
+$$
 The **power spectral density** is defined as the **Fourier transform** of the autocorrelation function:
-$
+$$
 S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
-$
+$$
 This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components. The relationship between PSD and the Fourier coefficients has been introduced in the previous section.
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
@@ -768,7 +769,7 @@ std = bn.move_std(sig, window=3, min_count=1)
 
 ```
 
-<div STYLE="page-break-after: always;"></div>
+
 
 ## How to Deal With Noise?
 
@@ -784,7 +785,7 @@ When the underlying process is **stochastic**—that is, governed by probabilist
 
 In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
 
-The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $1/f^\beta$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($\beta$ = 0), while flicker or pink noise has $\beta$ = 1, and Brownian noise has $\beta$ = 2. Blue noise has $\beta$ = -1.
+The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $$1/f^\beta$$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($$\beta$$ = 0), while flicker or pink noise has $$\beta$$ = 1, and Brownian noise has $$\beta$$ = 2. Blue noise has $$\beta$$ = -1.
 
 ### Signal-to-Noise Ratio and Decibel
 
@@ -831,7 +832,7 @@ The adoption of decibel instead of the conventional physical unit has three adva
 
 ### Artificial Noise Generation
 
-#### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
+#### Method 1: Approximate $$\mathrm{d}x/\mathrm{d}t$$ by $$\Delta x/\Delta t$$
 According to the property of Fourier transform, the convolution in the .
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -924,7 +925,7 @@ PDF(x; \alpha, \lambda)=\frac{\lambda^\alpha}{\Gamma(\alpha)} x ^{\alpha - 1} e^
 \end{align}
 ```
 
-The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \lambda^2$. When the number of segments ($\alpha$) decrease/increase to 1/$+\infty$, the Gamma distribution degenerate to exponential/normal distribution.
+The mean and variance of this distribution is $$\alpha/\lambda$$ and $$\alpha / \lambda^2$$. When the number of segments ($$\alpha$$) decrease/increase to 1/$$+\infty$$, the Gamma distribution degenerate to exponential/normal distribution.
 
 <p align = 'center'>
 <img src="Figure/figure_gamma_distribution.png" width="60%"/>
@@ -953,7 +954,7 @@ graph LR;
 
 It should be keep in mind that these methods are all build based on the assumption of wide-sense stationarity of the signal.[Explain WSS here]. A noise signal, no matter its color, is wide-sense stationary. However, a real time series of a physics quantity cannot gurantee its wide-sense stationarity. Since W.S.S is the only presumption of these method, they are also termed ***Nonparametric Estimator***.
 
-Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $(N\Delta t)^{-1}$. 
+Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $$(N\Delta t)^{-1}$$. 
 
 <p align = 'center'>
 <img src="Figure/figure_noise_blackman_tukey.png" width="60%"/>
@@ -991,8 +992,6 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 <img src="Figure/figure_signal_over_noise_hist.png" width="60%"/>
 </p>
 
-
-<div STYLE="page-break-after: always;"></div>
 
 ## Faulty Sample
 
@@ -1067,14 +1066,14 @@ Compare with the original frequency spectrum, the Lomb-Scargle periodogram conta
 \end{align}
 ```
 
-where the overline represents the complex conjugate operation when $X$ and $Y$ are complex signal. Specifically, the correlation function between $X$ and itself is called autocorrelation function:
+where the overline represents the complex conjugate operation when $$X$$ and $$Y$$ are complex signal. Specifically, the correlation function between $$X$$ and itself is called autocorrelation function:
 
 ```math
 \begin{align}
 {R_{XX}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{X(t + \tau)} \right]
 \end{align}
 ```
-If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
+If $$X$$ is a wide-sense stationary signal, then $${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$$ for arbitrary $$t_1, t_2,$$ and $$\tau$$. Thus, the autocorrelation function can be written as a single-variate function $$R_{XX}(\tau)=R_{XX}(t, t + \tau)$$.
 
 ### Hilbert Transform [*scipy.signal.hilbert*]
 
@@ -1311,7 +1310,7 @@ Inspiring by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the
 
 ```mermaid
 flowchart LR
-A@{ shape: lean-r, label: "$x[n]$"} --Fourier<br>Transform--> B["$X[k]$"] --abs<br>+<br>log--> C["$\mathrm{log|X[k]|}$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
+A@{ shape: lean-r, label: "$$x[n]$$"} --Fourier<br>Transform--> B["$$X[k]$$"] --abs<br>+<br>log--> C["$$\mathrm{log|X[k]|}$$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
 ```
 
 This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
@@ -1360,7 +1359,6 @@ df = freq[1] - freq[0]
 quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 ```
 
-<div STYLE="page-break-after: always;"></div>
 
 ## Time-Frequency Spectrum
 
@@ -1389,7 +1387,6 @@ Wavelet analysis offers a versatile framework for multi-resolution time-frequenc
 <p align = 'center'>
 <img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
 </p>
-
 ```python
 scales = 2 ** np.linspace(4, 12, 160, endpoint = False)
 
@@ -1430,7 +1427,7 @@ coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 
 #### Continuous and Discrete Wavelet
 
-<div STYLE="page-break-after: always;"></div>
+
 
 ## Multi-Dimensional Signal
 
@@ -1590,7 +1587,7 @@ However, a single spacecraft measurement only allows you to observe a one-dimens
 which perfectly satisfy that $\boldsymbol{\hat{\mathbf{B}}\cdot \kappa}=0$. 
 
 However,  this $\mathbf{\hat{B}}$-based, namely, coefficient-based estimation may be influenced by the noise's contribution and thus is not so practical. Inspired by the Welch method, a spectral-based estimation is preferred as the spectral density is easily denoised. The spectral-based estimation can be given by refining the original proposition:
-```math``$
+```math``$$
 
 ```math
 \hat{S}_{ij}=\langle \hat{B}_i \hat{B}_j^* \rangle
@@ -1795,7 +1792,7 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 <p align = 'center'>
 <img src="Figure/figure_svd.png" alt="An example of DFT." width="100%"/>
 </p>
-<div STYLE="page-break-after: always;"></div>
+
 
 ## Appendix
 
@@ -1832,6 +1829,10 @@ When create the
 |                    |                   |                                                              |
 |                    |                   |                                                              |
 |                    |                   |                                                              |
+
+## Acknowledgement
+
+ This document is finished with the help of ChatGPT and Copilot.
 
 </body>
 </html>
