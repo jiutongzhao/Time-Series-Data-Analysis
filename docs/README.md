@@ -2,7 +2,7 @@
 
 # Practical Spectral Analysis with Python
 
-## Preface
+# Preface
 
 For many students, their first real encounter with spectral analysis often unfolds like this:
 
@@ -16,7 +16,7 @@ Yet, a few determined souls persist—spending days gathering materials, watchin
 
 <div STYLE="page-break-after: always;"></div>
 
-## Why Do We Need Spectral Analysis?
+# Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
 
@@ -64,10 +64,10 @@ Spectral analysis helps to:
 
 > **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 $$
-f_s \ge 2f_{max}
+f_{max} \le f_s/2
 $$
 
-The frequency upper limitation $f_{max}=f_s/2$ is also called ***Nyquist Frequency***.
+The frequency upper limitation $f_s/2$ is also called ***Nyquist Frequency***.
 
 When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***Aliasing***.
 
@@ -219,15 +219,15 @@ scipy.signal.unit_impulse(
 
 ### Fourier Transform
 
-> Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
->
+Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
+
 $$
+\begin{align}
 X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
+\end{align}
 $$
->
-> 
->
-> Correspondingly, the inverse (continuous) Fourier transform can be given as:
+Correspondingly, the inverse (continuous) Fourier transform can be given as:
+
 $$
 \begin{align}
 x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
@@ -609,8 +609,10 @@ In plasma physics, the conventional way to express the electromagnetic field.
 It should be noted that this derivation property change a little bit for discrete Fourier transform:
 
 $$
+\begin{align}
 \frac{\Delta x(t)}{\Delta  t}&=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)]
+\end{align}
 $$
 
 
@@ -1562,7 +1564,6 @@ To be honest, I feel very hard to understand what does *coherent/coherence* mean
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
 $$
-
 \begin{align}
 \nabla \cdot \mathbf{E}(\mathbf{r},t) & = -\frac{\rho}{\varepsilon_0}\\
 
