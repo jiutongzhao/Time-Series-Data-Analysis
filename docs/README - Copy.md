@@ -16,7 +16,7 @@ Yet, a few determined souls persist—spending days gathering materials, watchin
 
 <div STYLE="page-break-after: always;"></div>
 
-## Why Do We Need Spectral Analysis?
+# Why Do We Need Spectral Analysis?
 
 ### Signals and Time Series
 
