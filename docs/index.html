@@ -3,13 +3,13 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>Practical Spectral Analysis with Python</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="icon" href="figure/wavelet.jpg" />
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-defaults.css">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
 
@@ -21,6 +21,7 @@
     window.$docsify = {
       name: '',
       repo: '',
+      coverpage: true,
       latex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']], // default
         displayMath: [['$$', '$$']],               // default
@@ -44,8 +45,47 @@
   <script src="https://cdn.jsdelivr.net/npm/docsify-latex@0"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-markdown.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <script src="https://unpkg.com/docsify-copy-code@2"></script>
 
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+  <style>
+    .docsify-copy-code-button > .success {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: 0;
+    padding: 0.65em 0.8em;
+    font-size: 1em;
+    opacity: 0;
+    transform: translate(0, -50%);
+    }</style>
+  
+  <style>
+  .docsify-copy-code-button.success > .success {
+    right: 100%;
+    opacity: 1;
+    transform: translate(-20%, -50%);
+  }</style>
+
+<style>
+
+:root {
+    /* Background */
+    --cover-background-blend-mode                      : ;
+    /* --cover-background-color                           : var(--base-background-color); */
+    --cover-background-image                           : url("https://matplotlib.org/stable/_images/sphx_glr_patheffect_demo_001_2_00x.png");
+    --cover-background-mask-color                      : ;
+    --cover-background-mask-opacity                    : 0.8;
+    --cover-background-mask-visibility                 : ;
+    --cover-background-position                        : center center;
+    --cover-background-repeat                          : no-repeat;
+    --cover-background-size                            : cover;
+
+    --base-font-size: 14px;
+    --theme-color   : green;
+}
+</style>
 
 </body>
 
