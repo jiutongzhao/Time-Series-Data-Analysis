@@ -1,6 +1,6 @@
-## What Else Should You Know About the DFT and FFT?
+# What Else Should You Know About the DFT and FFT?
 
-### Gibbs Phenomenon
+## Gibbs Phenomenon
 
 Although a discrete signal can be losslessly transformed using the Fourier transform, it still faces limitations when attempting to represent continuous functions with sharp discontinuities. A continuous function with an infinitely steep jump introduces an infinite derivative at the discontinuity. However, any finite, discrete sampling of that function cannot fully capture its high-frequency behavior near the jump.
 
@@ -14,7 +14,7 @@ The Gibbs phenomenon is not a numerical artifact but an intrinsic property of th
 <img src="Figure/figure_gibbs.png" width="60%"/>
 </p>
 
-### Uncertainty Principle
+## Uncertainty Principle
 
 In 
 
@@ -22,7 +22,7 @@ In
 <img src="Figure/figure_uncertainty_principle.png" width="60%"/>
 </p>
 
-### Parseval's Theorem and Energy Conservation
+## Parseval's Theorem and Energy Conservation
 
 > **Parseval's Theorem for CFT:**
 > $$
@@ -105,7 +105,7 @@ $$
 
 1/2 in this equation arises from the fact that $\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$.
 
-### More Properties of Fourier Transform
+## More Properties of Fourier Transform
 
 A super powerful property of Fourier transform is that:
 $$
@@ -168,7 +168,7 @@ $$
 | Spectral Periodicity       | $X(f)$ not periodic                                    | $X[k]$ is periodic with period $N$                           |
 | Periodic Input Duality     | Periodic $x(t) \Rightarrow$ discrete $X(f)$            | Periodic $x[n] \Rightarrow$ sparse $X[k]$                    |
 
-### The performance of `numpy.fft.fft` and `scipy.signal.fft`
+## The performance of `numpy.fft.fft` and `scipy.signal.fft`
 
 The invention of the ***(Cooley–Tukey) Fast Fourier Transform (FFT) algorithm*** reduced the time complexity of DFT from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\mathrm{log}N)$ by efficiently decomposing the DFT into smaller computations, i.e., [divide-and-conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).  
 
@@ -211,7 +211,7 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 3. https://dsp.stackexchange.com/questions/24375/fastest-implementation-of-fft-in-c
 4. https://www.fftw.org/
 
-### Wiener–Khinchin Theorem
+## Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
 $
@@ -225,7 +225,7 @@ This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
 
-### Wide-Sense Stationarity
+## Wide-Sense Stationarity
 
 Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two independent time variables rather than just the lag $\tau$. In such cases, the expectation of the instantaneous wave power $\mathbb{E}[{x^2(t)}]=R_x(t, t)\neq R_x(0=t-t)$ is not independent on $t$. Hence, the Fourier transform of the autocorrelation no longer represents a meaningful or consistent frequency-domain power measure.
 
@@ -259,7 +259,7 @@ The second terms traverse the whole wave phase from $0$ to $2\pi$ therefore has 
 
 
 
-### What If the Signal Is Not Stationary?
+## What If the Signal Is Not Stationary?
 
 For nonstationary signals, the PSD is ill-defined or misleading. In such cases, time-frequency analysis techniques such as:
 
@@ -268,41 +268,9 @@ For nonstationary signals, the PSD is ill-defined or misleading. In such cases, 
 
 can be used to track how the spectrum evolves over time, even though no stationary PSD exists.
 
-### Polynomial Trend as Seen by DFT
+## Polynomial Trend as Seen by DFT
 
 
-
-### Sliding Window
-
-`numpy.lib.stride_tricks.sliding_window_view(x, window_shape, axis=None, *, subok=False, writeable=False)` provides the function for re-organizing the signal into several sub-chunk. This function can only give a stride of one. For a customized stride, you need to use `numpy.lib.stride_tricks.as_strided(x, shape=None, strides=None, subok=False, writeable=True)`. This function can be unsafe and crash your program.  
-
-The `bottleneck` package, which is safer and more efficient,  is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the `bottleneck` functions and their expected results.
-
-```python
-# -------------------------------
-# Method 1: sliding_window_view (fixed stride = 1)
-# -------------------------------
-window_size = 4
-windows_stride1 = sliding_window_view(sig, window_shape=window_size)
-
-# -------------------------------
-# Method 2: as_strided (custom stride, use with caution!)
-# -------------------------------
-custom_stride = 2
-n_windows = (len(sig) - window_size) // custom_stride + 1
-shape = (n_windows, window_size)
-strides = (sig.strides[0] * custom_stride, sig.strides[0])
-
-windows_custom = as_strided(sig, shape=shape, strides=strides)
-
-# -------------------------------
-# Method 3: bottleneck (safe, NaN-aware window functions)
-# -------------------------------
-print("\n[3] bottleneck window functions:")
-ma = bn.move_mean(sig, window=3, min_count=1)
-mm = bn.move_max(sig, window=3, min_count=1)
-std = bn.move_std(sig, window=3, min_count=1)
-
-```
+<p align = 'center'>
 
 <div STYLE="page-break-after: always;"></div>

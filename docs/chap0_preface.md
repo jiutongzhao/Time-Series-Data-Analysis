@@ -1,14 +1,37 @@
-
 # Preface
 
-For many students, their first real encounter with spectral analysis often unfolds like this:
+<p align = 'center'><img src="Figure/figure_whistling.png" width="100%"/></p>
+<p align = 'center'>
+<audio id="audio" controls="" preload="none">
+  <source id="mp3" src="Data/whistling.wav">
+</audio>
+</p>
+<p align = 'center'><i>(Above): The Time Series of a Whistling Sound; (Bottom) Its Time-Frequency Spectrogram.</i></p>
 
-One day, they notice an intriguing phenomenon in a time-domain signal and eagerly share their discovery with an advisor or senior colleague. The response is calmly delivered: "You should try some Fourier or wavelet analysis."
 
-Returning to their desk, they dig out an old calculus textbook, flip through several pages, and quickly realize it won’t help. Next comes the trusted solution: a swift Google search for “Fourier Analysis tutorial". Eventually, they stumble upon a highly recommended *Digital Signal Processing* textbook with an impressive 4.3/5.0 book rating.  After a marathon weekend, they manage to read through the 50-plus pages of Chapter 1, *Signals and Systems*. However, by Chapter 2, Linear Time-Invariant Systems, fatigue sets in—only to realize that the actual Fourier series material is still more than 120 pages away.
+The purpose of this document stems from:
 
-At this juncture, most students pragmatically pivot to google *"Fourier Analysis by xxx"*  and get an answer with some unfamiliar jargon from *StackOverflow*, grabbing a ready-made code snippet to forge ahead.
+- **<u>Spectral Analysis is Useful</u>**: Signals are encountered in every single day of life, which can be seen, heard, or felt, like a whistling sound. Most of you can definitely get the variation of the signal, while you may find it hard to describe. The processing of such signals is a fundamental task in many fields, including physics, engineering, and data science. With a suitable analysis method, you can easily extract the information from the signal, such as the chirping signature of the whistle.
 
-Yet, a few determined souls persist—spending days gathering materials, watching lectures online, coding, and compiling a detailed report. Proudly, they present their hard work to their advisor, only to be met with the classic understated response: “Why so little progress this week?”
+- **<u>A Practical Handbook is Required</u>**: However, if you start learning it from the beginning, you need to flip through a 500-page textbook, which is not only time-consuming but also requires a solid mathematical background. The concise mathematical definition, like ***compact support***, is of no use in your own research but burns your patience and time. Moreover, it is hard for you to get a practical usage example with Python from these theoretical notebooks (Having said that, MATLAB provides a much more fruitful document). 
 
-<div STYLE="page-break-after: always;"></div>
+This document aims to provide a **practical guide** to spectral analysis, focusing on the essential concepts and practical applications. It is designed to be accessible to those with a basic understanding of Python and signal processing, without delving too deeply into the mathematical intricacies, which are accessible in the classic, highly-rated notebooks.
+
+Also, there will not be an introduction like "What is Signals", "What is Time Series". If you need it (them), please take a shower, brew a bottle of coffee, and read the super thick book. 
+
+- **Meteorology:** e.g. El-Nino ENSO Index
+
+<p align = 'center'>
+<img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
+</p>
+
+
+- **Geophysics:** e.g. Seismic Waves
+
+<p align = 'center'>
+<img src="Figure/figure_seismic_waves.png" width="60%"/>
+</p>
+
+- **Solar Physics:** e.g. Sunspot Number
+
+<p align = 'center'><img src="Figure/figure_sunspot.png" width="60%"/></p>

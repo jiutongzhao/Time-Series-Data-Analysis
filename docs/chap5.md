@@ -1,6 +1,6 @@
-## How to Deal With Faulty Sample?
+# How to Deal With Faulty Sample?
 
-### Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
+## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
 
@@ -61,7 +61,7 @@ $P(\omega) = \frac12\left[ \frac{\bigl[\sum (x_n-\bar x)\cos\!\bigl(\omega (t_n-
 
 Compare with the original frequency spectrum, the Lomb-Scargle periodogram contains some irregular frequency leakage. The Lomb-Scargle periodogram finally converge to the Fourier periodogram when the sample time is uniformly distributed.
 
-### Correlation Function
+## Correlation Function
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
@@ -80,7 +80,7 @@ $$
 $$
 If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
 
-### Hilbert Transform [*scipy.signal.hilbert*]
+## Hilbert Transform [*scipy.signal.hilbert*]
 
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
@@ -99,7 +99,7 @@ signal_ht = scipy.signal.hilbert(signal)
 signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 ```
 
-### Digital Filter
+## Digital Filter
 
 Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. In essence, a digital filter is a mathematical algorithm that modifies the amplitude and/or phase of certain frequency components of a discrete signal. Filters can be designed to remove noise, isolate trends, block out-of-band interference, or even simulate the response of a physical system. Anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.
 
@@ -123,7 +123,7 @@ Digital filters are divided into two main types:
   - $a[l]$: Feedback (output) coefficients, usually $a[0] = 1$
   - $M, N$: Orders for input and output
 
-#### Example: Moving Average
+### Example: Moving Average
 
 The **moving average filter** is actually a simple FIR filter. For a window length $L$, the coefficients are:
 $$
@@ -135,7 +135,7 @@ y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
 $$
 That is, the output is the **average of the most recent $L$ input samples**. **Therefore, the moving average filter is an FIR filter whose coefficients are all equal.**
 
-#### Example: Low-pass FIR Filtering
+### Example: Low-pass FIR Filtering
 
 Suppose we want to smooth a time series by attenuating frequencies above a certain threshold (e.g., removing noise above 50 Hz). This can be accomplished with an FIR filter designed using `scipy.signal.firwin`:
 
@@ -162,7 +162,7 @@ For IIR filters (such as Butterworth, Chebyshev), the `scipy.signal.butter` func
 
 
 
-#### Frequency Response and Interpretation
+### Frequency Response and Interpretation
 
 The effect of a digital filter can be fully characterized by its *frequency response*, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
 
@@ -187,24 +187,24 @@ It is not suggested to apply a filter with an over-narrow bandwidth unless you a
 <img src="Figure/figure_filtered_noise.png" width="60%"/>
 </p>
 
-#### Practical Tips
+### Practical Tips
 
 - **Zero-phase Filtering:** Use `scipy.signal.filtfilt` for zero-phase filtering to avoid phase distortion, especially for waveform analysis.
 - **Edge Effects:** Discard a small number of samples at both ends after filtering, or pad the signal before filtering to reduce transient effects.
 - **Causality:** Standard filters are causal (output depends only on current and past inputs). Non-causal (zero-phase) filtering requires processing both forward and backward in time, and is not physically realizable in real-time applications.
 
-### Interpolation
+## Interpolation
 
 **Interpolation** is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.
 
-#### Why Do We Need Interpolation?
+### Why Do We Need Interpolation?
 
 - **Resampling:** Convert irregularly sampled data to a regular time grid for spectral analysis.
 - **Filling Gaps:** Restore missing or corrupted data in a time series.
 - **Temporal Alignment:** Synchronize data from different sources with differing sampling rates.
 - **Upsampling/Downsampling:** Increase or decrease data resolution, e.g., for visualization or model input.
 
-#### Common Interpolation Methods
+## Common Interpolation Methods
 
 ##### 1. Nearest-Neighbor and Linear Interpolation [`interp1d`]
 
@@ -288,7 +288,7 @@ sinc_interp(t_interp, sig, t)
 <img src="Figure/figure_interpolation.png" width="60%"/>
 </p>
 
-#### Interpolation and the Frequency Domain
+### Interpolation and the Frequency Domain
 
 **Interpolation in the time domain directly impacts the signal’s frequency content:**
 
@@ -302,7 +302,7 @@ sinc_interp(t_interp, sig, t)
 
 #### 
 
-### Cepstrum
+## Cepstrum
 
 A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its harmonic $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
 

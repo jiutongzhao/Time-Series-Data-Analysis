@@ -1,8 +1,6 @@
-# Why Do We Need Spectral Analysis?
+# Initialize Your Data
 
-### Signals and Time Series
-
-In physics and engineering, we frequently encounter **signals**—mathematical functions representing physical quantities that vary continuously or discretely over time. A signal can be any measurable quantity exhibiting temporal variation, such as an audio waveform, the voltage output from a sensor, or the magnetic field recorded during a plasma experiment. When signals are observed, sampled, and recorded sequentially, they form a **time series**, capturing how these quantities evolve.
+## Signals and Time Series
 
 Many familiar phenomena can naturally be described as time series, including:
 
@@ -27,22 +25,7 @@ Each of these examples is described in the **time domain**—meaning we specify 
 
 While understanding the time-domain behavior of a system is fundamental, it can sometimes be challenging to discern **underlying patterns, periodicities, or oscillatory features** directly from time-domain data. This is precisely where **spectral analysis** proves invaluable, as it allows us to examine signals in the frequency domain, clearly identifying and characterizing these hidden structures.
 
-### Understand the Signal from Frequency Domain
-
-**Spectral analysis** examines a signal in the frequency domain instead of the time domain.
-
-Imagine listening to an orchestra. The audio signal is a complex waveform. But your brain can distinguish individual notes — essentially doing spectral analysis!
-
-In **plasma physics**, spectral analysis helps resolve the basic properties of wave (e.g., amplitude, compressibility) by revealing dominant frequencies in electromagnetic field fluctuations.
-
-Spectral analysis helps to:
-
-1. **Identify dominant frequencies** in a signal.
-2. **Detect multiple overlapping processes**.
-3. **Understand system behavior** through resonance.
-4. **Filter or reduce noise**.
-
-### Sampling
+## Sampling
 
 > **Nyquist-Shannon Sampling Theorem:** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 $$
@@ -56,7 +39,9 @@ When you measure a high frequency signal with a low cadence instrument, you will
 <p align = 'center'>
 <img src="Figure/figure_aliasing.png" width="60%"/>
 </p>
-Such phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
+Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
+
+It should be noted that the Nyquist frequency is only the lowest frequency to reconstruct the signal and its frequency spectrum. It doesn't mean that you can fully capture the waveform by sampling at this frequency. For example, if you sample a sine wave at a frequency of 2.01 times its frequency, you are going to get a distorted signal that does not represent the original sine wave accurately. 
 
 This effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter so that the high frequency component doesn't contribute to the unreal signal. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
@@ -112,7 +97,23 @@ This effect always happens when you (down-)sampling the signal, a common way to 
   sig = sig_func(t)
   ```
 
-------
+
+
+## Read Signals From Data
+
+| Interface                              | Purpose                                  | Supported Formats                         | Dependencies         | Pros                                                         | Cons                                                         |
+| -------------------------------------- | ---------------------------------------- | ----------------------------------------- | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **scipy.io.loadmat**                   | Load MATLAB `.mat` files (read-only)     | `.mat` v4, v6, v7–7.2                     | SciPy                | Reads structs, nested arrays, sparse matrices :contentReference[oaicite:1]{index=1} | No support for v7.3 HDF5 format, needs external libs for those files |
+| **scipy.io.readsav**                   | Read IDL `.sav` files                    | IDL `.sav`                                | SciPy                | Pure‑Python, preserves structure, case-insensitive dict :contentReference[oaicite:2]{index=2} | Read-only; limited support for advanced types                |
+| **scipy.io.netcdf** *(deprecated)*     | Read NetCDF3 files                       | NetCDF3                                   | SciPy                | Easy legacy I/O setup                                        | Deprecated—users are advised to use `netCDF4` or `xarray` instead |
+| **numpy.load**                         | Load NumPy’s `.npy` or `.npz` files      | `.npy`, `.npz`                            | NumPy                | Fast, supports memory mapping (`mmap_mode`) :contentReference[oaicite:3]{index=3} | Only supports NumPy’s native formats                         |
+| **numpy.fromfile**                     | Load raw binary or simple text files     | Raw binary or delimited text files `.dat` | NumPy                | Very fast for known-format binary/text; structured dtypes; no overhead :contentReference[oaicite:4]{index=4} | No metadata; brittle if dtype misaligned; non-portable; poor error handling |
+| **pandas.read_csv/excel/json/parquet** | Load structured or semi-structured data  | CSV, Excel, JSON, Parquet, etc.           | Pandas + format libs | Rich parsing; powerful DataFrame tools                       | Memory-heavy for large datasets; extra backend dependencies  |
+| **spacepy.pycdf.CDF**                  | Read NASA Common Data Format (CDF) files | `.cdf` (NASA CDF)                         | SpacePy + NASA C lib | Dict-like, lazy loading, metadata support :contentReference[oaicite:5]{index=5} | Requires NASA CDF C library; installation complexity         |
+
+
+
+## Generate Signals Artificially
 
 ### Common Waveforms
 

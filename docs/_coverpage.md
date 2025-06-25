@@ -4,13 +4,13 @@
 
 # ***Spectral Analysis with Python <small></small>***
 
-> A document for practical time series analsysis
+> **A Document for Practical Time Series Analysis**
 
-- From Fourier to Wavelet
-- Fruitful Examplary Figure
-- Provided with Python Code
+**From Fourier to Wavelet**
+
+**Fruitful Example Figure**
+
+**Provided with Python Code**
 
 [GitHub](https://github.com/JiuTong-Zhao/Time-Series-Data-Analysis)
-[Get Started](#Preface)
-
-![](/Figure/figure_background.png)
+[Get Started](#preface)

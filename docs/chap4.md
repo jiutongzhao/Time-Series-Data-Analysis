@@ -1,6 +1,6 @@
-## How to Handle Noise?
+# How to Handle Noise?
 
-### What is Noise?
+## What is Noise?
 
 Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty). 
 
@@ -14,7 +14,7 @@ In audio engineering, electronics, physics, and many other fields, the color of 
 
 The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $1/f^\beta$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($\beta$ = 0), while flicker or pink noise has $\beta$ = 1, and Brownian noise has $\beta$ = 2. Blue noise has $\beta$ = -1.
 
-### Signal-to-Noise Ratio and Decibel
+## Signal-to-Noise Ratio and Decibel
 
 Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
 
@@ -33,7 +33,7 @@ $$
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
 $$
 
-#### Interpretation
+### Interpretation
 
 - **Higher SNR** indicates a cleaner, more detectable signal.
 - **0 dB** means the signal and noise power are equal.
@@ -57,9 +57,9 @@ The adoption of decibel instead of the conventional physical unit has three adva
 - When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
-### Artificial Noise Generation
+## Artificial Noise Generation
 
-#### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
+### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
 According to the property of Fourier transform, the convolution in the .
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -70,7 +70,7 @@ brownian_noise = np.cumsum(np.random.randn(time.size)) * dt
 violet_noise = np.diff(np.random.randn(time.size + 1)) / dt
 ```
 
-#### Method 2: Rescale the frequency spectrum of the white noise [Suggested]
+### Method 2: Rescale the frequency spectrum of the white noise [Suggested]
 
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -91,7 +91,7 @@ violet_noise = np.fft.irfft(violet_noise_fft)
 
 Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
 
-### "Noise" of Noise
+## "Noise" of Noise
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
 
 The Fourier coefficient computed as 
@@ -116,7 +116,7 @@ It should be noted that the periodic signals like $\mathrm{sin}\omega t$ are not
 
 To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
 
-### Welch Method [`scipy.signal.welch`]
+## Welch Method [`scipy.signal.welch`]
 Welch proposed that the averaging the power spectral density instead of the coefficient can largely reduce the flutuation levels of the spectrum. Therefore, we may just get a.
 
 The averaging operation must be taken after the conversion from coefficient to power other wise the averaged coefficients are actually unchanged.
@@ -161,7 +161,7 @@ The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \la
 
 In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at unity, which means every segement has no overlapping with each other. It can be regarded as a special case of the *Welch Method* while it is actually proposed earlier.
 
-### Blackman-Tukey Method
+## Blackman-Tukey Method
 
 ***Blackman-Tukey method*** gives another approach to a high SNR estimation of *PSD* based on the *W.S.S* properties of the signal and *Wiener–Khinchin theorem*. This method consists of three steps:
 
@@ -187,7 +187,7 @@ Apart from splitting the signal into several segments, one can also downsample t
 <img src="Figure/figure_noise_blackman_tukey.png" width="60%"/>
 </p>
 
-### Signal Over Noise
+## Signal Over Noise
 
 A signal composed of a deterministic sinusoidal component and additive noise can be written as:
 $$

@@ -1,6 +1,8 @@
-<!-- docs/_sidebar.md --> 
-* [Preface](chap0_preface.md) 
-* [Why Do We Need Spectral Analysis?](chap1.md)
+<!-- docs/_sidebar.md -->
+
+- [Preface](chap0_preface.md)
+
+* [Initialize Your Data](chap1.md)
 * [How Do We See Frequencies in Data?](chap2.md)
 * [What Else Should You Know About the DFT and FFT?](chap3.md)
 * [How to Handle Noise?](chap4.md)

@@ -1,6 +1,6 @@
-## How Do We See Frequencies in Data?
+# How Do We See Frequencies in Data?
 
-### Fourier Transform
+## Fourier Transform
 
 Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
 
@@ -112,7 +112,7 @@ freq = np.fft.rfftfreq(coef.size, dt)
 
 Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
 
-### Windowing Effect
+## Windowing Effect
 
 When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary.
 
@@ -225,7 +225,7 @@ F --> K@{ shape: lean-r, label: "$psd[k]$"}
 
 
 
-### Fence Effect and Zero-Padding
+## Fence Effect and Zero-Padding
 
 To further improve the interpretability of spectral results, addressing spectral leakage alone is not enough. Another source of distortion arises from the discretization of the frequency axis itself. When a signal's frequency component does not align exactly with the frequency bins defined by the DFT, its energy spreads into neighboring bins—a phenomenon known as the **fence effect**. To reduce this effect and achieve smoother spectral representations, we often apply a technique known as **zero-padding**, which is discussed below.
 

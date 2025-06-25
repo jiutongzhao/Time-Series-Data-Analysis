@@ -55,25 +55,40 @@
   <script src="//cdn.jsdelivr.net/npm/docsify@5/dist/plugins/search.min.js"></script>
 
   <style>
-    .docsify-copy-code-button > .success {
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    right: 0;
-    padding: 0.65em 0.8em;
-    font-size: 1em;
-    opacity: 0;
-    transform: translate(0, -50%);
-    }</style>
-  
-  <style>
-  .docsify-copy-code-button.success > .success {
-    right: 100%;
-    opacity: 1;
-    transform: translate(-20%, -50%);
-  }</style>
+    .docsify-copy-code-button>.success {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: 0;
+      padding: 0.65em 0.8em;
+      font-size: 1em;
+      opacity: 0;
+      transform: translate(0, -50%);
+    }
+  </style>
 
   <style>
+    .docsify-copy-code-button.success>.success {
+      right: 100%;
+      opacity: 1;
+      transform: translate(-20%, -50%);
+    }
+  </style>
+
+  <style>
+    :root {
+      --cover-background-blend-mode: ;
+      --cover-background-color: ;
+      --cover-background-mask-color: ;
+      --cover-background-mask-opacity: 1.0;
+      --cover-background-mask-visibility: true;
+      --cover-background-image: 'https://images.hdqwalls.com/wallpapers/apple-ios9-official-apple-wave.jpg';
+      --cover-background-position: center center;
+      --cover-background-repeat: no-repeat;
+      --cover-background-size: cover;
+    }
+  </style>
+  <!-- <style>
   :root {
     section.cover.has-mask .mask {
     background-color: purple;
@@ -84,7 +99,7 @@
     width: 100%;
   }
   }
-  </style>
+  </style> -->
 
   <!-- <style>
     body {
