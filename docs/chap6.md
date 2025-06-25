@@ -1,6 +1,6 @@
-## Time-Frequency Spectrum
+# Time-Frequency Spectrum
 
-### Short-Time Fourier Transform
+## Short-Time Fourier Transform
 
 The Short-Time Fourier Transform (STFT) extends traditional Fourier analysis to non-stationary signals by introducing time localization via windowing. This allows us to track how the frequency content of a signal evolves over time. This section explains the trade-off between time and frequency resolution, the role of window functions, and practical implementation with `scipy.signal.shortTimeFFT`. It should be noted that function `scipy.signal.stft` is considered legacy and will no longer receive updates. While `scipy` currently have no plans to remove it, they recommend that new code uses more modern alternatives `shortTimeFFT` instead.
 
@@ -15,15 +15,15 @@ stft_frequency = np.fft.rfftfreq(window, d=dt)  # frequency vector for STFT
 ```
 
 <p align = 'center'>
-<img src="Figure/figure_stft.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_stft.png" alt="An example of DFT." width="100%"/>
 </p>
 
-### Wavelet Analysis
+## Continuous Wavelet Analysis
 
 Wavelet analysis offers a versatile framework for multi-resolution time-frequency analysis, especially for signals with localized features or abrupt transitions. By decomposing a signal into wavelets, we gain simultaneous insight into both frequency and time domains. This section introduces the fundamentals of wavelet theory, common wavelet families, and hands-on examples using Python packages such as `pywt`, `scipy`, and `squeezzeypy`.
 
 <p align = 'center'>
-<img src="Figure/figure_wavelet.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_wavelet.png" alt="An example of DFT." width="100%"/>
 </p>
 
 ```python
@@ -64,6 +64,10 @@ psd = (np.abs(coef) ** 2) * (2 * dt)
 coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 ```
 
-#### Continuous and Discrete Wavelet
+#### Wavelet Family
+
+
+
+
 
 <div STYLE="page-break-after: always;"></div>

@@ -59,6 +59,8 @@ $$
 
 in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application—The absolute value matters!
 
+- Single-side *vs* Double-side
+
 <p align = 'center'>
 <img src="Figure/figure_fft_single_side.png" width="60%"/>
 </p>
@@ -121,14 +123,14 @@ When performing spectral analysis using the DFT, we implicitly assume that the f
 </p>
 
 
-This artificial discontinuity introduces **spectral leakage**, causing energy from specific frequency components to spread into adjacent frequencies, thereby distorting the true spectral content. To mitigate this issue, a **window function**—typically denoted $\mathcal{W}(t)$—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.
+This artificial discontinuity introduces **spectral leakage**, causing energy from specific frequency components to spread into adjacent frequencies, thereby distorting the true spectral content. To mitigate this issue, a **window function**—typically denoted ${w}(t)$—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.
 
-Typically, the wave function is a bell-shaped function with all non-negative values. Different window functions (e.g., rectangular, Hamming, Hanning, Blackman) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). Choosing the appropriate window is essential for ensuring accurate and interpretable spectral results.
+Different window functions (e.g., rectangular, Hamming, Hanning, Blackman) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). You should try these window functions yourself and choose the most suitable one.
 
-Here after, we are going to give an example of window function, the Hanning window, which is written as:
+The Hanning window, which is a very wide used window function, can be written as:
 $$
 \begin{align}
-w(x)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi x)\right]\\
+w(t)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi t)\right]\\
 w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 \end{align}
 $$

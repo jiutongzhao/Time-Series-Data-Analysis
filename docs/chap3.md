@@ -2,44 +2,24 @@
 
 ## Gibbs Phenomenon
 
-Although a discrete signal can be losslessly transformed using the Fourier transform, it still faces limitations when attempting to represent continuous functions with sharp discontinuities. A continuous function with an infinitely steep jump introduces an infinite derivative at the discontinuity. However, any finite, discrete sampling of that function cannot fully capture its high-frequency behavior near the jump.
-
-From the perspective of the Fourier operator , the discontinuity is perceived as two adjacent sample points with a large difference, and a finite Fourier series will attempt to approximate this using a limited set of basis sinusoids. This leads to **overshooting and ringing** near the discontinuity—an effect known as the **Gibbs phenomenon**.
-
-Mathematically speaking, even though the Fourier transform converges to the correct function almost everywhere, at the discontinuity itself it overshoots by a fixed percentage (~9%) regardless of how many harmonics are included. The oscillatory artifacts do not vanish with more terms; they merely become narrower and more localized.
-
-The Gibbs phenomenon is not a numerical artifact but an intrinsic property of the Fourier basis when approximating non-smooth functions. In practical signal processing, techniques such as windowing, filtering, or switching to other basis functions (e.g., wavelets) are used to reduce its visible impact.
+Although the Fourier transform can perfectly reconstruct **<u>discrete</u>** signal points, it struggles to represent analytic functions with sharp discontinuities. This is because a finite number of sinusoids cannot fully capture the infinite-frequency behavior near a jump, leading to **the Gibbs phenomenon**—persistent overshoot and ringing near discontinuities. 
 
 <p align = 'center'>
-<img src="Figure/figure_gibbs.png" width="60%"/>
+<img src="Figure/figure_gibbs.png" width="100%"/>
 </p>
+Despite increasing the number of harmonics, the overshoot remains (~9%), becoming narrower but not disappearing. This is a fundamental limitation of the Fourier basis, not a numerical flaw, and in practice, techniques like windowing, filtering, or using alternative bases such as wavelets are employed to mitigate its effects.
 
 ## Uncertainty Principle
 
-In 
+The Uncertainty Principle in signal processing states that a function cannot be simultaneously localized in both time and frequency: the more precisely you know a signal’s timing, the less precisely you can know its frequency content, and vice versa. 
 
-<p align = 'center'>
-<img src="Figure/figure_uncertainty_principle.png" width="60%"/>
-</p>
+<p align = 'center'><img src="Figure/figure_uncertainty_principle.png" width="100%"/></p>
+<p align = 'center'><i>Top: Gaussian pulses with narrow (purple) to wide (blue) time span; Bottom: Their Fourier coefficient with wide to narrow frequency bandwidth. </i></p>
+
+
+This trade-off is a fundamental limitation of the Fourier transform and is mathematically expressed through time–bandwidth products. It implies that short-duration signals must occupy a wide frequency range, while narrow-band signals cannot be sharply confined in time—a concept closely related to Heisenberg’s uncertainty principle in quantum mechanics.
 
 ## Parseval's Theorem and Energy Conservation
-
-> **Parseval's Theorem for CFT:**
-> $$
-> \begin{align}
-> \int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
-> \end{align}
-> $$
->
-> 
->
-> **for DFT:**
-> $$
-> \sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
-> $$
->
-> 
-
 In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($u$) written as 
 
 $$
@@ -51,7 +31,7 @@ $$
 In this case, the ***energy*** of the signal naturally linked with the ***energy*** of the electromagnetic field. Nevertheless, the energy of a signal is an extensive property as it linearly increases with the length of the sample. In the ordinary investigation, the signal energy is always further converted as signal ***power***, which is an intensive property that describe the amplitude and is independent of signal length. The defition of power, *P*, can be written as:
 
 $$
-P&= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t\\
+P= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t
 $$
 
 
@@ -66,7 +46,15 @@ P&=\frac{1}{N\Delta t}\sum_{n=0}^{N-1}|x(n\Delta t)|^2 \Delta t\\
 \end{align}
 $$
 
+$$
+\begin{align}
+\int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
+\end{align}
+$$
 
+$$
+\sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
+$$
 
 for DFT. Considering that DFT yields both positive and negative frequency, we typically fold the DFT result. Naturally, the definition of *power spectral density (PSD)* is given as:
 
@@ -177,7 +165,7 @@ Most tutorials introduce the ***radix-2*** FFT, which splits the signal into ***
 Still, the divide-and-conquer strategy fails when the signal length *N* consists of at least one big prime number factor (e.g, 10007) as the signal is hard to split. In that situation, the ***Bluestein's algorithm***, which is essentially a ***Chirping-Z transform***, is used. This algorithm takes the $\mathcal{F}$ operation as a convolution and then uses the *convolution theorem* in the calculation of DFT coefficients. The convolution property allows us to extend the signal length to a proper, highly composite number with zero-padding (denoted as *M*), but the coefficients and frequency resolution remain unchanged. The final time complexity of *Bluestein's algorithm* goes to $\mathcal{O}(N+M\mathrm{log}M)$, where the first term originates from the iterate all the frequency component.
 
 <p align = 'center'>
-<img src="Figure/figure_numpy_fft_performance.png" width="60%"/>
+<img src="Figure/figure_numpy_fft_performance.png" width="100%"/>
 </p>
 
 
@@ -214,13 +202,13 @@ The `scipy.signal.fft` additionally provides an input parameter `workers:` *`int
 ## Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
-$
+$$
 R_x(\tau) = \mathbb{E}[x(t)\,x(t + \tau)]
-$
+$$
 The **power spectral density** is defined as the **Fourier transform** of the autocorrelation function:
-$
+$$
 S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
-$
+$$
 This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components. The relationship between PSD and the Fourier coefficients has been introduced in the previous section.
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.

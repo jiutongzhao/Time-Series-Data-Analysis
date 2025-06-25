@@ -68,9 +68,10 @@ std = bn.move_std(sig, window=3, min_count=1)
 
 ```
 
-<p align = 'center'>
-<img src="Figure/figure_table_of_distributions.png" width="60%"/>
-</p>
-<p align = 'center'>
-<i>Table of Common Distributions</i>
-</p>
+## Table of Common Distributions
+
+Please keep in mind that all signals contain uncertainty. If you want to start a theoretical derivation on some signal properties, consider it from the perspective of probability. 
+
+<p align = 'center'><img src="Figure/figure_table_of_distributions.png" width="60%"/></p>
+<p align = 'center'><i>Table of Common Distributions</i></p>
+

@@ -50,7 +50,7 @@ The central ideas of these two methods are:
      - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
      
        <p align = 'center'>
-       <img src="Figure/figure_pca.png" alt="An example of DFT." width="60%"/>
+       <img src="Figure/figure_pca.png" alt="An example of DFT." width="100%"/>
        </p>
        
         ```python
@@ -251,7 +251,7 @@ $$
 \mathrm{Coherency}:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
 $$
 <p align = 'center'>
-<img src="Figure/figure_coherency.png" alt="An example of DFT." width="60%"/>
+<img src="Figure/figure_coherency.png" alt="An example of DFT." width="100%"/>
 </p>
 
 One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.

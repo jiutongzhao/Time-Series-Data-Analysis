@@ -22,16 +22,16 @@ Also, there will not be an introduction like "What is Signals", "What is Time Se
 - **Meteorology:** e.g. El-Nino ENSO Index
 
 <p align = 'center'>
-<img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="60%"/>
+<img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="100%"/>
 </p>
 
 
 - **Geophysics:** e.g. Seismic Waves
 
 <p align = 'center'>
-<img src="Figure/figure_seismic_waves.png" width="60%"/>
+<img src="Figure/figure_seismic_waves.png" width="100%"/>
 </p>
 
 - **Solar Physics:** e.g. Sunspot Number
 
-<p align = 'center'><img src="Figure/figure_sunspot.png" width="60%"/></p>
+<p align = 'center'><img src="Figure/figure_sunspot.png" width="100%"/></p>

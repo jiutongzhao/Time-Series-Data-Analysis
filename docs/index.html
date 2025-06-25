@@ -9,9 +9,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5">
   <link rel="icon" href="Figure/figure_icon.png" />
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"> -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-defaults.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.css">
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/LIGMATV/docsify-theme-github/github.css"> -->
 
 </head>
@@ -24,7 +24,7 @@
       repo: '',
       coverpage: true,
       loadSidebar: true,
-      subMaxLevel: 5,
+      subMaxLevel: 3,
       search: 'auto', // default
       latex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']], // default
@@ -53,7 +53,12 @@
 
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify@5/dist/plugins/search.min.js"></script>
-
+  <style>
+  div.mermaid {
+    text-align: center;
+  }
+  </style>
+  
   <style>
     .docsify-copy-code-button>.success {
       position: absolute;
