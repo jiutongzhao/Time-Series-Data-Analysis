@@ -16,7 +16,7 @@ When you measure a high frequency signal with a low cadence instrument, you will
 </p>
 Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by recording the running car wheel (or helicopter propeller) and television (or computer screen) with your smart phone. 
 
-A sampling frequency that larger than two times of the wave frequency can not guarantee fully capturing the waveform. 
+<u>**A sampling frequency of two times of the wave frequency can not guarantee fully capturing the waveform.**</u> This fact is even true for pure sine waves. 
 
 
 
@@ -67,13 +67,12 @@ This effect always happens when you (down-)sampling the signal, a common way to 
   <p align = 'center'>
   <img src="Figure/figure_typical_signals.png" width="100%"/>
   </p>
-  
-  - In addition to sine waves, there are some other commonly used waveforms built-in functions that are provided by `scipy.signal` module. These functions can be used to generate various types of signals for testing, simulation, and analysis purposes. Using these built-in functions help to improve your code readability and reduce the your chance to creating bugs. Below is a brief overview of some typical waveforms:
 
-    #### **[Chirp Waveform](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.chirp.html) (`chirp`)**
+  - **<u>Using these `scipy.signal` built-in functions</u>** helps to **<u>improve your code readability and reduce your chances of creating bugs: </u>**    
 
-    Generates a swept-frequency (chirp) signal, which is often used in radar, sonar, and frequency response analysis.
-    
+    1. **[Chirp Waveform](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.chirp.html) (`chirp`)**
+       Generates a swept-frequency (chirp) signal, which is often used in radar, sonar, and frequency response analysis.
+
     ```python
     scipy.signal.chirp(
         t: array_like,                 # Time array
@@ -84,13 +83,13 @@ This effect always happens when you (down-)sampling the signal, a common way to 
         phi: float = 0                # Initial phase in degrees
     )
     ```
-    
+
     ------
-    
-    #### **[Gaussian Pulse](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.gausspulse.html#scipy.signal.gausspulse) (`gausspulse`)**
-    
+
+    2. **[Gaussian Pulse](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.gausspulse.html#scipy.signal.gausspulse) (`gausspulse`)**
+
     Generates a Gaussian-modulated sinusoidal pulse, commonly used in ultrasound and narrow-band radar simulations.
-    
+
     ```python
     scipy.signal.gausspulse(
         t: array_like,             # Time array
@@ -102,39 +101,39 @@ This effect always happens when you (down-)sampling the signal, a common way to 
         retenv: bool = False       # If True, return envelope of the signal
     )
     ```
-    
+
     ------
-    
-    #### **[Square Wave](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.square.html#scipy.signal.square) (`square`)**
-    
+
+    3. **[Square Wave](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.square.html#scipy.signal.square) (`square`)**
+
     Generates a square waveform, useful in digital signal simulations, PWM applications, and modulation experiments.
-    
+
     ```python
     scipy.signal.square(
         t: array_like,             # Time array
         duty: float = 0.5          # Duty cycle (fraction of period signal is high)
     )
     ```
-    
+
     ------
-    
-    #### **[Sawtooth Wave](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sawtooth.html#scipy.signal.sawtooth) (`sawtooth`)**
-    
+
+    4. **[Sawtooth Wave](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sawtooth.html#scipy.signal.sawtooth) (`sawtooth`)**
+
     Generates a sawtooth waveform, widely used in signal synthesis and electronics simulations.
-    
+
     ```python
     scipy.signal.sawtooth(
         t: array_like,             # Time array
         width: float = 1           # Width of rising ramp, from 0 to 1 (1 = triangle wave)
     )
     ```
-    
+
     ------
-    
-    #### **[Unit Impulse](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.unit_impulse.html#scipy.signal.unit_impulse) (`unit_impulse`)**
-    
+
+    5. **[Unit Impulse](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.unit_impulse.html#scipy.signal.unit_impulse) (`unit_impulse`)**
+
     Generates a discrete-time impulse (Dirac delta function), fundamental for impulse response analysis.
-    
+
     ```python
     scipy.signal.unit_impulse(
         shape: int or tuple[int],  # Output shape
@@ -145,11 +144,14 @@ This effect always happens when you (down-)sampling the signal, a common way to 
 
 - From ***Unix Timestamps*** to `np.datetime`
 
-  - A Unix timestamps is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.
+  - A Unix timestamp is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.
 
-  ```python
-  t = (t * 1e9).astype('datetime64[ns]')
-  t = t.astype('datetime64[s]')
-  ```
+      ```python
+      t = (t * 1e9).astype('datetime64[ns]')
+      t = t.astype('datetime64[s]')
+      ```
+  
+  - If you need to consider leap seconds in your investigation, use `astropy`.
+  
 
 <div STYLE="page-break-after: always;"></div>

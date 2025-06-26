@@ -1,223 +1,201 @@
-# How to Handle Noise?
+# Power Spectral Density
 
-## What is Noise?
+## Parseval's Theorem and Energy Conservation
+In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). In plasma physics, electromagnetic field contains the energy density ($u$) written as 
 
-Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty). 
-
-When the underlying process is **stochastic**—that is, governed by probabilistic rules—each individual time series obtained through measurement is called a **realization** (or sample path) of the underlying random process. While the random process describes the full ensemble of possible outcomes, a realization is a single, concrete instance that we analyze in practice.
-
-<p align = 'center'>
-<img src="Figure/figure_noise.png" alt="An example of DFT." width="60%"/>
-</p>
-
-In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
-
-The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $1/f^\beta$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($\beta$ = 0), while flicker or pink noise has $\beta$ = 1, and Brownian noise has $\beta$ = 2. Blue noise has $\beta$ = -1.
-
-## Signal-to-Noise Ratio and Decibel
-
-Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
-
-The SNR is defined as the ratio of the power of the signal to the power of the noise:
 $$
-\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
-$$
-where $P_{\text{signal}}$ is the average power of the signal, and $P_{\text{noise}}$ is the average power of the noise.
-
-Since this ratio can span several orders of magnitude, it is often expressed in **decibels (dB)**:
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
-$$
-For amplitude-based SNR (when measuring signal and noise in terms of root-mean-square (RMS) amplitude), the formula becomes:
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
+u=u_E + u_B=\frac{1}{2}(\varepsilon_0 \mathit{E}^2 + \frac{1}{\mu_0}\mathit{B}^2)
 $$
 
-### Interpretation
-
-- **Higher SNR** indicates a cleaner, more detectable signal.
-- **0 dB** means the signal and noise power are equal.
-- **Negative SNR** indicates the noise power exceeds signal power.
-
-***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
 
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+In this case, the ***energy*** of the signal naturally linked with the ***energy*** of the electromagnetic field. Nevertheless, the energy of a signal is an extensive property as it linearly increases with the length of the sample. In the ordinary investigation, the signal energy is always further converted as signal ***power***, which is an intensive property that describe the amplitude and is independent of signal length. The defition of power, *P*, can be written as:
+
+$$
+P= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t
+$$
 
 
 
-Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
+or 
+$$
+\begin{align}
+P&=\frac{1}{N\Delta t}\sum_{n=0}^{N-1}|x(n\Delta t)|^2 \Delta t\\
+&=\frac{1}{N^2\Delta f}\sum_{k=0}^{N-1}|X(k\Delta f)|^2 \Delta f \\
+&=\sum_{k=0}^{N-1} \boxed{\frac{1}{Nf_s} |X(k\Delta f)|^2}\, \Delta f\\
+&=\sum_{k=0}^{N-1}PSD[k]\Delta f
+\end{align}
+$$
 
-The adoption of decibel instead of the conventional physical unit has three advantage:
+$$
+\begin{align}
+\int_{-\infty}^\infty x^2(t)\, dt = \int_{-\infty}^\infty X^2(f)\, df
+\end{align}
+$$
 
-- It allows the direction addition when compare the amplitude of the signal.
-- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
-- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
+$$
+\sum_{n=0}^{N-1}|x[n]|^2 = \frac{1}{N}\sum_{k=0}^{N-1}|X[k]|^2
+$$
 
-## Artificial Noise Generation
+for DFT. Considering that DFT yields both positive and negative frequency, we typically fold the DFT result. Naturally, the definition of *power spectral density (PSD)* is given as:
 
-### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
-According to the property of Fourier transform, the convolution in the .
-```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-dt = time[1] - time[0]
+$$
+\begin{align}
+&\sum_{k=0}^{N-1} PSD[k\Delta f] \Delta f =\\
+\mathrm{For\ Even \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{N}/{2}-1} 2\cdot PSD[k\Delta f] + PSD[f_{N/2}]\right]\\
+\mathrm{For\ Odd \ }N:\ &\Delta f \left[PSD[0] + \sum_{k=1}^{{(N-1)}/{2}} 2\cdot PSD[k\Delta f]\right]
+\end{align}
+$$
 
-white_noise = np.random.randn(time.size)
-brownian_noise = np.cumsum(np.random.randn(time.size)) * dt
-violet_noise = np.diff(np.random.randn(time.size + 1)) / dt
-```
 
-### Method 2: Rescale the frequency spectrum of the white noise [Suggested]
+
+$PSD[0]$ represents the DC component and is ignored in the spectral analysis for the most(but not all) time.
 
 ```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-dt = time[1] - time[0]
+N = coef.size
 fs = 1 / dt
-freq = np.fft.rfftfreq(len(time), dt)
+psd = (np.abs(coef) ** 2) / (N * fs)
 
-brownian_noise_fft = np.fft.rfft(np.random.randn(time.size))
-brownian_noise_fft[1:] /= freq[1:] ** 1
-brownian_noise_fft[0] = 0
-brownian_noise = np.fft.irfft(brownian_noise_fft)
-
-violet_noise_fft = np.fft.rfft(np.random.randn(time.size))
-violet_noise_fft[1:] /= freq[1:] ** -1
-violet_noise_fft[0] = 0
-violet_noise = np.fft.irfft(violet_noise_fft)
+if N % 2 == 0:
+    psd[1:-1] *= 2
+else:
+    psd[1:] *= 2
 ```
 
-Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
-
-## "Noise" of Noise
-From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
-
-The Fourier coefficient computed as 
-$$
-\begin{align}
-
-X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
-
-\end{align}
-$$
-can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n]$ are independent identically distributed (*i.i.d*) random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary parts, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires that he real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
-
-
-
-<p align = 'center'>
-<img src="Figure/figure_noise_hist.png" width="60%"/>
-</p>
-
-It should be noted that the periodic signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**  can not guarantee their Fourier coefficients converged to a Normal distribution. Commonly, its *PDF* still follows a bell-shaped curves but the mean and variance dependent on the *SNR*.
-
-[^1]: which proved that independent but not identical distributed random variables satisfy the CLT.
-
-To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
-
-## Welch Method [`scipy.signal.welch`]
-Welch proposed that the averaging the power spectral density instead of the coefficient can largely reduce the flutuation levels of the spectrum. Therefore, we may just get a.
-
-The averaging operation must be taken after the conversion from coefficient to power other wise the averaged coefficients are actually unchanged.
-
-This method can be implemented by `scipy.signal.welch` function:
-
-```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-fs = 1 / (time[1] - time[0])
-freq = np.fft.rfftfreq(len(time), time[1] - time[0])
-
-noise_white = np.random.randn(time.size)
-
-coef_white = np.fft.rfft(noise_white, axis=-1).T
-psd_white = (np.abs(coef_white) ** 2) / fs / time.size
-
-freq_welch, psd_white_welch = scipy.signal.welch(noise_white, fs, window = 'hann', nperseg=2 ** 10)
-```
-
-Except for averaging, one can also  choose the median of the PSD across different segements and obtain a less disturbed PSD. This choice can be implemented by `scipy.signal.welch(signal, fs, average = 'median')`. The default parameter for `average` is `mean`, corresponding to the normal Welch method.
-
-For each segement, you can also chose the window function to reduce the spectral leakage. The result of this method is shown below:
-
-<p align = 'center'>
-<img src="Figure/figure_noise_welch.png" alt="From Wikipedia [Gamma Distribution]." width="60%"/>
-</p>
-
-One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
+According to the lineairty of $\mathcal{F}$, $X[k]$ should also be proportional to the signal amplitude. Easily catch that the coefficient at the exact wave frequency has the form of 
 
 $$
 \begin{align}
-PDF(x; \alpha, \lambda)=\frac{\lambda^\alpha}{\Gamma(\alpha)} x ^{\alpha - 1} e^{-\lambda x}
+|X[k]| = \frac{1}{2}A_k \cdot f_s \cdot T 
 \end{align}
 $$
 
-The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \lambda^2$. When the number of segments ($\alpha$) decrease/increase to 1/$+\infty$, the Gamma distribution degenerate to exponential/normal distribution.
+
+
+1/2 in this equation arises from the fact that $\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x=1/2$.
+
+## Wiener–Khinchin Theorem
+
+For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
+$$
+R_x(\tau) = \mathbb{E}[x(t)\,x(t + \tau)]
+$$
+The **power spectral density** is defined as the **Fourier transform** of the autocorrelation function:
+$$
+S_x(f) = \int_{-\infty}^{\infty} R_x(\tau)\,e^{-j 2\pi f \tau}\,d\tau
+$$
+This is known as the **Wiener–Khinchin theorem**, and it is valid *only* under the assumption of WSS. The PSD $S_x(f)$ then describes how the total power of the signal is distributed across different frequency components. The relationship between PSD and the Fourier coefficients has been introduced in the previous section.
+
+This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its contra-position claims that if the PSD doesn't equal to the Fourier transform of the ACF, the signal is not a *w.s.s* signal. The difference between them signify the nature of the solar wind parameters —— They are different from the NOISE! But, for some specific frequency range, they agree with each other well. It should be noticed that the closeness between them doesn't gurantee the signal to be *w.s.s*.
+
+## Wide-Sense Stationarity
+
+Without WSS, the autocorrelation $R_x(t_1, t_2)$ becomes a function of two independent time variables rather than just the lag $\tau$. In such cases, the expectation of the instantaneous wave power $\mathbb{E}[{x^2(t)}]=R_x(t, t)\neq R_x(0=t-t)$ is not independent on $t$. Hence, the Fourier transform of the autocorrelation no longer represents a meaningful or consistent frequency-domain power measure.
+
+> **Therefore, only stationary processes have a well-defined power spectral density, and only then can the spectrum be interpreted as the distribution of power over frequency.**
+
+
+
+This condition separates **deterministic Fourier transforms** (which apply to individual signals) from **statistical spectral analysis** (which applies to ensembles of signals or realizations of random processes).
+
+$$
+x(t) = A_1 \mathrm{sin}(\omega_1 t) + A_2 \mathrm{sin} \left (\omega_2t + \frac{1}{2}\beta t^2\right )
+$$
+
+$$
+\begin{align}
+
+R_x(t_1, t_2) & = \mathbb{E}[{x(t_1)x(t_2)}]\\
+& = \mathbb{E} \left [A_1^2 \cdot \mathrm{sin}(\omega_1 t_1) \cdot \mathrm{sin}(\omega_1 t_2) + A_2^2 \cdot \mathrm{sin}\left(\omega_2 t_1 + \frac{1}{2}\beta t_1^2 \right ) \cdot \mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right ) \right] \\
+ & + A_0 A_1 \left\{ \mathbb{E}\left[\mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right ) + \mathrm{sin}(\omega_1 t_2)\mathrm{sin}\left(\omega_2 t_1 + \frac{1}{2}\beta t_1^2 \right ) \right] \right\}
+
+\end{align}
+$$
+
+Assuming the window length $T\gt \tau=t_2-t_1\gg 1/f_0$, the square term can be converted to an univariate function of $\tau = t_2-t_1$ by product-to-sum identity. The cross terms can be treated in a similar way ***unless*** $\omega_1 \approx \omega_2+\beta t$, in which condition the 
+
+$$
+\mathrm{sin}(\omega_1 t_1)\mathrm{sin}\left(\omega_2 t_2 + \frac{1}{2}\beta t_2^2 \right )=\frac{1}{2} \left[ \mathrm{cos}\left( \omega_1 t_1 -\omega_2 t_2-\frac{1}{2}\beta t_2^2 \right) - \mathrm{cos}\left( \omega_1 t_1 + \omega_2 t_2+\frac{1}{2}\beta t_2^2 \right) \right]
+$$
+
+The second terms traverse the whole wave phase from $0$ to $2\pi$ therefore has a expectation of zero. As $\omega_1 t_1-\omega_2 t_2-\frac{1}{2}\beta t_2^2\approx \omega_1 (t_1-t_2) + \frac{1}{2}\beta t_2^2$, the first term can neither written as a function of $\tau$ nor converge to zero in the statistical sense. Thus, it is not wide-sense stationary. When $\omega_1$ is well separated with $\omega_2+\beta t$, the first term again traverse the whole wave phase and the signal return to wide-sense stationary. 
+
+## What If the Signal Is Not Stationary?
+
+For nonstationary signals, the PSD is ill-defined or misleading. In such cases, time-frequency analysis techniques such as:
+
+- **Short-Time Fourier Transform (STFT)**: analyzes local frequency content assuming approximate stationarity within short windows;
+- **Wavelet Transform**: offers multi-scale, adaptive analysis of transient and time-varying features;
+
+can be used to track how the spectrum evolves over time, even though no stationary PSD exists.
+
+## Polynomial Trend as Seen by DFT
+
 
 <p align = 'center'>
-<img src="Figure/figure_gamma_distribution.png" width="60%"/>
-</p>
 
+## More Properties of Fourier Transform
 
-In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at unity, which means every segement has no overlapping with each other. It can be regarded as a special case of the *Welch Method* while it is actually proposed earlier.
-
-## Blackman-Tukey Method
-
-***Blackman-Tukey method*** gives another approach to a high SNR estimation of *PSD* based on the *W.S.S* properties of the signal and *Wiener–Khinchin theorem*. This method consists of three steps:
-
-1. Calculate the (***double-sided***) ACF of the signal
-2. Apply a window function to the ACF
-3. Do DFT to the windowed ACF.
-
-```mermaid
-graph LR;
-    A[Signal] --> B[ACF];
-    B --> C[Window];
-    C --> D[DFT];
-    D --> E[PSD];
-```
-
-
-
-It should be keep in mind that these methods are all build based on the assumption of wide-sense stationarity of the signal.[Explain WSS here]. A noise signal, no matter its color, is wide-sense stationary. However, a real time series of a physics quantity cannot gurantee its wide-sense stationarity. Since W.S.S is the only presumption of these method, they are also termed ***Nonparametric Estimator***.
-
-Apart from splitting the signal into several segments, one can also downsample the signal and get multiple sub-signal with different startup time. However, the maximum frequency of the yield spectrum will also be reduced by a factor of ``N_DOWNSAMPLE``. At the same time, the frequency resolution remains to be $(N\Delta t)^{-1}$. 
-
-<p align = 'center'>
-<img src="Figure/figure_noise_blackman_tukey.png" width="60%"/>
-</p>
-
-## Signal Over Noise
-
-A signal composed of a deterministic sinusoidal component and additive noise can be written as:
+A super powerful property of Fourier transform is that:
 $$
-x(t) = s(t) + n(t)
+\mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
 $$
-The Fourier coefficient at frequency $f$ is:
-$$
-\tilde{X}(f) = \tilde{S}(f) + \tilde{N}(f)
-$$
-where $\tilde{S}(f)$ is the deterministic signal component (a fixed complex number), and $\tilde{N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
-$$
-\tilde{N}(f) \sim \mathcal{CN}(0, \sigma_n^2)
-$$
-That is, $\tilde{X}(f)$ is a complex Gaussian random variable:
-$$
-\tilde{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = \tilde{S}(f)
-$$
-The power spectrum estimate is:
-$$
-\hat{S}_x(f) = |\tilde{X}(f)|^2
-$$
-Since $|\tilde{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
-$$
-\hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
-$$
-In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
 
-<p align = 'center'>
-<img src="Figure/figure_signal_over_noise_hist.png" width="60%"/>
-</p>
+
+
+which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
+$$
+\begin{align}
+\frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
+&=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
+&=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
+\end{align}
+$$
+
+
+
+It can be denoted as 
+$$
+{{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
+$$
+
+
+
+One can also extend this property to
+$$
+({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
+$$
+
+
+
+In plasma physics, the conventional way to express the electromagnetic field.
+
+It should be noted that this derivation property change a little bit for discrete Fourier transform:
+
+$$
+\begin{align}
+\frac{\Delta x(t)}{\Delta  t}&=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
+&=\mathcal{F}^{-1}[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)]
+\end{align}
+$$
+
+
+
+
+
+| Property                   | Continuous-Time Fourier Transform (FT)                 | Discrete Fourier Transform (DFT/FFT)                         |
+| -------------------------- | ------------------------------------------------------ | :----------------------------------------------------------- |
+| Linearity                  | $\mathcal{F}\{a\,x(t) + b\,y(t)\} = a\,X(f) + b\,Y(f)$ | $\mathrm{DFT}\{a\,x[n] + b\,y[n]\} = a\,X[k] + b\,Y[k]$      |
+| Time Shift                 | $x(t - t_0) \rightarrow X(f)\,e^{-j 2\pi f t_0}$       | $x[n - n_0] \rightarrow X[k]\,e^{-j 2\pi k n_0 / N}$         |
+| Frequency Shift            | $x(t)\,e^{j 2\pi f_0 t} \rightarrow X(f - f_0)$        | $x[n]\,e^{j 2\pi k_0 n / N} \rightarrow X[(k - k_0)\bmod N]$ |
+| Time-Domain Convolution    | $x(t) * h(t) \rightarrow X(f)\,H(f)$                   | $x[n] \circledast h[n] \rightarrow X[k]\,H[k]$ (circular)    |
+| Time-Domain Multiplication | $x(t)\,h(t) \rightarrow X(f) * H(f)$                   | $x[n]\,h[n] \rightarrow X[k] * H[k] / N$                     |
+| Derivative (Time Domain)   | $\frac{d^n x(t)}{dt^n} \rightarrow (j 2 \pi f)^n X(f)$ | $\Delta^n x[n] \rightarrow X[k] \cdot (e^{j 2 \pi k / N} - 1)^n$ |
+| Conjugate Symmetry         | $x(t) \in \mathbb{R} \Rightarrow X(-f) = X^*(f)$       | $x[n] \in \mathbb{R} \Rightarrow X[N - k] = X^*[k]$          |
+| Parseval's Theorem         | $\int |x(t)|^2\,dt = \int |X(f)|^2\,df$                | $\sum |x[n]|^2 = \frac{1}{N} \sum |X[k]|^2$                  |
+| Frequency Resolution       | Continuous (infinitesimal)                             | $\Delta f = \frac{f_s}{N}$                                   |
+| Spectral Periodicity       | $X(f)$ not periodic                                    | $X[k]$ is periodic with period $N$                           |
+| Periodic Input Duality     | Periodic $x(t) \Rightarrow$ discrete $X(f)$            | Periodic $x[n] \Rightarrow$ sparse $X[k]$                    |
 
 
 <div STYLE="page-break-after: always;"></div>

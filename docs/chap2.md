@@ -20,11 +20,11 @@ $$
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
 $$
 \begin{align}
-X(f)=\sum_{n=-\infty}^{+\infty} x[n \Delta t]\cdot e^{-i2\pi f (n\Delta t)}
+X(f)=\sum_{n=-\infty}^{+\infty} x(n \Delta t)\cdot e^{-i2\pi f (n\Delta t)}
 \end{align}
 $$
 
-where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and still unrealistic. For a finite signal, ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
+where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and is still unrealistic. For a finite signal, the ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
 $$
 \begin{align}
 X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
@@ -32,55 +32,45 @@ X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \De
 \end{align}
 $$
 
+In many lecture notes, the sample period $\Delta t$ is set to unity so that the formulas can be simplified. So, remember that all the related quantities are not in SI (*Système International d'Unités*) in that case。
 
+Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculates the DTFT coefficients by extending the original series along and anti-along the time axis.
 
-Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculate the DTFT coefficients by extending the original series along and anti-along the time axis.
+## Double-side ***versus*** Single-side 
 
-$$
-\begin{align}
-X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
-& \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t
-\end{align}
-$$
+In frequency analysis using the Fast Fourier Transform (FFT), the spectrum can be represented in two main formats: **double-sided** and **single-sided**, depending on the properties of the input signal and the goal of the analysis.
 
+- **Double-Sided FFT** includes both positive and negative frequency components, symmetrically arranged around zero. It shows the full complex-valued spectrum, which is useful when the signal is complex or when phase symmetry matters. For real signals, the negative-frequency part is the complex conjugate of the positive-frequency part, making the negative side redundant in terms of magnitude.
 
+- `np.fft.fftfreq(N, dt)`
 
-It is worth noting that, $\Delta t$ is always taken as unity so that the expressions of both DTFT and DFT can be largely simplified as
+  ```python
+  coef = np.fft.fft(sig)
+  # Corresponding frequency with both zero, positive, and negative frequency
+  
+  freq = np.fft.fftfreq(coef.size, dt)
+  # [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
+  # [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
+  ```
 
-$$
-\begin{align}
-X(f) &= \int_{-\infty}^{+\infty} x(t)\cdot e^{-i2\pi ft} \mathrm{d}t\\
-X(f) &= \sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi fn}\\
-X[k] &= \sum_{n=0}^N x[n]\cdot e^{-2\pi i kn}
-\end{align}
-$$
+  Then you can use `np.fft.fftshift` to rearrange the `coef` and `freq` so that the frequency is monotonically increasing:
 
+  ```python
+  freq = np.fft.fftshift(freq)
+  coef = np.fft.fftshift(coef)
+  ```
 
+  <p align = 'center'><img src="Figure/figure_fft_double_side.png" width="60%"/></p>
 
-in most other tutorial. Nevertheless, this tutorial will keep that term as the constant coefficient matters in the real application—The absolute value matters!
+- **Single-Sided FFT** presents only the non-negative frequency components (from 0 up to Nyquist frequency). This format is typically used for **real-valued signals** when the **power spectral density** or **amplitude spectrum** is of interest. To preserve energy equivalence, the magnitudes (except at 0 and Nyquist) are usually **doubled** to account for the omitted negative frequencies.
 
-- Single-side *vs* Double-side
+In summary, use the **double-sided form** for full-spectrum analysis (e.g., for complex signals or inverse transforms), and the **single-sided form** for clearer interpretation of real-signal power content.
 
 <p align = 'center'>
 <img src="Figure/figure_fft_single_side.png" width="60%"/>
 </p>
 
-<p align = 'center'>
-<img src="Figure/figure_fft_double_side.png" width="60%"/>
-</p>
-With `numpy`, you can implement DFT through `numpy.fft.fft`:
 
-```python
-coef = np.fft.fft(sig)
-# Corresponding frequency with both zero, positive, and negative frequency
-```
-Given a window length n and a sample spacing `dt` (i.e., `np.fft.fftfreq(N, dt)`):
-
-```python
-freq = np.fft.fftfreq(coef.size, dt)
-# [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even
-# [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd
-```
 The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
 
 ```mermaid
@@ -96,27 +86,25 @@ D(["*2N Complex Signal*"]) -->|"*np.fft.fft*"| E(["*2N Complex Coefficients X[k]
 
 
 
-For real input, the aforementioned `2N` redundancy allows you to get that `freqs[1 + i]` = `freqs[-i].conj` and therefore simplify the frequency spectrum but only adopt the positive frequency component.
-
-
-```python
-freq[::n // 2]
-# [0, 1, ...,   N/2-1] / (DT * N)   if n is even
-# [0, 1, ..., (N-1)/2] / (DT * N)   if n is odd
-```
-
-Or, a more suggested way to use `numpy.fft.rfft` (`numpy.fft.rfftfreq`) instead of `numpy.fft.fft` (`numpy.fft.fftfreq`), which is only designed for real input and intrinsically truncate the output coefficients and frequencies.
+For real input, use `numpy.fft.rfft` (`numpy.fft.rfftfreq`) instead of `numpy.fft.fft` (`numpy.fft.fftfreq`), which is only designed for real input and intrinsically truncate the output coefficients and frequencies.
 
 ```python
 coef = np.fft.rfft(sig)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
 
-Yet, please remember that only real signal can be used as an input of `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
+Yet, please remember that only real signal can be used as an input to `numpy.fft.rfft` otherwise the imaginary parts are ignored by default.
 
 ## Windowing Effect
 
-When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary.
+When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. 
+$$
+\begin{align}
+X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t\\
+& \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \Delta  t
+\end{align}
+$$
+However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.
 
 <p align = 'center'>
 <img src="Figure/figure_dft_spectral_leakage_window.png" width="60%"/>
@@ -185,8 +173,6 @@ Some other window functions are also supported by `numpy` and `scipy`, which is 
 - For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
 - For Kaiser: $I_0$ is the modified Bessel function of the first kind
 - Gaussian approximations assume the window is appropriately scaled
-
-
 
 <u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
 
