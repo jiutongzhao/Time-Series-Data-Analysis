@@ -60,14 +60,14 @@ In frequency analysis using the Fast Fourier Transform (FFT), the spectrum can b
   coef = np.fft.fftshift(coef)
   ```
 
-  <p align = 'center'><img src="Figure/figure_fft_double_side.png" width="60%"/></p>
+  <p align = 'center'><img src="Figure/figure_fft_double_side.png" width="100%"/></p>
 
 - **Single-Sided FFT** presents only the non-negative frequency components (from 0 up to Nyquist frequency). This format is typically used for **real-valued signals** when the **power spectral density** or **amplitude spectrum** is of interest. To preserve energy equivalence, the magnitudes (except at 0 and Nyquist) are usually **doubled** to account for the omitted negative frequencies.
 
 In summary, use the **double-sided form** for full-spectrum analysis (e.g., for complex signals or inverse transforms), and the **single-sided form** for clearer interpretation of real-signal power content.
 
 <p align = 'center'>
-<img src="Figure/figure_fft_single_side.png" width="60%"/>
+<img src="Figure/figure_fft_single_side.png" width="100%"/>
 </p>
 
 
@@ -107,7 +107,7 @@ $$
 However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.
 
 <p align = 'center'>
-<img src="Figure/figure_dft_spectral_leakage_window.png" width="60%"/>
+<img src="Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
 </p>
 
 
@@ -152,7 +152,7 @@ sig *= np.hanning(sig.size) * np.sqrt(8 / 3)
 Some other window functions are also supported by `numpy` and `scipy`, which is summarized below:
 
 <p align = 'center'>
-<img src="Figure/figure_window_functions.png" width="60%"/>
+<img src="Figure/figure_window_functions.png" width="100%"/>
     <i>Some Other Window Functions (without normalization).</i>
 </p>
 
@@ -224,7 +224,7 @@ A common technique to mitigate the visual and analytical impact of the fence eff
 Zero-padding is particularly useful in peak detection, cross-spectral analysis, and visualization, where enhanced frequency granularity improves interpretability even though it doesn’t extract new information from the signal itself.
 
 <p align = 'center'>
-<img src="Figure/figure_dft_picket_fence_effect.png" width="60%"/>
+<img src="Figure/figure_dft_picket_fence_effect.png" width="100%"/>
 </p>
 ```python
 n_padding = 29

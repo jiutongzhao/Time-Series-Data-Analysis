@@ -142,16 +142,34 @@ This effect always happens when you (down-)sampling the signal, a common way to 
     )
     ```
 
-- From ***Unix Timestamps*** to `np.datetime`
 
-  - A Unix timestamp is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.
+## From ***Unix Timestamps*** to `np.datetime`
 
-      ```python
-      t = (t * 1e9).astype('datetime64[ns]')
-      t = t.astype('datetime64[s]')
-      ```
-  
-  - If you need to consider leap seconds in your investigation, use `astropy`.
-  
+- A Unix timestamp is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds.
+
+    ```python
+    t = (t * 1e9).astype('datetime64[ns]')
+    t = t.astype('datetime64[s]')
+    ```
+
+- If you need to consider leap seconds in your investigation, use `astropy`.
+
+## Sampling Method
+
+When working with signals, a key question is: **what does each timestamp represent?** Is it an **instantaneous sample**, a **mean over a time interval**, or something more complex?
+
+In many systems, timestamps correspond to **instantaneous values**, ideal for digital signal processing. But in practice, especially with physical measurements, values often reflect a **time-averaged signal**—due to sensor integration or readout limitations.
+
+<p align = 'center'>
+<img src="Figure/figure_sampling_methods.png" width="100%"/>
+</p>
+
+More complex cases may involve **weighted or probabilistic sampling**, where the timestamp marks a broader or nonlinear contribution in time.
+
+Clarifying this relationship is essential—it affects how we interpret, interpolate, and transform the data. Always ask: *what exactly does this sample in time mean?*
+
+
+
+
 
 <div STYLE="page-break-after: always;"></div>
