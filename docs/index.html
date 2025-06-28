@@ -31,11 +31,18 @@
         displayMath: [['$$', '$$']],               // default
         overflowScroll: false,
       },
+      tabs: {
+        persist: true, // default
+        sync: true, // default
+        theme: 'classic', // default
+        tabComments: true, // default
+        tabHeadings: true // default
+      },
     }
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/docsify-tabs@1"></script>
   <script type="module">
     import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
     mermaid.initialize({ startOnLoad: true });
@@ -54,11 +61,11 @@
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify@5/dist/plugins/search.min.js"></script>
   <style>
-  div.mermaid {
-    text-align: center;
-  }
+    div.mermaid {
+      text-align: center;
+    }
   </style>
-  
+
   <style>
     .docsify-copy-code-button>.success {
       position: absolute;
@@ -91,6 +98,8 @@
       --cover-background-position: center center;
       --cover-background-repeat: no-repeat;
       --cover-background-size: cover;
+      --docsifytabs-border-color: #ededed;
+      --docsifytabs-tab-highlight-color: purple;
     }
   </style>
   <!-- <style>

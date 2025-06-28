@@ -60,7 +60,14 @@ In frequency analysis using the Fast Fourier Transform (FFT), the spectrum can b
   coef = np.fft.fftshift(coef)
   ```
 
+  <!-- tabs:start -->
+  #### **Single-Sided**
+  <p align = 'center'><img src="Figure/figure_fft_single_side.png" width="100%"/></p>
+
+  #### **Double-Sided**
   <p align = 'center'><img src="Figure/figure_fft_double_side.png" width="100%"/></p>
+  
+  <!-- tabs:end -->
 
 - **Single-Sided FFT** presents only the non-negative frequency components (from 0 up to Nyquist frequency). This format is typically used for **real-valued signals** when the **power spectral density** or **amplitude spectrum** is of interest. To preserve energy equivalence, the magnitudes (except at 0 and Nyquist) are usually **doubled** to account for the omitted negative frequencies.
 
