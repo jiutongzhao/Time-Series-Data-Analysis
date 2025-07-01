@@ -1,6 +1,6 @@
 # How to Deal With Faulty Sample?
 
-## Lomb-Scargle Periodogram [*scipy.signal.lombscargle*]
+## Lomb-Scargle Periodogram [`scipy.signal.lombscargle`]
 
 The Lomb-Scargle periodogram is a powerful method for estimating the power spectrum of unevenly sampled time series. Unlike the standard FFT-based periodogram, which requires uniformly spaced data, Lomb-Scargle is widely used in astronomy and geophysics where data gaps are common. This section introduces its mathematical foundation, physical interpretation, and provides practical examples using `scipy.signal.lombscargle`.
 
@@ -61,7 +61,7 @@ $P(\omega) = \frac12\left[ \frac{\bigl[\sum (x_n-\bar x)\cos\!\bigl(\omega (t_n-
 
 Compare with the original frequency spectrum, the Lomb-Scargle periodogram contains some irregular frequency leakage. The Lomb-Scargle periodogram finally converge to the Fourier periodogram when the sample time is uniformly distributed.
 
-## Correlation Function
+## Correlation Function [`scipy.signal.correlate`]
 
 >A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
 
@@ -80,7 +80,7 @@ $$
 $$
 If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
 
-## Hilbert Transform [*scipy.signal.hilbert*]
+## Hilbert Transform [`scipy.signal.hilbert`]
 
 The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
@@ -99,7 +99,7 @@ signal_ht = scipy.signal.hilbert(signal)
 signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
 ```
 
-## Digital Filter
+## Digital Filter [`scipy.interpolate`]
 
 Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. In essence, a digital filter is a mathematical algorithm that modifies the amplitude and/or phase of certain frequency components of a discrete signal. Filters can be designed to remove noise, isolate trends, block out-of-band interference, or even simulate the response of a physical system. Anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.
 
@@ -315,7 +315,7 @@ Inspiring by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the
 
 ```mermaid
 flowchart LR
-A@{ shape: lean-r, label: "$x[n]$"} --Fourier<br>Transform--> B["$X[k]$"] --abs<br>+<br>log--> C["$\mathrm{log|X[k]|}$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
+A@{ shape: lean-r, label: "$$x[n]$$"} --Fourier<br>Transform--> B["$$X[k]$$"] --abs<br>+<br>log--> C["$$\mathrm{log|X[k]|}$$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
 ```
 
 This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.

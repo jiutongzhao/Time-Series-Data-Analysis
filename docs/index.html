@@ -31,6 +31,15 @@
         displayMath: [['$$', '$$']],               // default
         overflowScroll: false,
       },
+      copyCode: {
+        buttonText: {
+          '/zh-cn/': '点击复制',
+          '/ru/': 'Скопировать в буфер обмена',
+          '/de-de/': 'Klicken Sie zum Kopieren',
+          '/es/': 'Haga clic para copiar',
+          '/': 'Copy',
+        },
+      },
       tabs: {
         persist: true, // default
         sync: true, // default
@@ -67,18 +76,22 @@
   </style>
 
   <style>
+    .docsify-copy-code-button {
+      padding: 0.25em 0.5em;
+  }
+  </style>
+  <style>
     .docsify-copy-code-button>.success {
       position: absolute;
       z-index: 2;
       top: 50%;
       right: 0;
-      padding: 0.65em 0.8em;
+      padding: 0.25em 0.5em;
       font-size: 1em;
       opacity: 0;
       transform: translate(0, -50%);
     }
   </style>
-
   <style>
     .docsify-copy-code-button.success>.success {
       right: 100%;

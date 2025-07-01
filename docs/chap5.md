@@ -33,12 +33,6 @@ $$
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
 $$
 
-### Interpretation
-
-- **Higher SNR** indicates a cleaner, more detectable signal.
-- **0 dB** means the signal and noise power are equal.
-- **Negative SNR** indicates the noise power exceeds signal power.
-
 ***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
 
 
@@ -58,19 +52,6 @@ The adoption of decibel instead of the conventional physical unit has three adva
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
 ## Artificial Noise Generation
-
-### Method 1: Approximate $\mathrm{d}x/\mathrm{d}t$ by $\Delta x/\Delta t$
-According to the property of Fourier transform, the convolution in the .
-```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-dt = time[1] - time[0]
-
-white_noise = np.random.randn(time.size)
-brownian_noise = np.cumsum(np.random.randn(time.size)) * dt
-violet_noise = np.diff(np.random.randn(time.size + 1)) / dt
-```
-
-### Method 2: Rescale the frequency spectrum of the white noise [Suggested]
 
 ```python
 time = np.linspace(0, 1, 10000, endpoint=False)
@@ -109,14 +90,17 @@ can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n
 <p align = 'center'>
 <img src="Figure/figure_noise_hist.png" width="100%"/>
 </p>
+### Significance Level
 
-It should be noted that the periodic signals like $\mathrm{sin}\omega t$ are not *i.i.d*. These signals are not even *independent*, which means that even the **Lindeberg (-Feller) CLT**  can not guarantee their Fourier coefficients converged to a Normal distribution. Commonly, its *PDF* still follows a bell-shaped curves but the mean and variance dependent on the *SNR*.
+A Fourier spectrum always has some peaks no matter the signal is really periodic or totally random. It is of course not appreciated if you interpret a random Fourier peak as a sign of periodicity. 
 
-[^1]: which proved that independent but not identical distributed random variables satisfy the CLT.
+The ***significance level*** comes out for the assessment of these Fourier power peak. It uses the hypothesis testing to testify whether the peak is significance. The null hypothesis is that 
+$$
+x[n]\sim N(\mu, \sigma)
+$$
+Thus, the power spectral density follows the exponential distribution $PSD/S(f)\sim \chi_2^2$. The $95\%$ and $99\%$ percentile of this distribution is $2.995$ and $4.605$, respectively. Therefore, 95% and 99% significance level of the PSD is $2.995\sigma$ and $4.605\sigma$.
 
-To reduce this kind of uncertainty, we are going to introduce the following three method: 1. Barlett Method; 2. Welch Method; and 3. Blackman–Tukey Method.
-
-## Welch Method [`scipy.signal.welch`]
+### Welch Method [`scipy.signal.welch`]
 Welch proposed that the averaging the power spectral density instead of the coefficient can largely reduce the flutuation levels of the spectrum. Therefore, we may just get a.
 
 The averaging operation must be taken after the conversion from coefficient to power other wise the averaged coefficients are actually unchanged.
@@ -161,7 +145,7 @@ The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \la
 
 In ***Bartlett Method***, the ratio of ``N_STEP`` and ``N_PER_SEG`` is fixed at unity, which means every segement has no overlapping with each other. It can be regarded as a special case of the *Welch Method* while it is actually proposed earlier.
 
-## Blackman-Tukey Method
+### Blackman-Tukey Method
 
 ***Blackman-Tukey method*** gives another approach to a high SNR estimation of *PSD* based on the *W.S.S* properties of the signal and *Wiener–Khinchin theorem*. This method consists of three steps:
 
@@ -218,6 +202,24 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 <p align = 'center'>
 <img src="Figure/figure_signal_over_noise_hist.png" width="100%"/>
 </p>
+
+
+## Autoregressive (AR) Model
+
+An autoregressive model can be written as
+$$
+x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
+$$
+with $x[0]=0$. 
+
+
+
+Such a random series has a power spectrum of 
+$$
+\frac{1-\alpha^2}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
+$$
+
+
 
 
 <div STYLE="page-break-after: always;"></div>

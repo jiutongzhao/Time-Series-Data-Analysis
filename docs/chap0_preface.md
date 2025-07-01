@@ -1,15 +1,25 @@
-# Preface
+# <center> **Preface**
 
+<!-- tabs:start -->
+
+#### **Indian Cuckoo**
 <p align = 'center'><img src="Figure/figure_indian_cuckoo_with_bird.png" width="100%"/></p>
 <p align = 'center'><audio id="audio" controls="" preload="none">
   <source id="mp3" src="Data/indian_cuckoo_short.wav">
 </audio></p>
 <p align = 'center'><i>(Above): The Time Series of the Voice of Indian Cuckoo; (Bottom) Its Time-Frequency Spectrogram.</i></p>
+
+#### **Whistling**
 <p align = 'center'><img src="Figure/figure_whistling.png" width="100%"/></p>
 <p align = 'center'><audio id="audio" controls="" preload="none">
   <source id="mp3" src="Data/whistling.wav">
 </audio></p>
 <p align = 'center'><i>(Above): The Time Series of a Whistling; (Bottom) Its Time-Frequency Spectrogram.</i></p>
+
+#### **Sunspot Number**
+<p align = 'center'><img src="Figure/figure_sunspot.png" width="100%"/></p>
+<p align = 'center'><i>(Above): The Time Series of a Sunspot number; (Bottom) Its Frequency Spectrogram.</i></p>
+<!-- tabs:end -->
 
 The purpose of this document stems from:
 
