@@ -220,7 +220,7 @@ F --> K@{ shape: lean-r, label: "$psd[k]$"}
 
 
 
-## Fence Effect and Zero-Padding
+## Fence Effect and Padding
 
 To further improve the interpretability of spectral results, addressing spectral leakage alone is not enough. Another source of distortion arises from the discretization of the frequency axis itself. When a signal's frequency component does not align exactly with the frequency bins defined by the DFT, its energy spreads into neighboring bins—a phenomenon known as the **fence effect**. To reduce this effect and achieve smoother spectral representations, we often apply a technique known as **zero-padding**, which is discussed below.
 
@@ -238,5 +238,51 @@ n_padding = 29
 coef = np.fft.rfft(sig, n = signal.size + n_padding)
 freq = np.fft.rfftfreq(coef.size, dt)
 ```
+
+## Other Padding Type
+
+- `zero` - **zero-padding** - signal is extended by adding zero samples:
+
+  ```
+  ... 0  0 | x1 x2 ... xn | 0  0 ...
+  ```
+
+- `constant` - **constant-padding** - border values are replicated:
+
+  ```
+  ... x1 x1 | x1 x2 ... xn | xn xn ...
+  ```
+
+- `symmetric` - **symmetric-padding** - signal is extended by *mirroring* samples. This mode is also known as half-sample symmetric.:
+
+  ```
+  ... x2 x1 | x1 x2 ... xn | xn xn-1 ...
+  ```
+
+- `reflect` - **reflect-padding** - signal is extended by *reflecting* samples. This mode is also known as whole-sample symmetric.:
+
+  ```
+  ... x3 x2 | x1 x2 ... xn | xn-1 xn-2 ...
+  ```
+
+- `periodic` - **periodic-padding** - signal is treated as a periodic one:
+
+  ```
+  ... xn-1 xn | x1 x2 ... xn | x1 x2 ...
+  ```
+
+- `smooth` - **smooth-padding** - signal is extended according to the first derivatives calculated on the edges (straight line)
+
+- `antisymmetric` - **anti-symmetric padding** - signal is extended by *mirroring* and negating samples. This mode is also known as half-sample anti-symmetric:
+
+  ```
+  ... -x2 -x1 | x1 x2 ... xn | -xn -xn-1 ...
+  ```
+
+- `antireflect` - **anti-symmetric-reflect padding** - signal is extended by *reflecting* anti-symmetrically about the edge samples. This mode is also known as whole-sample anti-symmetric:
+
+  ```
+  ... (2*x1 - x3) (2*x1 - x2) | x1 x2 ... xn | (2*xn - xn-1) (2*xn - xn-2) ...
+  ```
 
 <div STYLE="page-break-after: always;"></div>

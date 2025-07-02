@@ -64,7 +64,83 @@ psd = (np.abs(coef) ** 2) * (2 * dt)
 coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 ```
 
-#### Wavelet Family
+## Morlet Wavelet
+
+Morlet wavelet is one of the most commonly-used continuous mother wavelet, which is written as:
+$$
+\psi(\eta):=\pi^{-1/4} e^{-{\eta^2}/{2}} e^{i\omega_0\eta}
+$$
+with scale function $\eta=s\cdot t$ where $s$ denotes `scale`.
+
+<u>**Admissibility Condition**</u>:
+$$
+\int_{-\infty}^{+\infty} \psi(\eta) \mathrm{d}\eta=\sqrt{2}\pi^{1/4} e^{-\omega_0^2/2} = \pi^{-1/4}e^{-\omega_0^2/2}\int_{-\infty}^{+\infty} e^{-\eta^2/2} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta = \neq0
+$$
+
+$$
+\psi^\prime(\eta)=\psi(\eta)-\delta\psi(\eta)=\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
+$$
+
+**<u>Normalization</u>**:
+$$
+\psi^{\prime\prime}=\frac{\psi^{\prime}}{\left[{\int_{-\infty}^{+\infty} [\psi^\prime(\eta)]^2 \mathrm{d}\eta}\right]^{-1/2}}=c_{\omega_0}\psi^{\prime}
+$$
+
+$$
+c_{\omega_0}=\left[\int_{-\infty}^{+\infty} [\psi^\prime(\eta)]^2 \mathrm{d}\eta\right]^{-1/2}=\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}
+$$
+<u>**Central Frequency:**</u>
+$$
+\omega_c=\omega_0\frac{1}{1-e^{-\omega_0 \omega_c}}
+$$
+<u>**Scale to Period:**</u>
+$$
+2x^2(1-e^{-\omega_0x})-2\omega_0x-1+e^{-\omega_0x}=0
+$$
+For large $\omega_0$, $e^{-\omega_0x}\rightarrow 0$,
+$$
+2x^2-2\omega_0 x-1=0
+$$
+
+$$
+x_0=\frac{2\omega_0\pm\sqrt{4\omega_0^2+8}}{4}=\frac{\omega_0\pm\sqrt{2+\omega_0^2}}{2}
+$$
+
+
+
+For small $\omega_0$, the asymptotic solution can be given by substituting $e^{-\omega_0x}\approx1-\omega_0x+\frac{1}{2}(-\omega_0x)^2$ 
+$$
+\begin{align}
+2x^2\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)-2\omega_0x-\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)&=0\\
+(-\omega_0x)\left[\omega_0x^3- 2x^2 + 2+1 - \frac{1}{2}\omega_0x \right]&=0\\
+\Rightarrow \omega_0x^3- 2x^2  - \frac{1}{2}\omega_0x + 3&=0
+\end{align}
+$$
+the asymptotic solution can be given by
+$$
+x_0=\sqrt{\frac{3}{2}}+\frac{\omega_0}{4}+\mathcal{O}(\omega_0^2)
+$$
+Thus, we can get the ratio of period and scale as
+$$
+\mathrm{\frac{period}{scale}}= \frac{2\pi}{x_0}\delta t
+$$
+
+```mermaid
+graph LR
+
+A[*Torrence & Compo 1998*] --$$\mu=\omega_0$$--> B[*ssqueezepy*]
+A --$$B=\frac{\omega_0^2}{2\pi^2}$$-->C[*pywavelets*<br>*'cmorB-1.0'*]
+A --$$\sigma=\omega_0$$--> D[*Wikipedia*]
+
+```
+
+
+
+
+
+
+
+## Wavelet Family
 
 
 
