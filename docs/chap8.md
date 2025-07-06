@@ -4,12 +4,7 @@
 
 Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction. 
 
-The central ideas of these two methods are:
-
-- **PCA**: Rotate the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
-- **MVA**: Apply PCA to a 3 × N vector time series and interpret the eigenvectors as the directions of maximum, intermediate, and minimum variance—often used to infer boundary normals or wave polarization axes.
-
-------
+The central ideas of these two methods are rotating the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
 
 #### Mathematical Formulation
 
@@ -375,7 +370,8 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 - Notice: `np.linalg.eigh` and `np.linalg.svd` return the eigen/singular values in an ascending / descending order.
 
-<p align = 'center'>
-<img src="Figure/figure_svd.png" alt="An example of DFT." width="100%"/>
-</p>
+<p align = 'center'><img src="Figure/figure_svd_spectra.png" width="100%"/></p>
+
+**Coherence, Planarity, and Degree of Polarization** are both a  
+
 <div STYLE="page-break-after: always;"></div>

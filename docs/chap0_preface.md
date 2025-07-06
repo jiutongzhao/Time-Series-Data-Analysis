@@ -9,16 +9,14 @@
 </audio></p>
 <p align = 'center'><i>(Above): The Time Series of the Voice of Indian Cuckoo; (Bottom) Its Time-Frequency Spectrogram.</i></p>
 
-#### **Whistling**
-<p align = 'center'><img src="Figure/figure_whistling.png" width="100%"/></p>
-<p align = 'center'><audio id="audio" controls="" preload="none">
-  <source id="mp3" src="Data/whistling.wav">
-</audio></p>
-<p align = 'center'><i>(Above): The Time Series of a Whistling; (Bottom) Its Time-Frequency Spectrogram.</i></p>
-
 #### **Sunspot Number**
 <p align = 'center'><img src="Figure/figure_sunspot.png" width="100%"/></p>
 <p align = 'center'><i>(Above): The Time Series of a Sunspot number; (Bottom) Its Frequency Spectrogram.</i></p>
+
+#### ** AO-Baltic Coherrence**
+<p align = 'center'><img src="Figure/figure_ao_baltic_truncated.png" width="100%"/></p>
+<p align = 'center'><i>(Above): The Time Series of a Sunspot number; (Bottom) Its Frequency Spectrogram.</i></p>
+
 <!-- tabs:end -->
 
 The purpose of this document stems from:
@@ -31,19 +29,10 @@ This document aims to provide a **practical guide** to spectral analysis, focusi
 
 Also, there will not be an introduction like "What is Signals", "What is Time Series". If you need it (them), please take a shower, brew a bottle of coffee, and read the super thick book. 
 
-- **Meteorology:** e.g. El-Nino ENSO Index
-
-<p align = 'center'>
-<img src="Figure/figure_meiv2.png" alt="Multivariate ENSO Index (MEI)" width="100%"/>
-</p>
-
-
 - **Geophysics:** e.g. Seismic Waves
 
 <p align = 'center'>
 <img src="Figure/figure_seismic_waves.png" width="100%"/>
 </p>
 
-- **Solar Physics:** e.g. Sunspot Number
 
-<p align = 'center'><img src="Figure/figure_sunspot.png" width="100%"/></p>

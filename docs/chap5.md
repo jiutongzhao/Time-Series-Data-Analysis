@@ -212,12 +212,19 @@ x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
 $$
 with $x[0]=0$. 
 
+$0\le\alpha<1$ denotes the AR1 coefficient. 
 
+<p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
+<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($\alpha$).</i></p>
 
 Such a random series has a power spectrum of 
 $$
 \frac{1-\alpha^2}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
 $$
+
+
+
+For a AR1 time series with $\alpha>0.9$, it will seems to be contains some "periodic" signature as its power concentrates near the low frequency range. 
 
 
 

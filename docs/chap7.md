@@ -72,6 +72,8 @@ $$
 $$
 with scale function $\eta=s\cdot t$ where $s$ denotes `scale`.
 
+<details> Mathematical Properties of Morlet Wavelet
+
 <u>**Admissibility Condition**</u>:
 $$
 \int_{-\infty}^{+\infty} \psi(\eta) \mathrm{d}\eta=\sqrt{2}\pi^{1/4} e^{-\omega_0^2/2} = \pi^{-1/4}e^{-\omega_0^2/2}\int_{-\infty}^{+\infty} e^{-\eta^2/2} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta = \neq0
@@ -93,6 +95,8 @@ $$
 $$
 \omega_c=\omega_0\frac{1}{1-e^{-\omega_0 \omega_c}}
 $$
+<\details>
+
 <u>**Scale to Period:**</u>
 $$
 2x^2(1-e^{-\omega_0x})-2\omega_0x-1+e^{-\omega_0x}=0
