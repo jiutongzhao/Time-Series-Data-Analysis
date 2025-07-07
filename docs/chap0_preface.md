@@ -17,6 +17,11 @@
 <p align = 'center'><img src="Figure/figure_ao_baltic_truncated.png" width="100%"/></p>
 <p align = 'center'><i>(Above): The Time Series of a Sunspot number; (Bottom) Its Frequency Spectrogram.</i></p>
 
+#### ** Mode Decomposition**
+<p align = 'center'>
+<img src="Figure/figure_seismic_waves.png" width="100%"/>
+</p>
+
 <!-- tabs:end -->
 
 The purpose of this document stems from:
@@ -29,10 +34,5 @@ This document aims to provide a **practical guide** to spectral analysis, focusi
 
 Also, there will not be an introduction like "What is Signals", "What is Time Series". If you need it (them), please take a shower, brew a bottle of coffee, and read the super thick book. 
 
-- **Geophysics:** e.g. Seismic Waves
-
-<p align = 'center'>
-<img src="Figure/figure_seismic_waves.png" width="100%"/>
-</p>
 
 
