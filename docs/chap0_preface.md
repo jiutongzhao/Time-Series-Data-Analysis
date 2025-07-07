@@ -1,4 +1,4 @@
-# <center> **Preface**
+# Preface
 
 <!-- tabs:start -->
 
@@ -22,17 +22,22 @@
 <img src="Figure/figure_seismic_waves.png" width="100%"/>
 </p>
 
+#### ** Chorus Wave SVD Analysis**
+<p align = 'center'>
+<img src="Figure/figure_svd_erg.png" width="100%"/>
+</p>
+
 <!-- tabs:end -->
 
-The purpose of this document stems from:
+This document serves as a practical guide to spectral analysis, driven by two key observations:
 
-- **<u>The Spectral Analysis is Useful</u>**: Signals are encountered in every single day of life, which can be seen, heard, or felt, like a whistling sound. Most of you can definitely get the variation of the signal, while you may find it hard to describe. Even though the original time series reveals something about the waveform and wave frequency, some aspects, such as the harmonics, are still difficult to obtain. The processing of such signals is a fundamental task in many fields, including physics, engineering, and data science. With a suitable analysis method, you can easily extract the information from the signal, such as the chirping signature of the whistle.
+-   **<u>The Utility of Spectral Analysis</u>**: Signals are omnipresent in daily life—they can be seen, heard, or felt, like a whistling sound. While the variations in a signal might be intuitively perceived, precisely describing them can be challenging. Even when a raw time series hints at waveform and frequency, deeper aspects such as harmonics often remain elusive. Processing such signals is fundamental across diverse fields, including physics, engineering, and data science. Through effective spectral analysis, crucial information—like the chirping signature of a bird's song—can be readily extracted.
 
-- **<u>A Practical Handbook is Required</u>**: However, if you start learning it from the beginning, you need to flip through a 500-page textbook, which is not only time-consuming but also requires a solid mathematical background. The concise mathematical definition, like ***compact support***, is of no use in your own research but burns your patience and time. Moreover, it is hard for you to get a practical usage example with Python from these theoretical notebooks (Having said that, MATLAB provides a much more fruitful document). 
+-   **<u>The Need for a Practical Handbook</u>**: Traditional spectral analysis textbooks can be daunting, often spanning hundreds of pages and demanding a robust mathematical background. Concepts like "compact support," while mathematically rigorous, frequently prove irrelevant for practical research and can consume valuable time and patience. Furthermore, these theoretical texts rarely provide practical Python implementations.
 
-This document aims to provide a **practical guide** to spectral analysis, focusing on the essential concepts and practical applications. It is designed to be accessible to those with a basic understanding of Python and signal processing, without delving too deeply into the mathematical intricacies, which are accessible in the classic, highly-rated notebooks.
+This document aims to bridge that gap by offering a **practical guide** to spectral analysis. It focuses on essential concepts and real-world applications, designed for readers with a basic understanding of Python and signal processing. It deliberately avoids delving into the deep mathematical intricacies, which are extensively covered in classic, highly-rated academic texts.
 
-Also, there will not be an introduction like "What is Signals", "What is Time Series". If you need it (them), please take a shower, brew a bottle of coffee, and read the super thick book. 
+Please note, this guide will not include introductory sections on fundamental concepts like "What are Signals" or "What is Time Series." For those foundational topics, we recommend consulting standard textbooks.
 
 
 

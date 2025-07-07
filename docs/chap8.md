@@ -370,8 +370,18 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 - Notice: `np.linalg.eigh` and `np.linalg.svd` return the eigen/singular values in an ascending / descending order.
 
+
+
+<!-- tabs:start -->
+
+#### **Spectra**
 <p align = 'center'><img src="Figure/figure_svd_spectra.png" width="100%"/></p>
 
-**Coherence, Planarity, and Degree of Polarization** are both a  
+#### **Line Plot**
+<p align = 'center'><img src="Figure/figure_svd_line.png" width="100%"/></p>
+
+<!-- tabs:end -->
+
+**Coherence, Planarity, and Degree of Polarization** are all a a functional properties 
 
 <div STYLE="page-break-after: always;"></div>

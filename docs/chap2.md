@@ -133,8 +133,14 @@ $$
 It can be implemented in `numpy` as follow:
 
 ```python
+# Symmetric Window
+w = np.hanning(sig.size)
+
+# Periodic Window
+w = np.hanning(sig.size + 1)[:-1]
+
 # Without Normalization
-sig *= np.hanning(sig.size)
+sig *= w
 ```
 
 However, applying a window modifies the signal’s amplitude and energy characteristics. This can introduce ambiguity when interpreting the resulting spectrum or comparing analyses across different window shapes. To ensure physical and quantitative consistency, **normalization** of the window function is often necessary. **Amplitude normalization** ensures that the peak value of the window is one, preserving the local signal scale. **Power normalization** adjusts the window so that the total energy of the signal—defined as the sum of squared values—remains unchanged after windowing. The amplitude and power normalization is also named <u>**$L_1$ and $L_2$ normalization**</u> as the amplitude and power can is proportional to the $L_1$ and $L_2$ norm of the signal, respectively. The choice of normalization method depends on the analytical goals, and plays a crucial role in ensuring accurate and meaningful spectral results.
@@ -150,10 +156,18 @@ A more quantitative estimation of the signal amplitude or power can be given by 
 
 ```python
 # Amplitude Normalization
-sig *= np.hanning(sig.size) * 2
+w = np.hanning(sig.size) * 2
+
+# or
+w = np.hanning(sig.size)
+w /= w.sum()
 
 # Power Normalization
-sig *= np.hanning(sig.size) * np.sqrt(8 / 3)
+w = np.hanning(sig.size) * np.sqrt(8 / 3)
+
+# or
+w = np.hanning(sig.size)
+w /= np.sqrt((w ** 2).sum())
 ```
 
 Some other window functions are also supported by `numpy` and `scipy`, which is summarized below:
@@ -188,11 +202,11 @@ In the end, we show the complete data processing diagram for ***windowed Fourier
 ```mermaid
 graph LR
 
-A(["*x[n]*"]) -->|Window 
-Function|B@{ shape: rect, label: "x_windowed[n]" }
+A(["$$x[n]$$"]) -->|Window 
+Function|B@{ shape: rect, label: "$$x_{windowed}[n]$$" }
 
 A-->|Zero
-Padding|C@{shape:rect, label: "$x_{ZP}[n]$"}
+Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
 
 C -->|Window
 Function|B

@@ -114,8 +114,71 @@ scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
 <p align = 'center'>
 <img src="Figure/figure_detrend.png" width="100%"/>
 </p>
-
 A slowing change signal is intrinsically not *w.s.s.* as its mean values varies with time. It turns into *w.s.s* after an appropriate detrend.
+
+
+
+## Cepstrum
+
+A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its harmonic $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
+
+<p align = 'center'>
+<img src="Figure/figure_cepstrum.png" width="90%"/>
+<i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
+</p>
+
+Inspiring by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the ***Cepstral Analysis*** in 1963. The norm of the Fourier coefficients is taken logarithm and then inverse Fourier transformed for detecting the harmonic signature of the signal. 
+
+```mermaid
+flowchart LR
+A@{ shape: lean-r, label: "$$x[n]$$"} --Fourier<br>Transform--> B["$$X[k]$$"] --abs<br>+<br>log--> C["$$\mathrm{log|X[k]|}$$"] --Inverse<br>Fourier<br>Transform--> D@{ shape: lean-l, label: Cepstrum}
+```
+
+This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
+
+The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as:
+
+$$
+y(t) = x(t) +\alpha x(t-\tau)
+$$
+
+which has a Fourier transform of
+
+$$
+\begin{align}
+Y(f) &= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
+|Y(f)|^2 &= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
+\end{align}
+$$
+
+$$
+\begin{align}
+\mathrm{log}(|Y(f)|^2) &= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
+& \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
+\end{align}
+$$
+
+Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
+
+However, it doesn't mean that the cepstral analysis work for the signals composited with echoes. Another common application of cepstral analysis is the [voice recognition](https://ieeexplore.ieee.org/document/859069). The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.
+
+
+
+```python
+''' Python Implication of Cepstrum '''
+
+freq = np.fft.rfftfreq(sig.size, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_coef = np.log(np.abs(coef))
+
+# Optional, Remove DC component for cepstrum calculation
+log_abs_coef -= np.mean(log_abs_coef)
+
+cepstrum = np.fft.rfft(log_abs_coef)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
+```
 
 
 <div STYLE="page-break-after: always;"></div>
