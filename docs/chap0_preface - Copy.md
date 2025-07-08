@@ -1,5 +1,5 @@
 
-# Preface
+# Preface0
 
 For many students, their first real encounter with spectral analysis often unfolds like this:
 

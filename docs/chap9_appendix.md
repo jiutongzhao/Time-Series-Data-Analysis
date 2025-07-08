@@ -1,8 +1,14 @@
 ## Appendix
 
-### NDArray Shaping
+## NDArray Shaping
 
-When create the 
+When create the `numpy.ndarray`, 
+
+## Naming Convention
+
+Naming the variable with the format of `noun_adjective` like `spec_complex` for the complex spectral matrix.
+
+
 
 ### Jargon Sheet
 

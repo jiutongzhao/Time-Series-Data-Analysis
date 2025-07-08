@@ -1,39 +1,42 @@
-# How to Handle Noise?
+# Handling Noise
 
-## What is Noise?
+## Noise Colors and Classification
 
-Noise refers to random or unwanted fluctuations that obscure the true underlying signal in your data. In spectral analysis, understanding the properties and sources of noise is crucial for interpreting results, estimating signal-to-noise ratio (SNR), and designing effective filtering or denoising strategies. In plasma physics, the noise originates from both physical (e.g., plasma turbulence) and non-physical process (e.g., measurement uncertainty). 
+Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as *noise*. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
 
-When the underlying process is **stochastic**—that is, governed by probabilistic rules—each individual time series obtained through measurement is called a **realization** (or sample path) of the underlying random process. While the random process describes the full ensemble of possible outcomes, a realization is a single, concrete instance that we analyze in practice.
+|    Color    | *PSD* ∝ $f^{‑β}$ |              Typical context              |
+| :---------: | :-------: | :---------------------------------------: |
+|    White    |   β = 0   |       Thermal/electronic background       |
+|    Pink     |   β = 1   |         Music, biological rhythms         |
+| Brown (red) |   β = 2   | Brownian motion, accumulated random walks |
+|    Blue     |  β = –1   |      Halftoning dither, mask design       |
+|   Violet    |  β = –2   |            Quantization noise             |
+
+A compact way to describe noise is by its **PSD slope**, traditionally labeled with colors:
 
 <p align = 'center'>
 <img src="Figure/figure_noise.png" alt="An example of DFT." width="100%"/>
 </p>
+These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
 
-In audio engineering, electronics, physics, and many other fields, the color of noise or noise spectrum refers to the power spectrum of a noise signal (a signal produced by a stochastic process). Different colors of noise have significantly different properties. For example, as audio signals they will sound different to human ears, and as images they will have a visibly different texture. Therefore, each application typically requires noise of a specific color. This sense of 'color' for noise signals is similar to the concept of timbre in music (which is also called "tone color"; however, the latter is almost always used for sound, and may consider detailed features of the spectrum).
+## Signal-to-Noise Ratio (SNR) and Decibels
 
-The practice of naming kinds of noise after colors started with white noise, a signal whose spectrum has equal power within any equal interval of frequencies. That name was given by analogy with white light, which was (incorrectly) assumed to have such a flat power spectrum over the visible range. Other color names, such as pink, red, and blue were then given to noise with other spectral profiles, often (but not always) in reference to the color of light with similar spectra. Some of those names have standard definitions in certain disciplines, while others are informal and poorly defined. Many of these definitions assume a signal with components at all frequencies, with a power spectral density per unit of bandwidth proportional to $1/f^\beta$ and hence they are examples of power-law noise. For instance, the spectral density of white noise is flat ($\beta$ = 0), while flicker or pink noise has $\beta$ = 1, and Brownian noise has $\beta$ = 2. Blue noise has $\beta$ = -1.
-
-## Signal-to-Noise Ratio and Decibel
-
-Signal-to-Noise Ratio (SNR) is a key metric that quantifies the strength of a signal relative to the background noise. It is widely used in signal processing, communications, and instrumentation to assess the quality and reliability of a measurement or transmission.
-
-The SNR is defined as the ratio of the power of the signal to the power of the noise:
+**SNR** tells us how clearly the signal emerges from noise:
 $$
 \mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
 $$
-where $P_{\text{signal}}$ is the average power of the signal, and $P_{\text{noise}}$ is the average power of the noise.
+where $P_{\text{signal}}$ and $P_{\text{noise}}$ are the average powers of the signal and noise, respectively.
 
-Since this ratio can span several orders of magnitude, it is often expressed in **decibels (dB)**:
+Because the ratio can span orders of magnitude, it is usually expressed in **decibels (dB)**:
 $$
 \mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
 $$
-For amplitude-based SNR (when measuring signal and noise in terms of root-mean-square (RMS) amplitude), the formula becomes:
+For amplitude‑based measurements (root‑mean‑square values):
 $$
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
 $$
 
-***Decibel (dB, Deci-Bel)***  is frequently used in describing the intensity of the signal. This quantity is defined as the 
+***Decibel Quick Reference\***
 
 
 |     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
@@ -41,13 +44,11 @@ $$
 |  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
 | Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
 
-
-
 Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
 
 The adoption of decibel instead of the conventional physical unit has three advantage:
 
-- It allows the direction addition when compare the amplitude of the signal.
+- It allows the directive addition when compare the amplitude of the signal.
 - When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
 - The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
