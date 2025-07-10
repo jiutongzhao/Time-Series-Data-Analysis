@@ -2,7 +2,7 @@
 
 ## Fourier Transform
 
-Fourier transform provide the perfect way to convert the observed time series into the dual space--Frequency domain. Its definition can be written as follows
+Fourier transform provide the perfect way to convert the observed time series into the dual space, ***Frequency domain***. Its definition can be written as follows
 
 $$
 \begin{align}
@@ -20,11 +20,13 @@ $$
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
 $$
 \begin{align}
-X(f)=\sum_{n=-\infty}^{+\infty} x(n \Delta t)\cdot e^{-i2\pi f (n\Delta t)}
+X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\Delta t)}
 \end{align}
 $$
 
-where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. This signal has infinite length and is still unrealistic. For a finite signal, the ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
+where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling period. 
+
+This infinite-length signal is still unrealistic. For a finite signal, the ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
 $$
 \begin{align}
 X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
@@ -71,11 +73,6 @@ In frequency analysis using the Fast Fourier Transform (FFT), the spectrum can b
 
 - **Single-Sided FFT** presents only the non-negative frequency components (from 0 up to Nyquist frequency). This format is typically used for **real-valued signals** when the **power spectral density** or **amplitude spectrum** is of interest. To preserve energy equivalence, the magnitudes (except at 0 and Nyquist) are usually **doubled** to account for the omitted negative frequencies.
 
-In summary, use the **double-sided form** for full-spectrum analysis (e.g., for complex signals or inverse transforms), and the **single-sided form** for clearer interpretation of real-signal power content.
-
-<p align = 'center'>
-<img src="Figure/figure_fft_single_side.png" width="100%"/>
-</p>
 
 
 The size of the coefficients is  `N` and each coefficient consist of both its real and imaginary parts, which means a `2N` redundancy. That is because `numpy.fft.fft` is designed for not only the real input but also the complex inputs, which can actually represents `2N` variables with a signal size of `N`.
@@ -254,6 +251,10 @@ freq = np.fft.rfftfreq(coef.size, dt)
 ```
 
 ## Other Padding Type
+
+<p align = 'center'>
+<img src="Figure/figure_padding_type.png" width="100%"/>
+</p>
 
 - `zero` - **zero-padding** - signal is extended by adding zero samples:
 

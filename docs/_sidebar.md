@@ -10,5 +10,6 @@
 * [Faulty Sample?](chap6.md)
 * [Time-Frequency Spectrum](chap7.md)
 * [Multi-Dimensional Signal](chap8.md)
-* [Appendix](chap9_appendix.md)
+* [Practical Application](chap9.md)
+* [Appendix](chap10_appendix.md) 
 

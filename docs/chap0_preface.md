@@ -39,7 +39,5 @@ This document aims to bridge that gap by offering a **practical guide** to spect
 
 <!-- tabs:end -->
 
-Please note, this guide will not include introductory sections on fundamental concepts like "What are Signals" or "What is Time Series." For those foundational topics, we recommend consulting standard textbooks.
-
 
 
