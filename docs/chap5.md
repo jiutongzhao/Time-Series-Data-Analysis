@@ -216,7 +216,7 @@ with $x[0]=0$.
 $0\le\alpha<1$ denotes the AR1 coefficient. 
 
 <p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
-<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($\alpha$).</i></p>
+<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($$\alpha$$).</i></p>
 
 Such a random series has a power spectrum of 
 $$
@@ -225,7 +225,7 @@ $$
 
 
 
-For a AR1 time series with $\alpha>0.9$, it will seems to be contains some "periodic" signature as its power concentrates near the low frequency range. 
+For a AR1 time series with $\alpha>0.9$, it will seems to be contains some "periodic" signature as its power concentrates near the low frequency range. This kind of signal conform the characteristics of "red noise".
 
 
 

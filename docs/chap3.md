@@ -26,8 +26,6 @@ $$
 P= \frac{1}{T}\int_{-T/2}^{T/2}|x(t)|^2 \mathrm{d}t
 $$
 
-
-
 ## Power Spectral Density
 
 For a signal to have a well-defined power spectral density, its second-order statistics must be time invariant. In a wide-sense stationary (WSS) process, the autocorrelation function depends only on the time lag ($\tau$) between two points, not on the specific times at which the measurements are taken. This property ensures that when we take the Fourier transform of the autocorrelation function—per the Wiener–Khinchin theorem—we obtain a unique and stable PSD that reflects the average distribution of power over frequency.
@@ -99,14 +97,19 @@ else:
     psd[1:] *= 2
 ```
 
-`scipy.signal.welch` is a more robust and efficient implementation of PSD estimation. It divides the signal into overlapping segments, applies a window to each segment, computes the FFT, and averages the results. This method reduces variance in the PSD estimate and is particularly useful for long signals. With a `npersge=N` and `noverlap=0`, it is equivalent to the above implementation.
-
-```python
-# scipy.signa.welch
-freq, psd = scipy.signal.welch(x, fs=fs, window='hann', nperseg=N, noverlap=0, detrend=False)
+```mermaid
+flowchart LR
+A@{ shape: lean-r, label: "$$x[n]$$"} --Padding<br>+<br>Window--> B["$$x_w[n]$$"]--Fourier<br>Transform--> C["$$X[k]$$"] --> D["$${\frac{|X[k]|^2}{Nf_s}}$$"] --Single-Side<br>Compensation--> E@{ shape: lean-l, label: Power Spectral<br>Density}
 ```
 
-The `hann` window used in `scipy.signal.welch` is ***periodic*** instead of ***symmetric***. The periodic window is more suitable for spectral analysis as it ensures continuity at the edges of each segment, reducing spectral leakage and improving the accuracy of the PSD estimate.
+- Alternative Approach: `scipy.signal.welch` is a more robust and efficient implementation of PSD estimation. It divides the signal into overlapping segments, applies a window to each segment, computes the FFT, and averages the results. This method reduces variance in the PSD estimate and is particularly useful for long signals. With a `npersge=N` and `noverlap=0`, it is equivalent to the above implementation.
+
+  ```python
+  # scipy.signa.welch
+  freq, psd = scipy.signal.welch(x, fs=fs, window='hann', nperseg=N, noverlap=0, detrend=False)
+  ```
+
+  The `hann` window used in `scipy.signal.welch` is ***periodic*** instead of ***symmetric***. 
 
 ## Wide-Sense Stationarity
 
