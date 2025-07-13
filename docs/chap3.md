@@ -3,13 +3,12 @@
 ## Parseval's Theorem and Energy Conservation
 
 > **Parseval's Identity**: The identity asserts that the sum of squares of the Fourier coefficients of a function is equal to the integral of the square of the function,
-> $$
-> % 归一化：\; X[k]=\displaystyle\sum_{n=0}^{N-1}x[n]\,e^{-j 2\pi kn/N}
-> \sum_{n=0}^{N-1} |x[n]|^{2} \Delta t
-> \;=\;
-> \sum_{k=0}^{N-1} |X[k]|^{2} \Delta f
-> $$
-> 
+$$
+ 
+ \sum_{n=0}^{N-1} |x[n]|^{2} \Delta t
+ \;=\;
+ \sum_{k=0}^{N-1} |X[k]|^{2} \Delta f
+ $$ 
 
 
 
