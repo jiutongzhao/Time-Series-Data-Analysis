@@ -2,25 +2,25 @@
 
 ## Fourier Transform
 
-Fourier transform provide the perfect way to convert the observed time series into the dual space, ***Frequency domain***. Its definition can be written as follows
-
+> **(Continuous) Fourier Transform (CFT, or FT)** provide the perfect way to convert the observed time series into the dual space, ***Frequency domain***. Its definition can be written as follows
 $$
 \begin{align}
-X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t
+X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t:=\mathcal{F}[x(t)]
 \end{align}
 $$
-Correspondingly, the inverse (continuous) Fourier transform can be given as:
-
+>$\mathcal{F}$ denotes the Fourier transform operator.  This transform is invertible and the inverse (continuous) Fourier transform can be given as:
 $$
 \begin{align}
-x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f
+x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X(f)]
 \end{align}
 $$
+
+
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***Discrete-Time Fourier Transform (DTFT)*** presents an alternative expression in:
 $$
 \begin{align}
-X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\Delta t)}
+X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\delta t)}
 \end{align}
 $$
 
@@ -29,12 +29,12 @@ where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling p
 This infinite-length signal is still unrealistic. For a finite signal, the ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
 $$
 \begin{align}
-X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i k\Delta f t} \, \Delta  t \\
-& = \sum_{n=0}^N x[n] e^{-2\pi i k\Delta f t} \, \Delta  t
+X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
+& = \sum_{n=0}^N x[n] e^{-2\pi i\cdot k \cdot \delta f \cdot t} \, \delta  t
 \end{align}
 $$
 
-In many lecture notes, the sample period $\Delta t$ is set to unity so that the formulas can be simplified. So, remember that all the related quantities are not in SI (*Système International d'Unités*) in that case。
+In many lecture notes, the sample period $\delta t$ is set to unity so that the formulas can be simplified. So, remember that all the related quantities are not in SI (*Système International d'Unités*) in that case。
 
 Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculates the DTFT coefficients by extending the original series along and anti-along the time axis.
 
@@ -177,57 +177,22 @@ Some other window functions are also supported by `numpy` and `scipy`, which is 
 
 
 
-| **Name and Function** |                NumPy or SciPy Function                 |                           **w[n]**                           |              **Amplitude Normalization Factor**              |               **Power Normalization Factor **                |
-| :-------------------: | :----------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| Rectangular (Boxcar)  |    `np.ones(N)` or `scipy.signal.windows.boxcar(N)`    |                             $1$                              |                             $1$                              |                             $1$                              |
-|    Hann (Hanning)     |   `np.hanning(N)` or `scipy.signal.windows.hann(N)`    |  $0.5\left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)$   |                          ${1}/{2}$                           |                       $\sqrt{{3}/{8}}$                       |
-|        Hamming        |  `np.hamming(N)` or `scipy.signal.windows.hamming(N)`  |       $0.54 - 0.46\cos\left(\frac{2\pi n}{N-1}\right)$       |                            $0.54$                            |    $\sqrt{0.397}=\sqrt{\frac{25^2 + 21^2}{2 \cdot 46^2}}$    |
-|       Blackman        | `np.blackman(N)` or `scipy.signal.windows.blackman(N)` | $0.42 - 0.5\cos\left(\frac{2\pi n}{N-1}\right) + 0.08\cos\left(\frac{4\pi n}{N-1}\right)$ |                            $0.42$                            | $\sqrt{0.274}=\sqrt{\frac{21^2 + 25^2 + 4^2}{2 \cdot 50^2}}$ |
-|        Kaiser         |         `scipy.signal.windows.kaiser(N, beta)`         | $\frac{I_0\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}$ | $\frac{1}{2I_0(\beta)}\int_{-1}^{1} I_0\left(\beta\sqrt{1-x^2}\right) dx$ | $\sqrt{\frac{1}{2}\int_{-1}^{1} \left[\frac{I_0\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^2 dx}$ |
-|         Tukey         |         `scipy.signal.windows.tukey(N, alpha)`         | $0.5\left(1 + \cos\left(\frac{\pi(2n)}{\alpha N} - 1\right)\right)$ |                      $1 - {\alpha}/{2}$                      |       $\sqrt{1 - \frac{\alpha}{2} + \frac{\alpha}{4}}$       |
-|       Gaussian        |        `scipy.signal.windows.gaussian(N, std)`         | $\exp\left(-\frac{1}{2}\left(\frac{n-\frac{N-1}{2}}{\sigma\frac{N-1}{2}}\right)^2\right)$ |                   $\sigma\sqrt{{\pi}/{2}}$                   |                     $\sigma\sqrt{\pi}/2$                     |
-|       Bartlett        | `np.bartlett(N)` or `scipy.signal.windows.bartlett(N)` |       $1 - \frac{2\left|n-\frac{N-1}{2}\right|}{N-1}$        |                          ${1}/{2}$                           |                       $\sqrt{{1}/{3}}$                       |
+| **Window & Python Call** | **w[n]** | **Amplitude Normalization** | **Power Normalization** |
+| :----------------------- | :----------------------------------------------------------: | :---------------------------------: | :--------------------------------------: |
+| **Rectangular (Boxcar)**<br>`np.ones(N)` / `scipy.signal.windows.boxcar(N)` | $1$ | $1$ | $1$ |
+| **Hann (Hanning)**<br>`np.hanning(N)` / `scipy.signal.windows.hann(N)` | $0.5\!\left(1-\cos\frac{2\pi n}{N-1}\right)$ | $\dfrac12$ | $\sqrt{\dfrac38}$ |
+| **Hamming**<br>`np.hamming(N)` / `scipy.signal.windows.hamming(N)` | $0.54-0.46\cos\frac{2\pi n}{N-1}$ | $0.54$ | $\sqrt{0.397}$ |
+| **Blackman**<br>`np.blackman(N)` / `scipy.signal.windows.blackman(N)` | $0.42-0.5\cos\frac{2\pi n}{N-1}+0.08\cos\frac{4\pi n}{N-1}$ | $0.42$ | $\sqrt{0.274}$ |
+| **Kaiser**<br>`scipy.signal.windows.kaiser(N, β)` | $\dfrac{I_0\!\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}$ | $\dfrac{1}{2I_0(\beta)}\!\displaystyle\int_{-1}^{1}\!I_0\!\left(\beta\sqrt{1-x^2}\right)dx$ | $\sqrt{\dfrac12\!\displaystyle\int_{-1}^{1}\!\!\left[\dfrac{I_0\!\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^{\!2}dx}$ |
+| **Tukey**<br>`scipy.signal.windows.tukey(N, α)` | $0.5\!\left(1+\cos\!\left(\dfrac{\pi(2n)}{\alpha N}-1\right)\right)$ | $1-\dfrac{\alpha}{2}$ | $\sqrt{1-\dfrac{\alpha}{2}+\dfrac{\alpha}{4}}$ |
+| **Gaussian**<br>`scipy.signal.windows.gaussian(N, σ)` | $\exp\!\left[-\dfrac12\left(\dfrac{n-\frac{N-1}{2}}{σ\frac{N-1}{2}}\right)^{\!2}\right]$ | $σ\sqrt{\dfrac{\pi}{2}}$ | $σ\sqrt{\pi}/2$ |
+| **Bartlett**<br>`np.bartlett(N)` / `scipy.signal.windows.bartlett(N)` | $1-\dfrac{2\left|n-\frac{N-1}{2}\right|}{N-1}$ | $\dfrac12$ | $\sqrt{\dfrac13}$ |
 
-- For Tukey: $\alpha$ is the cosine-tapered fraction $(0 \leq \alpha \leq 1)$
-- For Kaiser: $I_0$ is the modified Bessel function of the first kind
-- Gaussian approximations assume the window is appropriately scaled
+* **Tukey window:** α is the cosine-tapered fraction (0 ≤ α ≤ 1).  
+* **Kaiser window:** \(I_0\) is the modified Bessel function of the first kind.  
+* Gaussian factors assume appropriate scaling of σ.
 
 <u>**As the magnitude and power spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**</u>
-
-In the end, we show the complete data processing diagram for ***windowed Fourier transform (WFT)***.
-
-```mermaid
-graph LR
-
-A(["$$x[n]$$"]) -->|Window 
-Function|B@{ shape: rect, label: "$$x_{windowed}[n]$$" }
-
-A-->|Zero
-Padding|C@{shape:rect, label: "$$x_{ZP}[n]$$"}
-
-C -->|Window
-Function|B
-
-B -->|Fourier
-Transform|D@{shape: rect, label: "$X[k]$"}
-
-D -->H["$P[k]:=|X[k]|^2$"]
-
-D --> E(Window
-Compensation)
-
-E --> F(Single-Side
-Compensation)
-
-F --> G@{ shape: lean-r, label: "$X[k]$"}
-
-
-H --> E(Window
-Compensation)
-
-F --> K@{ shape: lean-r, label: "$psd[k]$"}
-
-```
 
 
 
@@ -301,3 +266,17 @@ freq = np.fft.rfftfreq(coef.size, dt)
   ```
 
 <div STYLE="page-break-after: always;"></div>
+
+```mermaid
+graph LR
+
+A(["$$x[n]$$"]) -->|Window|B@{ shape: rect, label: "$$x_{windowed}[n]$$" }
+
+A-->|Padding|C@{shape:rect, label: "$$x_{padded}[n]$$"}
+
+C -->|Window|B
+
+B -->|Fourier
+Transform|D@{shape: rect, label: "$$X[k]$$"}
+```
+

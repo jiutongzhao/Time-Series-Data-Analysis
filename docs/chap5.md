@@ -2,55 +2,23 @@
 
 ## Noise Colors and Classification
 
-Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as *noise*. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
-
-|    Color    | *PSD* ∝ $f^{‑β}$ |              Typical context              |
-| :---------: | :-------: | :---------------------------------------: |
-|    White    |   β = 0   |       Thermal/electronic background       |
-|    Pink     |   β = 1   |         Music, biological rhythms         |
-| Brown (red) |   β = 2   | Brownian motion, accumulated random walks |
-|    Blue     |  β = –1   |      Halftoning dither, mask design       |
-|   Violet    |  β = –2   |            Quantization noise             |
+Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as ***noise***. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
 
 A compact way to describe noise is by its **PSD slope**, traditionally labeled with colors:
+
+| **Noise Color** | **$PSD\propto f^{-\beta}$** |      **Typical Examples / Sources**       |
+| :-------------: | :---------: | :---------------------------------------: |
+|      White      |    $\beta$ = 0    |       Thermal/electronic background       |
+|      Pink       |    $\beta$ = 1    |         Music, biological rhythms         |
+|   Brown (Red)   |    $\beta$ = 2    | Brownian motion, accumulated random walks |
+|      Blue       |   $\beta$ = –1    |      Halftoning dither, mask design       |
+|     Violet      |   $\beta$ = –2    |            Quantization noise             |
+
+These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
 
 <p align = 'center'>
 <img src="Figure/figure_noise.png" alt="An example of DFT." width="100%"/>
 </p>
-These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
-
-## Signal-to-Noise Ratio (SNR) and Decibels
-
-**SNR** tells us how clearly the signal emerges from noise:
-$$
-\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
-$$
-where $P_{\text{signal}}$ and $P_{\text{noise}}$ are the average powers of the signal and noise, respectively.
-
-Because the ratio can span orders of magnitude, it is usually expressed in **decibels (dB)**:
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
-$$
-For amplitude‑based measurements (root‑mean‑square values):
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
-$$
-
-***Decibel Quick Reference\***
-
-
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
-
-Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
-
-The adoption of decibel instead of the conventional physical unit has three advantage:
-
-- It allows the directive addition when compare the amplitude of the signal.
-- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
-- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
 
 ## Artificial Noise Generation
 
@@ -72,6 +40,31 @@ violet_noise = np.fft.irfft(violet_noise_fft)
 ```
 
 Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
+
+## Autoregressive (AR) Model
+
+Many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behaviour is well captured by a first-order autoregressive model:
+$$
+x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
+$$
+whose single coefficient $\alpha$ sets the memory length. When $\alpha=0$ the series is white noise; as $\alpha\to1^{-}$ it approaches an integrated (Brownian) path with power piling up at low frequencies. 
+
+
+<p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
+<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($\alpha=$0.10, 0.90, and 0.99).</i></p>
+
+The spectrum makes this clear:
+$$
+\mathbb{E}[PSD(f)]=\frac{\sigma^2(1-\alpha^2)}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
+$$
+
+which is flat for $\alpha=0$ and climbs like $1/f^{2}$ near $f=0$ for $\alpha\approx1$. Thus AR (1) offers the simplest realistic noise model—white at one extreme, red at the other—while remaining easy to simulate and fit.
+
+The $$\alpha$$ parameter can be estimated by the lag-1 autocorrelation of the time series. 
+$$
+\alpha = \frac{\sum_{n=0}^{N-2}(x[n]-\bar{x})(x[n+1]-\bar{x})}{\sum_{n=0}^{N-1}(x[n]-\bar{x})^2}
+$$
+Higher-order AR models can capture more complex correlations, but require more data to fit reliably.
 
 ## "Noise" of Noise
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
@@ -172,60 +165,72 @@ Apart from splitting the signal into several segments, one can also downsample t
 <img src="Figure/figure_noise_blackman_tukey.png" width="100%"/>
 </p>
 
+
+## Signal-to-Noise Ratio (SNR) and Decibels
+
+**SNR** measures how clearly the signal emerges from noise:
+$$
+\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
+$$
+where $P_{\text{signal}}$ and $P_{\text{noise}}$ are the average powers of the signal and noise, respectively.
+
+Because the ratio can span orders of magnitude, it is usually expressed in **decibels (dB)**:
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
+$$
+For amplitude‑based measurements (root‑mean‑square values):
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
+$$
+
+***Decibel Quick Reference\***
+
+
+|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
+| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
+| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+
+Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
+
+The adoption of decibel instead of the conventional physical unit has three advantage:
+
+- It allows the directive addition when compare the amplitude of the signal.
+- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
+- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
+
+
 ## Signal Over Noise
 
-A signal composed of a deterministic sinusoidal component and additive noise can be written as:
+A signal composed of a deterministic sinusoidal component $s(t)$ and additive noise $n(t)$ can be written as:
 $$
 x(t) = s(t) + n(t)
 $$
-The Fourier coefficient at frequency $f$ is:
+Correspondingly, the Fourier coefficient at frequency $f$ is the sum of the signal and noise components::
 $$
-\tilde{X}(f) = \tilde{S}(f) + \tilde{N}(f)
+{X}(f) = {S}(f) + {N}(f)
 $$
-where $\tilde{S}(f)$ is the deterministic signal component (a fixed complex number), and $\tilde{N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
+where ${S}(f)$ is the deterministic signal component (a fixed complex number), and ${N}(f)$ is the Fourier transform of the noise. If the noise $n(t)$ is zero-mean wide-sense stationary, then:
 $$
 \tilde{N}(f) \sim \mathcal{CN}(0, \sigma_n^2)
 $$
-That is, $\tilde{X}(f)$ is a complex Gaussian random variable:
+That is, ${X}(f)$ is a complex Gaussian random variable:
 $$
-\tilde{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = \tilde{S}(f)
+{X}(f) \sim \mathcal{CN}(\mu, \sigma_n^2), \quad \mu = {S}(f)
 $$
 The power spectrum estimate is:
 $$
-\hat{S}_x(f) = |\tilde{X}(f)|^2
+{S}_x(f) = |{X}(f)|^2
 $$
-Since $|\tilde{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
+Since $|{X}(f)|^2$ is the sum of squares of two independent Gaussian variables (real and imaginary parts), it strictly follows a non-central chi-squared distribution:
 $$
-\hat{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
+{S}_x(f) \sim \sigma_n^2 \cdot \chi^2(2, \lambda), \quad \lambda = \frac{|\mu|^2}{\sigma_n^2}
 $$
-In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a non-central chi-squared distribution with 2 degrees of freedom.
+In other words, the deterministic signal provides a **complex offset** (mean $\mu$), and the noise determines the **variance** $\sigma_n^2$. The resulting power spectrum estimate is exactly a **<u>non-central chi-squared distribution</u>** with 2 degrees of freedom.
 
 <p align = 'center'>
 <img src="Figure/figure_signal_over_noise_hist.png" width="100%"/>
 </p>
-
-
-## Autoregressive (AR) Model
-
-An autoregressive model can be written as
-$$
-x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
-$$
-with $x[0]=0$. 
-
-$0\le\alpha<1$ denotes the AR1 coefficient. 
-
-<p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
-<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($$\alpha$$).</i></p>
-
-Such a random series has a power spectrum of 
-$$
-\frac{1-\alpha^2}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
-$$
-
-
-
-For a AR1 time series with $\alpha>0.9$, it will seems to be contains some "periodic" signature as its power concentrates near the low frequency range. This kind of signal conform the characteristics of "red noise".
 
 
 

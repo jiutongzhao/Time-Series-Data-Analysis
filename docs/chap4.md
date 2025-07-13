@@ -1,4 +1,41 @@
-# What Else Should You Know About the DFT and FFT?
+# What Else Should You Know About the DFT/FFT?
+
+## Uncertainty Principle
+
+In signal processing and quantum physics alike, the **uncertainty principle** states that
+
+> A signal $x(t)$ and its Fourier transform $X(f)$ cannot both be sharply localized.  If $\delta t$ denotes the effective duration of the signal and $\delta f$ its effective bandwidth, then
+$$
+\Delta t \,\Delta f \;\ge\; \tfrac{1}{4\pi}
+$$
+> meaning you can trade time resolution for frequency resolution, but never improve both simultaneously beyond this bound.  
+>
+This is often summarized as: "A signal cannot be both time-limited and band-limited."
+Practically, a shorter pulse spreads its spectrum, while a narrowband tone must last longer.
+
+<p align = 'center'><img src="Figure/figure_uncertainty_principle.png" width="100%"/></p>
+<p align = 'center'><i>Top: Gaussian pulses with narrow (purple) to wide (blue) time span; Bottom: Their Fourier coefficient with wide to narrow frequency bandwidth. </i></p>
+
+The lower bound of the time–bandwidth product is achieved by Gaussian functions, which are optimal in the sense that they minimize the product $\Delta t \Delta f$.
+
+Here the central time $t_0$ and bandwidth $f_0$ are defined as the first moments of the energy density $|x(t)|^2$ and $|X(f)|^2$, respectively, while $\Delta t$ and $\Delta f$ are their standard deviations. The integrals are taken over all time and frequency, respectively. For complex-valued signals, the squared magnitude $|x(t)|^2 = x(t)x^*(t)$ is used to represent signal energy.
+$$
+t_0 = \frac{\int t\,|x(t)|^{2} \, dt}{\int |x(t)|^{2} \, dt},
+\qquad
+\Delta t = \sqrt{\frac{\int (t-t_0)^{2}\,|x(t)|^{2} \, dt}{\int |x(t)|^{2} \, dt}}
+$$
+
+$$
+f_0 = \frac{\int f\,|X(f)|^{2} \, df}{\int |X(f)|^{2} \, df},
+\qquad
+\Delta f = \sqrt{\frac{\int (f-f_0)^{2}\,|X(f)|^{2} \, df}{\int |X(f)|^{2} \, df}}
+$$
+
+This trade-off is a fundamental limitation of the Fourier transform and is mathematically expressed through time–bandwidth products. It implies that short-duration signals must occupy a wide frequency range, while narrow-band signals cannot be sharply confined in time—a concept closely related to Heisenberg’s uncertainty principle in quantum mechanics.
+
+One direct application of this principle is the choice of the window length in the Short-Time Fourier Transform (STFT). A longer window improves frequency resolution but reduces time resolution, while a shorter window does the opposite. The optimal choice depends on the specific characteristics of the signal being analyzed.
+
+<div STYLE="page-break-after: always;"></div>
 
 ## Gibbs Phenomenon
 
@@ -7,19 +44,35 @@ Although the Fourier transform can perfectly reconstruct **<u>discrete</u>** sig
 <p align = 'center'>
 <img src="Figure/figure_gibbs.png" width="100%"/>
 </p>
-Despite increasing the number of harmonics, the overshoot remains (~9%), becoming narrower but not disappearing. This is a fundamental limitation of the Fourier basis, not a numerical flaw, and in practice, techniques like windowing, filtering, or using alternative bases such as wavelets are employed to mitigate its effects.
+The variation of the signal concentrates sharply localized, which means the bandwidth should be infinitely wide. Such a transient signal has a Fourier coefficient propotional to ${(2k+1)}^{-1}$ and $\delta f$ can not converged.
 
-## Uncertainty Principle
+Despite increasing the number of harmonics, the overshoot becomes narrower but remains at a constant: ~8.95%. 
+$$
+\frac{1}{\pi}\int_0^\pi \frac{\mathrm{sin} u}{u} \mathrm{d}u \approx 0.08949\ldots
+$$
+This is a fundamental limitation of the Fourier basis, not a numerical flaw, and in practice, techniques like windowing, filtering, or using alternative bases such as wavelets are employed to mitigate its effects.
 
-The Uncertainty Principle in signal processing states that a function cannot be simultaneously localized in both time and frequency: the more precisely you know a signal’s timing, the less precisely you can know its frequency content, and vice versa. 
+## Convolution Theorem
 
-<p align = 'center'><img src="Figure/figure_uncertainty_principle.png" width="100%"/></p>
-<p align = 'center'><i>Top: Gaussian pulses with narrow (purple) to wide (blue) time span; Bottom: Their Fourier coefficient with wide to narrow frequency bandwidth. </i></p>
+In Fourier analysis, the **Convolution Theorem** says that convolving two signals in time becomes multiplying their spectra:
+$$
+\mathcal{F}\{\,x(t)*y(t)\,\}=X(f)\cdot Y(f),
+\qquad
+\mathcal{F}^{-1}\{X(f)*Y(f)\}=x(t)\cdot y(t),
+$$
+with the definition of convolution operator ($*$):
+$$
+(x*y)(t)=\int_{-\infty}^{\infty}x(\tau)\,y(t-\tau)\,d\tau
+$$
+The convolution theorem states how operations performed on a signal in the time domain or in the frequency domain will affect that signal in its dual domain. 
 
+We now understand that windowing (time-domain multiplication) actually broadens and shapes the spectrum exactly as predicted by the convolution theorem.
 
-This trade-off is a fundamental limitation of the Fourier transform and is mathematically expressed through time–bandwidth products. It implies that short-duration signals must occupy a wide frequency range, while narrow-band signals cannot be sharply confined in time—a concept closely related to Heisenberg’s uncertainty principle in quantum mechanics.
+Unlike the continuous version, the discrete convolution theorem inherently links point-wise multiplication in the DFT domain to **circular (convolution-mod-N)** in the time domain—so to obtain ordinary linear convolution you must first zero-pad the sequences beyond their combined length.
 
-## More Properties of Fourier Transform
+According to the convolution theorem, performing convolution via the FFT cuts the computational cost from $O(N^{2})$ to $O\bigl(N\log N\bigr)$.
+
+## More Practical Properties
 
 A super powerful property of Fourier transform is that:
 $$
@@ -78,11 +131,10 @@ $$
 | Derivative (Time Domain)   | $\frac{d^n x(t)}{dt^n} \rightarrow (j 2 \pi f)^n X(f)$ | $\Delta^n x[n] \rightarrow X[k] \cdot (e^{j 2 \pi k / N} - 1)^n$ |
 | Conjugate Symmetry         | $x(t) \in \mathbb{R} \Rightarrow X(-f) = X^*(f)$       | $x[n] \in \mathbb{R} \Rightarrow X[N - k] = X^*[k]$          |
 | Parseval's Theorem         | $\int |x(t)|^2\,dt = \int |X(f)|^2\,df$                | $\sum |x[n]|^2 = \frac{1}{N} \sum |X[k]|^2$                  |
-| Frequency Resolution       | Continuous (infinitesimal)                             | $\Delta f = \frac{f_s}{N}$                                   |
 | Spectral Periodicity       | $X(f)$ not periodic                                    | $X[k]$ is periodic with period $N$                           |
 | Periodic Input Duality     | Periodic $x(t) \Rightarrow$ discrete $X(f)$            | Periodic $x[n] \Rightarrow$ sparse $X[k]$                    |
 
-## The performance of `numpy.fft.fft` and `scipy.signal.fft`
+## Software Performance
 
 The invention of the ***(Cooley–Tukey) Fast Fourier Transform (FFT) algorithm*** reduced the time complexity of DFT from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\mathrm{log}N)$ by efficiently decomposing the DFT into smaller computations, i.e., [divide-and-conquer](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).  
 

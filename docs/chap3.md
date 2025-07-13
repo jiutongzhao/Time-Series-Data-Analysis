@@ -97,11 +97,6 @@ else:
     psd[1:] *= 2
 ```
 
-```mermaid
-flowchart LR
-A@{ shape: lean-r, label: "$$x[n]$$"} --Padding<br>+<br>Window--> B["$$x_w[n]$$"]--Fourier<br>Transform--> C["$$X[k]$$"] --> D["$${\frac{|X[k]|^2}{Nf_s}}$$"] --Single-Side<br>Compensation--> E@{ shape: lean-l, label: Power Spectral<br>Density}
-```
-
 - Alternative Approach: `scipy.signal.welch` is a more robust and efficient implementation of PSD estimation. It divides the signal into overlapping segments, applies a window to each segment, computes the FFT, and averages the results. This method reduces variance in the PSD estimate and is particularly useful for long signals. With a `npersge=N` and `noverlap=0`, it is equivalent to the above implementation.
 
   ```python
@@ -124,8 +119,26 @@ Wide-Sense Stationarity (WSS) is a key concept in signal processing that describ
    The autocorrelation function depends only on the time difference (lag) between two time instants, not on the absolute time: $$ R_x(t_1, t_2) = R_x(\tau), \quad \tau = t_2 - t_1 $$
 
 These conditions imply that even if the signal itself is random, its first two moments are invariant to shifts in time. This invariance simplifies the analysis significantly since one can characterize such a signal solely by its mean and autocorrelation function.
-<p align = 'center'>
-    <img src="Figure/figure_wss.png" width="90%"/></p>
+
+## Correlation Function [`scipy.signal.correlate`]
+
+>A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
+
+$$
+\begin{align}
+{R_{XY}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{Y(t + \tau)} \right]
+\end{align}
+$$
+
+where the overline represents the complex conjugate operation when $X$ and $Y$ are complex signal. Specifically, the correlation function between $X$ and itself is called autocorrelation function:
+
+$$
+\begin{align}
+{R_{XX}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{X(t + \tau)} \right]
+\end{align}
+$$
+If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
+
 ## Wiener–Khinchin Theorem
 
 For a wide-sense stationary (WSS) random process $x(t)$, the **autocorrelation function** depends only on the time difference $\tau$, not on absolute time:
@@ -157,6 +170,13 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its c
 - If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
 
 The concept of *W.S.S* essentially guides us in selecting an appropriate window for spectral analysis. On one hand, the window length should be longer than the oscillation period to capture a complete cycle of the fluctuations. On the other hand, the window length should be shorter than the characteristic scale over which power or frequency variations occur, so that the signal within the window can be approximated as wide-sense stationary.
+
+```mermaid
+flowchart LR
+A@{ shape: lean-r, label: "$$x[n]$$"} --Detrend-->B["$$x_d[n]$$"] --Padding<br>+<br>Window--> C["$$x_{dw}[n]$$"]--Fourier<br>Transform--> D["$$X[k]$$"] --> E["$${\frac{|X[k]|^2}{Nf_s}}$$"] --Single-Side<br>+Window<br>Compensation--> F@{ shape: lean-l, label: Power Spectral<br>Density}
+```
+
+
 
 ## Cepstrum
 
@@ -222,5 +242,63 @@ df = freq[1] - freq[0]
 quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 ```
 
+## Lomb-Scargle Periodogram [`scipy.signal.lombscargle`]
+
+The **Lomb-Scargle periodogram** estimates a signal’s power spectrum **directly from unevenly sampled data**, avoiding interpolation.
+For each angular frequency $\omega$ it fits
+$$
+x(t_n)\;\approx\;A\cos\omega t_n + B\sin\omega t_n,
+$$
+and defines the normalized power
+$$
+P(\omega)=\tfrac12\!\left[
+\frac{\bigl[\sum (x_n-\bar x)\cos\omega(t_n-\tau)\bigr]^{\!2}}
+     {\sum\cos^{2}\omega(t_n-\tau)}
+\;+\;
+\frac{\bigl[\sum (x_n-\bar x)\sin\omega(t_n-\tau)\bigr]^{\!2}}
+     {\sum\sin^{2}\omega(t_n-\tau)}
+\right],
+$$
+with phase offset
+$$
+\tan(2\omega\tau)=
+\frac{\sum\sin 2\omega t_n}{\sum\cos 2\omega t_n},
+$$
+which decorrelates the sine–cosine terms and minimizes leakage.
+
+The Lomb–Scargle periodogram fits sinusoids directly to the data using a least-squares approach—with an optimized phase shift that decouples the sine and cosine terms—so it inherently minimizes spectral leakage. Since this method is tailored for unevenly sampled data, the effect of windowing is already embedded in its formulation, making an additional window function unnecessary. 
+
+When the sampling is uniform, $P(\omega)$ converges to the classic FFT periodogram.
+
+```python
+omega0 = 2 * np.pi * 5.0
+
+# Data Missing
+t = np.linspace(0, 1, 500, endpoint=False)
+sig = np.sin(omega0 * t) + np.sin(omega0 * 3.2 * t) + np.random.randn(t.size) * 0.01
+data_miss_idx = np.random.choice(np.arange(t.size), t.size - 200)
+sig[data_miss_idx] = np.nan
+
+# Randomly Sampling
+t = np.random.uniform(0, 1, 300)
+t.sort()
+sig = np.sin(omega0 * t) + np.sin(omega0 * 3.2 * t) + np.random.randn(t.size) * 0.01
+
+ls_amp = np.abs(scipy.signal.lombscargle(t[~np.isnan(sig)], sig[~np.isnan(sig)], 2 * np.pi * freq[1:], normalize='amplitude'))
+```
+
+
+
+<!-- tabs:start -->
+
+#### **Data Missing**
+
+<p align="center">   <img src="Figure/figure_lombscargle_data_missing.png" width="60%"/> </p>
+
+#### **Randomly Spampling**
+
+<p align="center">   <img src="Figure/figure_lombscargle_randomly_sampling.png" width="60%"/> </p>
+
+<!-- tabs:end -->
 
 <div STYLE="page-break-after: always;"></div>

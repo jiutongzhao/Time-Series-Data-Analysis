@@ -1,109 +1,86 @@
-## Multi-Dimensional Signal
+# Multi-Channel Analysis
 
 ### Principal Component Analysis / Minimum Variance Analysis
 
-Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are closely related, eigen‐vector–based techniques for extracting the dominant directional structure in multivariate data. PCA is a general statistical tool; MVA is the same mathematics applied to three-component field measurements (e.g., **B** in space physics) with special attention to the minimum-variance direction. 
+Principal Component Analysis (PCA) and Minimum Variance Analysis (MVA) are eigenvector-based methods for uncovering dominant directional structures in multivariate data. Both techniques seek an orthogonal transformation of the original measurements, 
+$$
+\mathbf{x}_{3\times N} \;=\;
+\begin{bmatrix}
+x_{1}[1], & x_{1}[2], & \cdots & x_{1}[N] \\
+x_{2}[1], & x_{2}[2], & \cdots & x_{2}[N] \\
+x_{3}[1], & x_{3}[2], & \cdots & x_{3}[N]
+\end{bmatrix}
+$$
 
-The central ideas of these two methods are rotating the data into a new orthogonal basis such that each successive axis captures the greatest possible remaining variance.
 
-#### Mathematical Formulation
+, into a new basis whose axes are ordered by the variance they explain.
 
-1. **Collect & demean** the data matrix
-   $$
-   \mathbf{X}
-   = \begin{bmatrix}
-     x_1 & x_2 & \dots & x_N \\
-     y_1 & y_2 & \dots & y_N \\
-     z_1 & z_2 & \dots & z_N
-   \end{bmatrix},
-   \qquad
-   \tilde{\mathbf{X}} = \mathbf{X} - \langle\mathbf{X}\rangle
-   $$
+First, subtract the mean from each component to obtain $\widetilde{\mathbf{x}} = \mathbf{x} - \langle\mathbf{x}\rangle$. The covariance matrix
+$$
+\mathbf{C}_{3\times 3} = \frac{1}{N-1}\,\widetilde{\mathbf{x}}\;\widetilde{\mathbf{x}}^\mathsf{T}
+$$
+is then diagonalized by solving
+$$
+\mathbf{C}\,\mathbf{e}_i = \lambda_i\,\mathbf{e}_i,\quad \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
+$$
+The eigenvectors $\{\mathbf{e}_i\}$ form the axes of the rotated coordinate system: projecting onto the first $k$ eigenvectors yields the best $k$-dimensional approximation in the least-squares sense (PCA), while in MVA one typically interprets $\mathbf{e}_3$, the direction of minimum variance, as the local discontinuity normal or wave propagation direction.
 
-2. **Form the covariance (spectral) matrix**
-   $$
-   \mathbf{C} \;=\; \frac{1}{N-1}\,\tilde{\mathbf{X}}\tilde{\mathbf{X}}^\mathsf{T}
-   $$
+```python
+N = 2 ** 10
+t = np.linspace(0, 1, N, endpoint=False)
+omega = 2 * np.pi * 8.0
+noise_level = 0.02
 
-3. **Solve the eigenproblem**
-   
-   $$
-     \mathbf{C}\,\mathbf{e}_i \;=\; \lambda_i\,\mathbf{e}_i,
-     \quad
-     \lambda_1 \ge \lambda_2 \ge \lambda_3 \ge 0
-   $$
-   
-4. **Interpretation**
+sig_x = np.sin(omega * t + np.pi * 0.0) * (0.6 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
+sig_y = np.sin(omega * t + np.pi * 0.5) * (0.7 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
+sig_z = np.sin(omega * t + np.pi * 1.0) * (0.8 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
 
-   - **PCA**: Project the data onto the top *k* eigenvectors $\{\mathbf{e}_1,\dots,\mathbf{e}_k\}$ for dimensionality reduction.
-   
-   - **MVA**:
-     - $\mathbf{e}_1$: maximum‐variance direction (largest fluctuations)
-     
-     - $\mathbf{e}_2$: intermediate direction
-     
-     - $\mathbf{e}_3$: minimum‐variance direction—often taken as the local discontinuity normal or the wave propagation vector.
-     
-       <p align = 'center'>
-       <img src="Figure/figure_pca.png" alt="An example of DFT." width="100%"/>
-       </p>
-       
-        ```python
-        sklearn.decomposition.PCA(
-           n_components: int | float | str | None = None,     # Number of components or variance ratio to keep
-           copy: bool = True,                                 # If False, data may be overwritten during fitting
-           whiten: bool = False,                              # If True, output is scaled to unit variance
-           svd_solver: str = 'auto',                          # SVD method: 'auto', 'full', 'arpack', or 'randomized'
-           tol: float = 0.0,                                  # Convergence tolerance (used only if svd_solver='arpack')
-           iterated_power: int | str = 'auto',                # Power iterations for randomized SVD
-           random_state: int | RandomState | None = None      # Seed or random generator for randomized SVD
-        )
-        # Returns:
-       
-        # pca : PCA object
-        #     A fitted PCA estimator instance, ready for transformation and analysis.
-       
-        pca.fit(
-            X: array-like of shape (n_samples, n_features),    # Training data matrix
-        )
-        ```
+signal = np.vstack((sig_x, sig_y, sig_z)).T
+pca = sklearn.decomposition.PCA(n_components=3)
+pca.fit(signal)
 
-       
+eigenvalues = pca.singular_values_
+eigenvectors = pca.components_
+```
 
-        ```python
-        N = 2 ** 10
-        t = np.linspace(0, 1, N, endpoint=False)
-        omega = 2 * np.pi * 8.0
-        noise_level = 0.02
-       
-        sig_x = np.sin(omega * t + np.pi * 0.0) * (0.6 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
-        sig_y = np.sin(omega * t + np.pi * 0.5) * (0.7 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
-        sig_z = np.sin(omega * t + np.pi * 1.0) * (0.8 * np.hanning(t.size)) + np.random.randn(t.size) * noise_level
-       
-        signal = np.vstack((sig_x, sig_y, sig_z)).T
-        pca = sklearn.decomposition.PCA(n_components=3)
-        pca.fit(signal)
-       
-        eigenvalues = pca.singular_values_
-        eigenvectors = pca.components_
-        ```
+In this framework, $\mathbf{e}_1$ (maximum-variance), $\mathbf{e}_2$ (intermediate), and $\mathbf{e}_3$ (minimum-variance) provide a natural triad for dimensionality reduction, feature extraction, and physical interpretation of multicomponent time series.
+
+<p align = 'center'>
+<img src="Figure/figure_pca.png" width="100%"/>
+<p>
 
 ### Spectral Matrix
 
-A ***spectral matrix*** can be defined as 
+A ***spectral matrix*** $\hat{S}$ can be defined as
 $$
-\hat{S}_{ij}= \hat{B}_i \hat{B}_j^*
+\hat{S}_{ij}= \langle {X}_i {X}_j^* \rangle
 $$
 
-for a time series decomposed with both signal and noise, its Fourier coefficients follow the ***non-central chi-square distribution***, as introduced in the previous section. Taking a moving-average in the time or frequency domain helps improving the SNR as we did in the Welch method. 
+where $\langle X \rangle$ denotes the smooth operator, $X_i$ is the frequency coefficient of the $i$-th component of a multichannel signal (e.g., Fourier or wavelet coefficient), and $X_j^*$ is the complex conjugate of the $j$-th component. The spectral matrix is a generalization of the power spectral density to multiple channels, capturing both auto-spectral (diagonal) and cross-spectral (off-diagonal) relationships.
 
 ```python
 spec = np.einsum('fti,ftj->ftij', coef, coef.conj())
+```
 
-# Average in time or frequency domain
-spec_avg = np.copy(spec)
-spec_avg = bn.move_mean(spec_avg, window=time_window, min_count=1, axis=1)
-spec_avg = bn.move_mean(spec_avg, window=freq_window, min_count=1, axis=0)
+This matrix is Hermitian and positive semi-definite, with diagonal elements representing the power spectral densities of each component and off-diagonal elements encoding cross-spectral relationships. 
+
+It contains all second-order statistical information about the multichannel signal in the frequency domain, including power distributions, correlations, and phase relationships. By transforming the signal frequency coefficients `coef` (e.g., from a Fourier or wavelet transform) into the spectral matrix, we can analyze the signal with multiple signature of the matrix/linear algebra.
+
+The spectral matrix can be averaged over time and frequency to reduce noise and improve statistical reliability, just like the Welch method:
+
+```python
+# Moving average smoothing
+spec = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
+spec = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
+```
+
+Instead, one may also apply a Gaussian smoothing kernel in time and frequency domain to achieve a similar effect. The width of the Gaussian kernel is commonly chose as a multiple of the scale, thus the smoothing kernel is longer at lower frequencies and shorter at higher frequencies.
+
+```python
+# Gaussian smoothing
+a = 1
+for i, s in enumerate(scales):
+    spec[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
 ```
 
 ### Coherence
@@ -118,29 +95,11 @@ $$
 
 where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $X$ and $Y$, and $\hat{S}_{XX}(f)$, $\hat{S}_{YY}(f)$ are the power spectral densities of $X$ and $Y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
 
+Coherence is a function of not only the spectral matrix but also the smoothing operator $\langle...\rangle$. Two common approaches of smoothing have been introduced in the last section.
+
 ```python
-scipy.signal.coherence(
-    x: array_like,               # First input signal (1D or 2D array)
-    y: array_like,               # Second input signal (same shape as x)
-    fs: float = 1.0,             # Sampling frequency (Hz)
-    window: str or tuple = 'hann',  # Window function to apply to each segment
-    nperseg: int = None,         # Segment length for FFT (default: 256)
-    noverlap: int = None,        # Number of overlapping points (default: nperseg // 2)
-    nfft: int = None,            # Number of FFT points (default: nperseg)
-    detrend: str or function = 'constant',  # How to detrend each segment
-    axis: int = -1               # Axis along which to compute coherence
-)
-# Returns:
-# f : ndarray
-#     Array of sample frequencies.
-# Cxy : ndarray
-#     Magnitude-squared coherence values (range: 0 to 1).
-
+coherence_xy = np.abs(spec[:, :, 0, 1]) ** 2 / (spec[:, :, 0, 0] * spec[:, :, 1, 1])
 ```
-
-To be honest, I feel very hard to understand what does *coherent/coherence* means in many of the magnetospheric ULF/VLF waves investigations. It can be easily understood the coherence between two individual light or signal. However, in the *in-situ* observation, the spacecraft can only measure one signal without further distinguishment or separation. In some literature, the coherence between $E_x$ and $B_y$ are used to measure whether the observed VLF waves are coherent. These VLF waves always propagate along the geomagnetic field line, which point to the north near the magnetic equator. It makes some sense as a high coherence suggests the waves have a stable wave vector during this interval. But, it is still hard to expect the occurrence of interference as both $E_x$ and $B_y$ may just be the presence of one single wave. While, some other literatures use the coherence between the magnetic field components to 
-
-- Coherency is meaningless without taking an average. 
 
 ### Combination with Maxwell's Equations: SVD Wave Analysis
 
@@ -213,16 +172,14 @@ $$
 $$
 where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ diagonal matrix with three nonnegative singular values, and $V ^T$ is a $3\times 3$ matrix with orthonormal rows. Diagonal matrix $W$ representing the signal power in a descending order. 
 
-**<u>Compressibility</u>** describe the polarization 
+**<u>Compressibility</u>** describe the ratio of the parallel power to the total power. It is a measure of how much of the wave power is associated with compressional (parallel) fluctuations versus transverse (perpendicular) fluctuations.
 $$
 \begin{align}
 \mathrm{Compressibility}:=\frac{PSD(B_\parallel)}{\sum_i PSD(B_i)}
 \end{align}
 $$
 
-
-
-**<u>Planarity</u>** 
+**<u>Planarity</u>** is a measure of how "planar" or "two-dimensional" the wave fluctuations are. It quantifies the extent to which the wave power is concentrated in a plane, as opposed to being distributed in three dimensions. A planarity of 1 indicates that the fluctuations are perfectly planar, while a planarity of 0 indicates isotropic fluctuations. It is defined as the ratio of the smallest singular value to the largest singular value of the spectral matrix:
 $$
 F=1-\sqrt{W_{2}/W_{0}}
 $$
@@ -348,8 +305,8 @@ D_p = \frac{\text{Power of the Polarized Component}}{\text{Total Power}}
 $$
 
 - $D_p = 1$: the signal is completely polarized.
-- -- $0 < D_p < 1$: the signal is partially polarized.
-- -- $D_p = 0$: the signal is totally unpolarized (random noise).
+- $0 < D_p < 1$: the signal is partially polarized.
+- $D_p = 0$: the signal is totally unpolarized (random noise).
 
 A high degree of polarization indicates that the observed fluctuations are dominated by coherent wave processes, while a low degree suggests that random or turbulent components are significant. The degree of polarization is widely used to distinguish wave modes, to separate physical signals from instrumental or background noise, and to assess the reliability of wave analysis.
 
