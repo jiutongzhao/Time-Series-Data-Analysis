@@ -18,7 +18,7 @@ Practically, a shorter pulse spreads its spectrum, while a narrowband tone must 
 
 The lower bound of the time–bandwidth product is achieved by Gaussian functions, which are optimal in the sense that they minimize the product $\Delta t \Delta f$.
 
-Here the central time $t_0$ and bandwidth $f_0$ are defined as the first moments of the energy density $|x(t)|^2$ and $|X(f)|^2$, respectively, while $\Delta t$ and $\Delta f$ are their standard deviations. The integrals are taken over all time and frequency, respectively. For complex-valued signals, the squared magnitude $|x(t)|^2 = x(t)x^*(t)$ is used to represent signal energy.
+Here the central time $t_0$ and bandwidth $f_0$ are defined as the first moments of the energy density $|x(t)|^2$ and $|X(f)|^2$, respectively, while $\Delta t$ and $\Delta f$ are their standard deviations. The integrals are taken over all time and frequency, respectively.
 $$
 t_0 = \frac{\int t\,|x(t)|^{2} \, dt}{\int |x(t)|^{2} \, dt},
 \qquad
@@ -79,8 +79,6 @@ $$
 \mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
 $$
 
-
-
 which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
 $$
 \begin{align}
@@ -90,21 +88,15 @@ $$
 \end{align}
 $$
 
-
-
 It can be denoted as 
 $$
 {{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
 $$
 
-
-
 One can also extend this property to
 $$
 ({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
 $$
-
-
 
 In plasma physics, the conventional way to express the electromagnetic field.
 
@@ -116,10 +108,6 @@ $$
 &=\mathcal{F}^{-1}[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)]
 \end{align}
 $$
-
-
-
-
 
 | Property                   | Continuous-Time Fourier Transform (FT)                 | Discrete Fourier Transform (DFT/FFT)                         |
 | -------------------------- | ------------------------------------------------------ | :----------------------------------------------------------- |

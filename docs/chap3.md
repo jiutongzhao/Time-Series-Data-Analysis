@@ -4,11 +4,11 @@
 
 > **Parseval's Identity**: The identity asserts that the sum of squares of the Fourier coefficients of a function is equal to the integral of the square of the function,
 $$
- 
- \sum_{n=0}^{N-1} |x[n]|^{2} \Delta t
+\sum_{n=0}^{N-1} |x[n]|^{2} \Delta t
  \;=\;
  \sum_{k=0}^{N-1} |X[k]|^{2} \Delta f
- $$ 
+$$
+ where $x[n]$ is the discrete time signal, $X[k]$ is its Discrete Fourier Transform (DFT), $\Delta t$ is the time interval between samples, and $\Delta f$ is the frequency interval between DFT bins. This theorem essentially states that the total energy of a signal in the time domain is equal to the total energy in the frequency domain. 
 
 
 

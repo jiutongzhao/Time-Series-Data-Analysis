@@ -394,8 +394,6 @@ Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets,
   M_p=\int_{-\infty}^{+\infty} t^p \psi(t) dt \neq 0
   $$
 
-- 
-
 - **Orthonormal:** Wavelets that form an orthogonal basis with unit norm, useful for efficient reconstruction without redundancy.
   $$
   \int_{-\infty}^{+\infty} \psi_i(t) \psi_j(t) dt = \delta_{ij}
@@ -407,7 +405,6 @@ Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets,
     \int_{-\infty}^{+\infty} \phi_r(t) \psi_d(t) dt = \delta_{ij} 
   $$
   
-
 - **Support:** The region in time where the wavelet is non-zero.
 
     - **Infinite Support:** Wavelets extending indefinitely in time, typically with exponential or Gaussian decay.
