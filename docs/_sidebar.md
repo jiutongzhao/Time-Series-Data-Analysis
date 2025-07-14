@@ -9,6 +9,6 @@
 * [Noise](chap5.md)
 * [Signal Interpretation](chap6.md)
 * [Time-Frequency Spectrum](chap7.md)
-* [Multi-Dimensional Signal](chap8.md)
+* [Multi-Channel Signal](chap8.md)
 * [Appendix](chap10_appendix.md) 
 
