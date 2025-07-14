@@ -10,8 +10,6 @@ $$
 $$
  where $x[n]$ is the discrete time signal, $X[k]$ is its Discrete Fourier Transform (DFT), $\Delta t$ is the time interval between samples, and $\Delta f$ is the frequency interval between DFT bins. This theorem essentially states that the total energy of a signal in the time domain is equal to the total energy in the frequency domain. 
 
-
-
 In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). The electromagnetic field contains the energy density ($u$) written as 
 $$
 u=u_E + u_B=\frac{1}{2}(\varepsilon_0 \mathit{E}^2 + \frac{1}{\mu_0}\mathit{B}^2)
@@ -121,11 +119,10 @@ These conditions imply that even if the signal itself is random, its first two m
 
 ## Correlation Function [`scipy.signal.correlate`]
 
->A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables. If one considers the correlation function between random variables representing the same quantity measured at two different points, then this is often referred to as an autocorrelation function, which is made up of autocorrelations. Correlation functions of different random variables are sometimes called cross-correlation functions to emphasize that different variables are being considered and because they are made up of cross-correlations. ——Wikipedia
-
+A correlation function is a function that gives the statistical correlation between random variables, contingent on the spatial or temporal distance between those variables.
 $$
 \begin{align}
-{R_{XY}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{Y(t + \tau)} \right]
+{R_{xy}}(t, t + \tau) := \mathbb{E}\left[ {x(t)} {y^*(t + \tau)} \right]
 \end{align}
 $$
 
@@ -133,10 +130,10 @@ where the overline represents the complex conjugate operation when $X$ and $Y$ a
 
 $$
 \begin{align}
-{R_{XX}}(t, t + \tau) := \mathbb{E}\left[ {X(t)} \overline{X(t + \tau)} \right]
+{R_{xx}}(t, t + \tau) := \mathbb{E}\left[ {x(t)} {x^*(t + \tau)} \right]
 \end{align}
 $$
-If $X$ is a wide-sense stationary signal, then ${R_{XX}}(t_1, t_1 + \tau)=R_{XX}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{XX}(\tau)=R_{XX}(t, t + \tau)$.
+If $X$ is a wide-sense stationary signal, then ${R_{xx}}(t_1, t_1 + \tau)=R_{xx}(t_2, t_2 + \tau)$ for arbitrary $t_1, t_2,$ and $\tau$. Thus, the autocorrelation function can be written as a single-variate function $R_{xx}(\tau)=R_{xx}(t, t + \tau)$.
 
 ## Wiener–Khinchin Theorem
 
@@ -154,19 +151,17 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. Its c
 
 ## What If the Signal Is Not Stationary?
 
-- If the constant mean condition (first condition) is not satisfied—say, due to an underlying background trend—you should first apply detrending. Techniques such as subtracting the mean (constant detrending) or removing a linear trend (linear detrending) help modify the signal so that its mean becomes approximately constant.
+If the constant mean condition (first condition) is not satisfied—say, due to an underlying background trend—you should first apply detrending. Techniques such as subtracting the mean (constant detrending) or removing a linear trend (linear detrending) help modify the signal so that its mean becomes approximately constant.
 
-  ```python
-  scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
-  ```
+```python
+scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
+```
 
-  
+<p align = 'center'>
+<img src="Figure/figure_detrend.png" width="100%"/>
+</p>
 
-- <p align = 'center'>
-  <img src="Figure/figure_detrend.png" width="100%"/>
-  </p>
-
-- If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
+If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
 
 The concept of *W.S.S* essentially guides us in selecting an appropriate window for spectral analysis. On one hand, the window length should be longer than the oscillation period to capture a complete cycle of the fluctuations. On the other hand, the window length should be shorter than the characteristic scale over which power or frequency variations occur, so that the signal within the window can be approximated as wide-sense stationary.
 
@@ -174,8 +169,6 @@ The concept of *W.S.S* essentially guides us in selecting an appropriate window 
 flowchart LR
 A@{ shape: lean-r, label: "$$x[n]$$"} --Detrend-->B["$$x_d[n]$$"] --Padding<br>+<br>Window--> C["$$x_{dw}[n]$$"]--Fourier<br>Transform--> D["$$X[k]$$"] --> E["$${\frac{|X[k]|^2}{Nf_s}}$$"] --Single-Side<br>+Window<br>Compensation--> F@{ shape: lean-l, label: Power Spectral<br>Density}
 ```
-
-
 
 ## Cepstrum
 
@@ -222,8 +215,6 @@ $$
 Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
 
 However, it doesn't mean that the cepstral analysis work for the signals composited with echoes. Another common application of cepstral analysis is the [voice recognition](https://ieeexplore.ieee.org/document/859069). The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.
-
-
 
 ```python
 ''' Python Implication of Cepstrum '''
@@ -285,8 +276,6 @@ sig = np.sin(omega0 * t) + np.sin(omega0 * 3.2 * t) + np.random.randn(t.size) * 
 
 ls_amp = np.abs(scipy.signal.lombscargle(t[~np.isnan(sig)], sig[~np.isnan(sig)], 2 * np.pi * freq[1:], normalize='amplitude'))
 ```
-
-
 
 <!-- tabs:start -->
 
