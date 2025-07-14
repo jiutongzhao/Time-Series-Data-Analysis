@@ -14,6 +14,7 @@ A compact way to describe noise is by its **PSD slope**, traditionally labeled w
 |      Blue       |   $\beta$ = –1    |      Halftoning dither, mask design       |
 |     Violet      |   $\beta$ = –2    |            Quantization noise             |
 
+
 These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
 
 <p align = 'center'>

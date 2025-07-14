@@ -29,6 +29,10 @@ The red hashed region indicates the **cone of influence (COI)**, which represent
 
 Although the STFT can represent a signal on the time–frequency plane, it does so with a **fixed window**: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously. 
 
+<p align = 'center'>
+<img src="Figure/figure_stft_vs_cwt.png" width="100%"/>
+</p>
+
 The **wavelet transform** turns this static trade-off into an **adaptive resolution** by scaling its analysis “window” with frequency—long windows for low frequencies and short windows for high frequencies—making it particularly well-suited to multiscale, transient features in non-stationary signals.
 
 <p align = 'center'>
