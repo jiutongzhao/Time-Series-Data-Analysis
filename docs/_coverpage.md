@@ -2,7 +2,7 @@
 
 <img src="/Figure/figure_icon.png" alt="logo" style="zoom:10%;" />
 
-# ***[!STILL IN PREPARATION]Spectral Analysis with Python <small></small>***
+# ***Spectral Analysis with Python[!STILL IN PREPARATION] <small></small>***
 
 > **A Document for Practical Time Series Analysis**
 

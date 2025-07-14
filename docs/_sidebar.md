@@ -10,6 +10,5 @@
 * [Signal Interpretation](chap6.md)
 * [Time-Frequency Spectrum](chap7.md)
 * [Multi-Dimensional Signal](chap8.md)
-* [Practical Application](chap9.md)
 * [Appendix](chap10_appendix.md) 
 

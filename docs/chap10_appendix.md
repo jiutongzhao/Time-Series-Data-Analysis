@@ -1,8 +1,14 @@
 ## Appendix
 
+## Weighted Summation
+
+In spectral analysis—whether it’s the Fourier transform, a filter, an interpolator, or a wavelet transform—the core operation is always a weighted summation. By designing appropriate weights, we amplify the information we care about and suppress what we don’t, allowing us to distill an N-point signal into concise, abstract, and generalizable features. As a result, nearly every outcome of spectral analysis exhibits additive properties—for example, the noise spectrum follows a chi-square distribution. From another viewpoint, weighted summation is essentially a convolution; by the convolution theorem, it is equivalent to multiplication in the dual domain. This insight also suggests alternative ways to construct kernels in spectral analysis, such as the FBSP wavelet in the continuous wavelet transform, which is obtained via spectral-domain interpolation.
+
+When you are lost in the mathematical derivation, remember that the core operation is always a weighted summation. This perspective can help you understand the underlying principles and guide your implementation.
+
 ## NDArray Shaping
 
-When create the `numpy.ndarray`, 
+When create the `numpy.ndarray`, arrange the dimension in the sequence of `Frequency -> Time -> Dimension(s) -> Channel(s)`. This arrangement is  nothing but my personal preference. One of the reason is the STFT and wavelet package by default return the matrix in the order of `Frequency -> Time`.    In this convention, one should use `np.stack([a, b], axis = -1)` when combining two channels. 
 
 ## Naming Convention
 
