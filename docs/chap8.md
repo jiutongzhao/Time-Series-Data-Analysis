@@ -70,8 +70,8 @@ The spectral matrix can be averaged over time and frequency to reduce noise and 
 
 ```python
 # Moving average smoothing
-spec = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
-spec = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
+spec_ma = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
+spec_ma = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
 ```
 
 Instead, one may also apply a Gaussian smoothing kernel in time and frequency domain to achieve a similar effect. The width of the Gaussian kernel is commonly chose as a multiple of the scale, thus the smoothing kernel is longer at lower frequencies and shorter at higher frequencies.
@@ -79,8 +79,9 @@ Instead, one may also apply a Gaussian smoothing kernel in time and frequency do
 ```python
 # Gaussian smoothing
 a = 1
+spec_sm = np.copy(spec)
 for i, s in enumerate(scales):
-    spec[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
+    spec_sm[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
 ```
 
 ### Coherence
@@ -89,16 +90,22 @@ Coherence (or coherency in some literature) measures the degree of linear correl
 
 The mathematical definition of coherence is the ratio of the cross-spectral density to the product of the individual power spectral densities:
 $$
-C_{XY}(f) = \frac{|\hat{S}_{XY}(f)|^2}{\hat{S}_{XX}(f) \hat{S}_{YY}(f)}
+C_{xy}(f) = \frac{|\hat{S}_{xy}(f)|^2}{\hat{S}_{xx}(f) \hat{S}_{yy}(f)}
 $$
 
 
-where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $X$ and $Y$, and $\hat{S}_{XX}(f)$, $\hat{S}_{YY}(f)$ are the power spectral densities of $X$ and $Y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
+where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $x$ and $y$, and $\hat{S}_{xx}(f)$, $\hat{S}_{yy}(f)$ are the power spectral densities of $x$ and $y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
 
-Coherence is a function of not only the spectral matrix but also the smoothing operator $\langle...\rangle$. Two common approaches of smoothing have been introduced in the last section.
+**<u>Coherence is a function of not only the spectral matrix but also the smoothing operator $\langle...\rangle$.</u>** Without any smoothing, the coherency is always unity no matter the signal is coherent or noisy and thus meaningless.  A real coherent signal can resist a high coherency while the off-diagonal term $S_{xy}$ contributed by random noise will cancel out in the smoothing operation. Two common approaches of smoothing have been introduced in the last section.
+
+<p align = 'center'>
+<img src="Figure/figure_coherency.png" alt="An example of DFT." width="100%"/>
+</p>
+
+
 
 ```python
-coherence_xy = np.abs(spec[:, :, 0, 1]) ** 2 / (spec[:, :, 0, 0] * spec[:, :, 1, 1])
+coherence_xy = np.abs(spec_sm[:, :, 0, 1]) ** 2 / (spec_sm[:, :, 0, 0] * spec_sm[:, :, 1, 1])
 ```
 
 ### Combination with Maxwell's Equations: SVD Wave Analysis
@@ -198,13 +205,6 @@ planarity = 1 - np.sqrt(s[:, :, 2] / s[:, :, 0])
 ellipticity_along_k = s[:, :, 1] / s[:, :, 0]
 ```
 
-Similarly, based on the averaged spectral matrix, one may define the coherence (coherency) between different components:
-$$
-\mathrm{Coherency}:=\frac{|S_{ij}|}{\sqrt{S_{ii}S_{jj}}}
-$$
-<p align = 'center'>
-<img src="Figure/figure_coherency.png" alt="An example of DFT." width="100%"/>
-</p>
 
 One should keep in mind that all interpretation about the observed waves is in the spacecraft inertial reference frame. A proper choice of coordinate system is especially necessary for a spinning spacecraft.
 
@@ -339,6 +339,68 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 <!-- tabs:end -->
 
-**Coherence, Planarity, and Degree of Polarization** are all a a functional properties 
+Similar to **Coherence, Planarity and Degree of Polarization** are also a a functional properties of the smoothing operator. A strong smoothing operator will promote the planarity and degree of polarization as it suppresses the noise contribution. However, a too strong smoothing operator will also smear out the temporal and frequency variations of the wave properties. Thus, a proper choice of the smoothing operator is necessary.
+
+
+
+```mermaid
+flowchart TD
+  %%=== Input Signals ===%%
+  subgraph Input["Input Signals"]
+    direction TB
+    A["$$B_1[n],\\,B_2[n],\\,B_3[n]$$"]
+  end
+
+  %%=== Avg Background Field ===%%
+  A --> B["$$\\langle B\\rangle$$<br/>Avg Background Field"]
+
+  %%=== Time–Frequency Transform ===%%
+  A -->|STFT or CWT| C["$$\\hat{B}_i(f,n)$$"]
+  
+  %%=== Cross–Spectral Estimation ===%%
+  subgraph Matrix["Construct Spectral Matrix"]
+  	direction LR
+  	C -->|Outer Product| D["$$\\hat B_i\\,\\hat B_j^*$$"]
+  	D -->|Smoothing time freq| E["$$S_{ij}(f)$$"]
+  end
+  %%=== Spectral Decomposition ===%%
+  E -->|Form 6×3| F["$$S_{6\\times3}$$"]
+  F -->|Real Part| G["$$\\Re\\{S_{3\\times3}\\}$$"]
+  F -->|Imag Part| H["$$\\Im\\{S_{3\\times3}\\}$$"]
+
+  %%=== Analysis Methods ===%%
+  F -->|SVD<br/>Santoňlík et al. 2003| I["$$k,\\,F,\\,\\mathrm{WNA}$$"]
+  G -->|Eigenanalysis<br/> McPherron 1972| J["$$k,\\,\\,\\mathrm{WNA}$$"]
+  H -->|Eigenanalysis<br/> Means 1972| K["$$k,\\,\\,\\mathrm{WNA}$$"]
+  E -->|FAC| L["$${B}_{\\parallel},\\,B_{LH},\\,B_{RH},\\,\\epsilon_{B},\\,\\delta B_{\\parallel}/\\delta B$$"]
+  B -->|Combine background| L
+
+  %%=== Wave Frame Analysis ===%%
+  E -->|Combine matrix| M["$$S_{wf}(3\\times3)$$"]
+  I -->|Combine k| M
+  M --> N["$$\\Re\\{S_{wf}\\}$$"]
+  M --> O["Coherency"]
+  M --> P["DOP"]
+  N -->|Eigenanalysis| Q["$$\\epsilon_k$$"]
+  M -->|Eigenanalysis| Q
+
+  %%=== Styles ===%%
+  classDef inputStyle    fill:#f0f8ff,stroke:#333,stroke-width:1px;
+  classDef tfStyle       fill:#e8f4fc,stroke:#333,stroke-width:1px;
+  classDef csStyle       fill:#f9f0ff,stroke:#333,stroke-width:1px;
+  classDef decompStyle   fill:#f0fff0,stroke:#333,stroke-width:1px;
+  classDef analysisStyle fill:#fff8dc,stroke:#333,stroke-width:1px;
+  classDef wfStyle       fill:#ffe4e1,stroke:#333,stroke-width:1px;
+
+  class A,B inputStyle;
+  class C tfStyle;
+  class D,E csStyle;
+  class F,G,H decompStyle;
+  class I,J,K,L analysisStyle;
+  class M,N,O,P,Q wfStyle;
+
+```
+
+
 
 <div STYLE="page-break-after: always;"></div>

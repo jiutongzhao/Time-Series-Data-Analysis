@@ -13,7 +13,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.css">
   <!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/LIGMATV/docsify-theme-github/github.css"> -->
-
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+    integrity="sha384-…"
+    crossorigin="anonymous"
+  />
 </head>
 
 <body>
@@ -80,6 +85,8 @@
       padding: 0.25em 0.5em;
   }
   </style>
+
+  </style>
   <style>
     .docsify-copy-code-button>.success {
       position: absolute;
@@ -118,6 +125,17 @@
 
     }
   </style>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    /* 强制 KaTeX 渲染 */
+    forceLegacyMathML: true,
+    /* 对 Flowchart 启用 HTML 标签，方便更灵活的样式控制 */
+    flowchart: { htmlLabels: true }
+  });
+</script>
   <!-- <style>
   :root {
     section.cover.has-mask .mask {

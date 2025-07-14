@@ -194,19 +194,19 @@ The Discrete Wavelet Transform (DWT) decomposes a signal into **approximation co
 ```mermaid
 graph LR
 
-subgraph L0["Level 0"]
-A --> B --Downsampling $$\downarrow2$$--> C
-A --> D --$$\downarrow2$$--> E
+subgraph L0["Level 0: $$[{f_s}/{4}, {f_s}/{2})$$"]
+A --> B --Downsampling<br>↓2--> C
+A --> D --↓2--> E
 end
 
-subgraph L1["Level 1"]
-E --> F --$$\downarrow2$$--> G
-E --> H --$$\downarrow2$$--> I
+subgraph L1["Level 1: $$[{f_s}/{8}, {f_s}/{4})$$"]
+E --> F --↓2--> G
+E --> H --↓2--> I
 end
 
-subgraph L2["Level 2"]
-I --> J --$$\downarrow2$$--> K
-I --> L --$$\downarrow2$$--> M
+subgraph L2["Level 2: $$[{f_s}/{16}, {f_s}/{8})$$"]
+I --> J --↓2--> K
+I --> L --↓2--> M
 end
 
 A@{ shape: lean-r, label: "$$x_0[n] = x[n]$$" }
@@ -355,6 +355,8 @@ Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets,
 
 ### Continuous Wavelets (CWT)
 
+The story starts with the *Gabor window* (1946), a Gaussian-modulated sinusoid that set the benchmark for joint time–frequency resolution. Early-1980s geophysics added explicit scale, giving the *Morlet* wavelet—the work-horse of the continuous wavelet transform (CWT). Shortly after, the real, symmetric *Mexican-Hat* (second derivative of a Gaussian) became popular for edge and peak detection, while *Paul* wavelets generalized higher-order Gaussian derivatives for finer phase tracking. In 1986 Yves Meyer produced the first rigorously admissible CWT mother, compact in the *frequency* domain. Finally, band-limited designs such as the *Shannon* and frequency-B-spline wavelets (early 1990s) offered idealized rectangular spectra for theoreticians and filter-bank designers.
+
 | Wavelet Name                  | Brief Description                                            | Key Properties                                               | Function/Scale Expression                                    |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | **Complex Gaussian (cgau)**   | Complex-valued derivatives of a Gaussian function; higher order means more oscillations. | Good time-frequency localization; complex-valued; infinite support. | $\psi(t) = C \frac{d^n}{dt^n}(e^{-t^2})$                     |
@@ -368,8 +370,9 @@ Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets,
 <p align = 'center'>
 <img src="Figure/figure_cwt_family.png" width="100%"/>
 </p>
-
 ### Discrete Wavelets (DWT)
+
+The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Strömberg’s 1983 work showed how to sample continuous wavelets without losing orthogonality, paving the way for Ingrid Daubechies’ breakthrough (1988): compactly supported, arbitrarily smooth orthonormal wavelets (db N). Compression soon demanded linear phase, so biorthogonal pairs appeared—the 5/3 tap *Le Gall–Tabatabai* (1988) for loss-less, and the longer 9/7 *Cohen–Daubechies–Feauveau* (1992) for lossy JPEG 2000. Stéphane Mallat’s pyramidal algorithm and subsequent wavelet-packet extension (late 1980s–1990) made $\mathcal{O}(N)$ multiresolution analysis practical. *Symlets* and *Coiflets* fine-tuned phase and moment symmetry, and Wim Sweldens’ *lifting scheme* (1995) recast any biorthogonal filter bank as fast, in-place, integer arithmetic—ideal for hardware codecs.
 
 | Wavelet Name                   | Brief Description                                            | Key Properties                                        | Scale Recurrence Relation                                    |
 | ------------------------------ | ------------------------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------ |
@@ -401,8 +404,8 @@ Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets,
 
 - **Biorthogonal:** Involves two wavelet sets forming dual bases, one set for analysis and another for synthesis; allows symmetric filters and linear phase.
   $$
-  \int_{-\infty}^{+\infty} \phi_d(t) \psi_r(t) dt = \delta_{ij}\\
-    \int_{-\infty}^{+\infty} \phi_r(t) \psi_d(t) dt = \delta_{ij} 
+  \int_{-\infty}^{+\infty} \phi_{d,i}(t) \psi_{r,j}(t) dt = \delta_{ij}\\
+    \int_{-\infty}^{+\infty} \phi_{r,i}(t) \psi_{d,j}(t) dt = \delta_{ij}
   $$
   
 - **Support:** The region in time where the wavelet is non-zero.
