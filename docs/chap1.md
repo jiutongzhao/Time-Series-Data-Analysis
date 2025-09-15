@@ -2,25 +2,26 @@
 
 ## Sampling
 
+All the data that await analysis are yield from sampling, no matter it originates from the real-world observation or a simulation program. When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***<u>Aliasing</u>***.
+
 > **[Nyquist-Shannon Sampling Theorem](https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem):** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 $$
-f_s > 2f_{max} 
+f_s > 2f_{max}
 $$
 > The frequency upper limitation $f_s/2$ is also called ***<u>Nyquist Frequency</u>***.
 
-When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***<u>Aliasing</u>***.
+
 
 <p align = 'center'><img src="Figure/figure_aliasing.png" width="100%"/></p><p align = 'center'>
     <i>Aliasing effcet in a virtual signal sampling.</i>
 </p>
-**Do Not Interpret Your Data with A Target Frequency near or even above Nyquist Frequency**
-
 
 Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel.
 
 <p align = 'center'><img src="Figure/figure_moire_pattern.png" width="45%"/> <img src="Figure/figure_helicopter.gif" width="38%"/></p>
 <p align = 'center'><i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i><p>
 <u>**Even a sampling frequency of two times of the wave frequency can not guarantee fully capturing the waveform.**</u> This fact is even true for pure sine waves. Ideally, you can capture the complete wave properties when you got a long enough samples when the sampling frequency is slightly higher than the Nyquist frequency. However, every realistic sample has a finite length. The higher sampling frequency you have, the shorter sample length is required.
+
 
 <p align = 'center'>
 <img src="Figure/figure_aliasing_nyquist.png" width="100%"/>
@@ -41,7 +42,7 @@ In the instrumental implementation, that filter typically consists of a set of r
 </p>
 
 
-
+In brief, **Do Not Interpret Your Data with A Target Frequency near or even above Nyquist Frequency**
 
 ## Read Signals From Data
 
@@ -60,7 +61,9 @@ In the instrumental implementation, that filter typically consists of a set of r
 
     ```python
     N, T = 100, 1
-    t = np.linspace(0, T, N, endpoint = False)
+    t = np.linspace(0, T, N, endpoint = False) 
+    # Ensure parameter endpoint is set to False, or use
+    # t = np.linspace(0, T, N + 1, endpoint = False)
     ```
 
     Correspondingly, the ungiven parameter can be derived uniquely.
@@ -91,12 +94,14 @@ In the instrumental implementation, that filter typically consists of a set of r
   sig = np.exp(j * omega * t)
   ```
   
+  The usage of complex signal aids in shortening the code sometime, but also reduce the readability.
+  
   <p align = 'center'>
   <img src="Figure/figure_typical_signals.png" width="100%"/>
   </p>
-  
-  - **<u>Using these `scipy.signal` built-in functions</u>** helps to **<u>improve your code readability and reduce your chances of creating bugs: </u>**    
 
+  - **<u>Using these `scipy.signal` built-in functions</u>** helps to **<u>improve your code readability and reduce your chances of creating bugs: </u>**    
+  
     ```python
     sig_cos = np.cos(omega0 * t)
     
@@ -120,11 +125,11 @@ In the instrumental implementation, that filter typically consists of a set of r
 
 ## Management of Timestamps
 
-There are several packages in Python for managing timestamps, and the choice depends on your project's specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed.
+There are several packages in Python for managing timestamps, and the choice depends on your project's specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed. **`datetime` as a built-in package, is always supported by different third-party package, therefore is suitable to be used during conversion**
 
 | Library  |                          Advantages                          |
 | :------: | :----------------------------------------------------------: |
-|  Pandas  | Rich time series functionality, easy integration with DataFrames **[Read Table Files]** |
+|  Pandas  | Rich time series functionality, easy integration with DataFrames **[Use in Reading Table Files]** |
 |  NumPy   | Efficient for large arrays and vectorized time operations **[Use in Data Analysis]** |
 | datetime | Part of Python standard library for basic date/time operations **[Use in Timestamps Format Conversion]** |
 | Astropy  | High precision handling of special time formats and leap seconds **[Use in Time System Conversion]** |

@@ -1,4 +1,4 @@
-# Interpretation of the signal
+# Processing of the signal
 
 ## Hilbert Transform [`scipy.signal.hilbert`]
 
@@ -217,7 +217,7 @@ sinc_interp(t_interp, sig, t)
 
 **Interpolation in the time domain directly impacts the signal’s frequency content:**
 
-- **Nearest-neighbor** acts as a zero-order hold, introducing high-frequency artifacts.
+- **Nearest-neighbor** acts as a zero-order hold, introducing high-frequency artifacts near the edge.
 - **Linear** acts as a convolution with a triangle ($\mathrm{sinc^2}$ in frequency), attenuating high-frequency components.
 - **Spline/Polynomial** offers smoother spectra but can still introduce artifacts at sharp features.
 - **Sinc interpolation** and **Fourier interpolation** (i.e., zero-padding in the frequency domain) yield the most faithful reconstruction for band-limited signals.

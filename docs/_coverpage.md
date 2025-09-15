@@ -2,7 +2,7 @@
 
 <img src="/Figure/figure_icon.png" alt="logo" style="zoom:10%;" />
 
-# ***Spectral Analysis with Python[!STILL IN PREPARATION] <small></small>***
+# ***Python for Spectral Analysis: From Fourier to Wavelets<small></small>***
 
 > **A Document for Practical Time Series Analysis**
 

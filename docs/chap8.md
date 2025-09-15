@@ -72,6 +72,18 @@ The spectral matrix can be averaged over time and frequency to reduce noise and 
 # Moving average smoothing
 spec_ma = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
 spec_ma = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
+
+def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
+    dj = np.abs(np.diff(np.log2(scales))[0])
+    _kernel = fractional_boxcar_kernel(w, nv=1 / dj)
+    kshape = [1] * spec.ndim
+    kshape[axis] = _kernel.size
+    _kernel = _kernel.reshape(kshape)
+    _spec = scipy.signal.convolve(
+        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
+        _kernel,
+        mode='same')
+    return _spec
 ```
 
 Instead, one may also apply a Gaussian smoothing kernel in time and frequency domain to achieve a similar effect. The width of the Gaussian kernel is commonly chose as a multiple of the scale, thus the smoothing kernel is longer at lower frequencies and shorter at higher frequencies.
@@ -82,6 +94,26 @@ a = 1
 spec_sm = np.copy(spec)
 for i, s in enumerate(scales):
     spec_sm[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
+    
+    
+def smooth_spec_gaussian(spec, sigmas):
+    _spec = np.copy(spec)
+    for i, s in enumerate(sigmas):
+        L = int(2 * 3.0 * s) + 1
+        if L < 50:
+            _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i],
+                                                       sigma=s,
+                                                       axis=0,
+                                                       mode='constant',
+                                                       cval=0.0)
+        else:
+            _kernel = windows.gaussian(L, std=s)
+            _kernel /= _kernel.sum()
+            _kernel = _kernel.reshape((L, ) + (1, ) * (spec[i].ndim - 1))
+            _spec[i] = fftconvolve(spec[i], _kernel,
+                                   mode='same')  # 注意边界条件与 ndimage 的 reflect 不同
+
+    return _spec
 ```
 
 ### Coherence

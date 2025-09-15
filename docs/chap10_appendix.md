@@ -158,7 +158,6 @@ windows_custom = as_strided(sig, shape=shape, strides=strides)
 # -------------------------------
 # Method 3: bottleneck (safe, NaN-aware window functions)
 # -------------------------------
-print("\n[3] bottleneck window functions:")
 ma = bn.move_mean(sig, window=3, min_count=1)
 mm = bn.move_max(sig, window=3, min_count=1)
 std = bn.move_std(sig, window=3, min_count=1)

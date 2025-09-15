@@ -267,16 +267,3 @@ freq = np.fft.rfftfreq(coef.size, dt)
 
 <div STYLE="page-break-after: always;"></div>
 
-```mermaid
-graph LR
-
-A(["$$x[n]$$"]) -->|Window|B@{ shape: rect, label: "$$x_{windowed}[n]$$" }
-
-A-->|Padding|C@{shape:rect, label: "$$x_{padded}[n]$$"}
-
-C -->|Window|B
-
-B -->|Fourier
-Transform|D@{shape: rect, label: "$$X[k]$$"}
-```
-

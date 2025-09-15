@@ -25,7 +25,7 @@ frequency_stft = np.fft.rfftfreq(window_hann, d=dt)
 </p>
 The red hashed region indicates the **cone of influence (COI)**, which represents the area where edge effects may distort the STFT results due to the finite length of the signal and windowing. The COI is typically defined as half the window length on either side of the time axis, beyond which the STFT results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.
 
-## Continuous Wavelet Analysis
+## Continuous Wavelet Transform
 
 Although the STFT can represent a signal on the time–frequency plane, it does so with a **fixed window**: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously. 
 
@@ -73,7 +73,7 @@ coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 
 The COI of wavelet is defined as the e-folding time of the wavelet at each scale, which is the time it takes for the wavelet amplitude to decay to $1/e$ of its maximum value.
 
-## Morlet Wavelet
+### Morlet Wavelet
 
 Morlet (or Gabor) wavelet is one of the most commonly-used continuous mother wavelet, which has the **<u>approximate</u>** form of:
 $$
@@ -82,6 +82,8 @@ $$
 with scale function $\eta=s\cdot t$ where $s$ denotes `scale` in the large $\omega_0$ domain. 
 
 This mother wavelet is a Gaussian-windowed complex sinusoid, which provides a good balance between time and frequency localization. The parameter $\omega_0$ is the non-dimensional frequency, which controls the number of oscillations within the Gaussian envelope. A common choice is $\omega_0=6$, which provides a good trade-off between time and frequency resolution.
+
+#### Morlet wavelet with small $\omega_0$
 
 **<u>But if you want to use an $\omega_0$ smaller than 5, you should be aware of the following issues:</u>**
 
@@ -195,53 +197,12 @@ A --$$\sigma=\omega_0$$--> D[*Wikipedia*]
 
 The Discrete Wavelet Transform (DWT) decomposes a signal into **approximation coefficients** (representing low-frequency components that capture the coarse structure) and **detail coefficients** (representing high-frequency components that capture rapid changes and local details). In contrast to the FFT—which decomposes a signal into sine and cosine functions spanning the entire duration—the DWT breaks the signal into wavelets that are localized in both time and frequency. This inherent multi-resolution analysis enables the DWT to capture transient time-domain information while still revealing its frequency content, effectively offering both temporal and spectral insights.
 
-```mermaid
-graph LR
+<p align = 'center'>
+<img src="Figure/figure_dwt_processing.png" width="100%"/>
+</p>
 
-subgraph L0["Level 0: $$[{f_s}/{4}, {f_s}/{2})$$"]
-A --> B --Downsampling<br>↓2--> C
-A --> D --↓2--> E
-end
 
-subgraph L1["Level 1: $$[{f_s}/{8}, {f_s}/{4})$$"]
-E --> F --↓2--> G
-E --> H --↓2--> I
-end
 
-subgraph L2["Level 2: $$[{f_s}/{16}, {f_s}/{8})$$"]
-I --> J --↓2--> K
-I --> L --↓2--> M
-end
-
-A@{ shape: lean-r, label: "$$x_0[n] = x[n]$$" }
-B["$$x_0[n]*h[n]$$"]
-C@{ shape: lean-l, label: "Level 0 Details<br>(cD0)" }
-D["$$x_0[n]*g[n]$$"]
-E@{ shape: lean-r, label: "$$x_1[n]$$" }
-F["$$x_1[n]*h[n]$$"]
-G@{ shape: lean-l, label: "Level 1 Details<br>(cD1)" }
-H["$$x_1[n]*g[n]$$"]
-I@{ shape: lean-r, label: "$$x_2[n]$$" }
-J["$$x_2[n]*h[n]$$"]
-K@{ shape: lean-l, label: "Level 2 Details<br>(cD2)" }
-L["$$x_2[n]*g[n]$$"]
-M@{ shape: lean-l, label: "Level 2 Approximate<br>(cA)" }
-
-B@{shape: stadium}
-D@{shape: stadium}
-F@{shape: stadium}
-H@{shape: stadium}
-J@{shape: stadium}
-L@{shape: stadium}
-
-classDef lowpass  fill:#C5E1A5,stroke:#558B2F,color:#000,shape:stadium
-classDef hipass   fill:#EF9A9A,stroke:#B71C1C,color:#000,shape:stadium
-classDef coeff    fill:#BBDEFB,stroke:#1E88E5,color:#000,stroke-width:2px,shape:stadium
-
-class B,F,J lowpass
-class D,H,L hipass
-class A,C,E,G,I,K,M coeff
-```
 
 The decomposition can be iteratively applied, resulting in **multi-level DWT**, offering multi-resolution analysis. Reconstruction from these coefficients exactly recovers the original signal (except minor numerical errors).
 
@@ -296,7 +257,8 @@ Here, different levels represent signal features at different frequency bands.
 
 Different wavelet families (e.g., Daubechies, Symlets, Coiflets, Biorthogonal) offer various trade-offs in terms of compact support, symmetry, and vanishing moments. The choice of wavelet affects the decomposition quality and should be selected based on the signal characteristics and analysis goals.
 
-## Wavelet Thresholding for Signal Denoising
+
+### DWT Thresholding for Signal Denoising
 
 Wavelet denoising leverages the idea that noise predominantly appears as low-amplitude coefficients, whereas meaningful signals appear as larger coefficients. We remove noise by applying a threshold to detail coefficients, retaining major signal features.
 
@@ -316,7 +278,7 @@ We generate a noisy sinusoidal signal and denoise it using soft thresholding.
    T = \sigma \sqrt{2\ln(N)}
    $$
 
-3. Apply soft thresholding to detail coefficients.
+3. Apply soft [thresholding](https://pywavelets.readthedocs.io/en/latest/ref/thresholding-functions.html) to detail coefficients.
 
 4. Reconstruct the denoised signal.
 
@@ -354,6 +316,13 @@ The left plot shows the noisy signal. On the right, after soft thresholding deno
 
 Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets, grouped by type, with intuitive descriptions and a couple of structured tables for clarity. I’ll also include an explanation of biorthogonal wavelets and their dual basis structure. I’ll let you know once it’s ready.
 
+### DWT Decomposition for Image Compression
+
+2-dimensional DWT allows the scale decomposition for a 2-D object like an image. Its key advantage is the ability to perform multi-resolution analysis by breaking down the image into different frequency subbands. Typically, the 2D-DWT decomposes an image into one approximation subband (LL, or cA, for **A**pproximated **c**oefficient) that captures the coarse, low-frequency components, and three detail subbands (LH, HL, HH) that represent horizontal, vertical, and diagonal high-frequency details respectively. This decomposition not only facilitates efficient image compression by isolating and quantizing the less perceptually significant high-frequency details, but it also aids in tasks such as denoising and feature extraction, where preserving both spatial and spectral information is critical. 
+
+<p align = 'center'>
+<img src="Figure/figure_dwt_image_compression.png" width="100%"/>
+</p>
 
 ## Wavelet Families in PyWavelets (Continuous vs. Discrete)
 
@@ -390,7 +359,7 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
 <img src="Figure/figure_dwt_family.png" width="100%"/>
 </p>
 
-### Key Terms Explained:
+### Vanishing Moment, Orthogonality, and Support:
 
 - **Vanishing Moments** ($p$): The number of moments (derivatives) that vanish at zero, indicating how well the wavelet can represent polynomial functions.
   $$
@@ -406,7 +375,7 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
   \int_{-\infty}^{+\infty} \psi_i(t) \psi_j(t) dt = \delta_{ij}
   $$
 
-- **Biorthogonal:** Involves two wavelet sets forming dual bases, one set for analysis and another for synthesis; allows symmetric filters and linear phase.
+- **Bi-orthogonal:** Involves two wavelet sets forming dual bases, one set for analysis and another for synthesis; allows symmetric filters and linear phase.
   $$
   \int_{-\infty}^{+\infty} \phi_{d,i}(t) \psi_{r,j}(t) dt = \delta_{ij}\\
     \int_{-\infty}^{+\infty} \phi_{r,i}(t) \psi_{d,j}(t) dt = \delta_{ij}
