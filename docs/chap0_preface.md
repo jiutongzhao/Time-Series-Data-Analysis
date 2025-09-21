@@ -36,4 +36,6 @@ This document aims to bridge that gap by offering a **practical guide** to spect
 <p align = 'center'>
 <img src="Figure/figure_svd_erg.png" width="100%"/>
 </p>
+** Image Compression**
+
 <!-- tabs:end -->

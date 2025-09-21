@@ -4,7 +4,7 @@
 
 In signal processing and quantum physics alike, the **uncertainty principle** states that
 
-> A signal $x(t)$ and its Fourier transform $X(f)$ cannot both be sharply localized.  If $\delta t$ denotes the effective duration of the signal and $\delta f$ its effective bandwidth, then
+> **Uncertainty Principle:** A signal $x(t)$ and its Fourier transform $X(f)$ cannot both be sharply localized.  If $\delta t$ denotes the effective duration of the signal and $\delta f$ its effective bandwidth, then
 $$
 \Delta t \,\Delta f \;\ge\; \tfrac{1}{4\pi}
 $$

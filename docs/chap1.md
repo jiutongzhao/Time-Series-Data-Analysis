@@ -2,7 +2,7 @@
 
 ## Sampling
 
-All the data that await analysis are yield from sampling, no matter it originates from the real-world observation or a simulation program. When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***<u>Aliasing</u>***.
+
 
 > **[Nyquist-Shannon Sampling Theorem](https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem):** A band-limited continuous-time signal $x(t)$ containing no frequency components higher than $f_{max}$,  can be perfectly reconstructed from its samples if it is sampled at a rate:
 $$
@@ -10,7 +10,7 @@ f_s > 2f_{max}
 $$
 > The frequency upper limitation $f_s/2$ is also called ***<u>Nyquist Frequency</u>***.
 
-
+All the data that await analysis are yield from sampling, no matter it originates from the real-world observation or a simulation program. When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***<u>Aliasing</u>***.
 
 <p align = 'center'><img src="Figure/figure_aliasing.png" width="100%"/></p><p align = 'center'>
     <i>Aliasing effcet in a virtual signal sampling.</i>

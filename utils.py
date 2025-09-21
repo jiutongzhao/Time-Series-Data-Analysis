@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.ndimage
 import ssqueezepy
-from scipy.signal import fftconvolve, windows
 from scipy.optimize import brentq
+from scipy.signal import fftconvolve, windows
 
 
 def estimate_ar1(sig):
@@ -102,19 +102,6 @@ def smooth_spec_gaussian(spec, sigmas):
     return _spec
 
 
-def smooth_spec_boxcar(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
-    dj = np.abs(np.diff(np.log2(scales))[0])
-    _kernel = fractional_boxcar_kernel(w, nv=1 / dj)
-    kshape = [1] * spec.ndim
-    kshape[axis] = _kernel.size
-    _kernel = _kernel.reshape(kshape)
-    _spec = scipy.signal.convolve(
-        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
-        _kernel,
-        mode='same')
-    return _spec
-
-
 def wavelet_spec(sig, scales, bandwidth=6.0, fs=1.0):
     # Compute the wavelet power spectral density
 
@@ -129,6 +116,7 @@ def wavelet_spec(sig, scales, bandwidth=6.0, fs=1.0):
 
     return spec
 
+
 def transcendental_eq(x, omega0):
     # 2 x^2 (1 - e^{-omega0 x}) - 2 omega0 x - 1 + e^{-omega0 x} = 0
     return 2*x**2*(1 - np.exp(-omega0*x)) \
@@ -136,17 +124,27 @@ def transcendental_eq(x, omega0):
            - 1 \
            + np.exp(-omega0*x)
 
+
 def morlet_scale_to_wavelength(mu):
     omega0 = np.geomspace(0.01, 100, 1000)
     x0 = np.zeros_like(omega0)
     for idx in range(len(omega0)):
-        x0[idx] = brentq(transcendental_eq, np.sqrt(1.5), (np.sqrt(omega0[idx] ** 2 + 2) + omega0[idx]) / 1, args=(omega0[idx],), xtol = 1e-12)
+        x0[idx] = brentq(transcendental_eq,
+                         np.sqrt(1.5),
+                         (np.sqrt(omega0[idx]**2 + 2) + omega0[idx]) / 1,
+                         args=(omega0[idx], ),
+                         xtol=1e-12)
+
 
 def vector_angle(u, v):
-    cos_theta = np.nansum(u * v, axis = -1) / (np.linalg.norm(u, axis=-1) * np.linalg.norm(v, axis=-1))
-    cos_theta = np.clip(cos_theta, -1.0, 1.0)  # Ensure the value is within the valid range for arccos
+    cos_theta = np.nansum(u * v, axis=-1) / (np.linalg.norm(u, axis=-1) *
+                                             np.linalg.norm(v, axis=-1))
+    cos_theta = np.clip(
+        cos_theta, -1.0,
+        1.0)  # Ensure the value is within the valid range for arccos
     angle = np.arccos(cos_theta)
     return angle
+
 
 def fractional_boxcar_kernel(w: float, nv: int = 16) -> np.ndarray:
     """
@@ -192,10 +190,10 @@ def fractional_boxcar_kernel(w: float, nv: int = 16) -> np.ndarray:
         raise ValueError("`nv` must be a positive integer.")
 
     # Continuous width expressed on the discrete voice grid
-    w_voice = w * nv                       # e.g. 0.6 oct × 12 voices/oct = 7.2 voices
+    w_voice = w * nv  # e.g. 0.6 oct × 12 voices/oct = 7.2 voices
 
     # Fractional part to be split between the two edges
-    residual = ((w_voice - 1) % 2) / 2.0   # 0 ≤ residual < 1
+    residual = ((w_voice - 1) % 2) / 2.0  # 0 ≤ residual < 1
 
     # Ensure an odd kernel length so the window is centred
     length = int(2 * ((w_voice + 1) // 2) + 1)
@@ -208,6 +206,7 @@ def fractional_boxcar_kernel(w: float, nv: int = 16) -> np.ndarray:
     kernel /= w_voice
     return kernel
 
+
 def estimate_ar1(sig):
     _sig = np.copy(sig)
     _sig -= np.mean(sig)
@@ -218,47 +217,60 @@ def estimate_ar1(sig):
     # g = np.sqrt((1 - ar1 ** 2) * cov0)
     return ar1
 
-def smooth_spec_gaussian(spec, scales, a = 1, axis = 0):
+
+def smooth_spec_gaussian(spec, scales, a=1, axis=0):
     _spec = np.copy(spec)
     for i, s in enumerate(scales):
-        _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
+        _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i],
+                                                   sigma=s * a,
+                                                   axis=axis,
+                                                   mode='constant',
+                                                   cval=0.0)
 
     return _spec
 
-def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis = 0):    
+
+def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
     dj = np.abs(np.diff(np.log2(scales))[0])
     w = w / dj
     _kernel = fractional_boxcar_kernel(w)
     kshape = [1] * spec.ndim
     kshape[axis] = _kernel.size
     _kernel = _kernel.reshape(kshape)
-    _spec = scipy.signal.convolve(spec * scales[:, np.newaxis, np.newaxis, np.newaxis], _kernel, mode = 'same')
+    _spec = scipy.signal.convolve(
+        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
+        _kernel,
+        mode='same')
     return _spec
 
 
-def zero_padding(sig, N = None):
+def zero_padding(sig, N=None):
     if N is None:
-        N = 2 ** np.ceil(np.log2(len(sig)) + 1)
+        N = 2**np.ceil(np.log2(len(sig)) + 1)
     if len(sig) < N:
-        return np.pad(sig, (0, int(N - len(sig))), mode='constant', constant_values=0)
+        return np.pad(sig, (0, int(N - len(sig))),
+                      mode='constant',
+                      constant_values=0)
     else:
         return sig
 
-def ar1_significance_level(scale, ar1 = 0, percentile = 0.95):
-    return (1 - ar1 ** 2) / (1 + ar1 ** 2 - 2 * ar1 * np.cos(2 * np.pi * scale))[:] * scipy.stats.chi2(2).ppf(percentile) / 2
+
+def ar1_significance_level(scale, ar1=0, percentile=0.95):
+    return (1 - ar1**2) / (1 + ar1**2 - 2 * ar1 * np.cos(2 * np.pi * scale)
+                           )[:] * scipy.stats.chi2(2).ppf(percentile) / 2
 
 
 """
 Rule of thumb for the shape of numpy.ndarray: Frequency Dimension (Nf) -> Time Dimension (Nt) -> Different Wavelets (Ns, if exist) -> Component/Channel Dimension (3, or 3 x 3 / 6 x 3 for spectral maxtrix)
 """
 
+
 def fractional_boxcar_kernel(w: float) -> np.ndarray:
     if w <= 0:
         raise ValueError("`w` must be positive.")
-    
 
     # Fractional part to be split between the two edges
-    residual = ((w - 1) % 2) / 2.0   # 0 ≤ residual < 1
+    residual = ((w - 1) % 2) / 2.0  # 0 ≤ residual < 1
 
     # Ensure an odd kernel length so the window is centred
     length = int(2 * ((w + 1) // 2) + 1)
@@ -271,25 +283,39 @@ def fractional_boxcar_kernel(w: float) -> np.ndarray:
     kernel /= w
     return kernel
 
-def smooth_spec_gaussian(spec, scales, a = 1, axis = 0):
+
+def smooth_spec_gaussian(spec, scales, a=1, axis=0):
     _spec = np.copy(spec)
     for i, s in enumerate(scales):
-        _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
+        _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i],
+                                                   sigma=s * a,
+                                                   axis=axis,
+                                                   mode='constant',
+                                                   cval=0.0)
 
     return _spec
 
-def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis = 0):    
+
+def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
     dj = np.abs(np.diff(np.log2(scales))[0])
-    print(dj)
     w = w / dj
     _kernel = fractional_boxcar_kernel(w)
     kshape = [1] * spec.ndim
     kshape[axis] = _kernel.size
     _kernel = _kernel.reshape(kshape)
-    _spec = scipy.signal.convolve(spec * scales[:, np.newaxis, np.newaxis, np.newaxis], _kernel, mode = 'same')
+    _spec = scipy.signal.convolve(
+        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
+        _kernel,
+        mode='same')
     return _spec
 
-def wavelet_coef_psd(time: np.ndarray, signal: np.ndarray, scales: np.ndarray, bandwidth: float = 6.0, downsample: int = 1, downsample_signal: bool = True):
+
+def wavelet_coef_psd(time: np.ndarray,
+                     signal: np.ndarray,
+                     scales: np.ndarray,
+                     bandwidth: float = 6.0,
+                     downsample: int = 1,
+                     downsample_signal: bool = True):
     """
     Compute complex Morlet wavelet coefficients and power spectral density (PSD).
     Complex Morlet wavelet can be written as:
@@ -337,14 +363,15 @@ def wavelet_coef_psd(time: np.ndarray, signal: np.ndarray, scales: np.ndarray, b
         downsample = 1
 
     if isinstance(time[0], np.datetime64):
-        elapsed_time = np.array(time).astype('datetime64[ns]').astype('float') / 1e9
+        elapsed_time = np.array(time).astype('datetime64[ns]').astype(
+            'float') / 1e9
     else:
         elapsed_time = np.array(time)
 
     dt = elapsed_time[1] - elapsed_time[0]
 
     # === Option 1: scipy.signal implementation ===
-    # bandwidthut, scipy.signal.cwt is deprecated in SciPy 1.12 and will be removed in SciPy 1.15. 
+    # bandwidthut, scipy.signal.cwt is deprecated in SciPy 1.12 and will be removed in SciPy 1.15.
     # They recommend using PyWavelets instead.
     # https://docs.scipy.org/doc/scipy-1.12.0/reference/generated/scipy.signal.cwt.html
     # However, as you can see in the bottom code block, pywt.cwt is actually problematic for the Morlet wavelet.
@@ -375,17 +402,32 @@ def wavelet_coef_psd(time: np.ndarray, signal: np.ndarray, scales: np.ndarray, b
     # This one is accurate and fast. They claim that this package is the fastest implementation of the wavelet transform in Python.
     # bandwidthut, this implementation is not elegantly designed and the input parameters are not well documented.
     # Also, it requires package numba, which may raise some compatibility issues.
-    coef, scales = ssqueezepy.cwt(signal - np.mean(signal), ('morlet', {'mu': bandwidth}), scales = bandwidth / (2 * np.pi) * scales.astype(np.float32), fs = 1 / dt, l1_norm = False, padtype = 'zero')
+    coef, scales = ssqueezepy.cwt(
+        signal - np.mean(signal, axis=0), ('morlet', {
+            'mu': bandwidth
+        }),
+        scales=bandwidth / (2 * np.pi) * scales.astype(np.float32),
+        fs=1 / dt,
+        l1_norm=False,
+        padtype='zero')
     frequency = bandwidth / (2 * np.pi) / dt / scales
 
     # coef, _, frequency, _ = ssqueezepy.ssq_cwt(signal, ('morlet', {'mu': bandwidth}), scales = bandwidth / (2 * np.pi) * scales.astype(np.float32), fs = 1 / dt)
     # coef = (coef.T * bandwidth * np.sqrt(scales / np.pi)).T
 
-    psd = (np.abs(coef) ** 2) * (2 * dt)
-    
-    return time[::downsample], frequency, coef[:, ::downsample], psd[:, ::downsample], signal[::downsample]
+    psd = (np.abs(coef)**2) * (2 * dt)
 
-def wfft_coef_psd(time: np.ndarray, signal: np.ndarray, step: int = 1, window: int = 120):
+    return time[::
+                downsample], frequency, coef[:, ::
+                                             downsample], psd[:, ::
+                                                              downsample], signal[::
+                                                                                  downsample]
+
+
+def wfft_coef_psd(time: np.ndarray,
+                  signal: np.ndarray,
+                  step: int = 1,
+                  window: int = 120):
     """
     Compute short-time Fourier transform (STFT) coefficients and power spectral density (PSD) using a sliding Hanning window.
 
@@ -420,27 +462,29 @@ def wfft_coef_psd(time: np.ndarray, signal: np.ndarray, step: int = 1, window: i
     """
 
     if isinstance(time[0], np.datetime64):
-        elapsed_time = np.array(time).astype('datetime64[ns]').astype('float') / 1e9
+        elapsed_time = np.array(time).astype('datetime64[ns]').astype(
+            'float') / 1e9
     else:
         elapsed_time = np.array(time)
 
     dt = elapsed_time[1] - elapsed_time[0]
     # Apply sliding window view
-    wtime = np.lib.stride_tricks.sliding_window_view(elapsed_time, window)[::step][:, 0] + dt * window / 2
+    wtime = np.lib.stride_tricks.sliding_window_view(
+        elapsed_time, window)[::step][:, 0] + dt * window / 2
     freq = np.fft.fftfreq(window, dt)[:window // 2]
     freq = np.fft.rfftfreq(window, dt)
     freq = np.abs(freq)
     wsignal = np.lib.stride_tricks.sliding_window_view(signal, window)[::step]
-    wsignal = wsignal - np.nanmean(wsignal, axis=-1, keepdims=True)  # Remove mean to avoid DC component
+    wsignal = wsignal - np.nanmean(
+        wsignal, axis=-1, keepdims=True)  # Remove mean to avoid DC component
     # Apply Hanning window and normalize based on Parseval's theorem
     wsignal = wsignal * np.sqrt(8 / 3) * np.hanning(window + 1)[:-1]
 
     coef = np.fft.fft(wsignal, axis=-1)[:, :window // 2].T
     coef = np.fft.rfft(wsignal, axis=-1).T
 
+    psd = (np.abs(coef)**2) * dt / window
 
-    psd = (np.abs(coef) ** 2) * dt / window
-    
     # Double the PSD values except for the DC component and Nyquist frequency
     if window % 2 == 0:
         psd[1:-1] *= 2
@@ -456,7 +500,9 @@ def wfft_coef_psd(time: np.ndarray, signal: np.ndarray, step: int = 1, window: i
     return wtime, freq, coef, psd, wsignal
 
 
-def svd_wave_analysis(spec: np.ndarray, freq_window: int = 5, time_window: int = 5):
+def svd_wave_analysis(spec: np.ndarray,
+                      freq_window: int = 5,
+                      time_window: int = 5):
     """
     Perform SVD-based wave polarization analysis to compute planarity, ellipticity, and coherence.
 
@@ -500,29 +546,31 @@ def svd_wave_analysis(spec: np.ndarray, freq_window: int = 5, time_window: int =
 
     # There are two ways to compute the degree of polarization:
     # To see the difference in theory, please refer to the paper by Taubenschuss and Santonlik (2019).
-    # Equation (28) in Taubenschuss and Santonlik 2019: 
+    # Equation (28) in Taubenschuss and Santonlik 2019:
     # degree_of_polarization = np.sqrt(3 / 2 * np.abs(np.trace(np.matmul(spec, spec), axis1 = 2, axis2 = 3) / (np.trace(spec, axis1 = 2, axis2 = 3) ** 2)) - 1 / 2)
 
     # Equation (74) in Taubenschuss and Santonlik 2019:
     # Be careful about np.linalg.eigh, which returns the eigenvalues in ascending order
-    # While np.linalg.svd returns the singular values in descending order  
+    # While np.linalg.svd returns the singular values in descending order
     w, v = np.linalg.eigh(spec)
-    degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
+    degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis=-1)
 
-    coherence = np.abs(spec_wf[:, :, 0, 1]) / np.sqrt(np.abs(spec_wf[:, :, 0, 0] * spec_wf[:, :, 1, 1]))
+    coherence = np.abs(spec_wf[:, :, 0, 1]) / np.sqrt(
+        np.abs(spec_wf[:, :, 0, 0] * spec_wf[:, :, 1, 1]))
 
     # eigenvalues, _ = np.linalg.eig(spec_wf[:, :, :2, :2])
     # eigenvalues_r, _ = np.linalg.eig(spec_wf[:, :, :2, :2].real)
     # ellipticity_along_k = np.sqrt((np.min(eigenvalues_r[:, :, :].real, axis = -1) - np.min(eigenvalues[:, :, :].real, axis = -1)) \
     #                               / (np.max(eigenvalues_r[:, :, :].real, axis = -1) - np.min(eigenvalues[:, :, :].real, axis = -1)))
 
-    eigenvalues_r, _ = np.linalg.eigh(spec_wf[:, :, :2, :2].real) # Ascending
-    eigenvalues, _ = np.linalg.eigh(spec_wf[:, :, :2, :2]) # Ascending
+    eigenvalues_r, _ = np.linalg.eigh(spec_wf[:, :, :2, :2].real)  # Ascending
+    eigenvalues, _ = np.linalg.eigh(spec_wf[:, :, :2, :2])  # Ascending
 
     ellipticity_along_k = np.sqrt((eigenvalues_r[:, :, 0] - eigenvalues[:, :, 0]) \
                                   / (eigenvalues_r[:, :, 1] - eigenvalues[:, :, 0]))
 
     return planarity, ellipticity_along_k, coherence, degree_of_polarization, vh
+
 
 def fac_wave_analysis(spec: np.ndarray, magf: np.ndarray):
     """
@@ -550,35 +598,48 @@ def fac_wave_analysis(spec: np.ndarray, magf: np.ndarray):
     """
 
     # ----- 1. Build the orthonormal FAC basis -----
-    dir_para = magf / np.linalg.norm(magf, axis=1, keepdims=True)           # (Nt, 3)
+    dir_para = magf / np.linalg.norm(magf, axis=1, keepdims=True)  # (Nt, 3)
 
     # Choose a reference axis least parallel to B to guarantee a non-zero cross product
-    dir_ref = np.eye(3)[np.argmin(np.abs(dir_para), axis=1)]               # (Nt, 3)
+    dir_ref = np.eye(3)[np.argmin(np.abs(dir_para), axis=1)]  # (Nt, 3)
 
     dir_perp1 = np.cross(dir_para, dir_ref)
-    dir_perp1 /= np.linalg.norm(dir_perp1, axis=1, keepdims=True)          # (Nt, 3)
+    dir_perp1 /= np.linalg.norm(dir_perp1, axis=1, keepdims=True)  # (Nt, 3)
 
     dir_perp2 = np.cross(dir_para, dir_perp1)
-    dir_perp2 /= np.linalg.norm(dir_perp2, axis=1, keepdims=True)          # (Nt, 3)
+    dir_perp2 /= np.linalg.norm(dir_perp2, axis=1, keepdims=True)  # (Nt, 3)
 
     # ----- 2. Define LH / RH complex unit vectors -----
-    dir_lh = (dir_perp1 - 1j * dir_perp2) / np.sqrt(2)                       # (Nt, 3)
-    dir_rh = (dir_perp1 + 1j * dir_perp2) / np.sqrt(2)                       # (Nt, 3)
+    dir_lh = (dir_perp1 - 1j * dir_perp2) / np.sqrt(2)  # (Nt, 3)
+    dir_rh = (dir_perp1 + 1j * dir_perp2) / np.sqrt(2)  # (Nt, 3)
 
     # ----- 3. Compute power:  e† S e  -----
     # np.einsum broadcasts (Nt,3) → (Nf,Nt,3) automatically
     P_para = np.einsum('tj,ftkj,tk->ft', dir_para.conj(), spec, dir_para)
-    P_lh   = np.einsum('tj,ftkj,tk->ft',   dir_lh.conj(), spec, dir_lh)
-    P_rh   = np.einsum('tj,ftkj,tk->ft',   dir_rh.conj(), spec, dir_rh)
+    P_lh = np.einsum('tj,ftkj,tk->ft', dir_lh.conj(), spec, dir_lh)
+    P_rh = np.einsum('tj,ftkj,tk->ft', dir_rh.conj(), spec, dir_rh)
 
     # ----- 4. Compressibility & ellipticity -----
     # Amplitude is √power
     amp_para = np.sqrt(P_para.real, dtype=P_para.dtype)
-    amp_lh   = np.sqrt(P_lh.real,   dtype=P_lh.dtype)
-    amp_rh   = np.sqrt(P_rh.real,   dtype=P_rh.dtype)
+    amp_lh = np.sqrt(P_lh.real, dtype=P_lh.dtype)
+    amp_rh = np.sqrt(P_rh.real, dtype=P_rh.dtype)
 
     eps = np.finfo(float).eps  # avoid 0/0
     compressibility = P_para.real / (P_para.real + P_lh.real + P_rh.real + eps)
     ellipticity_along_b = ((amp_rh - amp_lh) / (amp_rh + amp_lh + eps)).real
 
     return compressibility, ellipticity_along_b
+
+
+def smooth_spec_boxcar(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
+    dj = np.abs(np.diff(np.log2(scales))[0])
+    _kernel = fractional_boxcar_kernel(w, nv=1 / dj)
+    kshape = [1] * spec.ndim
+    kshape[axis] = _kernel.size
+    _kernel = _kernel.reshape(kshape)
+    _spec = scipy.signal.convolve(
+        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
+        _kernel,
+        mode='same')
+    return _spec

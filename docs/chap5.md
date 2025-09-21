@@ -1,4 +1,12 @@
-# Handling Noise
+# Understand and Handle Noise
+
+
+
+> **Lindeberg–Lévy CLT**—Suppose X1,X2,X3…![{\displaystyle X_{1},X_{2},X_{3}\ldots }](https://wikimedia.org/api/rest_v1/media/math/render/svg/dd6598526ef19d380b128f3aacff83367b5f35c1) is a sequence of [i.i.d.](https://en.wikipedia.org/wiki/Independent_and_identically_distributed) random variables with E⁡[Xi]=μ![{\displaystyle \operatorname {E} [X_{i}]=\mu }](https://wikimedia.org/api/rest_v1/media/math/render/svg/b4cb0f7a2cebcaf8b28056deff750e7a0e1d34f3) and Var⁡[Xi]=σ2<∞.![{\displaystyle \operatorname {Var} [X_{i}]=\sigma ^{2}<\infty .}](https://wikimedia.org/api/rest_v1/media/math/render/svg/76c2379b589ea26ef8d17aaeab2d9899f30f1299) Then, as n![{\displaystyle n}](https://wikimedia.org/api/rest_v1/media/math/render/svg/a601995d55609f2d9f5e233e36fbe9ea26011b3b) approaches infinity, the random variables n(X¯n−μ)![{\displaystyle {\sqrt {n}}({\bar {X}}_{n}-\mu )}](https://wikimedia.org/api/rest_v1/media/math/render/svg/c1f533faaeb8931b80712ddb6361d4814c2be02a) [converge in distribution](https://en.wikipedia.org/wiki/Convergence_in_distribution) to a [normal](https://en.wikipedia.org/wiki/Normal_distribution) N(0,σ2)![{\displaystyle {\mathcal {N}}(0,\sigma ^{2})}](https://wikimedia.org/api/rest_v1/media/math/render/svg/a12e4999caaf1154cee3440edde18c9e5f66a8da):[[4\]](https://en.wikipedia.org/wiki/Central_limit_theorem#cite_note-FOOTNOTEBillingsley1995357-4)
+>
+> n(X¯n−μ)⟶dN(0,σ2).![{\displaystyle {\sqrt {n}}\left({\bar {X}}_{n}-\mu \right)\mathrel {\overset {d}{\longrightarrow }} {\mathcal {N}}\left(0,\sigma ^{2}\right).}](https://wikimedia.org/api/rest_v1/media/math/render/svg/3752ee1b5177b8d87fb1cde66b4b4eef328bb142)
+
+Central Limit Theorem states that the sum of a large number of **independent random variables**, regardless of their individual distributions, will tend to follow a Normal (Gaussian) distribution. This principle underpins much of statistical analysis and signal processing. The requirement of independent and random variables is intrinsically related to the definition of noise.
 
 ## Noise Colors and Classification
 
