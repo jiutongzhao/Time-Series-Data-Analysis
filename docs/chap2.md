@@ -1,4 +1,4 @@
-# How Do We See Frequencies in Data?
+# Frequency Domain
 
 ## Fourier Transform
 

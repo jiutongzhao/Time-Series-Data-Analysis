@@ -1,4 +1,4 @@
-# What Else Should You Know About the DFT/FFT?
+# More about DFT/FFT
 
 ## Uncertainty Principle
 
@@ -10,7 +10,7 @@ $$
 $$
 > meaning you can trade time resolution for frequency resolution, but never improve both simultaneously beyond this bound.  
 >
-This is often summarized as: "A signal cannot be both time-limited and band-limited."
+This is often summarized as: "A signal cannot be both **time-limited and band-limited**."
 Practically, a shorter pulse spreads its spectrum, while a narrowband tone must last longer.
 
 <p align = 'center'><img src="Figure/figure_uncertainty_principle.png" width="100%"/></p>

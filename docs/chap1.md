@@ -1,4 +1,4 @@
-# Initialize Your Data
+# Data Initialization
 
 ## Sampling
 
