@@ -52,6 +52,12 @@ violet_noise = np.fft.irfft(violet_noise_fft)
 
 Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
 
+## Discretization Noise:
+
+The sampling of the real world signals are always converted and stored as digitized. Such digitization (or quantization) process includes one kind of noise so called **Quantization Noise**. 
+
+**Shot Noise**
+
 ## Autoregressive (AR) Model
 
 Many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behaviour is well captured by a first-order autoregressive model:
