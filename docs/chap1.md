@@ -63,7 +63,8 @@ In brief, **Do Not Interpret Your Data with A Target Frequency near or even abov
     N, T = 100, 1
     t = np.linspace(0, T, N, endpoint = False) 
     # Ensure parameter endpoint is set to False, or use
-    # t = np.linspace(0, T, N + 1, endpoint = False)
+    # t = np.linspace(0, T, N + 1, endpoint = True)
+    # to get a series with dt = T / N
     ```
 
     Correspondingly, the ungiven parameter can be derived uniquely.

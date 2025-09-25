@@ -211,8 +211,6 @@ sinc_interp(t_interp, sig, t)
 <p align = 'center'>
 <img src="Figure/figure_interpolation.png" width="100%"/>
 </p>
-
-
 ### Interpolation and the Frequency Domain
 
 **Interpolation in the time domain directly impacts the signal’s frequency content:**

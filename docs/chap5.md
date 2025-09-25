@@ -10,7 +10,7 @@ $$
 
 Central Limit Theorem states that the sum of a large number of **independent random variables**, regardless of their individual distributions, will tend to follow a Normal (Gaussian) distribution. This principle underpins much of statistical analysis and signal processing. The requirement of independent and random variables is intrinsically related to the definition of noise.
 
-## Noise Colors and Classification
+## Description of Noise
 
 Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as ***noise***. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
 
@@ -30,37 +30,115 @@ These color names condense how energy spreads across frequencies and guide filte
 <p align = 'center'>
 <img src="Figure/figure_noise.png" alt="An example of DFT." width="100%"/>
 </p>
+<p align = 'center'><i> Three types of colored noise.</i></p>
+
+
+
+
+## Signal-to-Noise Ratio (SNR) and Decibels
+
+**SNR** measures how clearly the signal emerges from noise:
+$$
+\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
+$$
+where $P_{\text{signal}}$ and $P_{\text{noise}}$ are the average powers of the signal and noise, respectively.
+
+Because the ratio can span orders of magnitude, it is usually expressed in **decibels (dB)**:
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
+$$
+For amplitude‑based measurements (root‑mean‑square values):
+$$
+\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
+$$
+
+***Decibel Quick Reference\***
+
+
+|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
+| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
+|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
+| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+
+Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
+
+The adoption of decibel instead of the conventional physical unit has three advantage:
+
+- It allows the directive addition when compare the amplitude of the signal.
+- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
+- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
+
+## [Quantization Noise](https://en.wikipedia.org/wiki/Quantization_(signal_processing))
+
+Quantization noise arises when a continuous-valued signal is mapped to discrete levels in an analog-to-digital converter (or by fixed-point rounding in digital signal processing). The difference between the true value $x$ and the quantized value $\Delta\cdot\lfloor {x}/{\Delta} + {1}/{2}\rfloor$  is the **quantization error**, where $\Delta$ is the quantization step size.
+
+For a uniform mid-tread quantizer with step size $\Delta$, and when the input is sufficiently “busy” (uncorrelated with the quantizer and exercising many codes), the error can be modeled as **additive white noise**, uniformly distributed on $[-\Delta/2,\,+\Delta/2]$. Such a addictive noise is white with a total power of $\sigma_q^2=\Delta^2/12$.  Therefore, the signal-to-quantization-noise ratio (SQNR) increases by **<u>6.02 dB ($\approx 10\mathrm{log}_{10}2$)</u>** for each additional bit of resolution.
+
+The uniformly distributed requirement can be fulfilled by the full-amplitude triangle waves or sawtooth waves, or a fast temporal variation. For small or slowly varying signals, the error becomes correlated with the signal, leading to distortion and spurious tones.
+
+<p align = 'center'><img src="Figure/figure_quantization_noise.png" width="100%"/></p>
+<p align = 'center'><i> Signals and power spectra for the sine waves with incresing background with different number of quantization bits.</i></p>
+
+At lower amplitudes the quantization error becomes dependent on the input signal, resulting in distortion. This distortion is created after the anti-aliasing filter, and if these distortions are above 1/2 the sample rate they will alias back into the band of interest. In order to make the quantization error **<u>independent</u>** of the input signal, the signal is ***dithered*** by adding noise to the signal. This slightly reduces signal-to-noise ratio, but can completely eliminate the distortion.
+
+------
+
+## [Shot Noise](https://en.wikipedia.org/wiki/Shot_noise)
+
+Shot noise (Schottky noise) is intrinsic randomness from the discrete nature of the particle to be measured. Even with constant average current or optical power, arrivals are Poisson-distributed, producing fluctuations.
+
+```math
+P(x;\lambda)=\frac{\lambda^x e^{-\lambda}}{x!}
+```
+
+where $\lambda$ is the expected number of events in the interval, and $x$ is the actual number of events that occur. The mean and variance of the Poisson distribution are both equal to $\lambda$.
+
+This noise is neither additive or multiplicative, but rather **signal-dependent**: its variance scales with the signal level. For a constant average rate $\bar{x}$, the shot noise power spectrum is white with total power $\sigma^2=\eta\bar{x}^2$ when using a detector with an one-count-level (the signal intensity contributed by a single count) of $\eta$.
+
+<p align = 'center'><img src="Figure/figure_shot_noise.png" width="100%"/></p>
+<p align = 'center'><i> Shot noise for a constant signal with different one-count-level.</i></p>
+
+A more general signal model consists of a constant background $a$ plus a time-varying component $b\cdot\mathrm{sin}(\omega t)$:
+
+```math
+x(t)=a+b\cdot\mathrm{sin}(\omega t)
+```
+
+In such case, the high frequency part of the power spectrum is still white, but with a total power $\sigma^2=\eta(a+b^2/2)$ that depends on the average signal level. While, the power at the frequency $\omega$ is boosted by the sinusoidal component, standing out from the white noise floor.
+
+
+
+------
 
 ## Artificial Noise Generation
 
 ```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-dt = time[1] - time[0]
+N = 10000
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
 fs = 1 / dt
 freq = np.fft.rfftfreq(len(time), dt)
 
-brownian_noise_fft = np.fft.rfft(np.random.randn(time.size))
+white_noise = np.random.randn(time.size)
+
+brownian_noise_fft = np.fft.rfft(white_noise)
 brownian_noise_fft[1:] /= freq[1:] ** 1
 brownian_noise_fft[0] = 0
 brownian_noise = np.fft.irfft(brownian_noise_fft)
 
-violet_noise_fft = np.fft.rfft(np.random.randn(time.size))
+violet_noise_fft = np.fft.rfft(white_noise)
 violet_noise_fft[1:] /= freq[1:] ** -1
 violet_noise_fft[0] = 0
 violet_noise = np.fft.irfft(violet_noise_fft)
 ```
 
-Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this 
+Besides these two methods, one can also get colored noise by filtering white noise. A colored noise that accurately follows its expected power spectrum requires the order of the filter to be high enough. Even though this method is not as straightforward as the Fourier method, it is more efficient in terms of computation time and memory usage.
 
-## Discretization Noise:
-
-The sampling of the real world signals are always converted and stored as digitized. Such digitization (or quantization) process includes one kind of noise so called **Quantization Noise**. 
-
-**Shot Noise**
+------
 
 ## Autoregressive (AR) Model
 
-Many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behaviour is well captured by a first-order autoregressive model:
+Many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behavior is well captured by a first-order autoregressive model:
 $$
 x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
 $$
@@ -75,7 +153,7 @@ $$
 \mathbb{E}[PSD(f)]=\frac{\sigma^2(1-\alpha^2)}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
 $$
 
-which is flat for $\alpha=0$ and climbs like $1/f^{2}$ near $f=0$ for $\alpha\approx1$. Thus AR (1) offers the simplest realistic noise model—white at one extreme, red at the other—while remaining easy to simulate and fit.
+which is flat for $\alpha=0$ and climbs like $1/f^{2}$ near $f=0$ for $\alpha\approx1$. Thus AR1 offers the simplest realistic noise model—white at one extreme, red at the other—while remaining easy to simulate and fit.
 
 The $$\alpha$$ parameter can be estimated by the lag-1 autocorrelation of the time series. 
 $$
@@ -183,40 +261,6 @@ Apart from splitting the signal into several segments, one can also downsample t
 </p>
 
 
-## Signal-to-Noise Ratio (SNR) and Decibels
-
-**SNR** measures how clearly the signal emerges from noise:
-$$
-\mathrm{SNR} = \frac{P_{\text{signal}}}{P_{\text{noise}}}
-$$
-where $P_{\text{signal}}$ and $P_{\text{noise}}$ are the average powers of the signal and noise, respectively.
-
-Because the ratio can span orders of magnitude, it is usually expressed in **decibels (dB)**:
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 10 \log_{10} \left( \frac{P_{\text{signal}}}{P_{\text{noise}}} \right)
-$$
-For amplitude‑based measurements (root‑mean‑square values):
-$$
-\mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
-$$
-
-***Decibel Quick Reference\***
-
-
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
-
-Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
-
-The adoption of decibel instead of the conventional physical unit has three advantage:
-
-- It allows the directive addition when compare the amplitude of the signal.
-- When you are not confident about the magnitude of the uncalibrated data, you can just use dB to describe the ambiguous intensity.
-- The [***Weber–Fechner law***](https://en.wikipedia.org/wiki/Weber-Fechner_law) states that human perception of stimulus intensity follows a logarithmic scale, which is why decibels—being logarithmic units—are used to align physical measurements with human sensory sensitivity, such as in sound and signal strength.
-
-
 ## Signal Over Noise
 
 A signal composed of a deterministic sinusoidal component $s(t)$ and additive noise $n(t)$ can be written as:
@@ -253,3 +297,5 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 
 
 <div STYLE="page-break-after: always;"></div>
+
+[https://en.wikipedia.org/wiki/Quantization_(signal_processing)]: https://en.wikipedia.org/wiki/Quantization_(signal_processing)
