@@ -73,7 +73,7 @@ The spectral matrix can be averaged over time and frequency to reduce noise and 
 spec_ma = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
 spec_ma = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
 
-def smooth_spec_box(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
+def smooth_spec_boxcar(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
     dj = np.abs(np.diff(np.log2(scales))[0])
     _kernel = fractional_boxcar_kernel(w, nv=1 / dj)
     kshape = [1] * spec.ndim
@@ -95,7 +95,7 @@ spec_sm = np.copy(spec)
 for i, s in enumerate(scales):
     spec_sm[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
     
-    
+
 def smooth_spec_gaussian(spec, sigmas):
     _spec = np.copy(spec)
     for i, s in enumerate(sigmas):
@@ -111,7 +111,7 @@ def smooth_spec_gaussian(spec, sigmas):
             _kernel /= _kernel.sum()
             _kernel = _kernel.reshape((L, ) + (1, ) * (spec[i].ndim - 1))
             _spec[i] = fftconvolve(spec[i], _kernel,
-                                   mode='same')  # 注意边界条件与 ndimage 的 reflect 不同
+                                   mode='same')
 
     return _spec
 ```
