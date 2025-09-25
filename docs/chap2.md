@@ -29,7 +29,7 @@ where $x[n]=x(n\Delta t)$ stands for a discrete signal and $T$ is the sampling p
 This infinite-length signal is still unrealistic. For a finite signal, the ***Discrete Fourier Transform (DFT)*** is the only one that applicable:
 $$
 \begin{align}
-X[k] = X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
+X[k] := X(k\Delta f) & = \sum_{n=0}^N x(n\Delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
 & = \sum_{n=0}^N x[n] e^{-2\pi i\cdot k \cdot \delta f \cdot t} \, \delta  t
 \end{align}
 $$
@@ -130,13 +130,13 @@ $$
 It can be implemented in `numpy` as follow:
 
 ```python
-# Symmetric Window
-w = np.hanning(sig.size)
-
-# Periodic Window
+# Periodic Window [suggested], for which w[1] = w[-1]
 w = np.hanning(sig.size + 1)[:-1]
 
-# Without Normalization
+# Symmetric Window, for which w[0] = w[-1]
+w = np.hanning(sig.size)
+
+# Windowing Without Normalization
 sig *= w
 ```
 
@@ -152,14 +152,14 @@ $$
 A more quantitative estimation of the signal amplitude or power can be given by using a normalized window function.
 
 ```python
-# Amplitude Normalization
+# Amplitude Normalization (factor of 2)
 w = np.hanning(sig.size) * 2
 
 # or
 w = np.hanning(sig.size)
 w /= w.sum()
 
-# Power Normalization
+# Power Normalization (factor of 8/3)
 w = np.hanning(sig.size) * np.sqrt(8 / 3)
 
 # or

@@ -80,13 +80,7 @@ In brief, **Do Not Interpret Your Data with A Target Frequency near or even abov
 
   ```python
   omega0 = 2 * np.pi * 6.0
-  
-  N = 2 ** 10
-  t = np.linspace(0, 1, N, endpoint=False)
-  dt = t[1] - t[0]
-  fs = 1 / dt  # Sampling frequency
-  
-  sig_sin = np.sin(omega0 * t)
+  sig = np.sin(omega0 * t)
   ```
   
   - Complex sine wave
@@ -100,7 +94,7 @@ In brief, **Do Not Interpret Your Data with A Target Frequency near or even abov
   <p align = 'center'>
   <img src="Figure/figure_typical_signals.png" width="100%"/>
   </p>
-
+  
   - **<u>Using these `scipy.signal` built-in functions</u>** helps to **<u>improve your code readability and reduce your chances of creating bugs: </u>**    
   
     ```python
@@ -230,8 +224,7 @@ After get your data, you should know that **what does each timestamps represent?
 <p align = 'center'>
 <img src="Figure/figure_sampling_methods.png" width="100%"/>
 </p>
-
-Due to the limitations of electronic circuitry and measurement principles, the acquisition of real-world signals always requires a finite sampling time. As a result, strictly perfect instantaneous sampling does not exist. However, if the sampling time is much shorter than the interval between data points or the timescale of interest, the measurement can be reasonably approximated as instantaneous. Average sampling itself also acts as a low-pass filter so has the advantage of anti-aliasing.
+Real instruments integrate over a finite dwell time, so truly instantaneous samples don’t exist. When that dwell time is much shorter than the sample interval—or than the dynamics you care about—the measurements can be treated as instantaneous; otherwise the averaging behaves like a low-pass filter and provides some anti-aliasing. In practice, the more robust approach is to pass the analog signal through a dedicated anti-aliasing low-pass filter before discrete sampling, which suppresses out-of-band content, reduces aliasing, and limits high-frequency noise.
 
 While artificial signal can be sampled in either ways, just be aware at what you are actually doing if you want to make the comparison between the observations and simulations.
 

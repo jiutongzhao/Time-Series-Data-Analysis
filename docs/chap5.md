@@ -113,12 +113,6 @@ In such case, the high frequency part of the power spectrum is still white, but 
 ## Artificial Noise Generation
 
 ```python
-N = 10000
-t = np.linspace(0, 1, N, endpoint=False)
-dt = t[1] - t[0]
-fs = 1 / dt
-freq = np.fft.rfftfreq(len(time), dt)
-
 white_noise = np.random.randn(time.size)
 
 brownian_noise_fft = np.fft.rfft(white_noise)
@@ -197,16 +191,7 @@ The averaging operation must be taken after the conversion from coefficient to p
 This method can be implemented by `scipy.signal.welch` function:
 
 ```python
-time = np.linspace(0, 1, 10000, endpoint=False)
-fs = 1 / (time[1] - time[0])
-freq = np.fft.rfftfreq(len(time), time[1] - time[0])
-
-noise_white = np.random.randn(time.size)
-
-coef_white = np.fft.rfft(noise_white, axis=-1).T
-psd_white = (np.abs(coef_white) ** 2) / fs / time.size
-
-freq_welch, psd_white_welch = scipy.signal.welch(noise_white, fs, window = 'hann', nperseg=2 ** 10)
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg=2 ** 10)
 ```
 
 Except for averaging, one can also  choose the median of the PSD across different segements and obtain a less disturbed PSD. This choice can be implemented by `scipy.signal.welch(signal, fs, average = 'median')`. The default parameter for `average` is `mean`, corresponding to the normal Welch method.

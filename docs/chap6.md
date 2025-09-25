@@ -12,7 +12,6 @@ The Hilbert transform is a fundamental tool for analyzing the instantaneous ampl
 
 ```python
 omega = 2 * np.pi * 8.0
-time = np.linspace(0, 1, 2 ** 7, endpoint=False)
 # Modulate the Sine Wave with a offseted Hanning Window
 signal = np.sin(omega * time) * (0.1 + np.hanning(time.size))
 signal_ht = scipy.signal.hilbert(signal)

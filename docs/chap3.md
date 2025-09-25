@@ -8,7 +8,8 @@ $$
  \;=\;
  \sum_{k=0}^{N-1} |X[k]|^{2} \Delta f
 $$
- where $x[n]$ is the discrete time signal, $X[k]$ is its Discrete Fourier Transform (DFT), $\Delta t$ is the time interval between samples, and $\Delta f$ is the frequency interval between DFT bins. This theorem essentially states that the total energy of a signal in the time domain is equal to the total energy in the frequency domain. 
+> where $x[n]$ is the discrete time signal, $X[k]$ is its Discrete Fourier Transform (DFT), $\Delta t$ is the time interval between samples, and $\Delta f$ is the frequency interval between DFT bins. This theorem essentially states that the total energy of a signal in the time domain is equal to the total energy in the frequency domain. 
+>
 
 In the physical world, the square power of the amplitude often refers to some kind of ***energy*** or ***power***. For example, the square of the displacement ($x$) of a spring, $x^2$ is proportional to the elastic potential energy ($kx^2/2$, where $k$ describes the stiffness). The electromagnetic field contains the energy density ($u$) written as 
 $$
