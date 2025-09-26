@@ -2,7 +2,7 @@
 
 <img src="/Figure/figure_icon.png" alt="logo" style="zoom:10%;" />
 
-# ***Python for Spectral Analysis: From Fourier to Wavelets<small></small>***
+# ***Python Spectral Analysis<small></small>***
 
 > **A Document for Practical Time Series Analysis**
 
@@ -12,5 +12,4 @@
 
 **Provided with Python Code**
 
-[GitHub](https://github.com/JiuTong-Zhao/Time-Series-Data-Analysis)
 [Get Started](#preface)

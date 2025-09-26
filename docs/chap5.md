@@ -16,13 +16,10 @@ Every real‑world measurement—whether from a spacecraft magnetometer, a seism
 
 A compact way to describe noise is by its **PSD slope**, traditionally labeled with colors:
 
-| **Noise Color** | **$PSD\propto f^{-\beta}$** |      **Typical Examples / Sources**       |
-| :-------------: | :---------: | :---------------------------------------: |
-|      White      |    $\beta$ = 0    |       Thermal/electronic background       |
-|      Pink       |    $\beta$ = 1    |         Music, biological rhythms         |
-|   Brown (Red)   |    $\beta$ = 2    | Brownian motion, accumulated random walks |
-|      Blue       |   $\beta$ = –1    |      Halftoning dither, mask design       |
-|     Violet      |   $\beta$ = –2    |            Quantization noise             |
+| Noise Color / Info | White | Pink | Brown (Red) | Blue | Violet |
+|:------------------:|:-----:|:----:|:-----------:|:----:|:------:|
+| $\beta$            | $\beta=0$ | $\beta=1$ | $\beta=2$ | $\beta=-1$ | $\beta=-2$ |
+| Examples           | Thermal/electronic background | Music, biological rhythms | Brownian motion, accumulated random walks | Halftoning dither, mask design | Quantization noise |
 
 
 These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
