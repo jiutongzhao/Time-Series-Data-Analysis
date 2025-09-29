@@ -2,24 +2,24 @@
 
 
 
-> **[Lindeberg–Lévy Central Limit Theorem (CLT)](https://en.wikipedia.org/wiki/Central_limit_theorem):**  Suppose $X_1, X_2, X_3,...,X_n$ is a sequence of independent and identically distributed random variables with $\mathbb{E}(X)=\mu$ and $\mathbb{D}(X)=\sigma^2<\infty$. Then, as $n$ approaches infinity, the random variables $\sqrt{n}(\bar{X}_n-\mu)$ converge in distribution to a **normal** $\mathcal{N}(0,\sigma^2)$
+> **[Lindeberg–Lévy Central Limit Theorem (CLT)](https://en.wikipedia.org/wiki/Central_limit_theorem):**  Suppose $X_1, X_2, X_3,...,X_n$ is a sequence of independent and identically distributed random variables with $\mathbb{E}(X)=\mu$ and $\mathbb{D}(X)=\sigma^2<\infty$. Then, as $n$ approaches infinity, the random variables $\sqrt{n}(\bar{X}_n-\mu)$ converge in distribution to a **normal (or Gaussian)** distribution:
 $$
 \sqrt{n}(\bar{X}_n-\mu) \mathrel {\overset {d}{\longrightarrow }} \mathcal{N}(0,\sigma^2)
 $$
 >  
 
-Central Limit Theorem states that the sum of a large number of **independent random variables**, regardless of their individual distributions, will tend to follow a Normal (Gaussian) distribution. This principle underpins much of statistical analysis and signal processing. The requirement of independent and random variables is intrinsically related to the definition of noise.
+**<u>*Central Limit Theorem*</u>** states that the sum of a large number of **independent random variables**, regardless of their individual distributions, will tend to follow a ***<u>Normal (Gaussian)</u>*** distribution. This principle underpins much of statistical analysis and signal processing. The requirement of independent and random variables is intrinsically related to the definition of noise.
 
 ## Description of Noise
 
-Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as ***noise***. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
+Every real‑world measurement—whether from a spacecraft magnetometer, a seismometer, or a studio microphone—contains the desired signal plus unwanted fluctuations we lump together as **<u>*noise*</u>**. These fluctuations can originate from the sensor (thermal agitation, quantization), the environment (vibrations, electromagnetic interference) or the intrinsic randomness of the source.
 
-A compact way to describe noise is by its **PSD slope**, traditionally labeled with colors:
+A compact way to describe noise is by the **power-law index** of the $PSD(f) \propto 1/f^\beta$, $\mathbf{\beta}$, traditionally labeled with colors:
 
 | Noise Color / Info | White | Pink | Brown (Red) | Blue | Violet |
 |:------------------:|:-----:|:----:|:-----------:|:----:|:------:|
 | $\beta$            | $\beta=0$ | $\beta=1$ | $\beta=2$ | $\beta=-1$ | $\beta=-2$ |
-| Examples           | Thermal/electronic background | Music, biological rhythms | Brownian motion, accumulated random walks | Halftoning dither, mask design | Quantization noise |
+| Examples           | Thermal/electronic background | Music, biological rhythms | Brownian motion, accumulated random walks | Halftoning dither, mask design | GPS acceleration errors |
 
 
 These color names condense how energy spreads across frequencies and guide filter choice, window length, and averaging strategies.
@@ -49,13 +49,13 @@ $$
 \mathrm{SNR}_{\mathrm{dB}} = 20 \log_{10} \left( \frac{A_{\text{signal}}}{A_{\text{noise}}} \right)
 $$
 
-***Decibel Quick Reference\***
+***Decibel Quick Reference***
 
 
-|     Decibel     |  0   |  1   |  3   |  6   |  10  |  20  |
-| :-------------: | :--: | :--: | :--: | :--: | :--: | :--: |
-|  Energy Ratio   |  1   | 1.12 | 1.41 | 2.00 | 3.16 |  10  |
-| Amplitude Ratio |  1   | 1.26 | 2.00 | 3.98 |  10  | 100  |
+|     Decibel     | -20  | -10    | -6                   | -3                           | -1    |  0   |   1   |             3              |         6         |  10   |  20  |
+| :-------------: | ---- | ------ | -------------------- | ---------------------------- | ----- | :--: | :---: | :------------------------: | :---------------: | :---: | :--: |
+| Amplitude Ratio | 0.1  | 0.3162 | 0.501 $\approx$ 1/2  | 0.708 $\approx$ $1/\sqrt{2}$ | 0.891 |  1   | 1.122 | 1.413 $\approx$ $\sqrt{2}$ | 1.995 $\approx$ 2 | 3.162 |  10  |
+|   Power Ratio   | 0.01 | 0.1    | 0.251 $\approx$  1/4 | 0.501                        | 0.794 |  1   | 1.259 |           1.995            | 3.981 $\approx$ 4 |  10   | 100  |
 
 Due to the fact that $2^{10}\approx10^3$, 3 dB corresponds to a energy ratio of $10^{3/10}=\sqrt[10]{1000}\approx \sqrt[10]{1024}=2$.
 
@@ -67,47 +67,51 @@ The adoption of decibel instead of the conventional physical unit has three adva
 
 ## [Quantization Noise](https://en.wikipedia.org/wiki/Quantization_(signal_processing))
 
-Quantization noise arises when a continuous-valued signal is mapped to discrete levels in an analog-to-digital converter (or by fixed-point rounding in digital signal processing). The difference between the true value $x$ and the quantized value $\Delta\cdot\lfloor {x}/{\Delta} + {1}/{2}\rfloor$  is the **quantization error**, where $\Delta$ is the quantization step size.
+Quantization noise arises when a continuous-valued signal is mapped to discrete levels in an analog-to-digital converter (or by fixed-point rounding in digital signal processing). The difference between the true value $x$ and the quantized value $\Delta\cdot\lfloor {x}/{\Delta} + {1}/{2}\rfloor$  is the ***<u>quantization error</u>***, where $\Delta$ is the quantization step size.
 
-For a uniform mid-tread quantizer with step size $\Delta$, and when the input is sufficiently “busy” (uncorrelated with the quantizer and exercising many codes), the error can be modeled as **additive white noise**, uniformly distributed on $[-\Delta/2,\,+\Delta/2]$. Such a addictive noise is white with a total power of $\sigma_q^2=\Delta^2/12$.  Therefore, the signal-to-quantization-noise ratio (SQNR) increases by **<u>6.02 dB ($\approx 10\mathrm{log}_{10}2$)</u>** for each additional bit of resolution.
+For a uniform mid-tread quantizer with step size $\Delta$, and when the input is sufficiently “busy” (uncorrelated with the quantizer and exercising many codes), the error can be modeled as **additive white noise**, uniformly distributed on $[-\Delta/2,\,+\Delta/2]$. Such a addictive noise is white with a total power of $\sigma_q^2=\Delta^2/12$.  Therefore, the signal-to-quantization-noise ratio (SQNR) increases by **6.02 dB ($\approx 10\mathrm{log}_{10}2$)** for each additional bit of resolution.
 
 The uniformly distributed requirement can be fulfilled by the full-amplitude triangle waves or sawtooth waves, or a fast temporal variation. For small or slowly varying signals, the error becomes correlated with the signal, leading to distortion and spurious tones.
 
 <p align = 'center'><img src="Figure/figure_quantization_noise.png" width="100%"/></p>
 <p align = 'center'><i> Signals and power spectra for the sine waves with incresing background with different number of quantization bits.</i></p>
 
-At lower amplitudes the quantization error becomes dependent on the input signal, resulting in distortion. This distortion is created after the anti-aliasing filter, and if these distortions are above 1/2 the sample rate they will alias back into the band of interest. In order to make the quantization error **<u>independent</u>** of the input signal, the signal is ***dithered*** by adding noise to the signal. This slightly reduces signal-to-noise ratio, but can completely eliminate the distortion.
-
-------
+At lower amplitudes the quantization error becomes dependent on the input signal, resulting in distortion. This distortion is created after the anti-aliasing filter, and if these distortions are above 1/2 the sample rate they will alias back into the band of interest. In order to make the quantization error **independent** of the input signal, the signal is <u>***dithered***</u> by adding noise to the signal. This slightly reduces signal-to-noise ratio, but can completely eliminate the distortion.
 
 ## [Shot Noise](https://en.wikipedia.org/wiki/Shot_noise)
 
-Shot noise (Schottky noise) is intrinsic randomness from the discrete nature of the particle to be measured. Even with constant average current or optical power, arrivals are Poisson-distributed, producing fluctuations.
+The uncertainty in the counting measurement create intrinsic randomness called **<u>*Shot noise (Schottky noise)*</u>**. Even with constant signal to be measured by counting the number of events, arrivals are [**<u>*Poisson-distributed*</u>**](https://en.wikipedia.org/wiki/Poisson_distribution), producing fluctuations.
 
-```math
+$$
 P(x;\lambda)=\frac{\lambda^x e^{-\lambda}}{x!}
-```
-
+$$
 where $\lambda$ is the expected number of events in the interval, and $x$ is the actual number of events that occur. The mean and variance of the Poisson distribution are both equal to $\lambda$.
 
-This noise is neither additive or multiplicative, but rather **signal-dependent**: its variance scales with the signal level. For a constant average rate $\bar{x}$, the shot noise power spectrum is white with total power $\sigma^2=\eta\bar{x}^2$ when using a detector with an one-count-level (the signal intensity contributed by a single count) of $\eta$.
+This noise is neither additive or multiplicative, but rather **signal-dependent**: its variance scales with the signal level. For a constant average rate $\bar{x}$, the shot noise power spectrum is white with total power $\sigma^2=\eta\bar{x}^2$ when using a detector with an one-count-level, $\eta$:
+$$
+\eta:=\frac{\mathrm{Signal\ Intensity}}{\mathbb{E}(\mathrm{Number\ of\ Events})}
+$$
+
+
+Thus, the $PSD$ noise level increases 10 dB for each 10-fold increase in signal intensity, corresponding to a 10-fold increase in the Poisson mean $\lambda$. 
 
 <p align = 'center'><img src="Figure/figure_shot_noise.png" width="100%"/></p>
 <p align = 'center'><i> Shot noise for a constant signal with different one-count-level.</i></p>
 
 A more general signal model consists of a constant background $a$ plus a time-varying component $b\cdot\mathrm{sin}(\omega t)$:
 
-```math
+$$
 x(t)=a+b\cdot\mathrm{sin}(\omega t)
-```
-
+$$
 In such case, the high frequency part of the power spectrum is still white, but with a total power $\sigma^2=\eta(a+b^2/2)$ that depends on the average signal level. While, the power at the frequency $\omega$ is boosted by the sinusoidal component, standing out from the white noise floor.
 
 
 
 ------
 
-## Artificial Noise Generation
+## Artificial Noise Generation `np.random.randn`
+
+Colored noise can be generated by manipulating the Fourier coefficients of white noise. The following code snippet demonstrates how to create Brownian (red) noise and Violet noise from white noise using NumPy:
 
 ```python
 white_noise = np.random.randn(time.size)
@@ -127,17 +131,16 @@ Besides these two methods, one can also get colored noise by filtering white noi
 
 ------
 
-## Autoregressive (AR) Model
+## [Autoregressive (AR) Model](https://en.wikipedia.org/wiki/Autoregressive_model)
 
-Many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behavior is well captured by a first-order autoregressive model:
+Apart from the completely randomness, many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behavior is well captured by a first-order **<u>*autoregressive model*</u>**:
 $$
 x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
 $$
 whose single coefficient $\alpha$ sets the memory length. When $\alpha=0$ the series is white noise; as $\alpha\to1^{-}$ it approaches an integrated (Brownian) path with power piling up at low frequencies. 
 
-
 <p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
-<p align = 'center'><i> AR1 Time series with different AR1 coefficient ($\alpha=$0.10, 0.90, and 0.99).</i></p>
+<p align = 'center'><i> AR1 Time series with different AR1 coefficient (alpha = 0.10, 0.90, and 0.99).</i></p>
 
 The spectrum makes this clear:
 $$
@@ -152,7 +155,11 @@ $$
 $$
 Higher-order AR models can capture more complex correlations, but require more data to fit reliably.
 
-## "Noise" of Noise
+## Null Hypothesis In the Signal Interpretation
+
+When you see a peak in the Fourier spectrum, you may want to know whether it is a real signal or just a random fluctuation of the noise. To answer this question, you need to set up a null hypothesis that the time series is purely noise, and then calculate the probability of observing such a peak (or higher) under this hypothesis. If this probability (the p-value) is very low, you can reject the null hypothesis and conclude that the peak is likely a real signal.
+
+## "Noise"(Uncertainty) of Noise
 From the power spectra of noises, one can see that the PSD of the generated noise may randomly deviates from the theoretical expectation, i.e., the exactly power-law PSD. 
 
 The Fourier coefficient computed as 

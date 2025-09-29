@@ -1,8 +1,8 @@
 # Wavelet and Time-Frequency Analysis
 
-## Short-Time Fourier Transform
+## Short-Time Fourier Transform `scipy.signal.ShortTimeFFT`
 
-The Short-Time Fourier Transform (STFT) extends traditional Fourier analysis to non-stationary signals by introducing time localization via windowing. This allows us to track how the frequency content of a signal evolves over time. This section explains the trade-off between time and frequency resolution, the role of window functions, and practical implementation with `scipy.signal.shortTimeFFT`. It should be noted that function `scipy.signal.stft` is considered legacy and will no longer receive updates. While `scipy` currently have no plans to remove it, they recommend that new code uses more modern alternatives `shortTimeFFT` instead.
+The **<u>*Short-Time Fourier Transform (STFT)*</u>** extends traditional Fourier analysis to non-stationary signals by introducing time localization via windowing. This allows us to track how the frequency content of a signal evolves over time. This section explains the trade-off between time and frequency resolution, the role of window functions, and practical implementation with `scipy.signal.shortTimeFFT`. It should be noted that function `scipy.signal.stft` is considered legacy and will no longer receive updates. While `scipy` currently have no plans to remove it, they recommend that new code uses more modern alternatives `shortTimeFFT` instead. Here is an example of using `scipy.signal.ShortTimeFFT` to perform STFT on a synthetic signal composed of multiple sine waves with varying frequencies and amplitudes, along with some added noise.
 
 ```python
 N_window = 4096
@@ -22,10 +22,13 @@ frequency_stft = np.fft.rfftfreq(window_hann, d=dt)
 
 <p align = 'center'>
 <img src="Figure/figure_stft.png" alt="An example of DFT." width="100%"/>
+</p><p align = 'center'>
+    The STFT spectra of a signal that consists of a growing wave, a chriping wave, and a contant wave.
 </p>
-The red hashed region indicates the **cone of influence (COI)**, which represents the area where edge effects may distort the STFT results due to the finite length of the signal and windowing. The COI is typically defined as half the window length on either side of the time axis, beyond which the STFT results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.
 
-## Continuous Wavelet Transform
+The red hashed region indicates the ***<u>cone of influence (COI)</u>***, which represents the area where edge effects may distort the *STFT* results due to the finite length of the signal and windowing. The *COI* is typically defined as half the window length on either side of the time axis, beyond which the *STFT* results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.
+
+## Continuous Wavelet Transform `ssqueezepy.cwt` and `pywt.cwt`
 
 Although the STFT can represent a signal on the time–frequency plane, it does so with a **fixed window**: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously. 
 
@@ -33,16 +36,16 @@ Although the STFT can represent a signal on the time–frequency plane, it does 
 <img src="Figure/figure_stft_vs_cwt.png" width="100%"/>
 </p>
 
-The **wavelet transform** turns this static trade-off into an **adaptive resolution** by scaling its analysis “window” with frequency—long windows for low frequencies and short windows for high frequencies—making it particularly well-suited to multiscale, transient features in non-stationary signals.
+The **wavelet transform** turns this static trade-off into an **adaptive resolution** by scaling its analysis “window” with frequency—long windows for low frequencies and short windows for high frequencies—making it particularly well-suited to **<u>*multiscale*</u>**, transient features in non-stationary signals.
 
 <p align = 'center'>
 <img src="Figure/figure_wavelet.png" width="100%"/>
 </p>
 
 
-Formally, both methods project the signal onto a family of basis functions via inner products: the STFT uses windowed sinusoids as its basis, whereas the continuous wavelet transform replaces the sinusoid with a scalable, time-localized “mother wavelet.” It is this additional scale parameter that provides the core advantage of wavelet analysis, as we will explore in the next section.
+Formally, both methods project the signal onto a family of basis functions via inner products: the *STFT* uses windowed sinusoids as its basis, whereas the continuous wavelet transform replaces the sinusoid with a scalable, time-localized “wavelet.” It is this additional scale parameter that provides the core advantage of wavelet analysis, as we will explore in the next section.
 
-In Python, there are two classic packages for performing continuous wavelet transforms: **pywt** and **ssqueezepy**. As shown below, **pywt** offers a comprehensive set of basic features, while **ssqueezepy** delivers high computational efficiency and supports synchrosqueezing wavelets. Older versions of **SciPy** also provided a `cwt` function, but this functionality has been deprecated in more recent releases.
+In Python, there are two classic packages for performing continuous wavelet transforms: `pywt` and `ssqueezepy`. As shown below, `pywt` offers a comprehensive set of basic features, while `ssqueezepy` delivers high computational efficiency and supports synchrosqueezing wavelets. Older versions of `Scipy` also provided a `cwt` function, but this functionality has been deprecated in more recent releases.
 
 
 ```python
@@ -64,14 +67,16 @@ df = (f[0] / f[1] - 1) * f / np.sqrt(f[0] / f[1])
 
 # ssqueezepy
 coef, scales = ssqueezepy.cwt(sig, ('morlet', {'mu': bandwidth}), scales = bandwidth / (2 * np.pi) * scales.astype(np.float32), fs = 1 / dt, l1_norm = False)
-f = bandwidth / (2 * np.pi) / dt / scales
-df = (f[0] / f[1] - 1) * f / np.sqrt(f[0] / f[1])
+freq = (bandwidth + np.sqrt(bandwidth ** 2 + 2)) / 2 / (2 * np.pi) / dt / scales
+df = (freq[0] / freq[1] - 1) * freq / np.sqrt(freq[0] / freq[1])
 psd = (np.abs(coef) ** 2) * (2 * dt)
 
 coi = (np.sqrt(4) * bandwidth / (2 * np.pi) / f).astype(float)
 ```
 
 The COI of wavelet is defined as the e-folding time of the wavelet at each scale, which is the time it takes for the wavelet amplitude to decay to $1/e$ of its maximum value.
+
+[Torrence & Compo (1998)](https://psl.noaa.gov/people/gilbert.p.compo/Torrence_compo1998.pdf) give a very impressive summary of the CWT and its application to geophysical time series, which is widely cited in various fields. They recommend using the **<u>*Morlet*</u>** wavelet with a non-dimensional frequency $\omega_0=6$ for general-purpose analysis, as it provides a good balance between time and frequency localization.
 
 ### Morlet Wavelet
 
@@ -83,104 +88,6 @@ with scale function $\eta=s\cdot t$ where $s$ denotes `scale` in the large $\ome
 
 This mother wavelet is a Gaussian-windowed complex sinusoid, which provides a good balance between time and frequency localization. The parameter $\omega_0$ is the non-dimensional frequency, which controls the number of oscillations within the Gaussian envelope. A common choice is $\omega_0=6$, which provides a good trade-off between time and frequency resolution.
 
-#### Morlet wavelet with small $\omega_0$
-
-**<u>But if you want to use an $\omega_0$ smaller than 5, you should be aware of the following issues:</u>**
-
-- **<u>Admissibility</u>**: The strict form of Morlet wavelet should satisfy the **admissibility condition**, which requires the wavelet to have zero mean. However, the standard Morlet wavelet does not strictly satisfy this condition because
-
-$$
-\begin{align}
-\int_{-\infty}^{+\infty} \psi_{approx}(\eta) \mathrm{d}\eta &= \sqrt{2}\pi^{1/4} e^{-\omega_0^2/2}\\
-&= \int_{-\infty}^{+\infty} \boxed{\pi^{-1/4}e^{-\omega_0^2/2}e^{-\eta^2/2}} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta\\
-&\neq 0
-\end{align}
-$$
-
-​	To address this, a correction term is often subtracted to ensure zero mean.
-$$
-\psi_{adm}(\eta)=\psi_{approx}(\eta)-\delta\psi(\eta)=\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
-$$
-
-- **<u>Normalization</u>**: To ensure the corrected morlet wavelet has unit energy, we normalize it so that its L2 norm equals 1. The normalization factor is given by the inverse of the square root of the integral of the squared magnitude of the wavelet.
-
-$$
-\psi(\eta)=\frac{\psi_{adm}}{\left[{\int_{-\infty}^{+\infty} [\psi^\prime(\eta)]^2 \mathrm{d}\eta}\right]^{-1/2}}=c_{\omega_0}\psi_{adm} = \boxed{\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\psi_{adm}
-$$
-
-The Final form of Morlet wavelet is:
-$$
-\psi(\eta)=ta)={\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
-$$
-when $\omega_0\geq 5$, the correction term $e^{-\omega_0^2/2}$ is negligible, and the approximate form $\psi_{approx}$ is often used directly. 
-
-- **<u>Frequency Response:</u>** Another issue that must be considered is the frequency response of the corrected Morlet wavelet, which is no longer a simple Gaussian centered at $\omega_0$. Instead, it has a more complex shape due to the subtraction of the correction term:
-
-$$
-\hat{\psi}(\omega)=c_{\omega_0}\pi^{-1/4}\left[e^{-(\omega-\omega_0)^2/2}-e^{-\omega_0^2/2}e^{-\omega^2/2}\right]
-$$
-
-This affects the relationship between scale and equivalent Fourier period, as well as the central frequency of the wavelet.
-
-- **Equivalent Fourier Period:** For Morlet wavelets with a small $\omega_0$, the Gaussian envelope $e^{-\eta^2/2}$ dominates over the carrier oscillation $e^{-i\omega_0\eta}$. As a result, the CWT power spectrum of an input sine wave no longer peaks at the naive period $T = 2\pi/\omega_0$. Instead, its maximum shifts to the equivalent Fourier period $T_{\mathrm{eq}}$, which more accurately captures the signal’s power distribution in the frequency domain.
-  $$
-  \begin{align}
-  s=\arg\max_s \left|\hat{\psi}\left(\frac{2\pi s}{T_{eq}}\right)\right|\\
-  \end{align}
-  $$
-  The equivalent Fourier period can be found by solving the equation:
-
-
-$$
-\frac{\partial}{\partial s}|\hat{\psi}(2\pi s/T)|=2x^2(1-e^{-\omega_0x})-2\omega_0x-1+e^{-\omega_0x}=0
-$$
-​	For large $\omega_0$, $e^{-\omega_0x}\rightarrow 0$,
-$$
-2x^2-2\omega_0 x-1=0
-$$
-
-$$
-x_0=\frac{2\omega_0\pm\sqrt{4\omega_0^2+8}}{4}=\frac{\omega_0\pm\sqrt{2+\omega_0^2}}{2}
-$$
-
-​	For small $\omega_0$, the asymptotic solution can be given by substituting $e^{-\omega_0x}\approx1-\omega_0x+\frac{1}{2}(-\omega_0x)^2$ 
-$$
-\begin{align}
-2x^2\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)-2\omega_0x-\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)&=0\\
-(-\omega_0x)\left[\omega_0x^3- 2x^2 + 2+1 - \frac{1}{2}\omega_0x \right]&=0\\
-\Rightarrow \omega_0x^3- 2x^2  - \frac{1}{2}\omega_0x + 3&=0
-\end{align}
-$$
-​	the asymptotic solution can be given by
-$$
-x_0=\sqrt{\frac{3}{2}}+\frac{\omega_0}{4}+\mathcal{O}(\omega_0^2)
-$$
-​	Thus, we can get the ratio of period and scale as
-$$
-T_{eq}= s\cdot\frac{2\pi}{x_0} \cdot \delta t
-$$
-
-<p align = 'center'>
-<img src="Figure/figure_fourier_period.png" width="100%"/>
-</p>
-
-
-​	This ratio is often used to convert between scale and equivalent Fourier period when interpreting wavelet transforms. For large $\omega_0$, it approaches the commonly used approximation $2\pi/\omega_0$.
-
-- <u>**Central Frequency:**</u> The central frequency $\omega_c$ of the Morlet wavelet is defined as the frequency at which the wavelet's Fourier transform attains its maximum, i.e.,
-  $$
-  \begin{align}
-  \omega_c &= \arg\max_\omega |\hat{\psi}(\omega)|\\
-  \end{align}
-  $$
-  It can be derived from the Fourier transform of the admissible Morlet wavelet:
-
-$$
-\omega_c=\omega_0\frac{1}{1-e^{-\omega_0 \omega_c}}
-$$
-
-
-​	The central frequency indicates where a wavelet is most responsive in the frequency domain, while the scale-to-period ratio specifies the scale at which it best matches a sine wave of a given period. For large $\omega_0$, this ratio converges to $2\pi/\omega_0$, a commonly used approximation.
 
 - **<u>Parameter Relationships in Different Literatures</u>**: Different implementations of the Morlet wavelet use different parameterizations. The following diagram summarizes the relationships among the parameters $\mu$, $B$, and $\sigma$ used in various references and libraries. 
 
@@ -358,8 +265,9 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
 <p align = 'center'>
 <img src="Figure/figure_dwt_family.png" width="100%"/>
 </p>
-
 ### Vanishing Moment, Orthogonality, and Support:
+
+In the above descriptions on the wavelet functions, several key properties of wavelets are frequently mentioned. Here’s a brief explanation of these terms:
 
 - **Vanishing Moments** ($p$): The number of moments (derivatives) that vanish at zero, indicating how well the wavelet can represent polynomial functions.
   $$
@@ -388,7 +296,104 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
     - **Finite Support:** Wavelets explicitly confined within a finite time interval, completely vanishing outside this interval.
 
 
+## More Details about Morlet wavelet
 
+If you want to go deeper into the Morlet wavelet, here are some additional details, which could be especially useful for understanding its properties and applications:
+
+- **<u>Admissibility</u>**: The strict form of Morlet wavelet should satisfy the **admissibility condition**, which requires the wavelet to have zero mean. However, the standard Morlet wavelet does not strictly satisfy this condition because
+
+$$
+\begin{align}
+\int_{-\infty}^{+\infty} \psi_{approx}(\eta) \mathrm{d}\eta &= \sqrt{2}\pi^{1/4} e^{-\omega_0^2/2}\\
+&= \int_{-\infty}^{+\infty} \boxed{\pi^{-1/4}e^{-\omega_0^2/2}e^{-\eta^2/2}} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta\\
+&\neq 0
+\end{align}
+$$
+
+​	To address this, a correction term is often subtracted to ensure zero mean.
+$$
+\psi_{adm}(\eta)=\psi_{approx}(\eta)-\delta\psi(\eta)=\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
+$$
+
+- **<u>Normalization</u>**: To ensure the corrected morlet wavelet has unit energy, we normalize it so that its L2 norm equals 1. The normalization factor is given by the inverse of the square root of the integral of the squared magnitude of the wavelet.
+
+$$
+\psi(\eta)=\frac{\psi_{adm}}{\left[{\int_{-\infty}^{+\infty} [\psi^\prime(\eta)]^2 \mathrm{d}\eta}\right]^{-1/2}}=c_{\omega_0}\psi_{adm} = \boxed{\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\psi_{adm}
+$$
+
+The Final form of Morlet wavelet is:
+$$
+\psi(\eta)=ta)={\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
+$$
+when $\omega_0\geq 5$, the correction term $e^{-\omega_0^2/2}$ is negligible, and the approximate form $\psi_{approx}$ is often used directly. 
+
+- **<u>Frequency Response:</u>** Another issue that must be considered is the frequency response of the corrected Morlet wavelet, which is no longer a simple Gaussian centered at $\omega_0$. Instead, it has a more complex shape due to the subtraction of the correction term:
+
+$$
+\hat{\psi}(\omega)=c_{\omega_0}\pi^{-1/4}\left[e^{-(\omega-\omega_0)^2/2}-e^{-\omega_0^2/2}e^{-\omega^2/2}\right]
+$$
+
+This affects the relationship between scale and equivalent Fourier period, as well as the central frequency of the wavelet.
+
+- **<u>Equivalent Fourier Period</u>:** For Morlet wavelets with a small $\omega_0$, the Gaussian envelope $e^{-\eta^2/2}$ dominates over the carrier oscillation $e^{-i\omega_0\eta}$. As a result, the CWT power spectrum of an input sine wave no longer peaks at the naive period $T = 2\pi/\omega_0$. Instead, its maximum shifts to the equivalent Fourier period $T_{\mathrm{eq}}$, which more accurately captures the signal’s power distribution in the frequency domain.
+  $$
+  \begin{align}
+  s=\arg\max_s \left|\hat{\psi}\left(\frac{2\pi s}{T_{eq}}\right)\right|\\
+  \end{align}
+  $$
+  The equivalent Fourier period can be found by solving the equation:
+
+
+$$
+\frac{\partial}{\partial s}|\hat{\psi}(2\pi s/T)|=2x^2(1-e^{-\omega_0x})-2\omega_0x-1+e^{-\omega_0x}=0
+$$
+​	For large $\omega_0$, $e^{-\omega_0x}\rightarrow 0$,
+$$
+2x^2-2\omega_0 x-1=0
+$$
+
+$$
+x_0=\frac{2\omega_0\pm\sqrt{4\omega_0^2+8}}{4}=\frac{\omega_0\pm\sqrt{2+\omega_0^2}}{2}
+$$
+
+​	For small $\omega_0$, the asymptotic solution can be given by substituting $e^{-\omega_0x}\approx1-\omega_0x+\frac{1}{2}(-\omega_0x)^2$ 
+$$
+\begin{align}
+2x^2\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)-2\omega_0x-\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)&=0\\
+(-\omega_0x)\left[\omega_0x^3- 2x^2 + 2+1 - \frac{1}{2}\omega_0x \right]&=0\\
+\Rightarrow \omega_0x^3- 2x^2  - \frac{1}{2}\omega_0x + 3&=0
+\end{align}
+$$
+​	the asymptotic solution can be given by
+$$
+x_0=\sqrt{\frac{3}{2}}+\frac{\omega_0}{4}+\mathcal{O}(\omega_0^2)
+$$
+​	Thus, we can get the ratio of period and scale as
+$$
+T_{eq}= s\cdot\frac{2\pi}{x_0} \cdot \delta t
+$$
+
+<p align = 'center'>
+<img src="Figure/figure_fourier_period.png" width="100%"/>
+</p>
+
+
+​	This ratio is often used to convert between scale and equivalent Fourier period when interpreting wavelet transforms. For large $\omega_0$, it approaches the commonly used approximation $2\pi/\omega_0$.
+
+- <u>**Central Frequency:**</u> The central frequency $\omega_c$ of the Morlet wavelet is defined as the frequency at which the wavelet's Fourier transform attains its maximum, i.e.,
+  $$
+  \begin{align}
+  \omega_c &= \arg\max_\omega |\hat{\psi}(\omega)|\\
+  \end{align}
+  $$
+  It can be derived from the Fourier transform of the admissible Morlet wavelet:
+
+$$
+\omega_c=\omega_0\frac{1}{1-e^{-\omega_0 \omega_c}}
+$$
+
+
+​	The central frequency indicates where a wavelet is most responsive in the frequency domain, while the scale-to-period ratio specifies the scale at which it best matches a sine wave of a given period. For large $\omega_0$, this ratio converges to $2\pi/\omega_0$, a commonly used approximation.
 
 
 <div STYLE="page-break-after: always;"></div>

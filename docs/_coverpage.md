@@ -6,10 +6,4 @@
 
 > **A Document for Practical Time Series Analysis**
 
-**From Fourier to Wavelet**
-
-**Fruitful Example Figure**
-
-**Provided with Python Code**
-
 [Get Started](#preface)

@@ -7,7 +7,7 @@
 * [Power Spectral Density](chap3.md)
 * [More About FFT](chap4.md)
 * [Noise](chap5.md)
-* [Signal Interpretation](chap6.md)
+* [Signal Processing](chap6.md)
 * [Time-Frequency Spectrum](chap7.md)
 * [Multi-Channel Signal](chap8.md)
 * [Appendix](chap10_appendix.md)

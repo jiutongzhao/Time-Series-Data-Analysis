@@ -1,49 +1,72 @@
 # Processing of the signal
 
-## Hilbert Transform [`scipy.signal.hilbert`]
+## Reconstruction and Interpolation [`scipy.interpolate`]
 
-The Hilbert transform is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
+**Interpolation** is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.
+
+The choice of interpolation method can significantly affect the quality of the reconstructed signal, particularly in terms of smoothness, fidelity to the original data, and preservation of frequency content. Below is a summary of common interpolation methods, their implementations in SciPy, and their respective advantages and caveats:
+
+| Method                | SciPy / API                | Pros                                                         | Caveats                                                      |
+| --------------------- | -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Nearest neighbor      | `interp1d(kind='nearest')` | Extremely fast; trivial to use                               | Step artifacts; strong spectral distortion; not smooth       |
+| Linear                | `interp1d(kind='linear')`  | Robust; no overshoot; simple and predictable                 | Not smooth at knots; attenuates high frequencies             |
+| Cubic spline          | `CubicSpline(bc_type=...)` | Very smooth (C²); configurable boundaries                    | Overshoot/ringing near discontinuities; needs strictly increasing x |
+| Akima piecewise       | `Akima1DInterpolator`      | Reduces overshoot; robust to local outliers/kinks            | Only C¹; slower than linear; not globally optimal            |
+| Fourier (freq-domain) | `scipy.signal.resample`    | Preserves spectrum for band-limited signals; great for upsampling | Requires uniform sampling & quasi-periodicity; wrap-around artifacts if not tapered |
+| Ideal sinc (windowed) | custom (windowed `sinc`)   | Theoretical best under sampling theorem; highest spectral fidelity | Infinite kernel → truncation/window needed; computationally heavy; uniform sampling only |
 
 <p align = 'center'>
-<img src="Figure/figure_hilbert.png" width="100%"/>
+<img src="Figure/figure_interpolation.png" width="100%"/>
+</p><p align = 'center'>
+    Different  interpolation methods applied to a two frequencies (1.1 Hz and 2.2 Hz) signal.
 </p>
 
+Particularly, the $\mathrm{sinc}$ interpolation is the most intutive way for the **reconstruction of a band-limited signal**, as it do not contribute any frequency component beyond the Nyquist frequency. It is defined as:
+$$
+x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - n\delta t}{\delta t}\right)
+$$
+where $\delta t=1/f_s$ is the sampling interval, and $\mathrm{sinc}(x) = {\sin(\pi x)}/{\pi x}$.
 
+A practical implementation of $\mathrm{sinc}$ interpolation in Python/`Numpy` is as follows:
 
 ```python
-omega = 2 * np.pi * 8.0
-# Modulate the Sine Wave with a offseted Hanning Window
-signal = np.sin(omega * time) * (0.1 + np.hanning(time.size))
-signal_ht = scipy.signal.hilbert(signal)
+def sinc_interp(t_interp, sig, t):
+    dt = t[1] - t[0]
+    weight = np.sinc((t_interp[:, None] - t[None, :]) / dt)
+    return weight @ sig
 
-signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
+sinc_interp(t_interp, sig, t)
 ```
+
+There is no a universal best interpolation method. The choice depends on the specific application, data characteristics, and computational constraints. For example, if you need a quick and dirty upsampling for visualization, linear interpolation might suffice. If you are reconstructing a smooth physical signal from noisy measurements, cubic splines or Akima interpolation could be better. For resampling band-limited signals, Fourier-based methods or sinc interpolation are preferred.
 
 ## Digital Filter [`scipy.interpolate`]
 
-Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. In essence, a digital filter is a mathematical algorithm that modifies the amplitude and/or phase of certain frequency components of a discrete signal. Filters can be designed to remove noise, isolate trends, block out-of-band interference, or even simulate the response of a physical system. Anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.
+Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. The anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.
 
 Digital filters are divided into two main types:
 
-- **Finite Impulse Response (FIR):** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.  A general FIR digital filter is implemented as:
+- **<u>*Finite Impulse Response (FIR)*</u>:** The output depends only on the current and <u>**a finite number of past input samples**</u>. FIR filters are always stable and can have exactly linear phase.  A general FIR digital filter is implemented as:
   $$
-  y[n] = \sum_{k=0}^{M} h[k]\, x[n-k]
+  y[n] = \sum_{m=0}^{L} h[m]\, x[n-m]
   $$
 
   - $x[n], y[n]$: Input, Output signal
-  - $h[k]$: Filter coefficients (impulse response), length $M+1$
-  - $M$: Filter order
+  - $h[m]$: Filter coefficients (impulse response), length $L+1$
+  - $L$: Filter order
 
-- **Infinite Impulse Response (IIR):** The output depends on both current and **<u>past input samples *and* past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion:
+- ***<u>Infinite Impulse Response (IIR)</u>*:** The output depends on both current and **<u>past input samples and past outputs</u>**. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion:
   $$
-  y[n] = \sum_{k=0}^{M} b[k]\, x[n-k] - \sum_{l=1}^{N} a[l]\, y[n-l]
+  y[n] = \sum_{p=0}^{L} b[p]\, x[n-p] - \sum_{q=1}^{M} a[q]\, y[n-q]
   $$
 
-  - $b[k]$: Feedforward (input) coefficients
-  - $a[l]$: Feedback (output) coefficients, usually $a[0] = 1$
-  - $M, N$: Orders for input and output
+  - $b[p]$: Feedforward (input) coefficients
+  - $a[q]$: Feedback (output) coefficients, usually $a[0] = 1$
+  - $L, M$: Orders for input and output
 
-### Example: Moving Average
+The *FIR* filter can be explicitly written as a convolution with the filter coefficients, $h[k]$, as the kernel. The *IIR* filter involves feedback, making it recursive and more complex to analyze, but is still possible to express as an infinite series of convolutions, implicitly.
+
+### Moving Average as an FIR Filter
 
 The **moving average filter** is actually a simple FIR filter. For a window length $L$, the coefficients are:
 $$
@@ -55,37 +78,62 @@ y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
 $$
 That is, the output is the **average of the most recent $L$ input samples**. **Therefore, the moving average filter is an FIR filter whose coefficients are all equal.**
 
-### Example: Low-pass FIR Filtering
-
-Suppose we want to smooth a time series by attenuating frequencies above a certain threshold (e.g., removing noise above 50 Hz). This can be accomplished with an FIR filter designed using `scipy.signal.firwin`:
-
-```python
-import numpy as np
-from scipy.signal import firwin, lfilter
-
-fs = 200.0  # Sampling frequency (Hz)
-nyq = fs / 2.0
-cutoff = 50.0  # Desired cutoff frequency (Hz)
-numtaps = 101  # Filter length (number of coefficients)
-
-# Design FIR low-pass filter
-fir_coeff = firwin(numtaps, cutoff / nyq)
-# Apply to data
-filtered_signal = lfilter(fir_coeff, 1.0, raw_signal)
-```
-
-For IIR filters (such as Butterworth, Chebyshev), the `scipy.signal.butter` function is commonly used. **Note:** Filtering can introduce edge effects—always inspect the beginning and end of the filtered signal.
-
 <p align = 'center'>
-<img src="Figure/figure_filters.png" width="100%"/>
+<img src="Figure/figure_moving_average.png" width="100%"/>
+</p><p align = 'center'>
+    Sine waves with white noise and its moving average [L = 20].
 </p>
 
+The output $y[n]$ is the average of $x[m]$ between $m=n-L+1$ and $m=n$. Therefore, the outputis delayed by about $L/2$ samples compared to the input. This delay is called ***<u>phase shift</u>*** of the filter. As the linear filter is essentially a convolution, its influence on the frequency content of the signal can be analyzed in the frequency domain. A filter has frequency response $\mathcal{F}\{h[t]\}=H(k)=|H(k)|e^{j\phi(k)}$, where $|H|$ controls amplitude and $\phi(\omega)$ is the phase shift. 
+
+For multi-frequency signals, the **phase response** $\phi(\omega)$ shapes how different components are time-shifted, which can preserve or distort waveform shape.
+
+- **Linear phase.** If $\phi(\omega)=-\omega\tau_0$ (a straight line), then the **group delay** $\tau_g(\omega)=-\tfrac{d\phi}{d\omega}=\tau_0$ is constant: every frequency is delayed by the same $\tau_0$. Waveforms are not distorted—only shifted in time. Real, symmetric FIR filters achieve this; the delay equals $(N-1)/2$ samples.
+- **Nonlinear phase.** When $\tau_g(\omega)$ varies with $\omega$, different frequencies experience different delays, causing **dispersion** (e.g., edge smearing, ringing). Most IIR filters (Butterworth, Chebyshev, elliptic) have nonlinear phase; **Bessel** IIRs trade selectivity for flatter group delay.
+
+To get the correct timing, you may need to shift the output back by $L/2$ samples. Equivalently, you can use a **centered moving average** to avoid phase distortion:
+$$
+y[n]= \frac{1}{2M + 1} \sum_{k=-M}^{M} x[n-k]
+$$
+Such a filter not only has the input in the past (i.e., $x[n-M],\ x[n-M+1],\ ...,\ x[n-1]$) but also in the future (i.e., $x[n+1],\ x[n+2],\ ...,\ x[n+M]$). This is a **<u>*non-causal*</u>** filter, which cannot be implemented in real-time systems but is acceptable for offline processing. Conversely, a ***<u>causal</u>*** filter only uses past and present inputs.
+
+Alternatively, you can apply the filter twice, once forward and once backward in time, to achieve zero-phase filtering. This is implemented in `scipy.signal.filtfilt`.
+
+## Implementing Digital Filters in `scipy.signal`
+
+### Filter representations in `scipy.signal`:
+
+- ### BA (transfer-function coefficients)
+
+  - Numerator/denominator polynomials $(b, a)$ of $H(z)=\frac{B(z)}{A(z)}$ [See [Z-transform](https://en.wikipedia.org/wiki/Z-transform) for explanation].
+
+  - **Pros:** Simple, widely used; works for FIR (`a=[1]`) and IIR.
+
+  - **Cons:** Can be **numerically unstable** for high-order IIR (coefficient sensitivity).
+
+  - **Get/Use:** `scipy.signal.butter(..., output='ba')`; apply with `scipy.signal.lfilter(b, a, x)` (once, forward) or `scipy.signal.filtfilt(b, a, x)`.
+
+- ### ZPK (zeros–poles–gain)
+
+  - Factorized form $(z, p, k)$ describing zeros, poles, overall gain.
+
+  - **Pros:** Great for analysis (stability, sensitivity); easy to modify poles/zeros.
+  - **Cons:** Still not the most stable for *applying* high-order IIR directly.
+  - **Get/Convert:** `scipy.signal.butter(..., output='zpk')`; convert via `scipy.signal.zpk2tf`, `scipy.signal.zpk2sos`.
+
+- ### SOS (second-order sections, <u>suggested</u>)
+
+  - Cascade of bi-quads; array of sections with 6 parameters each.
+  - **Pros:** **Most numerically stable** for high-order IIR; production-friendly.
+  - **Cons:** Slightly more verbose; must convert at design time.
+  - **Get/Use:** `scipy.signal.butter(..., output='sos')`; apply with `scipy.signal.sosfilt(sos, x)` or `scipy.signal.sosfiltfilt(sos, x)`.
 
 
 
-### Frequency Response and Interpretation
+### Common Filter Types
 
-The effect of a digital filter can be fully characterized by its *frequency response*, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
+The following table summarizes common digital filter types, their implementations in `scipy.signal`, main features, and typical use cases:
+
 
 | Filter Type    | Function (`scipy.signal`) | Main Features                | Use Case                  |
 | -------------- | ------------------------- | ---------------------------- | ------------------------- |
@@ -96,132 +144,47 @@ The effect of a digital filter can be fully characterized by its *frequency resp
 | Bessel         | `bessel`                  | Linear phase, slow rolloff   | Transient preservation    |
 | Median         | `medfilt`, `medfilt1d`    | Nonlinear, preserves edges   | Spike removal             |
 
+For IIR filters, the **<u>*Butterworth*</u>** filter, `scipy.signal.butter`, is commonly used. An example of these filters applied to a sine wave is shown below:
+
+
+
+<p align = 'center'>
+<img src="Figure/figure_filters.png" width="100%"/>
+</p>
+Please note that **filtering can introduce edge effects**, so always inspect the beginning and end of the filtered signal.
+
+### Frequency Response and Interpretation
+
+The effect of a digital filter can be fully characterized by its **<u>*frequency response*</u>**, i.e., how it amplifies or suppresses each frequency. Use `scipy.signal.freqz` to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).
 
 
 <p align = 'center'>
 <img src="Figure/figure_filters_response.png" width="100%"/>
 </p>
+### Artifacts from Over-narrow Filters
 
-
-It is not suggested to apply a filter with an over-narrow bandwidth unless you are already confident about the central frequency and waveform of the signal. Like, if you apply a 5-Butterworth 6-10 Hz bandpass filter to a pure white noise, you are going to get a filtered signal that looks like a sine wave with a frequency around 8 Hz. Thus, you are introducing artificial waves into the signal.
+**It is not suggested to apply a filter with an over-narrow bandwidth unless you are already confident about the central frequency and waveform of the signal.** Like, if you apply a 5-Butterworth 6-10 Hz bandpass filter to a **pure white noise**, you are going to get a filtered signal that looks like a sine wave with a frequency around 8 Hz. Thus, you are introducing artificial waves into the signal.
 
 <p align = 'center'>
 <img src="Figure/figure_filtered_noise.png" width="100%"/>
 </p>
 
 
-### Practical Tips
 
-- **Zero-phase Filtering:** Use `scipy.signal.filtfilt` for zero-phase filtering to avoid phase distortion, especially for waveform analysis.
-- **Edge Effects:** Discard a small number of samples at both ends after filtering, or pad the signal before filtering to reduce transient effects.
-- **Causality:** Standard filters are causal (output depends only on current and past inputs). Non-causal (zero-phase) filtering requires processing both forward and backward in time, and is not physically realizable in real-time applications.
+## [Hilbert Transform](https://en.wikipedia.org/wiki/Hilbert_transform) [`scipy.signal.hilbert`]
 
-## Interpolation
-
-**Interpolation** is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.
-
-### Why Do We Need Interpolation?
-
-- **Resampling:** Convert irregularly sampled data to a regular time grid for spectral analysis.
-- **Filling Gaps:** Restore missing or corrupted data in a time series.
-- **Temporal Alignment:** Synchronize data from different sources with differing sampling rates.
-- **Upsampling/Downsampling:** Increase or decrease data resolution, e.g., for visualization or model input.
-
-## Common Interpolation Methods
-
-##### 1. Nearest-Neighbor and Linear Interpolation [`interp1d`]
-
-Selects the value of the nearest known data point. Simple and fast, but produces a “blocky” or step-like signal.
-
-```python
-scipy.interpolate.interp1d(
-    x: array_like,           # 1D array of independent variable (e.g., time)
-    y: array_like,           # N-D array of dependent data values
-    kind: str = 'linear',    # 'linear', 'nearest', 'cubic', etc.
-    axis: int = -1,          
-    fill_value: Union[str, float, tuple] = 'extrapolate',
-    bounds_error: bool = False
-)
-```
-
-##### 2. Spline Interpolation [`CubicSpline`]
-
-Fits smooth polynomial curves (usually cubic) through the data. Produces smooth and visually appealing results, but can introduce overshoot or ringing near sharp transitions.
-
-```python
-scipy.interpolate.CubicSpline(
-    x: array_like,                      # 1D array of increasing x-values
-    y: array_like,                      # 1D or 2D array of values to interpolate
-    bc_type: Union[str, tuple] = 'not-a-knot',  # Boundary condition type
-    extrapolate: Union[bool, str] = True
-)
-```
-
-##### 3. Akima Interpolation [`Akima1DInterpolator`]
-
-Akima interpolation is a piecewise method based on fitting local polynomials between data points using adaptive slopes that depend on the trends of neighboring intervals. Unlike cubic splines, it does not enforce global smoothness but instead focuses on avoiding oscillations and overshoots near sharp transitions. This makes Akima interpolation particularly effective for datasets with non-uniform behavior or outliers, where traditional spline methods may produce unwanted ringing. It maintains a good balance between smoothness and stability and is especially useful in applications requiring visually reliable curve fitting without excessive global influence.
-
-Assumes that the data is periodic and uniformly sampled. The signal is extended using its discrete Fourier transform (DFT), and interpolation is performed in the frequency domain by zero-padding and inverse transforming. Fourier interpolation is ideal for band-limited signals and preserves the frequency content, but it may introduce artifacts if the periodicity assumption is violated.
-
-```python
-scipy.interpolate.Akima1DInterpolator(
-    x: array_like,       # 1D array of x data
-    y: array_like        # 1D array of y data
-)
-```
-
-##### 4. Fourier Interpolation [`resample`]
-
-Assumes data is periodic and uses the Fourier series for reconstruction. Ideal for band-limited signals with uniform sampling, preserves frequency content.
-
-```python
-scipy.signal.resample(
-    x: array_like,           # Input 1D array (signal)
-    num: int,                # Number of samples in output
-    t: Optional[array_like] = None,   # Original time vector (optional)
-    axis: int = 0,
-    window: Union[str, tuple, array_like, callable] = None,
-    domain: str = 'time'     # 'time' or 'freq'
-)
-```
-
-##### 5. Sinc Interpolation
-
-**Sinc interpolation** is the theoretical ideal method for reconstructing a uniformly sampled, band-limited signal from its discrete samples. According to the Shannon sampling theorem, a continuous signal with no frequency components above the Nyquist frequency can be perfectly reconstructed from its samples using a sinc function as the interpolation kernel:
-$$
-x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - nT_s}{T_s}\right)
-$$
-where $T_s$ is the sampling interval, and $\mathrm{sinc}(x) = {\sin(\pi x)}/{\pi x}$.
-
-- **Perfect for band-limited, uniformly sampled signals** (theoretical limit).
-- **Preserves all frequency content up to the Nyquist frequency.**
-- The interpolation kernel is infinitely wide (non-local), so true sinc interpolation is not practically achievable (requires truncation or windowing).
-- In practice, *windowed sinc* or a finite sum is used.
-
-```python
-def sinc_interp(t_interp, sig, t):
-    dt = t[1] - t[0]
-    weight = np.sinc((t_interp[:, None] - t[None, :]) / dt)
-    return weight @ sig
-
-sinc_interp(t_interp, sig, t)
-```
+The **<u>*Hilbert transform*</u>** is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
 
 <p align = 'center'>
-<img src="Figure/figure_interpolation.png" width="100%"/>
+<img src="Figure/figure_hilbert.png" width="100%"/>
 </p>
-### Interpolation and the Frequency Domain
-
-**Interpolation in the time domain directly impacts the signal’s frequency content:**
-
-- **Nearest-neighbor** acts as a zero-order hold, introducing high-frequency artifacts near the edge.
-- **Linear** acts as a convolution with a triangle ($\mathrm{sinc^2}$ in frequency), attenuating high-frequency components.
-- **Spline/Polynomial** offers smoother spectra but can still introduce artifacts at sharp features.
-- **Sinc interpolation** and **Fourier interpolation** (i.e., zero-padding in the frequency domain) yield the most faithful reconstruction for band-limited signals.
-
-> **Tip:**
->  For spectral analysis, prefer linear, sinc, or Fourier interpolation for uniformly sampled, band-limited signals. Spline interpolation is suitable for smooth, low-noise signals, but beware of overshoot and frequency artifacts.
 
 
+
+```python
+signal_ht = scipy.signal.hilbert(signal)
+signal_ht.real, sighal_ht.imag, np.abs(signal_ht)
+# The real, imaginary part and the envelope
+```
 
 <div STYLE="page-break-after: always;"></div>
