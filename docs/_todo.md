@@ -3,4 +3,5 @@
 1. Add Dynamic Time Warping (DTW) and soft-dtw
 1. Add lag estimation by autocorrelation
 1. Add a case for discrete wavelet image compression
-1. 
+
+Lastly updated on 28th, Sep, 2025.
