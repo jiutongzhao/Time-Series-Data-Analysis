@@ -1,107 +1,196 @@
 ## Appendix
 
-## Weighted Summation
+# Weighted Summation
 
-In spectral analysis—whether it’s the <u>Fourier transform</u>, a digital <u>filter</u>, an interpolator, or a wavelet transform—the core operation is always a **weighted summation**. By designing appropriate weights, we amplify the information we care about and suppress what we don’t, allowing us to distill an N-point signal into concise, abstract, and generalizable features. As a result, nearly every outcome of spectral analysis exhibits additive properties—for example, the noise spectrum follows a chi-square distribution. 
+Whether it’s a <u>Fourier transform</u>, digital <u>filter</u>, interpolator, or wavelet transform, they all do the same thing: a **weighted summation** of the signal. Properly chosen weights (kernel / window / basis function) amplify the components we care about and suppress the rest, distilling an $N$-point sequence $x\in\mathbb{R}^N$ into **compact, generalizable** features.
 
-From another viewpoint, weighted summation is essentially a convolution; by the convolution theorem, it is equivalent to multiplication in the dual domain. This insight also suggests alternative ways to construct kernels in spectral analysis, such as the FBSP wavelet in the continuous wavelet transform, which is obtained via spectral-domain interpolation.
+### Unifying Essence: Weighted Inner Product
 
-When you are lost in the mathematical derivation, remember that the core operation is always a weighted summation. This perspective can help you understand the underlying principles and guide your implementation.
+Write any local/global operation as
+$$
+y[t] \;=\; \sum_{k} w_t[k]\; x[k] \;=\; \langle x,\; w_t\rangle,
+$$
+where $w_t$ varies with position/scale/frequency (a moving window, a scaled wavelet, a band filter, etc.). Under this definition, most spectral-analysis outcomes are **additive**: linear superposition in the input maps to linear superposition in the feature domain. For Gaussian white noise, many power estimators (e.g., the raw periodogram) follow a $\chi^2$ law (degrees of freedom depend on averaging/smoothing), providing the statistical basis for uncertainty and variance control.
 
-## NDArray Shaping
+### View 1: Convolution (Time-Domain Localization)
 
-When create the `numpy.ndarray`, arrange the dimension in the sequence of `Frequency -> Time -> Dimension(s) -> Channel(s)-> Others`. This arrangement is nothing but my personal preference. One of the reason is the STFT and wavelet package by default return the matrix in the order of `Frequency -> Time`.    In this convention, one should use `np.stack([a, b], axis = -1)` when combining two channels. 
+If $w_t[k]=h[t-k]$ depends on $t$ only by shift, we obtain **discrete convolution**
+$$
+y[t]=(h*x)[t]=\sum_k h[k]\,x[t-k].
+$$
 
-## Naming Convention
+- Examples
+  - FIR/IIR filtering: $h$ is the impulse response; FIR via direct convolution, IIR via recursion (an equivalent weighted accumulation).
+  - STFT: at each center $t$, weight by window $g$ and take inner products with complex exponentials.
+  - Interpolation: kernel interpolation (e.g., Lanczos, B-splines) is convolution/sample-and-hold with an interpolation kernel.
 
-Naming the variable with the format of `noun_adjective` like `spec_complex` for the complex spectral matrix.
+### View 2: Frequency-Domain Multiplication (Spectral Sculpting)
 
-Naming the function with the format of `verb_noun_adverb/adjective` like `smooth_spec_boxcar`. 
+By the convolution theorem, time-domain convolution equals frequency-domain pointwise multiplication:
+$$
+\mathcal{F}\{h*x\}(\omega)=H(\omega)\,X(\omega).
+$$
 
-A doc-string is always appreciated. One easy way to do that is to generate them through LLM-based chatbot like copilot and check/revise them.
+- Examples
+  - Frequency-domain filter design: specify $H(\omega)$ (pass/stop/transition bands), then invert to obtain $h$.
+  - CWT with FBSP (Fourier B-spline) kernels: construct smooth/compact $H(\omega)$ directly, then transform back.
 
-For more details, I suggest to use the naming conventions from *Google Python Style Guide*. In brief
+### View 3: Linear Projection (Geometry & Statistics)
 
-### 3.16 Naming
+Matrix form:
+$$
+y = W x,\qquad
+W=
+\begin{bmatrix}
+-\\ w_1^\top \\ -\\ \vdots \\ -\\ w_m^\top \\ -
+\end{bmatrix}.
+$$
+Each row $w_i$ is an **inner-product projection**. This links directly to **PCA**: PCA chooses eigenvectors of the data covariance as weights to maximize projected variance and minimize reconstruction error.
 
-`module_name`, `package_name`, `ClassName`, `method_name`, `ExceptionName`, `function_name`, `GLOBAL_CONSTANT_NAME`, `global_var_name`, `instance_var_name`, `function_parameter_name`, `local_var_name`, `query_proper_noun_for_thing`, `send_acronym_via_https`.
+- Examples
+  - Orthogonal bases (DFT/DCT/orthogonal wavelets): $W$ is orthogonal/unitary, conserving energy (Parseval).
+  - Overcomplete dictionaries & sparse coding (STFT, redundant wavelets, curvelets): select a few “active” weights via regularization.
+  - Least squares/Ridge: penalization controls variance/bias of weights in noise.
 
-Names should be descriptive. This includes functions, classes, variables, attributes, files and any other type of named entities.
+### Three “Chisels” for Designing Weights
 
-Avoid abbreviation. In particular, do not use abbreviations that are ambiguous or unfamiliar to readers outside your project, and do not abbreviate by deleting letters within a word.
+1. **Target selectivity**: emphasize desired time–frequency/scale/direction regions; suppress others.
+2. **Constraints & regularization**: smoothness, compact support, zero mean, minimum phase, MMSE, sparsity, etc.
+3. **Statistical robustness**: control variance (averaging/multitaper/multiscale aggregation) and correct bias (window compensation, gain calibration).
 
-Always use a `.py` filename extension. Never use dashes.
+### Common Pitfalls & Remedies
+
+- **Spectral leakage/side-lobe artifacts** → choose appropriate windows; redesign $H(\omega)$ in frequency domain if needed.
+- **Boundary effects** → make extension strategy explicit and flag “valid region” in plots.
+- **Phase distortion** → for linear phase use symmetric FIR; for zero-phase use `filtfilt` (mind edge handling/stability).
+- **DOF mismatch** → when reporting noise spectra and confidence intervals, state how smoothing/averaging changed the DOF.
+
+### Things to Remember
+
+- Everything is $\langle x, w\rangle$: locally it’s **convolution**; in frequency it’s **multiplication**; in linear algebra it’s **projection**.
+- Efficiency follows structure: shift-invariance ⇒ convolution; FFT ⇒ $O(N\log N)$; orthogonal bases ⇒ fast transforms (FFT/DWT/DCT).
+- Statistics are baked in: weights set the bias–variance trade-off; $\chi^2$ approximations give uncertainty; aggregation (averaging/multitaper) boosts robustness.
+
+Here’s a tighter, no-fluff version you can drop in.
+
+# NDArray Shaping
+
+shape spectral data as
+$$
+ (Frequency,, Time,, Dimension,, Channel,, \dots) ;=; (F, T, D, C, \dots)
+$$
+Rationale: matches many STFT/CWT APIs `(F, T)`, simplifies plotting and reductions, keeps channels/metadata at the tail.
+
+**Combine channels**
+
+```python
+y = np.stack([ch1, ch2], axis=-1)  # (..., C=2)
+```
+
+**Common ops**
+
+```python
+avg_over_time = S.mean(axis=1)           # (F, D, C, ...)  average over time
+band_mean     = S[f0:f1].mean(axis=0)    # (T, D, C, ...)  bandded mean
+mag_over_D    = np.linalg.norm(S, axis=2)# (F, T, C, ...), magnetude over dimension
+S_cal = S * g[np.newaxis,np.newaxis,np.newaxis,:]  # g: (C,)
+```
+
+**Convert layouts**
+
+```python
+# libs expecting time-last
+x_tlast = np.moveaxis(x, 1, -1)      # (F,T,...) -> (F,...,T)
+x_back  = np.moveaxis(x_tlast, -1, 1)
+
+x_nchw = np.expand_dims(np.moveaxis(x, -1, 0), 0)
+```
+
+**Performance & hygiene**
+
+```python
+S = np.ascontiguousarray(S)   # after transpose/moveaxis
+S_F = np.asfortranarray(S)    # if a Fortran-ordered lib needs it
+```
 
 
 
+Here’s a crisper, better-organized version you can drop in.
 
+# Naming Convention (Compact)
 
-#### 3.16.1 Names to Avoid
+**Local conventions**
 
-- single character names, except for specifically allowed cases:
+- **Variables:** `noun_adjective`, e.g., `spec_complex` (complex spectrogram), `trace_clean`.
+- **Functions:** `verb_noun[_adverb|_adjective]`, e.g., `smooth_spec_boxcar`, `estimate_bandpower_fast`.
+- **Docstrings:** always include one. Generate a first draft with an LLM (e.g., Copilot) and revise for accuracy.
 
-  - counters or iterators (e.g. `i`, `j`, `k`, `v`, et al.)
-  - `e` as an exception identifier in `try/except` statements.
-  - `f` as a file handle in `with` statements
-  - private [type variables](https://google.github.io/styleguide/pyguide.html#typing-type-var) with no constraints (e.g. `_T = TypeVar("_T")`, `_P = ParamSpec("_P")`)
-  - names that match established notation in a reference paper or algorithm (see [Mathematical Notation](https://google.github.io/styleguide/pyguide.html#math-notation))
+**Follow Google Python Style Guide (brief)**
 
-  Please be mindful not to abuse single-character naming. Generally speaking, descriptiveness should be proportional to the name’s scope of visibility. For example, `i` might be a fine name for 5-line code block but within multiple nested scopes, it is likely too vague.
+- Use: `module_name`, `package_name`, `ClassName`, `method_name`, `ExceptionName`,
+   `function_name`, `GLOBAL_CONSTANT_NAME`, `global_var_name`, `instance_var_name`,
+   `function_parameter_name`, `local_var_name`, `query_proper_noun_for_thing`, `send_acronym_via_https`.
+- Names must be **descriptive**. Avoid ambiguous abbreviations and dropped-letter shortenings.
+- Python files must end with `.py`; never use dashes in filenames.
 
-- dashes (`-`) in any package/module name
+### Names to avoid
 
-- `__double_leading_and_trailing_underscore__` names (reserved by Python)
+- Single letters (except standard cases: `i/j/k` loop counters, `e` in `except`, `f` file handle, private type vars like `_T`, or symbols matching a referenced paper’s notation).
+- `__double_leading_and_trailing__` (reserved).
+- Offensive terms.
+- Redundant type suffixes (e.g., `id_to_name_dict` → `id_to_name`).
 
-- offensive terms
+### Conventions & visibility
 
-- names that needlessly include the type of the variable (for example: `id_to_name_dict`)
+- “Internal” = module-internal or protected/private in a class.
+- Prefer single underscore `_name` for protected members; avoid `__dunder` privacy (name-mangling hurts readability/testing).
+- Group related classes and top-level functions in the same module.
+- Class names use `CapWords`; module files use `lower_with_under.py`.
+- **Unit tests:** PEP 8 names, e.g., `test_<method_under_test>_<state>` (underscore segments allowed after `test`).
 
+### File naming
 
+- `.py` extension, no dashes. If you need an executable without the extension, use a symlink or tiny shell wrapper.
 
-#### 3.16.2 Naming Conventions
+### Quick reference (public vs. internal)
 
-- “Internal” means internal to a module, or protected or private within a class.
-- Prepending a single underscore (`_`) has some support for protecting module variables and functions (linters will flag protected member access). Note that it is okay for unit tests to access protected constants from the modules under test.
-- Prepending a double underscore (`__` aka “dunder”) to an instance variable or method effectively makes the variable or method private to its class (using name mangling); we discourage its use as it impacts readability and testability, and isn’t *really* private. Prefer a single underscore.
-- Place related classes and top-level functions together in a module. Unlike Java, there is no need to limit yourself to one class per module.
-- Use CapWords for class names, but lower_with_under.py for module names. Although there are some old modules named CapWords.py, this is now discouraged because it’s confusing when the module happens to be named after a class. (“wait – did I write `import StringIO` or `from StringIO import StringIO`?”)
-- New *unit test* files follow PEP 8 compliant lower_with_under method names, for example, `test_<method_under_test>_<state>`. For consistency(*) with legacy modules that follow CapWords function names, underscores may appear in method names starting with `test` to separate logical components of the name. One possible pattern is `test<MethodUnderTest>_<state>`.
+| Type                   | Public               | Internal              |
+| ---------------------- | -------------------- | --------------------- |
+| Packages/Modules       | `lower_with_under`   | `_lower_with_under`   |
+| Classes/Exceptions     | `CapWords`           | `_CapWords`           |
+| Functions/Methods      | `lower_with_under()` | `_lower_with_under()` |
+| Constants (global/cls) | `CAPS_WITH_UNDER`    | `_CAPS_WITH_UNDER`    |
+| Variables              | `lower_with_under`   | `_lower_with_under`   |
+| Params/Locals          | `lower_with_under`   | —                     |
 
+### Mathematical notation (when it truly helps)
 
+- Short symbols are fine if they match a cited paper/algorithm.
+- Document the source of the notation (link in comment/docstring).
+- For public APIs, prefer descriptive `pep8_names`.
+- Silence lints narrowly: `# pylint: disable=invalid-name` (end-line for a few vars, or at block start for many).
 
-#### 3.16.3 File Naming
+### Minimal docstring template
 
-Python filenames must have a `.py` extension and must not contain dashes (`-`). This allows them to be imported and unittested. If you want an executable to be accessible without the extension, use a symbolic link or a simple bash wrapper containing `exec "$0.py" "$@"`.
+```python
+def smooth_spec_boxcar(spec_complex: np.ndarray, width: int) -> np.ndarray:
+    """
+    Smooth a complex spectrogram with a centered boxcar along the frequency axis.
 
+    Args:
+        spec_complex: Array shaped (..., F, T, C, ...) or (F, T, ...); complex-valued.
+        width: Positive odd window length in frequency bins.
 
+    Returns:
+        Smoothed spectrogram with the same shape and dtype as input.
 
+    Raises:
+        ValueError: If width < 1 or even.
+    """
+    ...
+```
 
-
-#### 3.16.4 Guidelines derived from [Guido](https://en.wikipedia.org/wiki/Guido_van_Rossum)’s Recommendations
-
-| Type                       | Public               | Internal                          |
-| -------------------------- | -------------------- | --------------------------------- |
-| Packages                   | `lower_with_under`   |                                   |
-| Modules                    | `lower_with_under`   | `_lower_with_under`               |
-| Classes                    | `CapWords`           | `_CapWords`                       |
-| Exceptions                 | `CapWords`           |                                   |
-| Functions                  | `lower_with_under()` | `_lower_with_under()`             |
-| Global/Class Constants     | `CAPS_WITH_UNDER`    | `_CAPS_WITH_UNDER`                |
-| Global/Class Variables     | `lower_with_under`   | `_lower_with_under`               |
-| Instance Variables         | `lower_with_under`   | `_lower_with_under` (protected)   |
-| Method Names               | `lower_with_under()` | `_lower_with_under()` (protected) |
-| Function/Method Parameters | `lower_with_under`   |                                   |
-| Local Variables            | `lower_with_under`   |                                   |
-
-#### 3.16.5 Mathematical Notation
-
-For mathematically-heavy code, short variable names that would otherwise violate the style guide are preferred when they match established notation in a reference paper or algorithm.
-
-When using names based on established notation:
-
-1. Cite the source of all naming conventions, preferably with a hyperlink to academic resource itself, in a comment or docstring. If the source is not accessible, clearly document the naming conventions.
-2. Prefer PEP8-compliant `descriptive_names` for public APIs, which are much more likely to be encountered out of context.
-3. Use a narrowly-scoped `pylint: disable=invalid-name` directive to silence warnings. For just a few variables, use the directive as an endline comment for each one; for more, apply the directive at the beginning of a block.
+**TL;DR:** Be descriptive, use `lower_with_under` for functions/vars, `CapWords` for classes, constants in `CAPS_WITH_UNDER`, keep internals prefixed with `_`, and always include a docstring.
 
 ### Jargon Sheet
 
