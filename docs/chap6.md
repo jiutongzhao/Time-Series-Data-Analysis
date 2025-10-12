@@ -161,6 +161,8 @@ The effect of a digital filter can be fully characterized by its **<u>*frequency
 <p align = 'center'>
 <img src="Figure/figure_filters_response.png" width="100%"/>
 </p>
+
+
 ### Artifacts from Over-narrow Filters
 
 **It is not suggested to apply a filter with an over-narrow bandwidth unless you are already confident about the central frequency and waveform of the signal.** Like, if you apply a 5-Butterworth 6-10 Hz bandpass filter to a **pure white noise**, you are going to get a filtered signal that looks like a sine wave with a frequency around 8 Hz. Thus, you are introducing artificial waves into the signal.
