@@ -36,13 +36,15 @@ $$
 
 and the yielding frequency is also discrete with a frequency interval of $\delta f = 1/(N\cdot\delta t)$, where $N$ is the total number of samples. The multiplier $k$ is an integer ranging from $0$ to $N-1$. But, **$X[k]$ provide no additional information beyond $k=N/2$** for a real-valued signal, as it is **symmetric about** $k=N/2$, as a manifestation of the Nyquist-Shannon sampling theorem.
 
+### DFT for a sinusoidal signal
+
 For a pure sinusoidal signal $x(t)=A\cdot \mathrm{sin}(2\pi f_0 t + \phi)$, the DFT result will be two spikes at $f_0$ and $-f_0$ (or equivalently at $N-f_0$) with a complex amplitude of $AN/2 \cdot e^{i\phi}$ and $AN/2 \cdot e^{-i\phi}$, respectively. The amplitude spectrum can be calculated as $|X[k]|/N$ and the phase spectrum can be calculated as $\mathrm{arg}(X[k])$.
 
 In many lecture notes (especially in the mathematics course), the sample period $\delta t$ is set to unity so that the formulas can be simplified. So, remember that all the related quantities are not in **<u>*SI (Système International d'Unités)*</u>** in that case. But in practical usage of spectral analysis, **the unit here always matters**. Specially, the unit information will be lost in the programming processing, which can be kept in mind in theoretical derivation. For this reason, we will try to keep all the units in this document. You can also ignore it during the processing but remember to add it back when you output the results. [Dimensional analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) can be useful for getting and checking the correct final unitof the results. 
 
 Ideally, according to the periodicity of $e^{-2\pi i ft}$, the DFT actually calculates the DTFT coefficients by extending the original series along and anti-along the time axis.
 
-## Double-side ***versus*** Single-side 
+### Double-side ***versus*** Single-side 
 
 In frequency analysis using the *DFT*, or its practical implementation **<u>*Fast Fourier Transform (FFT)*</u>**, the spectrum can be represented in two main formats: **double-sided** and **single-sided**, depending on the properties of the input signal and the goal of the analysis.
 

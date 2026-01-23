@@ -1,4 +1,4 @@
-# Data Initialization
+# <center> Data Initialization
 
 ## Sampling
 
@@ -12,19 +12,27 @@ f_s > 2f_{max}
 $$
 > The value $f_s/2$ is known as the **<u>*Nyquist Frequency*</u>**, and it represents the highest frequency that can be captured without aliasing.
 
-All the data that await analysis are yield from ***<u>sampling</u>***, no matter it originates from the real-world observation or a simulation program. When you measure a high frequency signal with a low cadence instrument, you will not only miss the high frequency component, **<u>but also measure an erroneous signal</u>**, so called ***<u>[Aliasing](https://en.wikipedia.org/wiki/Aliasing)</u>***. 
+### Aliasing
+
+All the data that await analysis are yield from ***<u>sampling</u>***, no matter it originates from the real-world observation or a simulation program. When one measure a high frequency signal with a low cadence instrument, one will not only miss the high frequency component, **<u>but also measure a signal that may lead misunderstanding</u>**, so called ***<u>[Aliasing](https://en.wikipedia.org/wiki/Aliasing)</u>***. 
 
 <p align = 'center'><img src="Figure/figure_aliasing.png" width="100%"/></p><p align = 'center'>
     <i>Aliasing effcet in a virtual signal sampling.</i>
 </p>
 
+
+**With an insufficient sampling rate, the measurement cannot faithfully capture the signal’s waveform.** In the example above, sampling a 10 Hz sine wave at 9 Hz produces an apparent 1 Hz oscillation (aliasing): because the sampling frequency is 1 Hz lower than the true signal frequency, successive samples advance through the wave’s phase by only a small amount each time, so it takes about one second for the samples to span an entire cycle from trough to peak and back. 
+
 Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel. Particularly, the aliasing effect in image downsampling is called ***<u>[Moiré Pattern](https://en.wikipedia.org/wiki/Moir%C3%A9_pattern)</u>***.
 
-<p align = 'center'><img src="Figure/figure_moire_pattern.png" width="45%"/> <img src="Figure/figure_helicopter.gif" width="38%"/></p>
+<p align = 'center'><img src="Figure/figure_moire_pattern.png" width="100%"/> <img src="Figure/figure_helicopter.gif" width="100%"/></p>
 <p align = 'center'><i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i><p>
 
+### Reconstruction
 
-<u>**Even a sampling frequency of two times of the wave frequency can not guarantee fully "capturing" the waveform by naked eye.**</u> This fact is even true for pure sine waves. Like when you sample a 50 Hz sinusoidal waves with a 101 Hz sampling frequency, you will still see something like a wave packet, which shows the amplitude modulation. This fact actually signify the **<u>difference between "visualization" and "reconstruction"</u>**. When visualizing the signal, one may not only plot the sampled points, but also connect them with lines. However, such connections can only be made assuming that the signal between two sampled points is linear, which is not true for sinusoidal waves. Therefore, the visualization can be misleading. Human senses actually automatically make such assumptions and interpretations, which is why aliasing can be so deceptive.
+<u>**Even a sampling frequency of two times of the wave frequency can not guarantee fully "capturing" the waveform by naked eye.**</u> This fact is even true for pure sine waves. Like when you sample a 50 Hz sinusoidal waves with a 101 Hz sampling frequency, you will still see something like a wave packet, which shows the amplitude modulation. 
+
+This fact actually signify the **<u>difference between "visualization" and "reconstruction"</u>**. When visualizing the signal, one may not only plot the sampled points, but also connect them with lines. However, such connections can only be made assuming that the signal between two sampled points is linear, which is not true for sinusoidal waves. Therefore, the visualization can be misleading. Human senses actually automatically make such assumptions and interpretations, which is why aliasing can be so deceptive.
 
 However, when reconstructing [see Chapter 6/Reconstruction and Interpolation](chap6.md#reconstruction-and-interpolation) the signal, one can use the **<u>[Whittaker–Shannon interpolation formula (a.k.a sinc interpolation)](https://en.wikipedia.org/wiki/Whittaker%E2%80%93Shannon_interpolation_formula)</u>** to perfectly reconstruct the original signal from its samples, provided that the sampling frequency is greater than twice the maximum frequency of the signal. This reconstruction is mathematically guaranteed and does not rely on any assumptions about the signal between sampled points.
 
@@ -33,8 +41,11 @@ However, when reconstructing [see Chapter 6/Reconstruction and Interpolation](ch
 </p><p align = 'center'>
     <i>A sampling frequency (128 Hz) that slightly higher than the Nyquist frequency (2 × 62.4=124.8 Hz). The sampled signal is shown as a wave packet.</i>
 </p>
+Ideally, you can perfectly reconstruct the complete signal when you got a **<u>long enough samples</u>** when the sampling frequency is slightly higher than the Nyquist frequency. However, **<u>every realistic sample has a finite length</u>**. Thus, reconstruction is still imperfect especially when the sample length is not far longer than the wave period, as shown by the above cases near the edges. The principle behind this (i.e., finite-length rectangular window) will be introduced in [Chapter 2/Windowing Effect](chap2.md#windowing-effect) of this document. 
 
-Ideally, you can perfectly reconstruct the complete signal when you got a **<u>long enough samples</u>** when the sampling frequency is slightly higher than the Nyquist frequency. However, **<u>every realistic sample has a finite length</u>**. Thus, reconstruction is still imperfect especially when the sample length is not far longer than the wave period, as shown by the above cases near the edges. The principle behind this (i.e., finite-length rectangular window) will be introduced in [Chapter 2/Windowing Effect](chap2.md#windowing-effect) of this document. In terms of experience, the higher sampling frequency you have, the shorter sample length is required. 
+In terms of experience, the higher sampling frequency you have, the shorter sample length is required. 
+
+### Anti-Aliasing
 
 Aliasing effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter (so called, ***<u>anti-aliasing filter</u>***) so that the high frequency component doesn't contribute to the unreal signal. This technique and its python implementation, `scipy.signal.decimate`, will be introduced in [Chapter 5](chap5.md). In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
@@ -45,7 +56,17 @@ Aliasing effect always happens when you (down-)sampling the signal, a common way
 </p>
 
 
-In brief, **this section tells you the basic requirements of data sampling for a given task**.
+### Sampling Method
+
+After get your data, you should know that **what does each timestamps represent?** Is it accurately the time you get the **instantaneous sample** or the **middle point** of the whole **sampling period**?
+
+<p align = 'center'>
+<img src="Figure/figure_sampling_methods.png" width="100%"/>
+</p>
+Real instruments always integrate over a finite dwell time, so truly instantaneous samples do not exist. If that dwell time is much shorter than the sampling interval—or shorter than the timescales of interest—the measurement can be **approximated as instantaneous**. Otherwise, the averaging acts like a low-pass filter, providing some built-in anti-aliasing.
+
+For artificial signals you can choose either approach, **but be mindful of which one you are using when comparing simulations with real observations**.
+
 
 ## Read Signals From Data
 
@@ -226,16 +247,5 @@ There are several packages in Python for managing timestamps, and the choice dep
     datetime_array_to_pd = [pd.Timestamp(dt) for dt in datetime_array]
     ```
     
-
-## Sampling Method
-
-After get your data, you should know that **what does each timestamps represent?** Is it accurately the time you get the **instantaneous sample** or the **middle point** of the whole **sampling period**?
-
-<p align = 'center'>
-<img src="Figure/figure_sampling_methods.png" width="100%"/>
-</p>
-Real instruments always integrate over a finite dwell time, so truly instantaneous samples do not exist. If that dwell time is much shorter than the sampling interval—or shorter than the timescales of interest—the measurement can be **approximated as instantaneous**. Otherwise, the averaging acts like a low-pass filter, providing some built-in anti-aliasing.
-
-For artificial signals you can choose either approach, **but be mindful of which one you are using when comparing simulations with real observations**.
 
 <div STYLE="page-break-after: always;"></div>

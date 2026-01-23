@@ -797,7 +797,7 @@ pre[data-lang] {
 
 	.markdown-section .table-wrapper td::before {
 		display: inline-block;
-		float: right;
+		float: center;
 		width: 8em;
 		margin-left: -8em;
 		font-weight: bold;

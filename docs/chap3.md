@@ -132,6 +132,10 @@ This is known as the **<u>*[Wiener–Khinchin theorem](https://en.wikipedia.org/
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. This relationship is particularly useful because it allows us to compute the power spectral density from time-domain data by first calculating the autocorrelation function and then applying the Fourier transform. This approach is often more robust, especially for signals that may be noisy or have missing data.
 
+## Two-dimensional Angular Power Spectrum
+
+
+
 
 ## What If the Signal Is Not Stationary? [`scipy.signal.detrend`]
 
