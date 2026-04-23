@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "177d7091bea5c267",
+        "id": "ec296313b6917b19",
         "type": "tabs",
         "children": [
           {
-            "id": "e082a3103a25dfa5",
+            "id": "60ab6defc980827d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/chap6.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "chap6"
+              "title": "New tab"
             }
           }
         ]
@@ -166,22 +162,56 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "gemini-scribe:Gemini Scribe: Agent Mode": false
+      "gemini-scribe:Gemini Scribe: Agent Mode": false,
+      "copilot:Open Copilot Chat": false
     }
   },
-  "active": "e082a3103a25dfa5",
+  "active": "60ab6defc980827d",
   "lastOpenFiles": [
+    "utils/__pycache__/signal.cpython-313.pyc",
+    "utils/__pycache__/resample.cpython-313.pyc",
+    "utils/wavelet.py",
+    "utils/utils.py",
+    "utils/spectrum.py",
+    "utils/smooth.py",
+    "utils/signal.py",
+    "utils/resample.py",
+    "utils/data.py",
+    "utils/__pycache__",
+    "utils",
+    "heat_diffusion_comparison.gif",
+    "ffmpeg_example.gif",
+    "docs/_todo.md",
+    "docs/Figure/unit_pulse.gif",
+    "docs/Figure/leena.png",
+    "docs/Figure/heat_diffusion.gif",
+    "docs/Figure/figure_wk_theorem.png",
+    "docs/Figure/figure_upper_c_spectrum.png",
+    "docs/Figure/figure_sunspot_direct_psd.png",
+    "docs/Figure/figure_sig_coef_square.png",
+    "docs/Figure/figure_sig_coef_sine.png",
+    "Untitled 1.canvas",
+    "docs/chap6.md",
+    "copilot/copilot-custom-prompts/Clip Web Page.md",
+    "copilot/copilot-custom-prompts/Clip YouTube Transcript.md",
+    "copilot/copilot-custom-prompts/Rewrite as tweet thread.md",
+    "copilot/copilot-custom-prompts/Rewrite as tweet.md",
+    "copilot/copilot-custom-prompts/Remove URLs.md",
+    "copilot/copilot-custom-prompts/Generate glossary.md",
+    "copilot/copilot-custom-prompts/Generate table of contents.md",
+    "copilot/copilot-custom-prompts/Make longer.md",
+    "copilot/copilot-custom-prompts/Make shorter.md",
+    "copilot/copilot-custom-prompts/Emojify.md",
+    "copilot/copilot-custom-prompts/Explain like I am 5.md",
+    "copilot/copilot-custom-prompts/Simplify.md",
+    "copilot/copilot-custom-prompts/Summarize.md",
+    "copilot/copilot-custom-prompts/Translate to Chinese.md",
+    "copilot/copilot-custom-prompts/Fix grammar and spelling.md",
     "docs/chap2.md",
     "docs/chap1.md",
     "Untitled.canvas",
     "gemini-scribe/Prompts/example-expert.md",
-    "gemini-scribe/Prompts",
-    "gemini-scribe",
     "practical_spectral_analysis_in_plasma_physics.md",
-    "practical_spectral_analysis_in_plasma_physics.pdf",
-    "README.pdf",
-    "README.md",
-    "README_watermark.pdf",
-    "table_of_distributions.pdf"
+    "README.md"
   ]
 }
