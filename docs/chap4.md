@@ -52,28 +52,6 @@ Despite increasing the number of harmonics, the overshoot becomes narrower but r
 $$
 \frac{1}{\pi}\int_0^\pi \frac{\mathrm{sin} u}{u} \mathrm{d}u \approx 0.08949\ldots
 $$
-## [Convolution Theorem](https://en.wikipedia.org/wiki/Convolution_theorem)
-
->  In Fourier analysis, the **Convolution Theorem** says that convolving two signals in time becomes multiplying their spectra:
-$$
-\mathcal{F}\{\,x(t)*y(t)\,\}=X(f)\cdot Y(f),
-\qquad
-\mathcal{F}^{-1}\{X(f)*Y(f)\}=x(t)\cdot y(t),
-$$
-> with the definition of convolution operator ($*$):
-$$
-(x*y)(t)=\int_{-\infty}^{\infty}x(\tau)\,y(t-\tau)\,d\tau
-$$
-
-
-The convolution theorem states how operations performed on a signal in the time domain or in the frequency domain will affect that signal in its dual domain. 
-
-We now understand that windowing (**time-domain multiplication**) actually broadens and shapes the spectrum (**frequency-domain convolution**) exactly as predicted by the convolution theorem.
-
-Unlike the continuous version, the discrete convolution theorem inherently links point-wise multiplication in the DFT domain to **circular (convolution-mod-N)** in the time domain—so to obtain ordinary linear convolution you must first zero-pad the sequences beyond their combined length.
-
-According to the convolution theorem, performing convolution via the *FFT* cuts the computational cost from $O(N^{2})$ to $O\bigl(N\log N\bigr)$.
-
 ## More Practical Properties
 
 A super powerful property of Fourier transform is that:
@@ -123,6 +101,49 @@ The following table summarizes some common properties of the Continuous-Time Fou
 | Parseval's Theorem         | $\int |x(t)|^2\,dt = \int |X(f)|^2\,df$                | $\sum |x[n]|^2 = \frac{1}{N} \sum |X[k]|^2$                  |
 | Spectral Periodicity       | $X(f)$ not periodic                                    | $X[k]$ is periodic with period $N$                           |
 | Periodic Input Duality     | Periodic $x(t) \Rightarrow$ discrete $X(f)$            | Periodic $x[n] \Rightarrow$ sparse $X[k]$                    |
+
+## Application: Solve Differential Equations with FFT
+
+As the physics field, e.g., temperature field, electromagnetic field, has finite energy and therefore can be decomposed by Fourier transform. Mathematicians surprisingly find that the physics law these field follows can be largely simplified in its Fourier space. For example, the thermal diffusion equation written as
+$$
+\frac{\mathrm{d}T(\mathbf{r},t)}{\mathrm{d}t}=\alpha\nabla^2T(\mathbf{r},t) \\ \frac{\mathrm{d}\hat{T}(\mathbf{k},t)}{\mathrm{d}t} = -\alpha k^2\hat{T}(\mathbf{k},t)
+$$
+ The transformed differential equation has a very apparent solution:
+$$
+\hat{T}(\mathbf{k},t)=\hat{T}(\mathbf{k},0)\cdot\exp(-\alpha k^2t)
+$$
+and the solution of the thermal diffusion problem can be given by the inverse Fourier transform of $\hat{T}(\mathbf{k},t)$.
+
+<p align = 'center'>
+<img src="Figure/heat_diffusion.gif" width="100%"/>
+</p>
+Another application is solving the Maxwell's equation in the vaccum:
+$$
+\frac{\partial \mathbf{E}}{\partial t}=\frac{1}{c^2}\nabla\times \mathbf{B} + \mu_0\mathbf{J}\\
+\frac{\partial \mathbf{B}}{\partial t}=-\nabla\times \mathbf{E}
+$$
+Accordingly, these equations in the Fourier space are:
+$$
+\frac{\partial \mathbf{\hat{E}}}{\partial t}=\frac{1}{c^2}i\mathbf{k}\times \mathbf{\hat{B}} + \mu_0\mathbf{\hat{J}}\\
+\frac{\partial \mathbf{\hat{B}}}{\partial t}=-i\mathbf{k}\times \mathbf{\hat{E}}
+$$
+These equations does not have a general analytic solution but can still be solved numerically through finite-difference method in the time domain.
+$$
+\mathbf{\hat{E}}^{n+1}=\mathbf{\hat{E}}^{n}+\Delta t \cdot \frac{1}{c^2}i\mathbf{k}\times\mathbf{\hat{B}}^{n+1/2}\\
+\mathbf{\hat{B}}^{n+3/2}=\mathbf{\hat{B}}^{n+1/2}-\Delta t \cdot i\mathbf{k}\times\mathbf{\hat{E}}^{n+1}\\
+$$
+This kind of algorithm take the Fourier decomposition in the position space but keep using 
+$$
+\mathbf{\hat{E}}^{n+1}=\mathbf{\hat{E}}^{n}+\Delta t \cdot \frac{1}{c^2}i\mathbf{k}\times\mathbf{\hat{B}}^{n+1/2}\\
+\mathbf{\hat{B}}^{n+3/2}=\mathbf{\hat{B}}^{n+1/2}-\Delta t \cdot i\mathbf{k}\times\mathbf{\hat{E}}^{n+1}\\
+$$
+
+
+
+<p align = 'center'>
+<img src="Figure/unit_pulse.gif" width="100%"/>
+</p>
+However, the Fourier method intrinsically assume a periodic boundary condition of the solution and limit its own applicable situations. More importantly, the Fourier transform takes the whole information from the global area of interest and therefore become parallelization-difficult. This defect becomes even more fatal as the advances in parallelized, GPU-based computation. 
 
 ## FFT Algorithm Performance
 

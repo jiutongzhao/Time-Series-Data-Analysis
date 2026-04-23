@@ -23,9 +23,11 @@ All the data that await analysis are yield from ***<u>sampling</u>***, no matter
 
 **With an insufficient sampling rate, the measurement cannot faithfully capture the signal’s waveform.** In the example above, sampling a 10 Hz sine wave at 9 Hz produces an apparent 1 Hz oscillation (aliasing): because the sampling frequency is 1 Hz lower than the true signal frequency, successive samples advance through the wave’s phase by only a small amount each time, so it takes about one second for the samples to span an entire cycle from trough to peak and back. 
 
+<p align = 'center'><img src="Figure/figure_moire_pattern.png" width="100%"/> </p>
 Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to $f_s/2$ and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel. Particularly, the aliasing effect in image downsampling is called ***<u>[Moiré Pattern](https://en.wikipedia.org/wiki/Moir%C3%A9_pattern)</u>***.
 
-<p align = 'center'><img src="Figure/figure_moire_pattern.png" width="100%"/> <img src="Figure/figure_helicopter.gif" width="100%"/></p>
+<p align = 'center'><img src="Figure/figure_helicopter.gif" width="100%"/></p>
+
 <p align = 'center'><i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i><p>
 
 ### Reconstruction
@@ -45,7 +47,7 @@ Ideally, you can perfectly reconstruct the complete signal when you got a **<u>l
 
 In terms of experience, the higher sampling frequency you have, the shorter sample length is required. 
 
-### Anti-Aliasing
+### Application: Anti-Aliasing Filter
 
 Aliasing effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter (so called, ***<u>anti-aliasing filter</u>***) so that the high frequency component doesn't contribute to the unreal signal. This technique and its python implementation, `scipy.signal.decimate`, will be introduced in [Chapter 5](chap5.md). In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.
 
@@ -55,6 +57,18 @@ Aliasing effect always happens when you (down-)sampling the signal, a common way
     <i>An example circuit diagram of anti-aliasing filter.</i>
 </p>
 
+
+### Application: Nyquist Folding Receiver
+
+<p align = 'center'>
+<img src="Figure/figure_aliasing_folding.png" width="100%"/>
+</p>
+
+
+
+<p align = 'center'>
+<img src="Figure/figure_nyquist_zone.png" width="100%"/>
+</p>
 
 ### Sampling Method
 

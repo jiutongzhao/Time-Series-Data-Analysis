@@ -135,25 +135,37 @@ Besides these two methods, one can also get colored noise by filtering white noi
 
 Apart from the completely randomness, many real-world disturbances carry just a hint of “inertia”: the next value mostly echoes the present one, plus a fresh random jolt. Such behavior is well captured by a first-order **<u>*autoregressive model*</u>**:
 $$
-x[n+1]=\alpha x[n] + \mathcal{N}(0,1)
+x[n]=\varphi x[n-1] + \mathcal{N}(0,1)
 $$
-whose single coefficient $\alpha$ sets the memory length. When $\alpha=0$ the series is white noise; as $\alpha\to1^{-}$ it approaches an integrated (Brownian) path with power piling up at low frequencies. 
+whose single coefficient $\varphi$ sets the memory length. When $\varphi=0$ the series is white noise; as $\varphi\to1^{-}$ it approaches an integrated (Brownian) path with power piling up at low frequencies. 
 
 <p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
 <p align = 'center'><i> AR1 Time series with different AR1 coefficient (alpha = 0.10, 0.90, and 0.99).</i></p>
 
 The spectrum makes this clear:
 $$
-\mathbb{E}[PSD(f)]=\frac{\sigma^2(1-\alpha^2)}{1+\alpha^2-2\alpha \mathrm{cos}(2\pi f/f_s)}
+\mathbb{E}[PSD(f)]=\frac{\sigma^2(1-\varphi^2)}{1+\varphi^2-2\varphi \mathrm{cos}(2\pi f/f_s)}
 $$
 
-which is flat for $\alpha=0$ and climbs like $1/f^{2}$ near $f=0$ for $\alpha\approx1$. Thus AR1 offers the simplest realistic noise model—white at one extreme, red at the other—while remaining easy to simulate and fit.
+which is flat for $\varphi=0$ and climbs like $1/f^{2}$ near $f=0$ for $\varphi\approx1$. Thus AR1 offers the simplest realistic noise model—white at one extreme, red at the other—while remaining easy to simulate and fit.
 
-The $$\alpha$$ parameter can be estimated by the lag-1 autocorrelation of the time series. 
+The $$\varphi$$ parameter can be estimated by the lag-1 autocorrelation of the time series. 
 $$
-\alpha = \frac{\sum_{n=0}^{N-2}(x[n]-\bar{x})(x[n+1]-\bar{x})}{\sum_{n=0}^{N-1}(x[n]-\bar{x})^2}
+\varphi = \frac{\sum_{n=0}^{N-2}(x[n]-\bar{x})(x[n+1]-\bar{x})}{\sum_{n=0}^{N-1}(x[n]-\bar{x})^2}
 $$
-Higher-order AR models can capture more complex correlations, but require more data to fit reliably.
+The AR model is naturally linked to the high-order dynamic system: For example, a second order ordinary differential equation can be discretized as:
+$$
+\frac{\mathrm{d}^2x}{\mathrm{d}t^2}=kx\to \frac{x[n]-2x[n-1]+x[n-2]}{\Delta t^2}=kx[n-1]
+$$
+The right-hand side can be re-arranged as
+$$
+x[n]=(2+k\Delta t^2)x[n-1]-x[n-2]
+$$
+
+$$
+x[n]=\varphi_1 x[n-1]+\varphi_2 x[n-2]+\mathcal{N}(0,1)
+$$
+
 
 ## Null Hypothesis In the Signal Interpretation
 

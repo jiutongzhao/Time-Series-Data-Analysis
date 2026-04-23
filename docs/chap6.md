@@ -40,6 +40,14 @@ sinc_interp(t_interp, sig, t)
 
 There is no a universal best interpolation method. The choice depends on the specific application, data characteristics, and computational constraints. For example, if you need a quick and dirty upsampling for visualization, linear interpolation might suffice. If you are reconstructing a smooth physical signal from noisy measurements, cubic splines or Akima interpolation could be better. For resampling band-limited signals, Fourier-based methods or sinc interpolation are preferred.
 
+## Filter Circuit
+
+<p align = 'center'>
+<img src="Figure/figure_rc_hp_diagram.png" width="30%"/><img src="Figure/figure_rc_hp_response.png" width="30%"/>
+</p><p align = 'center'>
+    Different  interpolation methods applied to a two frequencies (1.1 Hz and 2.2 Hz) signal.
+</p>
+
 ## Digital Filter [`scipy.interpolate`]
 
 Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. The anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.

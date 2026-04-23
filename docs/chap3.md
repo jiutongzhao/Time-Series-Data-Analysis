@@ -132,7 +132,7 @@ This is known as the **<u>*[Wiener–Khinchin theorem](https://en.wikipedia.org/
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. This relationship is particularly useful because it allows us to compute the power spectral density from time-domain data by first calculating the autocorrelation function and then applying the Fourier transform. This approach is often more robust, especially for signals that may be noisy or have missing data.
 
-## Two-dimensional Angular Power Spectrum
+## Application: Angular Power Spectrum of the Cosmic Microwave Background (CMB)
 
 
 
@@ -269,5 +269,15 @@ ls_amp = np.abs(scipy.signal.lombscargle(t[~np.isnan(sig)], sig[~np.isnan(sig)],
 <p align="center">   <img src="Figure/figure_lombscargle_randomly_sampling.png" width="60%"/> </p>
 
 <!-- tabs:end -->
+
+## Application: Discovery of Exoplanet: 51b Pagesi
+
+<p align="center">   <img src="Figure/figure_radial_velocity_diagram.png" width="60%"/> </p>
+
+
+
+<p align="center">   <img src="Figure/figure_lombscargle_pagesi51b.png" width="60%"/> </p>
+
+
 
 <div STYLE="page-break-after: always;"></div>
