@@ -43,35 +43,58 @@ eigenvalues = pca.singular_values_
 eigenvectors = pca.components_
 ```
 
+Or, you can use the classic eigenvalue decomposition:
+
+```python
+sig = sig - np.mean(sig, axis=1, keepdims=True)
+cov = sig @ sig.T
+eigenvalues, eigenvectors = scipy.linalg.eigh(cov)
+
+sig_transformed = eigenvectors @ sig
+```
+
 In this framework, $\mathbf{e}_1$ (maximum-variance), $\mathbf{e}_2$ (intermediate), and $\mathbf{e}_3$ (minimum-variance) provide a natural triad for dimensionality reduction, feature extraction, and physical interpretation of multicomponent time series.
 
 <p align = 'center'>
 <img src="Figure/figure_pca.png" width="100%"/>
 <p>
+However, this transformation do not ensure the projected coordinates system to be right-handed. A simple check of the determinant of the eigenvector matrix can identify whether a flip is needed.
 
 ### Spectral Matrix
 
-A ***spectral matrix*** $\hat{S}$ can be defined as
+In the analysis of multi-components signal, the time-frequency spectra are always converted to ***spectral matrix*** $\hat{S}(f,t)$, which is defined as:
 $$
-\hat{S}_{ij}= \langle {X}_i {X}_j^* \rangle
+\hat{S}_{ij}(f,t)= \langle {X}_i(f,t) {X}_j^*(f,t) \rangle
 $$
 
 where $\langle X \rangle$ denotes the smooth operator, $X_i$ is the frequency coefficient of the $i$-th component of a multichannel signal (e.g., Fourier or wavelet coefficient), and $X_j^*$ is the complex conjugate of the $j$-th component. The spectral matrix is a generalization of the power spectral density to multiple channels, capturing both auto-spectral (diagonal) and cross-spectral (off-diagonal) relationships.
 
 ```python
-spec = np.einsum('fti,ftj->ftij', coef, coef.conj())
+spec = np.einsum('fti,ftj->ftij', coef, coef.conj()) # Assume the first and second axis are frequency and time
 ```
 
-This matrix is Hermitian and positive semi-definite, with diagonal elements representing the power spectral densities of each component and off-diagonal elements encoding cross-spectral relationships. 
+This matrix is **<u>*Hermitian*</u>** and **<u>*positive semi-definite*</u>**, with diagonal elements representing the power spectral densities of each component and off-diagonal elements encoding cross-spectral relationships. 
 
-It contains all second-order statistical information about the multichannel signal in the frequency domain, including power distributions, correlations, and phase relationships. By transforming the signal frequency coefficients `coef` (e.g., from a Fourier or wavelet transform) into the spectral matrix, we can analyze the signal with multiple signature of the matrix/linear algebra.
+It contains all **second-order statistical information** about the multichannel signal in the frequency domain, including power distributions, correlations, and phase relationships. By transforming the signal frequency coefficients `coef` (e.g., from a Fourier or wavelet transform) into the spectral matrix, we can analyze the signal with multiple signature of the matrix/linear algebra.
 
-The spectral matrix can be averaged over time and frequency to reduce noise and improve statistical reliability, just like the Welch method:
+The spectral matrix can be averaged over time and frequency to reduce noise and improve statistical reliability, just like the *Welch* method:
 
 ```python
-# Moving average smoothing
+# Moving average smoothing with package bottleneck(bn)
 spec_ma = bn.move_mean(spec, window=freq_window, min_count=1, axis=0)
 spec_ma = bn.move_mean(spec, window=time_window, min_count=1, axis=1)
+
+def smooth_spec_boxcar(spec: np.ndarray, scales: np.ndarray, w: float, axis=0):
+    dj = np.abs(np.diff(np.log2(scales))[0])
+    _kernel = fractional_boxcar_kernel(w, nv=1 / dj)
+    kshape = [1] * spec.ndim
+    kshape[axis] = _kernel.size
+    _kernel = _kernel.reshape(kshape)
+    _spec = scipy.signal.convolve(
+        spec * scales[:, np.newaxis, np.newaxis, np.newaxis],
+        _kernel,
+        mode='same')
+    return _spec
 ```
 
 Instead, one may also apply a Gaussian smoothing kernel in time and frequency domain to achieve a similar effect. The width of the Gaussian kernel is commonly chose as a multiple of the scale, thus the smoothing kernel is longer at lower frequencies and shorter at higher frequencies.
@@ -82,6 +105,26 @@ a = 1
 spec_sm = np.copy(spec)
 for i, s in enumerate(scales):
     spec_sm[i] = scipy.ndimage.gaussian_filter1d(spec[i], sigma = s * a, axis = axis, mode = 'constant', cval = 0.0)
+    
+
+def smooth_spec_gaussian(spec, sigmas):
+    _spec = np.copy(spec)
+    for i, s in enumerate(sigmas):
+        L = int(2 * 3.0 * s) + 1
+        if L < 50:
+            _spec[i] = scipy.ndimage.gaussian_filter1d(spec[i],
+                                                       sigma=s,
+                                                       axis=0,
+                                                       mode='constant',
+                                                       cval=0.0)
+        else:
+            _kernel = windows.gaussian(L, std=s)
+            _kernel /= _kernel.sum()
+            _kernel = _kernel.reshape((L, ) + (1, ) * (spec[i].ndim - 1))
+            _spec[i] = fftconvolve(spec[i], _kernel,
+                                   mode='same')
+
+    return _spec
 ```
 
 ### Coherence
@@ -96,19 +139,22 @@ $$
 
 where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $x$ and $y$, and $\hat{S}_{xx}(f)$, $\hat{S}_{yy}(f)$ are the power spectral densities of $x$ and $y$, respectively. Coherence values range from 0 (no correlation) to 1 (perfect correlation).
 
-**<u>Coherence is a function of not only the spectral matrix but also the smoothing operator $\langle...\rangle$.</u>** Without any smoothing, the coherency is always unity no matter the signal is coherent or noisy and thus meaningless.  A real coherent signal can resist a high coherency while the off-diagonal term $S_{xy}$ contributed by random noise will cancel out in the smoothing operation. Two common approaches of smoothing have been introduced in the last section.
+**Coherence is a function of not only the spectral matrix but also the smoothing operator, $\langle...\rangle$.** Without any smoothing, **the coherency is always unity** no matter the signal is coherent or noisy and thus meaningless. You need to check at least two individual points for knowing whether the signals are coherent. A real coherent signal can resist a high coherency while the off-diagonal term $S_{xy}$ contributed by random noise will cancel out in the smoothing operation. Two common approaches of smoothing have been introduced in the last section.
 
 <p align = 'center'>
 <img src="Figure/figure_coherency.png" alt="An example of DFT." width="100%"/>
+</p><p align = 'center'>
+    The coherence  between two white noise signals after smoothing.
 </p>
 
+The coherence between noises is still non-zero event after smoothing. A common way for checking the coherence is to compare it with a threshold, which can be determined by numerical experiments (e.g., input two white noises and check the distributions of their coherence). 
 
 
 ```python
 coherence_xy = np.abs(spec_sm[:, :, 0, 1]) ** 2 / (spec_sm[:, :, 0, 0] * spec_sm[:, :, 1, 1])
 ```
 
-### Combination with Maxwell's Equations: SVD Wave Analysis
+### Advanced Usage: Combine the Spectrum with Maxwell's Equation
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
 $$
@@ -340,6 +386,8 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 <!-- tabs:end -->
 
 Similar to **Coherence, Planarity and Degree of Polarization** are also a a functional properties of the smoothing operator. A strong smoothing operator will promote the planarity and degree of polarization as it suppresses the noise contribution. However, a too strong smoothing operator will also smear out the temporal and frequency variations of the wave properties. Thus, a proper choice of the smoothing operator is necessary.
+
+For the frequency/scale domain, a common choice for the smooth operator is boxcar smooth, which is the simplest operator.  
 
 
 

@@ -1,14 +1,38 @@
-# Preface
+#  Preface
+
+## What is spectral analysis?
+
+One central idea in spectral analysis is that any finite, sampled signal can be represented as a sum of sinusoids (equivalently, complex exponentials) with different amplitudes and phases. This decomposition lets us view the same data in the frequency domain, where features such as variability, periodicity, and modulation are often easier to identify and quantify. 
+
+<p align = 'center'><img src="Figure/figure_fft_time_frequency.png" width="100%"/></p>
+<center><i>  View of a signal in the time and frequency domain. [https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft]</i></center>
+
+Actually, our ears and brains do spectral analysis every seconds. So, the frequency spectrum is something that we are actually feel, instead of a pure mathematical concept. Watching the following video, you are going to see and hear how a fast variated periodic signal be sensed as a tone.
+
+<p align = 'center'><img src="Figure/figure_hearing_mechanism.jpg" width="100%"/></p>
+<center><i> [Adopt from https://www.entlecture.com/physiology-of-hearing/]</i></center>
+
+
+<video src = "Data/sound_frequency.mp4" width="100%"></video>
+
+## Why writing this document?
 
 This document serves as a practical guide to spectral analysis, driven by two key observations:
 
--   **<u>The Utility of Spectral Analysis</u>**: Signals are omnipresent in daily life—they can be seen, heard, or felt, like a whistling sound. While the variations in a signal might be intuitively perceived, precisely describing them can be challenging. Even when a raw time series hints at waveform and frequency, deeper aspects such as harmonics often remain elusive. Processing such signals is fundamental across diverse fields, including physics, engineering, and data science. Through effective spectral analysis, crucial information—like the chirping signature of a bird's song—can be readily extracted.
+- **<u>The Utility of Spectral Analysis</u>**: Signals are omnipresent in daily life: they can be seen, heard, or felt, like a whistling sound. While the variations in a signal might be intuitively perceived, precisely describing them can be challenging. Even when a raw time series hints at waveform and frequency, deeper aspects such as harmonics often remain elusive. Processing such signals is fundamental across diverse fields, including physics, engineering, and data science. Through effective spectral analysis, crucial information, like the chirping signature of a bird's song, can be readily extracted.
 
--   **<u>The Need for a Practical Handbook</u>**: Traditional spectral analysis textbooks can be daunting, often spanning hundreds of pages and demanding a robust mathematical background. Concepts like "compact support," while mathematically rigorous, frequently prove irrelevant for practical research and can consume valuable time and patience. Furthermore, these theoretical texts rarely provide practical Python implementations.
+- **<u>The Need for a Practical Handbook</u>**: Traditional spectral analysis textbooks can be daunting, often spanning hundreds of pages and demanding a robust mathematical background. Concepts like "compact support," while mathematically rigorous, frequently prove irrelevant for practical research and can consume valuable time and patience. Furthermore, these theoretical texts rarely provide practical Python implementations.
+
+  
+
+  **However, it is really hard to balance the trade-off between the mathematical details, programming implementation, and physics intuition. I will mainly focus on the latter two, by showing codes and visualizing some necessary facts regarding the signal processing.**
 
 This document aims to bridge that gap by offering a **practical guide** to spectral analysis. It focuses on essential concepts and real-world applications, designed for readers with a basic understanding of Python and signal processing. It deliberately avoids delving into the deep mathematical intricacies, which are extensively covered in classic, highly-rated academic texts.
 
-**<u>Below are representative spectral‑analysis results that we will showcase, so you can decide whether this guide meets your needs:</u>**
+
+## What can you get from this document?
+
+Below are representative spectral‑analysis results that we will showcase, so you can decide whether this guide meets your needs:
 
 <!-- tabs:start -->
 
@@ -36,4 +60,6 @@ This document aims to bridge that gap by offering a **practical guide** to spect
 <p align = 'center'>
 <img src="Figure/figure_svd_erg.png" width="100%"/>
 </p>
+** Image Compression**
+
 <!-- tabs:end -->
