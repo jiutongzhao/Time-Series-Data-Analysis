@@ -134,7 +134,54 @@ This theorem tells the intrinsic relationship between the *PSD* and *ACF*. This 
 
 ## Application: Angular Power Spectrum of the Cosmic Microwave Background (CMB)
 
+The Wiener–Khinchin theorem is the workhorse behind almost every estimator of the **angular power spectrum of the Cosmic Microwave Background (CMB)**. Modern pipelines (e.g. *Planck*, *ACT*) operate on the 2-sphere, but the underlying logic is one-dimensional:
 
+1. Observe a (nearly) stationary stochastic field $T(\hat n)$.
+2. Estimate its two-point correlation function $C(\theta) = \langle T(\hat n_1)\,T(\hat n_2)\rangle$ for $\hat n_1\!\cdot\!\hat n_2 = \cos\theta$.
+3. Take the (spherical) Fourier transform — equivalent to expanding $C(\theta)$ on Legendre polynomials — to obtain $C_\ell$.
+
+Wiener–Khinchin guarantees that this $C_\ell$ is the same object as $\langle |a_{\ell m}|^2\rangle$ obtained by a direct harmonic transform of $T$ — provided the field is statistically isotropic (the angular analogue of WSS).
+
+To keep things tutorial-friendly, we work in **one dimension**: build a synthetic temperature strip whose theoretical PSD is a CMB-style power-law with an *acoustic-peak* bump, draw a realisation in the Fourier domain, and verify the WK theorem by:
+
+- estimating the PSD directly with Welch's method, and
+- estimating it via the Fourier transform of the autocorrelation function.
+
+The two estimators agree to within sample variance, exactly as Wiener–Khinchin predicts.
+
+```python
+N      = 2 ** 14
+dx     = 1.0
+fs     = 1.0 / dx
+freq   = np.fft.rfftfreq(N, dx)
+freq_p = np.maximum(freq, freq[1])
+
+# Toy CMB-like target PSD: red-tilted continuum + acoustic-peak bump
+ell0, sigma_ell, amp_peak = 0.05, 0.012, 4.0
+C_target  = (1.0 / freq_p) ** 1.2
+C_target += amp_peak * np.exp(-0.5 * ((freq_p - ell0) / sigma_ell) ** 2)
+C_target[0] = 0.0
+
+# Draw a Gaussian realisation with this PSD
+phase = np.random.default_rng(42).uniform(0, 2 * np.pi, freq.size)
+T_k   = np.sqrt(C_target * fs * N / 2.0) * np.exp(1j * phase)
+T_x   = np.fft.irfft(T_k, n=N)
+
+# Estimator 1: Welch
+f_welch, psd_welch = scipy.signal.welch(T_x, fs=fs, nperseg=1024, window='hann')
+
+# Estimator 2: FT of the (Blackman-Tukey-windowed) ACF
+acf      = np.fft.irfft(np.abs(np.fft.rfft(T_x)) ** 2, n=N) / N
+acf      = np.concatenate([acf[-N // 2:], acf[:N // 2]])
+M        = 1024
+acf_win  = acf[N // 2 - M : N // 2 + M + 1] * np.blackman(2 * M + 1)
+psd_wk   = np.abs(np.fft.rfft(acf_win)) / fs
+freq_wk  = np.fft.rfftfreq(acf_win.size, dx)
+```
+
+<p align = 'center'>
+<img src="Figure/figure_wk_cmb.png" width="100%"/>
+</p>
 
 
 ## What If the Signal Is Not Stationary? [`scipy.signal.detrend`]
@@ -210,6 +257,41 @@ cepstrum = np.fft.rfft(log_abs_coef)
 df = freq[1] - freq[0]
 quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 ```
+
+### Worked Example: Gear-Box Fault Detection
+
+A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration spectrum is dominated by the *gear-mesh frequency* $f_m = N_t \cdot f_r$ (number of teeth $\times$ shaft rotation frequency) and its harmonics. A localised fault — say a chipped tooth — modulates the mesh signal at the *shaft-rotation frequency* $f_r$, and an entire family of side-bands $f_m \pm k f_r$ appears around every mesh harmonic.
+
+In the spectrum these side-bands form a **comb** with comb spacing $f_r$. The cepstrum collapses each such comb into a single peak (a *rahmonic*) at the **quefrency** $\tau_r = 1/f_r$, i.e. the period of one shaft revolution. This makes the fault signature far easier to spot than reading side-bands from the log-spectrum directly.
+
+The synthetic signal below imitates a gear-box with $N_t = 21$ teeth running at $f_r = 25\,\mathrm{Hz}$. We modulate the mesh and its first harmonic by a once-per-revolution amplitude envelope, add a faint tooth-impact impulse train at $N_t f_r$, and bury everything in white noise. The cepstrum clearly shows a peak at $\tau_r = 40\,\mathrm{ms}$ and its rahmonics, while $f_r$ itself is invisible in the raw signal.
+
+```python
+fs, T  = 20_000.0, 2.0
+t      = np.arange(0, T, 1.0 / fs)
+fr, Nt = 25.0, 21
+fm     = Nt * fr                         # 525 Hz mesh frequency
+
+mod    = 1.0 + 0.6 * np.cos(2 * np.pi * fr * t)   # amplitude modulation @ fr
+sig    = mod * np.sin(2 * np.pi * fm * t)
+sig   += 0.5 * mod * np.sin(2 * np.pi * 2 * fm * t)
+
+impulse_train = np.zeros_like(t)
+impulse_train[::int(fs / fm)] = 1.0
+sig  += 0.05 * impulse_train
+sig  += 0.2  * np.random.default_rng(0).standard_normal(t.size)
+
+freq      = np.fft.rfftfreq(sig.size, 1 / fs)
+log_mag   = np.log(np.abs(np.fft.rfft(sig)) + 1e-12)
+log_mag  -= log_mag.mean()
+cepstrum  = np.fft.irfft(log_mag).real
+quefrency = np.arange(cepstrum.size) / fs
+# Peak at quefrency = 1 / fr = 40 ms reveals the shaft-rate modulation
+```
+
+<p align = 'center'>
+<img src="Figure/figure_cepstrum_gearbox.png" width="100%"/>
+</p>
 
 ## [Lomb-Scargle Periodogram](https://en.wikipedia.org/wiki/Least-squares_spectral_analysis#The_generalized_Lomb%E2%80%93Scargle_periodogram) [`scipy.signal.lombscargle`]
 
