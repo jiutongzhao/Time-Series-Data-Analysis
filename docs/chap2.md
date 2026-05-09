@@ -101,18 +101,18 @@ $$
 A(x) = \sum_{k=0}^N a_kx^k = a_0 + a_1x + a_2x^2 + ... + a_{N-1}x^{N-1}\\
 B(x) = \sum_{k=0}^N b_kx^k = b_0 + b_1x + b_2x^2 + ... + b_{N-1}x^{N-1}
 $$
-If you want to find their product $C(x) = A(x)B(x)$, the standard "distributive" method requires multiplying every term in $A(x)$ by every term in $$B(x)$$, which has a time complexity of $\mathcal{O}(N^2)$$. 
+If you want to find their product $C(x) = A(x)B(x)$, the standard "distributive" method requires multiplying every term in $A(x)$ by every term in $B(x)$, which has a time complexity of $\mathcal{O}(N^2)$. 
 
 Once you put $$x=\mathrm{exp}[i2\pi\ l/M],\ l = 0,1,\dots, M-1$$ into the above polynomials, you get
 $$
 A\left[\mathrm{e}^{i2\pi l / M}\right] = \sum_{k=0}^N a_k\mathrm{e}^{i2\pi (lk / M)}:=A_l\\
 B\left[\mathrm{e}^{i2\pi l / M}\right] = \sum_{k=0}^N b_k\mathrm{e}^{i2\pi (lk / M)}:=B_l
 $$
-The results $A_L,\ B_L$ are nothing but the **Fourier** coefficients of the series $$a_k$$ and $$b_k$$ with an extension filled by zero. 
+The results $A_L,\ B_L$ are nothing but the **Fourier** coefficients of the series $a_k$ and $b_k$ with an extension filled by zero. 
 
-These values of $$A(x)$$ (or $$B(x)$$) at $$M$$ specific points: $$(x_0, A(x_0)), ..., (x_{M-1}, A(x_{M-1}))$$ are called Point-Value Representation with a degree-bound of $$M$$ of a polynomial, and they can uniquely determine a polynomials with degree no more than $$M$$.
+These values of $A(x)$ (or $B(x)$) at $M$ specific points: $$[x_0, A(x_0)], ..., [x_{M-1}, A(x_{M-1})]$$ are called **Point-Value Representation** with a degree-bound of $M$ of a polynomial, and they can uniquely determine a polynomials with degree no more than $M$.
 
-According to the definition $$C(x)=A(x) B(x)$$, we have $$C_l=A_l B_l$$ that is satisfied from $$l=0$$ to $$M-1$$. Now, we get the point-value representation of $$C(x)$$ as well. The coefficients of $$C(x)$$ are obviously derived by applying IFFT to the point-value representation of $$C_l$$.
+According to the definition $C(x)=A(x) B(x)$, we have $C_l=A_l B_l$ that is satisfied from $l=0$ to $M-1$. Now, we get the point-value representation of $C(x)$ as well. The coefficients of $C(x)$ are obviously derived by applying IFFT to the point-value representation of $C_l$.
 
 ```python
 import numpy as np
@@ -152,7 +152,9 @@ This idea can easily extended to the large integer multiplication, as an integer
 $$
 \underline{65536} = \underline{6} \times 10^4 + \underline{5} \times 10^3 + \underline{5} \times 10^2 + \underline{3} \times 10^1 + \underline{6} \times 10^0=A_{63556}(10)
 $$
-The only two addition things to do are 1. convert the large integers to polynomial $$A(x),\ B(x)$$, coefficients; 2. Convert the resultant polynomial $$C(x)$$ back to the resultant integer.
+The only two addition things to do are 
+1. convert the large integers to polynomial $A(x),\ B(x)$, coefficients; 
+2. Convert the resultant polynomial $C(x)$ back to the resultant integer.
 
 ## [Windowing](https://en.wikipedia.org/wiki/Window_function) Effect
 
