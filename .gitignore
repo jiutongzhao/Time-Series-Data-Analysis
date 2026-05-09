@@ -7,4 +7,6 @@ Data/orpheus.mp4
 *.mp4
 *.wav
 *.cdf
+*.csv
+*.mp3
 docs/Data/audio.zip
