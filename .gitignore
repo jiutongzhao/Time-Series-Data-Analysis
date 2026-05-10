@@ -10,3 +10,9 @@ Data/orpheus.mp4
 *.csv
 *.mp3
 docs/Data/audio.zip
+*.xls
+*.csv
+*.csv
+docs/Data/gearbox/CWRU_48k_load_1_CNN_data.npz
+*.xls
+*.csv

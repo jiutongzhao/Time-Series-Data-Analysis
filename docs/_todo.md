@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # Changelog and Upcoming Content
 
 ## Done
@@ -14,3 +15,12 @@
 3. Flesh out `chap9.md` "Usage Example" with one or two end-to-end physics case studies.
 
 Lastly updated on 9th, May, 2026.
+=======
+1. Add an partical example for cepstrum (gear box). 
+2. Add an example for WK theorem (cosmic microwave background)
+3. Add a case for discrete wavelet image compression
+4. Add an example for Kalman Filter (GPS + IMU fusion)
+5. Fourier/Hankel/Radon/Abel Transforms and Spherical Harmonic
+
+Lastly updated on 27th April, 2026.
+>>>>>>> Stashed changes
