@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "_todo.md",
+                "file": "chap0_preface.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "_todo"
+              "title": "chap0_preface"
             }
           }
         ]
@@ -44,7 +44,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "文件列表"
             }
           },
           {
@@ -174,26 +174,30 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
     }
   },
   "active": "70db191eb16aab86",
   "lastOpenFiles": [
+    "index - Copy.html",
+    "chap0_preface - Copy.md",
+    "README - Copy.md",
+    "README - Copy (3).md",
+    "README - Copy (2).md",
+    "chap1.md",
+    "_todo.md",
     "README.md",
     "chap9.md",
     "chap8.md",
     "chap10_appendix.md",
-    "README - Copy.md",
-    "README - Copy (2).md",
     "chap3.md",
     "chap4.md",
-    "chap2.md",
-    "chap1.md"
+    "chap2.md"
   ]
 }

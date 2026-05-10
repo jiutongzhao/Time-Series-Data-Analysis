@@ -1,0 +1,194 @@
+{
+  "a_guide_to_wave_spectral_analysis_v2.ipynb": {
+    "a_guide_to_wave_spectral_analysis_v2.html": "f4042e72"
+  },
+  "chap1.ipynb": {
+    "chap1.html": "b1d7bf70"
+  },
+  "chap2.ipynb": {
+    "chap2.html": "ba6251e4"
+  },
+  "chap3.ipynb": {
+    "chap3.html": "3eb06b08"
+  },
+  "chap4.ipynb": {
+    "chap4.html": "e85eba28"
+  },
+  "chap5.ipynb": {
+    "chap5.html": "89a87681"
+  },
+  "chap6.ipynb": {
+    "chap6.html": "13b17b18"
+  },
+  "chap7.ipynb": {
+    "chap7.html": "33001193"
+  },
+  "chap8.ipynb": {
+    "chap8.html": "a35d4fd1"
+  },
+  "copilot/copilot-custom-prompts/Clip Web Page.md": {
+    "Clip Web Page.html": "63d2162b"
+  },
+  "copilot/copilot-custom-prompts/Clip YouTube Transcript.md": {
+    "Clip YouTube Transcript.html": "52a001e6"
+  },
+  "copilot/copilot-custom-prompts/Emojify.md": {
+    "Emojify.html": "64ffaf28"
+  },
+  "copilot/copilot-custom-prompts/Explain like I am 5.md": {
+    "Explain like I am 5.html": "579bb356"
+  },
+  "copilot/copilot-custom-prompts/Fix grammar and spelling.md": {
+    "Fix grammar and spelling.html": "832ff7d8"
+  },
+  "copilot/copilot-custom-prompts/Generate glossary.md": {
+    "Generate glossary.html": "f7f9e251"
+  },
+  "copilot/copilot-custom-prompts/Generate table of contents.md": {
+    "Generate table of contents.html": "16cd5a4a"
+  },
+  "copilot/copilot-custom-prompts/Make longer.md": {
+    "Make longer.html": "01ca7746"
+  },
+  "copilot/copilot-custom-prompts/Make shorter.md": {
+    "Make shorter.html": "177d899f"
+  },
+  "copilot/copilot-custom-prompts/Remove URLs.md": {
+    "Remove URLs.html": "a8814c6b"
+  },
+  "copilot/copilot-custom-prompts/Rewrite as tweet thread.md": {
+    "Rewrite as tweet thread.html": "b879d43f"
+  },
+  "copilot/copilot-custom-prompts/Rewrite as tweet.md": {
+    "Rewrite as tweet.html": "1517e90d"
+  },
+  "copilot/copilot-custom-prompts/Simplify.md": {
+    "Simplify.html": "ab1670f6"
+  },
+  "copilot/copilot-custom-prompts/Summarize.md": {
+    "Summarize.html": "fc21344b"
+  },
+  "copilot/copilot-custom-prompts/Translate to Chinese.md": {
+    "Translate to Chinese.html": "a6380ac2"
+  },
+  "docs/chap0_preface - Copy.md": {
+    "chap0_preface - Copy.html": "974d6ca0"
+  },
+  "docs/chap0_preface.md": {
+    "chap0_preface.html": "1a0aeee0"
+  },
+  "docs/chap0_preface.qmd": {
+    "chap0_preface.html": "dadcb99d"
+  },
+  "docs/chap1.md": {
+    "chap1.html": "6df4464f"
+  },
+  "docs/chap1.qmd": {
+    "chap1.html": "325af2a0"
+  },
+  "docs/chap10_appendix.md": {
+    "chap10_appendix.html": "c3fcff88"
+  },
+  "docs/chap10_appendix.qmd": {
+    "chap10_appendix.html": "9033ddb3"
+  },
+  "docs/chap2.md": {
+    "chap2.html": "bfa68460"
+  },
+  "docs/chap2.qmd": {
+    "chap2.html": "d188fbd7"
+  },
+  "docs/chap3.md": {
+    "chap3.html": "4b4a2b8c"
+  },
+  "docs/chap3.qmd": {
+    "chap3.html": "ccbc9e60"
+  },
+  "docs/chap4.md": {
+    "chap4.html": "9b2e3cb3"
+  },
+  "docs/chap4.qmd": {
+    "chap4.html": "4608c13e"
+  },
+  "docs/chap5.md": {
+    "chap5.html": "cda9f271"
+  },
+  "docs/chap5.qmd": {
+    "chap5.html": "9f09af84"
+  },
+  "docs/chap6.md": {
+    "chap6.html": "ec33c664"
+  },
+  "docs/chap6.qmd": {
+    "chap6.html": "5618663a"
+  },
+  "docs/chap7.md": {
+    "chap7.html": "c3ce4cae"
+  },
+  "docs/chap7.qmd": {
+    "chap7.html": "580d947f"
+  },
+  "docs/chap8.md": {
+    "chap8.html": "8f2f5e43"
+  },
+  "docs/chap8.qmd": {
+    "chap8.html": "e54f2b44"
+  },
+  "docs/chap9.md": {
+    "chap9.html": "a06891f4"
+  },
+  "docs/README - Copy (2).md": {
+    "README - Copy (2).html": "2a53b9b9"
+  },
+  "docs/README - Copy (3).md": {
+    "README - Copy (3).html": "02d0d651"
+  },
+  "docs/README - Copy.md": {
+    "README - Copy.html": "cf19fb59"
+  },
+  "gemini-scribe/Prompts/example-expert.md": {
+    "example-expert.html": "3fed4f65"
+  },
+  "index.qmd": {
+    "index.html": "97583244"
+  },
+  "intro.md": {
+    "intro.html": "3e4a5e93"
+  },
+  "MIGRATION.md": {
+    "MIGRATION.html": "466a4924"
+  },
+  "practical_spectral_analysis_in_plasma_physics.md": {
+    "practical_spectral_analysis_in_plasma_physics.html": "0d3205f0"
+  },
+  "practical_spectral_analysis_plot.ipynb": {
+    "practical_spectral_analysis_plot.html": "03354ae7"
+  },
+  "psatd.ipynb": {
+    "psatd.html": "d61cdeef"
+  },
+  "readme.ipynb": {
+    "readme.html": "6b1e2a94"
+  },
+  "Spectral_Analysis_Tutorial.ipynb": {
+    "Spectral_Analysis_Tutorial.html": "c3ec79fa"
+  },
+  "test_util.ipynb": {
+    "test_util.html": "1933a77f"
+  },
+  "FIX_SUMMARY.md": {
+    "FIX_SUMMARY.html": "e6d75cf8"
+  },
+  "QUICKSTART.md": {
+    "QUICKSTART.html": "918d2edb"
+  },
+  "README_QUARTO.md": {
+    "README_QUARTO.html": "1980def9"
+  },
+  "TROUBLESHOOTING.md": {
+    "TROUBLESHOOTING.html": "733f5964"
+  },
+  "walkthrough.qmd": {
+    "walkthrough.html": "a95619dd"
+  }
+}
