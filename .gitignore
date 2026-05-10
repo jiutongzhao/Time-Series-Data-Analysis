@@ -7,7 +7,12 @@ Data/orpheus.mp4
 *.mp4
 *.wav
 *.cdf
+*.csv
+*.mp3
 docs/Data/audio.zip
-
-/.quarto/
-**/*.quarto_ipynb
+*.xls
+*.csv
+*.csv
+docs/Data/gearbox/CWRU_48k_load_1_CNN_data.npz
+*.xls
+*.csv
