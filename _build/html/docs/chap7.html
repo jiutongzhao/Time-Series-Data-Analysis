@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>chap7 – Practical Spectral Analysis with Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-2c9aed11d1b70b0b2e0b9c8c3ae51c6c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Spectral Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/chap5.html">Advanced Topics</a></li><li class="breadcrumb-item"><a href="../docs/chap7.html">Time-Frequency Spectrum</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Getting Started</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap0_preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Core Concepts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Initialization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Frequency Domain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Power Spectral Density</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">More About FFT</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Signal Processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap7.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Time-Frequency Spectrum</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Channel Signal</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap10_appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/_todo.qmd" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#wavelet-and-time-frequency-analysis" id="toc-wavelet-and-time-frequency-analysis" class="nav-link active" data-scroll-target="#wavelet-and-time-frequency-analysis">Wavelet and Time-Frequency Analysis</a>
+  <ul class="collapse">
+  <li><a href="#short-time-fourier-transform-scipy.signal.shorttimefft" id="toc-short-time-fourier-transform-scipy.signal.shorttimefft" class="nav-link" data-scroll-target="#short-time-fourier-transform-scipy.signal.shorttimefft">Short-Time Fourier Transform <code>scipy.signal.ShortTimeFFT</code></a></li>
+  <li><a href="#continuous-wavelet-transform-ssqueezepy.cwt-and-pywt.cwt" id="toc-continuous-wavelet-transform-ssqueezepy.cwt-and-pywt.cwt" class="nav-link" data-scroll-target="#continuous-wavelet-transform-ssqueezepy.cwt-and-pywt.cwt">Continuous Wavelet Transform <code>ssqueezepy.cwt</code> and <code>pywt.cwt</code></a>
+  <ul class="collapse">
+  <li><a href="#morlet-wavelet" id="toc-morlet-wavelet" class="nav-link" data-scroll-target="#morlet-wavelet">Morlet Wavelet</a></li>
+  </ul></li>
+  <li><a href="#discrete-wavelet-transform" id="toc-discrete-wavelet-transform" class="nav-link" data-scroll-target="#discrete-wavelet-transform">Discrete Wavelet Transform</a>
+  <ul class="collapse">
+  <li><a href="#dwt-thresholding-for-signal-denoising" id="toc-dwt-thresholding-for-signal-denoising" class="nav-link" data-scroll-target="#dwt-thresholding-for-signal-denoising">DWT Thresholding for Signal Denoising</a></li>
+  <li><a href="#dwt-decomposition-for-image-compression" id="toc-dwt-decomposition-for-image-compression" class="nav-link" data-scroll-target="#dwt-decomposition-for-image-compression">DWT Decomposition for Image Compression</a></li>
+  </ul></li>
+  <li><a href="#wavelet-families-in-pywavelets-continuous-vs.-discrete" id="toc-wavelet-families-in-pywavelets-continuous-vs.-discrete" class="nav-link" data-scroll-target="#wavelet-families-in-pywavelets-continuous-vs.-discrete">Wavelet Families in PyWavelets (Continuous vs.&nbsp;Discrete)</a>
+  <ul class="collapse">
+  <li><a href="#continuous-wavelets-cwt" id="toc-continuous-wavelets-cwt" class="nav-link" data-scroll-target="#continuous-wavelets-cwt">Continuous Wavelets (CWT)</a></li>
+  <li><a href="#discrete-wavelets-dwt" id="toc-discrete-wavelets-dwt" class="nav-link" data-scroll-target="#discrete-wavelets-dwt">Discrete Wavelets (DWT)</a></li>
+  <li><a href="#vanishing-moment-orthogonality-and-support" id="toc-vanishing-moment-orthogonality-and-support" class="nav-link" data-scroll-target="#vanishing-moment-orthogonality-and-support">Vanishing Moment, Orthogonality, and Support:</a></li>
+  </ul></li>
+  <li><a href="#more-details-about-morlet-wavelet" id="toc-more-details-about-morlet-wavelet" class="nav-link" data-scroll-target="#more-details-about-morlet-wavelet">More Details about Morlet wavelet</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/chap5.html">Advanced Topics</a></li><li class="breadcrumb-item"><a href="../docs/chap7.html">Time-Frequency Spectrum</a></li></ol></nav></header>
+
+
+
+
+
+<section id="wavelet-and-time-frequency-analysis" class="level1">
+<h1>Wavelet and Time-Frequency Analysis</h1>
+<section id="short-time-fourier-transform-scipy.signal.shorttimefft" class="level2">
+<h2 class="anchored" data-anchor-id="short-time-fourier-transform-scipy.signal.shorttimefft">Short-Time Fourier Transform <code>scipy.signal.ShortTimeFFT</code></h2>
+<p>The <strong><u><em>Short-Time Fourier Transform (STFT)</em></u></strong> extends traditional Fourier analysis to non-stationary signals by introducing time localization via windowing. This allows us to track how the frequency content of a signal evolves over time. This section explains the trade-off between time and frequency resolution, the role of window functions, and practical implementation with <code>scipy.signal.shortTimeFFT</code>. It should be noted that function <code>scipy.signal.stft</code> is considered legacy and will no longer receive updates. While <code>scipy</code> currently have no plans to remove it, they recommend that new code uses more modern alternatives <code>shortTimeFFT</code> instead. Here is an example of using <code>scipy.signal.ShortTimeFFT</code> to perform STFT on a synthetic signal composed of multiple sine waves with varying frequencies and amplitudes, along with some added noise.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>N_window <span class="op">=</span> <span class="dv">4096</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>N_step <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Hanning Window</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>window_hann <span class="op">=</span> scipy.signal.windows.hann(N_window, sym <span class="op">=</span> <span class="va">True</span>) </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># create the STFT object</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>STFT <span class="op">=</span> scipy.signal.ShortTimeFFT(window_hann, hop<span class="op">=</span>N_step, fs <span class="op">=</span> fs, scale_to<span class="op">=</span><span class="st">'psd'</span>, fft_mode <span class="op">=</span> <span class="st">'onesided2X'</span>)  </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># perform the STFT</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>psd_stft <span class="op">=</span> STFT.stft(sig)  </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>time_stft <span class="op">=</span> np.arange(<span class="dv">0</span>, psd_stft.shape[<span class="dv">1</span>]) <span class="op">*</span> STFT.hop <span class="op">/</span> fs <span class="op">-</span> STFT.win.size <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> fs</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>frequency_stft <span class="op">=</span> np.fft.rfftfreq(window_hann, d<span class="op">=</span>dt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p align="center">
+<img src="../Figure/figure_stft.png" alt="An example of DFT." width="100%">
+</p>
+<p align="center">
+The STFT spectra of a signal that consists of a growing wave, a chriping wave, and a contant wave.
+</p>
+<p>The red hashed region indicates the <strong><em><u>cone of influence (COI)</u></em></strong>, which represents the area where edge effects may distort the <em>STFT</em> results due to the finite length of the signal and windowing. The <em>COI</em> is typically defined as half the window length on either side of the time axis, beyond which the <em>STFT</em> results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.</p>
+</section>
+<section id="continuous-wavelet-transform-ssqueezepy.cwt-and-pywt.cwt" class="level2">
+<h2 class="anchored" data-anchor-id="continuous-wavelet-transform-ssqueezepy.cwt-and-pywt.cwt">Continuous Wavelet Transform <code>ssqueezepy.cwt</code> and <code>pywt.cwt</code></h2>
+<p>Although the STFT can represent a signal on the time–frequency plane, it does so with a <strong>fixed window</strong>: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously.</p>
+<p align="center">
+<img src="../Figure/figure_stft_vs_cwt.png" width="100%">
+</p>
+<p>The <strong>wavelet transform</strong> turns this static trade-off into an <strong>adaptive resolution</strong> by scaling its analysis “window” with frequency—long windows for low frequencies and short windows for high frequencies—making it particularly well-suited to <strong><u><em>multiscale</em></u></strong>, transient features in non-stationary signals.</p>
+<p align="center">
+<img src="../Figure/figure_wavelet.png" width="100%">
+</p>
+<p>Formally, both methods project the signal onto a family of basis functions via inner products: the <em>STFT</em> uses windowed sinusoids as its basis, whereas the continuous wavelet transform replaces the sinusoid with a scalable, time-localized “wavelet.” It is this additional scale parameter that provides the core advantage of wavelet analysis, as we will explore in the next section.</p>
+<p>In Python, there are two classic packages for performing continuous wavelet transforms: <code>pywt</code> and <code>ssqueezepy</code>. As shown below, <code>pywt</code> offers a comprehensive set of basic features, while <code>ssqueezepy</code> delivers high computational efficiency and supports synchrosqueezing wavelets. Older versions of <code>Scipy</code> also provided a <code>cwt</code> function, but this functionality has been deprecated in more recent releases.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssqueezepy</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>N_per_octave <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>scales <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> np.linspace(<span class="dv">4</span>, <span class="dv">12</span>, <span class="dv">8</span> <span class="op">*</span> N_per_octave, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>bandwidth <span class="op">=</span> <span class="fl">12.0</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>central_frequency <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># pywavelets</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>wavelet <span class="op">=</span> <span class="st">'cmor</span><span class="sc">%.1f</span><span class="st">-</span><span class="sc">%.1f</span><span class="st">'</span> <span class="op">%</span> (bandwidth, central_frequency)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>coef, f <span class="op">=</span> pywt.cwt(sig, scales, wavelet, dt, method <span class="op">=</span> <span class="st">'fft'</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>coef <span class="op">*=</span> np.sqrt(np.sqrt(bandwidth) <span class="op">*</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> np.pi))  <span class="co"># amplitude normalization for Morlet</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>psd <span class="op">=</span> (np.<span class="bu">abs</span>(coef) <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> dt)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (f[<span class="dv">0</span>] <span class="op">/</span> f[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> f <span class="op">/</span> np.sqrt(f[<span class="dv">0</span>] <span class="op">/</span> f[<span class="dv">1</span>])</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ssqueezepy</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>coef, scales <span class="op">=</span> ssqueezepy.cwt(sig, (<span class="st">'morlet'</span>, {<span class="st">'mu'</span>: bandwidth}), scales <span class="op">=</span> bandwidth <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> np.pi) <span class="op">*</span> scales.astype(np.float32), fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt, l1_norm <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> (bandwidth <span class="op">+</span> np.sqrt(bandwidth <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">2</span>)) <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> np.pi) <span class="op">/</span> dt <span class="op">/</span> scales</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (freq[<span class="dv">0</span>] <span class="op">/</span> freq[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> freq <span class="op">/</span> np.sqrt(freq[<span class="dv">0</span>] <span class="op">/</span> freq[<span class="dv">1</span>])</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>psd <span class="op">=</span> (np.<span class="bu">abs</span>(coef) <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> dt)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>coi <span class="op">=</span> (np.sqrt(<span class="dv">4</span>) <span class="op">*</span> bandwidth <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> np.pi) <span class="op">/</span> f).astype(<span class="bu">float</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The COI of wavelet is defined as the e-folding time of the wavelet at each scale, which is the time it takes for the wavelet amplitude to decay to <span class="math inline">1/e</span> of its maximum value.</p>
+<p><a href="https://psl.noaa.gov/people/gilbert.p.compo/Torrence_compo1998.pdf">Torrence &amp; Compo (1998)</a> give a very impressive summary of the CWT and its application to geophysical time series, which is widely cited in various fields. They recommend using the <strong><u><em>Morlet</em></u></strong> wavelet with a non-dimensional frequency <span class="math inline">\omega_0=6</span> for general-purpose analysis, as it provides a good balance between time and frequency localization.</p>
+<section id="morlet-wavelet" class="level3">
+<h3 class="anchored" data-anchor-id="morlet-wavelet">Morlet Wavelet</h3>
+<p>Morlet (or Gabor) wavelet is one of the most commonly-used continuous mother wavelet, which has the <strong><u>approximate</u></strong> form of: <span class="math display">
+\psi_{approx}(\eta):=\pi^{-1/4} {e^{-{\eta^2}/{2}}} \cdot {e^{i\omega_0\eta}}
+</span> with scale function <span class="math inline">\eta=s\cdot t</span> where <span class="math inline">s</span> denotes <code>scale</code> in the large <span class="math inline">\omega_0</span> domain.</p>
+<p>This mother wavelet is a Gaussian-windowed complex sinusoid, which provides a good balance between time and frequency localization. The parameter <span class="math inline">\omega_0</span> is the non-dimensional frequency, which controls the number of oscillations within the Gaussian envelope. A common choice is <span class="math inline">\omega_0=6</span>, which provides a good trade-off between time and frequency resolution.</p>
+<ul>
+<li><strong><u>Parameter Relationships in Different Literatures</u></strong>: Different implementations of the Morlet wavelet use different parameterizations. The following diagram summarizes the relationships among the parameters <span class="math inline">\mu</span>, <span class="math inline">B</span>, and <span class="math inline">\sigma</span> used in various references and libraries.</li>
+</ul>
+<pre class="mermaid"><code>graph LR
+
+A[*Torrence &amp; Compo 1998*] --$$\mu=\omega_0$$--&gt; B[*ssqueezepy*]
+A --$$B=\frac{\omega_0^2}{2\pi^2}$$--&gt;C[*pywavelets*&lt;br&gt;*'cmorB-1.0'*]
+A --$$\sigma=\omega_0$$--&gt; D[*Wikipedia*]
+</code></pre>
+</section>
+</section>
+<section id="discrete-wavelet-transform" class="level2">
+<h2 class="anchored" data-anchor-id="discrete-wavelet-transform">Discrete Wavelet Transform</h2>
+<p>The Discrete Wavelet Transform (DWT) decomposes a signal into <strong>approximation coefficients</strong> (representing low-frequency components that capture the coarse structure) and <strong>detail coefficients</strong> (representing high-frequency components that capture rapid changes and local details). In contrast to the FFT—which decomposes a signal into sine and cosine functions spanning the entire duration—the DWT breaks the signal into wavelets that are localized in both time and frequency. This inherent multi-resolution analysis enables the DWT to capture transient time-domain information while still revealing its frequency content, effectively offering both temporal and spectral insights.</p>
+<p align="center">
+<img src="../Figure/figure_dwt_processing.png" width="100%">
+</p>
+<p>The decomposition can be iteratively applied, resulting in <strong>multi-level DWT</strong>, offering multi-resolution analysis. Reconstruction from these coefficients exactly recovers the original signal (except minor numerical errors).</p>
+<ul>
+<li><strong>Single-Level DWT Example</strong></li>
+</ul>
+<p>Let’s perform single-level decomposition and reconstruction:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>cA, cD <span class="op">=</span> pywt.dwt(sig, <span class="st">'db1'</span>)  <span class="co"># Haar wavelet</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Approximation (cA):"</span>, cA)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># lessCopyEditApproximation (cA): [2.12, 4.95, 7.78]  </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Detail (cD):"</span>, cD)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Detail (cD): [-0.71, -0.71, -0.71]</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstruction</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>reconstructed <span class="op">=</span> pywt.idwt(cA, cD, <span class="st">'db1'</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Reconstructed:"</span>, reconstructed)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstructed: [1. 2. 3. 4. 5. 6.]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><strong>Multi-Level DWT Example</strong></li>
+</ul>
+<p>Multi-level decomposition provides more granular frequency analysis. Here’s a two-level decomposition example:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>coeffs <span class="op">=</span> pywt.wavedec(sig, <span class="st">'db1'</span>, level<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>cA2, cD2, cD1 <span class="op">=</span> coeffs</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"cA2:"</span>, cA2)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># cA2: [ 5. 13.]  </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"cD2:"</span>, cD2)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># cD2: [-2. -2.]  </span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"cD1:"</span>, cD1)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># cD1: [-0.71 -0.71 -0.71 -0.71]</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>reconstructed <span class="op">=</span> pywt.waverec(coeffs, <span class="st">'db1'</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Reconstructed:"</span>, reconstructed)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstructed: [1. 2. 3. 4. 5. 6. 7. 8.]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Here, different levels represent signal features at different frequency bands.</p>
+<p>Different wavelet families (e.g., Daubechies, Symlets, Coiflets, Biorthogonal) offer various trade-offs in terms of compact support, symmetry, and vanishing moments. The choice of wavelet affects the decomposition quality and should be selected based on the signal characteristics and analysis goals.</p>
+<section id="dwt-thresholding-for-signal-denoising" class="level3">
+<h3 class="anchored" data-anchor-id="dwt-thresholding-for-signal-denoising">DWT Thresholding for Signal Denoising</h3>
+<p>Wavelet denoising leverages the idea that noise predominantly appears as low-amplitude coefficients, whereas meaningful signals appear as larger coefficients. We remove noise by applying a threshold to detail coefficients, retaining major signal features.</p>
+<p>Two common thresholding methods:</p>
+<ul>
+<li><strong>Hard Thresholding</strong>: Sets coefficients smaller than threshold to zero, others remain unchanged (may cause discontinuities).</li>
+<li><strong>Soft Thresholding</strong>: Smoothly reduces coefficients above the threshold towards zero (creates smoother results).</li>
+</ul>
+<p>We generate a noisy sinusoidal signal and denoise it using soft thresholding.</p>
+<p><strong>Steps:</strong></p>
+<ol type="1">
+<li><p>Decompose signal using DWT.</p></li>
+<li><p>Estimate noise level <span class="math inline">\sigma</span> from detail coefficients and compute threshold: <span class="math display">
+T = \sigma \sqrt{2\ln(N)}
+</span></p></li>
+<li><p>Apply soft <a href="https://pywavelets.readthedocs.io/en/latest/ref/thresholding-functions.html">thresholding</a> to detail coefficients.</p></li>
+<li><p>Reconstruct the denoised signal.</p></li>
+</ol>
+<p align="center">
+<img src="../Figure/figure_dwt_denoise.png" width="100%">
+</p>
+<p>Example implementation:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate synthetic noisy sinusoidal signal</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>sig_clean <span class="op">=</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="dv">5</span> <span class="op">*</span> t)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>sig_nosiy <span class="op">=</span> sig_clean <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.3</span>, size<span class="op">=</span>N)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Wavelet decomposition</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>wavelet <span class="op">=</span> <span class="st">'db4'</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>coeffs <span class="op">=</span> pywt.wavedec(sig_nosiy, wavelet)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>cA, cDs <span class="op">=</span> coeffs[<span class="dv">0</span>], coeffs[<span class="dv">1</span>:]</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Threshold calculation</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>sigma <span class="op">=</span> np.median(np.<span class="bu">abs</span>(details[<span class="op">-</span><span class="dv">1</span>])) <span class="op">/</span> <span class="fl">0.6745</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> sigma <span class="op">*</span> np.sqrt(<span class="dv">2</span> <span class="op">*</span> np.log(N))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Soft thresholding</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>denoised_details <span class="op">=</span> [pywt.threshold(d, T, mode<span class="op">=</span><span class="st">'soft'</span>) <span class="cf">for</span> d <span class="kw">in</span> details]</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Reconstruction</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>denoised_signal <span class="op">=</span> pywt.waverec([cA] <span class="op">+</span> denoised_details, wavelet)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The left plot shows the noisy signal. On the right, after soft thresholding denoising, the signal is smoother, closely approximating the original clean signal. Most noise is effectively removed, while preserving key signal features.</p>
+<p>Got it. I’ll prepare a compact, tutorial-style summary of the listed wavelets, grouped by type, with intuitive descriptions and a couple of structured tables for clarity. I’ll also include an explanation of biorthogonal wavelets and their dual basis structure. I’ll let you know once it’s ready.</p>
+</section>
+<section id="dwt-decomposition-for-image-compression" class="level3">
+<h3 class="anchored" data-anchor-id="dwt-decomposition-for-image-compression">DWT Decomposition for Image Compression</h3>
+<p>2-dimensional DWT allows the scale decomposition for a 2-D object like an image. Its key advantage is the ability to perform multi-resolution analysis by breaking down the image into different frequency subbands. Typically, the 2D-DWT decomposes an image into one approximation subband (LL, or cA, for <strong>A</strong>pproximated <strong>c</strong>oefficient) that captures the coarse, low-frequency components, and three detail subbands (LH, HL, HH) that represent horizontal, vertical, and diagonal high-frequency details respectively. This decomposition not only facilitates efficient image compression by isolating and quantizing the less perceptually significant high-frequency details, but it also aids in tasks such as denoising and feature extraction, where preserving both spatial and spectral information is critical.</p>
+<p><strong>Worked example.</strong> We compress an 8-bit grey-scale photograph by replacing every detail coefficient whose magnitude is below a percentile-based threshold with zero, then reconstructing. Sweeping the threshold from <span class="math inline">0\%</span> (lossless) to <span class="math inline">99\%</span> (only the top <span class="math inline">1\%</span> of coefficients kept) traces out a <em>rate-distortion</em> curve: how many coefficients we keep versus the resulting peak signal-to-noise ratio (PSNR).</p>
+<p>The Daubechies-4 (<code>db4</code>) basis is a good default — compactly supported, four vanishing moments, and orthogonal so the energy at each level is preserved. With <span class="math inline">95\%</span> of the coefficients zeroed the picture is still visually faithful, illustrating the strong sparsity that wavelet bases expose in natural images. This same principle underlies the wavelet-based JPEG-2000 codec.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> scipy.datasets.ascent().astype(<span class="bu">float</span>)        <span class="co"># 512x512 sample image</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>wavelet, level <span class="op">=</span> <span class="st">'db4'</span>, <span class="dv">4</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>coeffs        <span class="op">=</span> pywt.wavedec2(image, wavelet<span class="op">=</span>wavelet, level<span class="op">=</span>level)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>arr, slices   <span class="op">=</span> pywt.coeffs_to_array(coeffs)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>ratios <span class="op">=</span> [<span class="fl">0.0</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.99</span>]                 <span class="co"># fraction of coeffs zeroed</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>psnrs  <span class="op">=</span> []</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> ratios:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> r <span class="op">==</span> <span class="fl">0.0</span>:</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        arr_c <span class="op">=</span> arr.copy()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        thresh <span class="op">=</span> np.quantile(np.<span class="bu">abs</span>(arr), r)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        arr_c  <span class="op">=</span> np.where(np.<span class="bu">abs</span>(arr) <span class="op">&gt;=</span> thresh, arr, <span class="fl">0.0</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    coeffs_c    <span class="op">=</span> pywt.array_to_coeffs(arr_c, slices, output_format<span class="op">=</span><span class="st">'wavedec2'</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    image_recon <span class="op">=</span> pywt.waverec2(coeffs_c, wavelet<span class="op">=</span>wavelet)[: image.shape[<span class="dv">0</span>], : image.shape[<span class="dv">1</span>]]</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    mse  <span class="op">=</span> np.mean((image <span class="op">-</span> image_recon) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    psnr <span class="op">=</span> <span class="fl">10.0</span> <span class="op">*</span> np.log10((image.<span class="bu">max</span>() <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> <span class="bu">max</span>(mse, <span class="fl">1e-12</span>))</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    psnrs.append(psnr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p align="center">
+<img src="../Figure/figure_dwt_image_compression.png" width="100%">
+</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Coefficients kept</th>
+<th style="text-align: center;"><span class="math inline">100\%</span></th>
+<th style="text-align: center;"><span class="math inline">50\%</span></th>
+<th style="text-align: center;"><span class="math inline">10\%</span></th>
+<th style="text-align: center;"><span class="math inline">5\%</span></th>
+<th style="text-align: center;"><span class="math inline">1\%</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">PSNR (typical, <code>db4</code>)</td>
+<td style="text-align: center;"><span class="math inline">\infty</span></td>
+<td style="text-align: center;"><span class="math inline">\sim 60</span> dB</td>
+<td style="text-align: center;"><span class="math inline">\sim 40</span> dB</td>
+<td style="text-align: center;"><span class="math inline">\sim 35</span> dB</td>
+<td style="text-align: center;"><span class="math inline">\sim 28</span> dB</td>
+</tr>
+</tbody>
+</table>
+<p>The numbers above are representative for <code>scipy.datasets.ascent</code> and depend on the chosen image, wavelet, and decomposition level — re-run the snippet to populate them for your own data.</p>
+</section>
+</section>
+<section id="wavelet-families-in-pywavelets-continuous-vs.-discrete" class="level2">
+<h2 class="anchored" data-anchor-id="wavelet-families-in-pywavelets-continuous-vs.-discrete">Wavelet Families in PyWavelets (Continuous vs.&nbsp;Discrete)</h2>
+<section id="continuous-wavelets-cwt" class="level3">
+<h3 class="anchored" data-anchor-id="continuous-wavelets-cwt">Continuous Wavelets (CWT)</h3>
+<p>The story starts with the <em>Gabor window</em> (1946), a Gaussian-modulated sinusoid that set the benchmark for joint time–frequency resolution. Early-1980s geophysics added explicit scale, giving the <em>Morlet</em> wavelet—the work-horse of the continuous wavelet transform (CWT). Shortly after, the real, symmetric <em>Mexican-Hat</em> (second derivative of a Gaussian) became popular for edge and peak detection, while <em>Paul</em> wavelets generalized higher-order Gaussian derivatives for finer phase tracking. In 1986 Yves Meyer produced the first rigorously admissible CWT mother, compact in the <em>frequency</em> domain. Finally, band-limited designs such as the <em>Shannon</em> and frequency-B-spline wavelets (early 1990s) offered idealized rectangular spectra for theoreticians and filter-bank designers.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Wavelet Name</th>
+<th>Brief Description</th>
+<th>Key Properties</th>
+<th>Function/Scale Expression</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Complex Gaussian (cgau)</strong></td>
+<td>Complex-valued derivatives of a Gaussian function; higher order means more oscillations.</td>
+<td>Good time-frequency localization; complex-valued; infinite support.</td>
+<td><span class="math inline">\psi(t) = C \frac{d^n}{dt^n}(e^{-t^2})</span></td>
+</tr>
+<tr class="even">
+<td><strong>Complex Morlet (cmor)</strong></td>
+<td>Gaussian-windowed complex sinusoid; useful for capturing phase information and oscillations.</td>
+<td>Excellent time-frequency balance; complex-valued; infinite support.</td>
+<td><span class="math inline">\psi(t) = C e^{-t^2/(2\sigma^2)} e^{i2\pi f_c t}</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Morlet (morl)</strong></td>
+<td>Real-valued Gaussian-windowed sinusoid, widely used for general analysis.</td>
+<td>Good time-frequency localization; infinite support.</td>
+<td><span class="math inline">\psi(t) = \pi^{-1/4} e^{-t^2/2} \cos(\omega_0 t)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Frequency B-Spline (fbsp)</strong></td>
+<td>Band-limited complex wavelet defined by frequency-domain B-splines.</td>
+<td>Adjustable bandwidth and smoothness; complex-valued; infinite support.</td>
+<td>Defined in frequency domain by B-spline filters.</td>
+</tr>
+<tr class="odd">
+<td><strong>Mexican Hat (mexh)</strong></td>
+<td>Real-valued second derivative of Gaussian; bell-shaped wavelet for edge detection.</td>
+<td>Good localization; real-valued; infinite support.</td>
+<td><span class="math inline">\psi(t) = (1 - t^2) e^{-t^2/2}</span></td>
+</tr>
+<tr class="even">
+<td><strong>Shannon (shan)</strong></td>
+<td>Ideal rectangular band-pass wavelet; perfectly band-limited in frequency domain.</td>
+<td>Ideal frequency localization; poor time localization; complex-valued; infinite support.</td>
+<td>Frequency domain rectangular function; inverse FT yields sinc function.</td>
+</tr>
+<tr class="odd">
+<td><strong>Gaussian (gaus)</strong></td>
+<td>Real-valued Gaussian derivatives (DOG); higher orders mean more oscillations.</td>
+<td>Good localization for feature detection; real-valued; infinite support.</td>
+<td><span class="math inline">\psi(t) = \frac{d^n}{dt^n}(e^{-t^2/2})</span></td>
+</tr>
+</tbody>
+</table>
+<p align="center">
+<img src="../Figure/figure_cwt_family.png" width="100%">
+</p>
+</section>
+<section id="discrete-wavelets-dwt" class="level3">
+<h3 class="anchored" data-anchor-id="discrete-wavelets-dwt">Discrete Wavelets (DWT)</h3>
+<p>The discrete lineage begins with the step-like <em>Haar</em> basis (1910). Jan-Olov Strömberg’s 1983 work showed how to sample continuous wavelets without losing orthogonality, paving the way for Ingrid Daubechies’ breakthrough (1988): compactly supported, arbitrarily smooth orthonormal wavelets (db N). Compression soon demanded linear phase, so biorthogonal pairs appeared—the 5/3 tap <em>Le Gall–Tabatabai</em> (1988) for loss-less, and the longer 9/7 <em>Cohen–Daubechies–Feauveau</em> (1992) for lossy JPEG 2000. Stéphane Mallat’s pyramidal algorithm and subsequent wavelet-packet extension (late 1980s–1990) made <span class="math inline">\mathcal{O}(N)</span> multiresolution analysis practical. <em>Symlets</em> and <em>Coiflets</em> fine-tuned phase and moment symmetry, and Wim Sweldens’ <em>lifting scheme</em> (1995) recast any biorthogonal filter bank as fast, in-place, integer arithmetic—ideal for hardware codecs.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 29%">
+<col style="width: 26%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Wavelet Name</th>
+<th>Brief Description</th>
+<th>Key Properties</th>
+<th>Scale Recurrence Relation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Daubechies (db)</strong></td>
+<td>Orthonormal wavelets with compact support; “db1” is Haar wavelet. Higher orders smoother, longer filters.</td>
+<td>Orthogonal; asymmetric (except db1); compact support.</td>
+<td><span class="math inline">\phi(t) = \sqrt{2} \sum_{k} h[k] \phi(2t - k)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Symlets (sym)</strong></td>
+<td>Modified Daubechies wavelets with improved symmetry, reducing phase distortion.</td>
+<td>Orthogonal; near-symmetric; compact support.</td>
+<td><span class="math inline">\phi(t) = \sqrt{2} \sum_{k} h[k] \phi(2t - k)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Coiflets (coif)</strong></td>
+<td>Designed for equal vanishing moments in scaling and wavelet functions; smoother approximation.</td>
+<td>Orthogonal; near-symmetric; compact support.</td>
+<td><span class="math inline">\phi(t) = \sqrt{2} \sum_{k} h[k] \phi(2t - k)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Biorthogonal (bior &amp; rbio)</strong></td>
+<td>Uses separate wavelets for analysis and synthesis, forming dual bases; symmetric filters with linear phase.</td>
+<td>Biorthogonal; symmetric; compact support.</td>
+<td><span class="math inline">\phi_d(t) = \sqrt{2} \sum_{k} h_d[k] \phi_d(2t - k)</span>, <span class="math inline">\phi_r(t) = \sqrt{2} \sum_{k} h_r[k] \phi_r(2t - k)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Discrete Meyer (dmey)</strong></td>
+<td>Finite approximation of the Meyer wavelet, with excellent smoothness and frequency characteristics.</td>
+<td>Orthonormal; nearly symmetric; finite approximation.</td>
+<td>Defined by frequency domain filter approximation.</td>
+</tr>
+</tbody>
+</table>
+<p align="center">
+<img src="../Figure/figure_dwt_family.png" width="100%">
+</p>
+</section>
+<section id="vanishing-moment-orthogonality-and-support" class="level3">
+<h3 class="anchored" data-anchor-id="vanishing-moment-orthogonality-and-support">Vanishing Moment, Orthogonality, and Support:</h3>
+<p>In the above descriptions on the wavelet functions, several key properties of wavelets are frequently mentioned. Here’s a brief explanation of these terms:</p>
+<ul>
+<li><p><strong>Vanishing Moments</strong> (<span class="math inline">p</span>): The number of moments (derivatives) that vanish at zero, indicating how well the wavelet can represent polynomial functions. <span class="math display">
+M_k=\int_{-\infty}^{+\infty} t^k \psi(t) dt = 0 \quad \text{for } k = 0, 1, \ldots, p-1
+</span></p>
+<p><span class="math display">
+M_p=\int_{-\infty}^{+\infty} t^p \psi(t) dt \neq 0
+</span></p></li>
+<li><p><strong>Orthonormal:</strong> Wavelets that form an orthogonal basis with unit norm, useful for efficient reconstruction without redundancy. <span class="math display">
+\int_{-\infty}^{+\infty} \psi_i(t) \psi_j(t) dt = \delta_{ij}
+</span></p></li>
+<li><p><strong>Bi-orthogonal:</strong> Involves two wavelet sets forming dual bases, one set for analysis and another for synthesis; allows symmetric filters and linear phase. <span class="math display">
+\int_{-\infty}^{+\infty} \phi_{d,i}(t) \psi_{r,j}(t) dt = \delta_{ij}\\
+  \int_{-\infty}^{+\infty} \phi_{r,i}(t) \psi_{d,j}(t) dt = \delta_{ij}
+</span></p></li>
+<li><p><strong>Support:</strong> The region in time where the wavelet is non-zero.</p>
+<ul>
+<li><p><strong>Infinite Support:</strong> Wavelets extending indefinitely in time, typically with exponential or Gaussian decay.</p></li>
+<li><p><strong>Finite Support:</strong> Wavelets explicitly confined within a finite time interval, completely vanishing outside this interval.</p></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="more-details-about-morlet-wavelet" class="level2">
+<h2 class="anchored" data-anchor-id="more-details-about-morlet-wavelet">More Details about Morlet wavelet</h2>
+<p>If you want to go deeper into the Morlet wavelet, here are some additional details, which could be especially useful for understanding its properties and applications:</p>
+<ul>
+<li><strong><u>Admissibility</u></strong>: The strict form of Morlet wavelet should satisfy the <strong>admissibility condition</strong>, which requires the wavelet to have zero mean. However, the standard Morlet wavelet does not strictly satisfy this condition because</li>
+</ul>
+<p><span class="math display">
+\begin{align}
+\int_{-\infty}^{+\infty} \psi_{approx}(\eta) \mathrm{d}\eta &amp;= \sqrt{2}\pi^{1/4} e^{-\omega_0^2/2}\\
+&amp;= \int_{-\infty}^{+\infty} \boxed{\pi^{-1/4}e^{-\omega_0^2/2}e^{-\eta^2/2}} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta\\
+&amp;\neq 0
+\end{align}
+</span></p>
+<p>​ To address this, a correction term is often subtracted to ensure zero mean. <span class="math display">
+\psi_{adm}(\eta)=\psi_{approx}(\eta)-\delta\psi(\eta)=\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
+</span></p>
+<ul>
+<li><strong><u>Normalization</u></strong>: To ensure the corrected morlet wavelet has unit energy, we normalize it so that its L2 norm equals 1. The normalization factor is given by the inverse of the square root of the integral of the squared magnitude of the wavelet.</li>
+</ul>
+<p><span class="math display">
+\psi(\eta)=\frac{\psi_{adm}}{\left[{\int_{-\infty}^{+\infty} [\psi^\prime(\eta)]^2 \mathrm{d}\eta}\right]^{-1/2}}=c_{\omega_0}\psi_{adm} = \boxed{\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\psi_{adm}
+</span></p>
+<p>The Final form of Morlet wavelet is: <span class="math display">
+\psi(\eta)=ta)={\left(1+e^{-\omega_0^2}-2e^{-\frac{3}{4}\omega_0^2}\right)^{-{1}/{2}}}\pi^{-1/4}e^{-\eta^2/2}\left[e^{i\omega_0\eta}-e^{-\omega_0^2/2}\right]
+</span> when <span class="math inline">\omega_0\geq 5</span>, the correction term <span class="math inline">e^{-\omega_0^2/2}</span> is negligible, and the approximate form <span class="math inline">\psi_{approx}</span> is often used directly.</p>
+<ul>
+<li><strong><u>Frequency Response:</u></strong> Another issue that must be considered is the frequency response of the corrected Morlet wavelet, which is no longer a simple Gaussian centered at <span class="math inline">\omega_0</span>. Instead, it has a more complex shape due to the subtraction of the correction term:</li>
+</ul>
+<p><span class="math display">
+\hat{\psi}(\omega)=c_{\omega_0}\pi^{-1/4}\left[e^{-(\omega-\omega_0)^2/2}-e^{-\omega_0^2/2}e^{-\omega^2/2}\right]
+</span></p>
+<p>This affects the relationship between scale and equivalent Fourier period, as well as the central frequency of the wavelet.</p>
+<ul>
+<li><strong><u>Equivalent Fourier Period</u>:</strong> For Morlet wavelets with a small <span class="math inline">\omega_0</span>, the Gaussian envelope <span class="math inline">e^{-\eta^2/2}</span> dominates over the carrier oscillation <span class="math inline">e^{-i\omega_0\eta}</span>. As a result, the CWT power spectrum of an input sine wave no longer peaks at the naive period <span class="math inline">T = 2\pi/\omega_0</span>. Instead, its maximum shifts to the equivalent Fourier period <span class="math inline">T_{\mathrm{eq}}</span>, which more accurately captures the signal’s power distribution in the frequency domain. <span class="math display">
+\begin{align}
+s=\arg\max_s \left|\hat{\psi}\left(\frac{2\pi s}{T_{eq}}\right)\right|\\
+\end{align}
+</span> The equivalent Fourier period can be found by solving the equation:</li>
+</ul>
+<p>$$</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

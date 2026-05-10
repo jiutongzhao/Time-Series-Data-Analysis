@@ -8,3 +8,6 @@ Data/orpheus.mp4
 *.wav
 *.cdf
 docs/Data/audio.zip
+
+/.quarto/
+**/*.quarto_ipynb

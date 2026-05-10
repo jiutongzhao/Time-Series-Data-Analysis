@@ -1,0 +1,12 @@
+{
+  "hash": "233799313d33b4cd38d843a73d316f6a",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Hello, Quarto\"\nformat: html\n---\n\n## Markdown\n\nMarkdown is an easy to read and write text format:\n\n- It's _plain text_ so works well with version control\n- It can be **rendered** into HTML, PDF, and more\n- Learn more at: <https://quarto.org/docs/authoring/>\n\n## Code Cell\n\nHere is a Python code cell:\n\n::: {#aa109c43 .cell execution_count=1}\n``` {.python .cell-code}\nimport os\n\nos.cpu_count()\n16\n```\n\n::: {.cell-output .cell-output-display execution_count=1}\n```\n16\n```\n:::\n:::\n\n\n## Equation\n\nUse LaTeX to write equations:\n\n$$\n\\chi' = \\sum_{i=1}^n k_i s_i^3\n$$\n\n",
+    "supporting": [
+      "walkthrough_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

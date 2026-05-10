@@ -1,0 +1,74 @@
+# Jupyter Book table of contents
+# https://jupyterbook.org/customize/toc.html
+#
+# Two-level layout: each prose chapter (`docs/chapN.md`) is the primary
+# entry; the corresponding self-contained notebook (`chapN.ipynb`) is a
+# sub-page so the reader can jump between "the explanation" and "run the
+# code".
+
+format: jb-book
+root: intro
+
+parts:
+  - caption: Front Matter
+    chapters:
+      - file: docs/chap0_preface
+
+  - caption: The Spectral-Analysis Handbook
+    chapters:
+      - file: docs/chap1
+        title: 1 — Data Initialization
+        sections:
+          - file: chap1
+            title: Notebook
+
+      - file: docs/chap2
+        title: 2 — Frequency Domain
+        sections:
+          - file: chap2
+            title: Notebook
+
+      - file: docs/chap3
+        title: 3 — Power Spectral Density
+        sections:
+          - file: chap3
+            title: Notebook
+
+      - file: docs/chap4
+        title: 4 — More about DFT/FFT
+        sections:
+          - file: chap4
+            title: Notebook
+
+      - file: docs/chap5
+        title: 5 — Noise
+        sections:
+          - file: chap5
+            title: Notebook
+
+      - file: docs/chap6
+        title: 6 — Signal Processing
+        sections:
+          - file: chap6
+            title: Notebook
+
+      - file: docs/chap7
+        title: 7 — Wavelet & Time–Frequency
+        sections:
+          - file: chap7
+            title: Notebook
+
+      - file: docs/chap8
+        title: 8 — Multi-Channel Analysis
+        sections:
+          - file: chap8
+            title: Notebook
+
+  - caption: Back Matter
+    chapters:
+      - file: docs/chap9
+        title: 9 — Usage Examples
+      - file: docs/chap10_appendix
+        title: Appendix
+      - file: docs/_todo
+        title: Changelog & Roadmap

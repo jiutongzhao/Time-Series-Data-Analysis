@@ -1,0 +1,85 @@
+# Jupyter Book configuration
+# https://jupyterbook.org/customize/config.html
+
+title: Practical Spectral Analysis with Python
+author: Jiutong Zhao
+copyright: "2024-2026"
+logo: ""              # add a path here later if you want a logo
+
+# Force the book to render *as written* — no re-execution. This keeps the
+# build fast and reproducible even when the figures depend on local data
+# (Cluster CDF, audio WAVs, etc.) that may not be present in CI.
+execute:
+  execute_notebooks: "off"
+  timeout: -1
+  allow_errors: false
+
+# Markdown / MyST extensions.  These are the bits that make LaTeX, AMS
+# math, mermaid, and inline HTML in the existing chap*.md files render
+# correctly.
+parse:
+  myst_enable_extensions:
+    - amsmath          # \begin{align}, \begin{equation}, ...
+    - dollarmath       # $...$ and $$...$$
+    - deflist
+    - colon_fence
+    - html_image
+    - html_admonition
+    - linkify
+    - smartquotes
+    - substitution
+    - tasklist
+  myst_url_schemes:    # auto-detected URL prefixes inside MyST
+    - mailto
+    - http
+    - https
+  myst_dmath_double_inline: true   # render $$..$$ on a single line if needed
+
+# LaTeX engine for any future PDF build.
+latex:
+  latex_engine: xelatex
+  use_jupyterbook_latex: true
+
+# Bibliography file (optional; create _references.bib if you want to use it).
+bibtex_bibfiles: []
+
+# Useful repository metadata so Jupyter Book can render an "Edit on GitHub"
+# button on every page.
+repository:
+  url: https://github.com/jiutongzhao/Time-Series-Data-Analysis
+  branch: main
+  path_to_book: ""
+
+# Theme & HTML options.
+html:
+  favicon: ""
+  use_repository_button: true
+  use_issues_button: true
+  use_edit_page_button: true
+  home_page_in_navbar: true
+  baseurl: ""
+
+# Sphinx fine-tuning. We register a few extra extensions for niceties:
+#   * sphinxcontrib.mermaid     -> render the ```mermaid``` blocks already
+#                                  used in docs/chap3.md.
+#   * sphinx_proof              -> theorem / proof admonitions for the
+#                                  Wiener-Khinchin / Parseval blocks.
+sphinx:
+  extra_extensions:
+    - sphinxcontrib.mermaid
+    - sphinx_proof
+  config:
+    # KaTeX-style fast math via MathJax 3 with the AMS package preloaded.
+    mathjax3_config:
+      tex:
+        macros:
+          "FT": "\\mathcal{F}"
+          "iFT": "\\mathcal{F}^{-1}"
+          "expect": ["\\mathbb{E}\\left[#1\\right]", 1]
+          "abs": ["\\left|#1\\right|", 1]
+          "norm": ["\\left\\|#1\\right\\|", 1]
+        packages:
+          "[+]": ["ams", "noerrors", "noundefined"]
+    # Look for missing references during build but don't fail the build.
+    nitpicky: false
+    language: en

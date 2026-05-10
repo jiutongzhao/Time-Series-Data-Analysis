@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>chap2 – Practical Spectral Analysis with Python</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-2c9aed11d1b70b0b2e0b9c8c3ae51c6c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Spectral Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../docs/chap0_preface.html" aria-current="page"> 
+<span class="menu-text">Docs</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="../docs/chap2.html">Frequency Domain</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Getting Started</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap0_preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Core Concepts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"></span></a><center><a href="../docs/chap1.html" class="sidebar-item-text sidebar-link"> Data Initialization</a>
+  </center></div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Frequency Domain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Power Spectral Density</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">More about DFT/FFT</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processing of the signal</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Wavelet and Time-Frequency Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Multi-Channel Analysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../docs/chap10_appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#frequency-domain" id="toc-frequency-domain" class="nav-link active" data-scroll-target="#frequency-domain">Frequency Domain</a>
+  <ul class="collapse">
+  <li><a href="#fourier-transform" id="toc-fourier-transform" class="nav-link" data-scroll-target="#fourier-transform">Fourier Transform</a>
+  <ul class="collapse">
+  <li><a href="#dft-for-a-sinusoidal-signal" id="toc-dft-for-a-sinusoidal-signal" class="nav-link" data-scroll-target="#dft-for-a-sinusoidal-signal">DFT for a sinusoidal signal</a></li>
+  <li><a href="#double-side-versus-single-side" id="toc-double-side-versus-single-side" class="nav-link" data-scroll-target="#double-side-versus-single-side">Double-side <strong><em>versus</em></strong> Single-side</a></li>
+  </ul></li>
+  <li><a href="#application-polynomial-large-integer-multiplication" id="toc-application-polynomial-large-integer-multiplication" class="nav-link" data-scroll-target="#application-polynomial-large-integer-multiplication">Application: Polynomial &amp; Large Integer Multiplication</a></li>
+  <li><a href="#windowing-effect" id="toc-windowing-effect" class="nav-link" data-scroll-target="#windowing-effect">Windowing Effect</a></li>
+  <li><a href="#convolution-theorem" id="toc-convolution-theorem" class="nav-link" data-scroll-target="#convolution-theorem">Convolution Theorem</a></li>
+  <li><a href="#other-window-functions" id="toc-other-window-functions" class="nav-link" data-scroll-target="#other-window-functions">Other Window Functions</a></li>
+  <li><a href="#sampling-as-a-rectangular-window" id="toc-sampling-as-a-rectangular-window" class="nav-link" data-scroll-target="#sampling-as-a-rectangular-window">Sampling as a Rectangular Window</a></li>
+  <li><a href="#application-borwein-integral" id="toc-application-borwein-integral" class="nav-link" data-scroll-target="#application-borwein-integral">Application: Borwein integral</a></li>
+  <li><a href="#fence-effect-and-padding" id="toc-fence-effect-and-padding" class="nav-link" data-scroll-target="#fence-effect-and-padding">Fence Effect and Padding</a></li>
+  <li><a href="#other-padding-type" id="toc-other-padding-type" class="nav-link" data-scroll-target="#other-padding-type">Other Padding Type</a></li>
+  <li><a href="#application-stiffness-of-a-piano-string" id="toc-application-stiffness-of-a-piano-string" class="nav-link" data-scroll-target="#application-stiffness-of-a-piano-string">Application: Stiffness of a Piano String</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../docs/chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="../docs/chap2.html">Frequency Domain</a></li></ol></nav></header>
+
+
+
+
+
+<section id="frequency-domain" class="level1">
+<h1>Frequency Domain</h1>
+<section id="fourier-transform" class="level2">
+<h2 class="anchored" data-anchor-id="fourier-transform">Fourier Transform</h2>
+<blockquote class="blockquote">
+<p><strong><a href="https://en.wikipedia.org/wiki/Fourier_transform">(Continuous) Fourier Transform (CFT, or FT)</a></strong> provide the perfect way to convert the observed time series into the dual space, <strong><em>Frequency domain</em></strong>. Its definition can be written as follows <span class="math display">
+\begin{align}
+X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t:=\mathcal{F}[x(t)]
+\end{align}
+</span> <span class="math inline">\mathcal{F}</span> denotes the Fourier transform operator. This transform is invertible and the inverse (continuous) Fourier transform can be given as: <span class="math display">
+\begin{align}
+x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X(f)]
+\end{align}
+</span></p>
+</blockquote>
+<p align="center">
+<img src="../Figure/figure_4types_of_ft.png" width="100%">
+</p>
+<p>However, a physical sample can only cover at discrete time nodes. Thus, <strong><em><u>Discrete-Time Fourier Transform (DTFT)</u></em></strong> presents an alternative expression in: <span class="math display">
+\begin{align}
+X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\delta t)}
+\end{align}
+</span></p>
+<p>where <span class="math inline">x[n]=x(n\cdot\delta t)</span> stands for a discrete signal and <span class="math inline">\delta t</span> (<code>dt</code>) is the sampling period.</p>
+<p>This infinite-length discrete signal is still unrealistic. For a finite signal, the <strong><em><u>Discrete Fourier Transform (DFT)</u></em></strong> is the only one that applicable: <span class="math display">
+\begin{align}
+X[k] := X(k\cdot \delta f) &amp; = \sum_{n=0}^N x(n\delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
+&amp; = \sum_{n=0}^N x[n] e^{-2\pi i\cdot k \cdot \delta f \cdot t} \, \delta  t
+\end{align}
+</span></p>
+<p>and the yielding frequency is also discrete with a frequency interval of <span class="math inline">\delta f = 1/(N\cdot\delta t)</span>, where <span class="math inline">N</span> is the total number of samples. The multiplier <span class="math inline">k</span> is an integer ranging from <span class="math inline">0</span> to <span class="math inline">N-1</span>. But, <strong><span class="math inline">X[k]</span> provide no additional information beyond <span class="math inline">k=N/2</span></strong> for a real-valued signal, as it is <strong>symmetric about</strong> <span class="math inline">k=N/2</span>, as a manifestation of the Nyquist-Shannon sampling theorem.</p>
+<section id="dft-for-a-sinusoidal-signal" class="level3">
+<h3 class="anchored" data-anchor-id="dft-for-a-sinusoidal-signal">DFT for a sinusoidal signal</h3>
+<p>For a pure sinusoidal signal <span class="math inline">x(t)=A\cdot \mathrm{sin}(2\pi f_0 t + \phi)</span>, the DFT result will be two spikes at <span class="math inline">f_0</span> and <span class="math inline">-f_0</span> (or equivalently at <span class="math inline">N-f_0</span>) with a complex amplitude of <span class="math inline">AN/2 \cdot e^{i\phi}</span> and <span class="math inline">AN/2 \cdot e^{-i\phi}</span>, respectively. The amplitude spectrum can be calculated as <span class="math inline">|X[k]|/N</span> and the phase spectrum can be calculated as <span class="math inline">\mathrm{arg}(X[k])</span>.</p>
+<p>In many lecture notes (especially in the mathematics course), the sample period <span class="math inline">\delta t</span> is set to unity so that the formulas can be simplified. So, remember that all the related quantities are not in <strong><u><em>SI (Système International d’Unités)</em></u></strong> in that case. But in practical usage of spectral analysis, <strong>the unit here always matters</strong>. Specially, the unit information will be lost in the programming processing, which can be kept in mind in theoretical derivation. For this reason, we will try to keep all the units in this document. You can also ignore it during the processing but remember to add it back when you output the results. <a href="https://en.wikipedia.org/wiki/Dimensional_analysis">Dimensional analysis</a> can be useful for getting and checking the correct final unitof the results.</p>
+<p>Ideally, according to the periodicity of <span class="math inline">e^{-2\pi i ft}</span>, the DFT actually calculates the DTFT coefficients by extending the original series along and anti-along the time axis.</p>
+</section>
+<section id="double-side-versus-single-side" class="level3">
+<h3 class="anchored" data-anchor-id="double-side-versus-single-side">Double-side <strong><em>versus</em></strong> Single-side</h3>
+<p>In frequency analysis using the <em>DFT</em>, or its practical implementation <strong><u><em>Fast Fourier Transform (FFT)</em></u></strong>, the spectrum can be represented in two main formats: <strong>double-sided</strong> and <strong>single-sided</strong>, depending on the properties of the input signal and the goal of the analysis.</p>
+<ul>
+<li><p><strong>Double-Sided FFT</strong> includes both positive and negative frequency components, symmetrically arranged around zero. It shows the full complex-valued spectrum, which is useful when the signal is complex or when phase symmetry matters. For real signals, the negative-frequency part is the complex conjugate of the positive-frequency part, making the negative side redundant.</p>
+<p><code>np.fft.fftfreq(N, dt)</code> returns the discrete Fourier Transform sample frequencies.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.fft(sig)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Corresponding frequency with both zero, positive, and negative frequency</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.fftfreq(coef.size, dt)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># [0, 1, ...,   N/2-1,     -N/2, ..., -1] / (dt * N)   # if n is even</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># [0, 1, ..., (N-1)/2, -(N-1)/2, ..., -1] / (dt * N)   # if n is odd</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then you can use <code>np.fft.fftshift</code> to rearrange the <code>coef</code> and <code>freq</code> so that the frequency is monotonically increasing:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.fftshift(freq)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.fftshift(coef)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Single-Sided FFT</strong> presents only the non-negative frequency components (from 0 up to Nyquist frequency). This format is typically used for <strong>real-valued signals</strong> when the <strong>amplitude spectrum</strong> or <strong>energy (i.e., the square of amplitude) spectrum</strong> is of interest. To preserve energy equivalence, the magnitudes (except at 0 and Nyquist) are usually <strong>doubled</strong> to account for the omitted negative frequencies.</p>
+<p>For real input, use <code>numpy.fft.rfft</code> (<code>numpy.fft.rfftfreq</code>) instead of <code>numpy.fft.fft</code> (<code>numpy.fft.fftfreq</code>) to get a single-sided Fourier spectrum, which is only designed for real input and intrinsically truncate the output coefficients and frequencies.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.rfft(sig)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.rfftfreq(coef.size, dt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Yet, please remember that only real signal can be used as an input to <code>numpy.fft.rfft</code> otherwise the program will report a <code>TypeError</code>.</p></li>
+</ul>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Single-Sided</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Double-Sided</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p align="center">
+<img src="../Figure/figure_fft_single_side.png" width="100%">
+</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p align="center">
+<img src="../Figure/figure_fft_double_side.png" width="100%">
+</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="application-polynomial-large-integer-multiplication" class="level2">
+<h2 class="anchored" data-anchor-id="application-polynomial-large-integer-multiplication">Application: Polynomial &amp; Large Integer Multiplication</h2>
+<p>This is one of the most brilliant “crossover episodes” in computer science and applied mathematics. Using a tool originally designed for analyzing continuous wave frequencies (the Fourier Transform) to multiply discrete numbers and polynomials is a stroke of absolute genius.</p>
+<p>First, let us imagine you have two polynomials of degree <span class="math inline">N-1</span>: <span class="math display">
+A(x) = \sum_{k=0}^N a_kx^k = a_0 + a_1x + a_2x^2 + ... + a_{N-1}x^{N-1}\\
+B(x) = \sum_{k=0}^N b_kx^k = b_0 + b_1x + b_2x^2 + ... + b_{N-1}x^{N-1}
+</span> If you want to find their product <span class="math inline">C(x) = A(x)B(x)</span>, the standard “distributive” method requires multiplying every term in <span class="math inline">A(x)</span> by every term in <span class="math inline">B(x)</span>, which has a time complexity of <span class="math inline">\mathcal{O}(N^2)</span>.</p>
+<p>Once you put <span class="math display">x=\mathrm{exp}[i2\pi\ l/M],\ l = 0,1,\dots, M-1</span> into the above polynomials, you get <span class="math display">
+A\left[\mathrm{e}^{i2\pi l / M}\right] = \sum_{k=0}^N a_k\mathrm{e}^{i2\pi (lk / M)}:=A_l\\
+B\left[\mathrm{e}^{i2\pi l / M}\right] = \sum_{k=0}^N b_k\mathrm{e}^{i2\pi (lk / M)}:=B_l
+</span> The results <span class="math inline">A_L,\ B_L</span> are nothing but the <strong>Fourier</strong> coefficients of the series <span class="math inline">a_k</span> and <span class="math inline">b_k</span> with an extension filled by zero.</p>
+<p>These values of <span class="math inline">A(x)</span> (or <span class="math inline">B(x)</span>) at <span class="math inline">M</span> specific points: <span class="math display">[x_0, A(x_0)], ..., [x_{M-1}, A(x_{M-1})]</span> are called <strong>Point-Value Representation</strong> with a degree-bound of <span class="math inline">M</span> of a polynomial, and they can uniquely determine a polynomials with degree no more than <span class="math inline">M</span>.</p>
+<p>According to the definition <span class="math inline">C(x)=A(x) B(x)</span>, we have <span class="math inline">C_l=A_l B_l</span> that is satisfied from <span class="math inline">l=0</span> to <span class="math inline">M-1</span>. Now, we get the point-value representation of <span class="math inline">C(x)</span> as well. The coefficients of <span class="math inline">C(x)</span> are obviously derived by applying IFFT to the point-value representation of <span class="math inline">C_l</span>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>])</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1x^0 + 2x^1 + 3x^2 + 4x^3</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> np.array([<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 5x^0 + 6x^1 + 7x^2 + 8x^3 + 9x^4</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> <span class="bu">len</span>(A) <span class="op">+</span> <span class="bu">len</span>(B) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>A_padded <span class="op">=</span> np.pad(A, (<span class="dv">0</span>, M <span class="op">-</span> <span class="bu">len</span>(A)), mode<span class="op">=</span><span class="st">'constant'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>B_padded <span class="op">=</span> np.pad(B, (<span class="dv">0</span>, M <span class="op">-</span> <span class="bu">len</span>(B)), mode<span class="op">=</span><span class="st">'constant'</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> np.fft.ifft(np.fft.fft(A_padded) <span class="op">*</span> np.fft.fft(B_padded))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>A_string <span class="op">=</span> <span class="st">' + '</span>.join([<span class="ss">f'</span><span class="sc">{</span>a<span class="sc">:.0f}</span><span class="ss">x^</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i, a <span class="kw">in</span> <span class="bu">enumerate</span>(A)])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>B_string <span class="op">=</span> <span class="st">' + '</span>.join([<span class="ss">f'</span><span class="sc">{</span>b<span class="sc">:.0f}</span><span class="ss">x^</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i, b <span class="kw">in</span> <span class="bu">enumerate</span>(B)])</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>C_string <span class="op">=</span> <span class="st">' + '</span>.join([<span class="ss">f'</span><span class="sc">{</span>c<span class="sc">.</span>real<span class="sc">:.0f}</span><span class="ss">x^</span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> i, c <span class="kw">in</span> <span class="bu">enumerate</span>(C)])</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(A_string)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'*'</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(B_string)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'='</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(C_string)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Result:</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 1x^0 + 2x^1 + 3x^2 + 4x^3</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#             *</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 5x^0 + 6x^1 + 7x^2 + 8x^3 + 9x^4</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#             =</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 5x^0 + 16x^1 + 34x^2 + 60x^3 + 70x^4 + 70x^5 + 59x^6 + 36x^7</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This idea can easily extended to the large integer multiplication, as an integer can be decomposited as <span class="math display">
+\underline{65536} = \underline{6} \times 10^4 + \underline{5} \times 10^3 + \underline{5} \times 10^2 + \underline{3} \times 10^1 + \underline{6} \times 10^0=A_{63556}(10)
+</span> The only two addition things to do are 1. convert the large integers to polynomial <span class="math inline">A(x),\ B(x)</span>, coefficients; 2. Convert the resultant polynomial <span class="math inline">C(x)</span> back to the resultant integer.</p>
+</section>
+<section id="windowing-effect" class="level2">
+<h2 class="anchored" data-anchor-id="windowing-effect"><a href="https://en.wikipedia.org/wiki/Window_function">Windowing</a> Effect</h2>
+<p>When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. <span class="math display">
+\begin{align}
+X[k] &amp; = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t\\
+&amp; \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t
+\end{align}
+</span> However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.</p>
+<p align="center">
+<img src="../Figure/figure_dft_spectral_leakage_window.png" width="100%">
+</p>
+<p>This artificial discontinuity introduces <strong><em><u><a href="https://en.wikipedia.org/wiki/Spectral_leakage%3C/u%3E***">Spectral Leakage</a>, causing energy from specific frequency components to spread into adjacent frequencies (called </u></em></strong><u><u><a href="https://en.wikipedia.org/wiki/Sidelobes%3C/u%3E***">lobe</a>, thereby distorting the true spectral content. To mitigate this issue, a <strong>window function</strong>—typically denoted <span class="math inline">{w}(t)</span>—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.</u></u></p><u><u>
+<p>Different window functions (e.g., <strong><u><em>rectangular, Hamming, Hanning, Blackman</em></u></strong>) offer different trade-offs between <strong>frequency resolution</strong> (main-lobe width) and <strong>leakage suppression</strong> (side-lobe attenuation). You should try these window functions yourself and choose the most suitable one.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Hann_function">Hanning window</a>, which is a very wide used window function, can be written as: <span class="math display">
+\begin{align}
+w(t)&amp;=\frac{1}{2}\left[1-\mathrm{cos}(2\pi t)\right]\\
+w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
+\end{align}
+</span></p>
+<p>It can be implemented in <code>numpy</code> as follow:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Symmetric Window, for which w[0] = w[-1]</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Periodic Window, for which w[1] = w[-1]</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size <span class="op">+</span> <span class="dv">1</span>)[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Windowing Without Normalization</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>sig <span class="op">*=</span> w</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>However, applying a window also reduce the signal’s amplitude and energy near the boundary. This can introduce ambiguity when interpreting the resulting spectrum or comparing analyses across different window shapes. To ensure physical and quantitative consistency, <strong>normalization</strong> of the window function is often necessary. <strong>Amplitude normalization</strong> ensures that the peak value of the window is one, preserving the local signal scale. <strong>Power normalization</strong> adjusts the window so that the total energy of the signal—defined as the sum of squared values—remains unchanged after windowing. The amplitude and energy normalization is also named <u><strong><span class="math inline">L_1</span> and <span class="math inline">L_2</span> normalization</strong></u> as the amplitude and energy can is proportional to the <span class="math inline">L_1</span> and <span class="math inline">L_2</span> norm of the signal, respectively. The choice of normalization method depends on the analytical goals, and plays a crucial role in ensuring accurate and meaningful spectral results.</p>
+<p>The Hanning window has an average amplitude of <span class="math inline">1/2=\int_0^1 w(x)\mathrm{d}x</span> and an average energy of <span class="math display">
+\begin{align}
+\int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
+\end{align}
+</span></p>
+<p>A more quantitative estimation of the signal amplitude or energy can be given by using a normalized window function.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Amplitude Normalization (factor of 2)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size) <span class="op">*</span> <span class="dv">2</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>w <span class="op">/=</span> w.<span class="bu">sum</span>()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Energy Normalization (factor of 8/3)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size) <span class="op">*</span> np.sqrt(<span class="dv">8</span> <span class="op">/</span> <span class="dv">3</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> np.hanning(sig.size)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>w <span class="op">/=</span> np.sqrt((w <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</u></u></section><u><u>
+<section id="convolution-theorem" class="level2">
+<h2 class="anchored" data-anchor-id="convolution-theorem"><a href="https://en.wikipedia.org/wiki/Convolution_theorem">Convolution Theorem</a></h2>
+<blockquote class="blockquote">
+<p>In Fourier analysis, the <strong>Convolution Theorem</strong> says that convolving two signals in time becomes multiplying their spectra: <span class="math display">
+\mathcal{F}\{\,x(t)*y(t)\,\}=X(f)\cdot Y(f),
+\qquad
+\mathcal{F}^{-1}\{X(f)*Y(f)\}=x(t)\cdot y(t),
+</span> with the definition of convolution operator (<span class="math inline">*</span>): <span class="math display">
+(x*y)(t)=\int_{-\infty}^{\infty}x(\tau)\,y(t-\tau)\,d\tau
+</span></p>
+</blockquote>
+<p>The convolution theorem states how operations performed on a signal in the time domain or in the frequency domain will affect that signal in its dual domain.</p>
+<p align="center">
+<img src="../Figure/convolution_theorem.gif" width="100%"> <i>Some Other Window Functions (without normalization).</i>
+</p>
+<p>We now understand that windowing (<strong>time-domain multiplication</strong>) actually broadens and shapes the spectrum (<strong>frequency-domain convolution</strong>) exactly as predicted by the convolution theorem.</p>
+<p>Unlike the continuous version, the discrete convolution theorem inherently links point-wise multiplication in the DFT domain to <strong>circular (convolution-mod-N)</strong> in the time domain—so to obtain ordinary linear convolution you must first zero-pad the sequences beyond their combined length.</p>
+<p>According to the convolution theorem, performing convolution via the <em>FFT</em> cuts the computational cost from <span class="math inline">O(N^{2})</span> to <span class="math inline">O\bigl(N\log N\bigr)</span>.</p>
+</section>
+<section id="other-window-functions" class="level2">
+<h2 class="anchored" data-anchor-id="other-window-functions">Other Window Functions</h2>
+<p>Some other window functions are also supported by <code>numpy</code> and <code>scipy</code>, which is summarized below:</p>
+<p align="center">
+<img src="../Figure/figure_window_functions.png" width="100%"> <i>Some Other Window Functions (without normalization).</i>
+</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 37%">
+<col style="width: 22%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Window Name &amp; Python Call</strong></th>
+<th style="text-align: center;"><strong>w[n]</strong></th>
+<th style="text-align: center;"><strong>Amplitude Normalization</strong></th>
+<th style="text-align: center;"><strong>Power Normalization</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Rectangular (Boxcar)</strong><br><code>np.ones(N)</code> / <code>scipy.signal.windows.boxcar(N)</code></td>
+<td style="text-align: center;"><span class="math inline">1</span></td>
+<td style="text-align: center;"><span class="math inline">1</span></td>
+<td style="text-align: center;"><span class="math inline">1</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hann (Hanning)</strong><br><code>np.hanning(N)</code> / <code>scipy.signal.windows.hann(N)</code></td>
+<td style="text-align: center;"><span class="math inline">0.5\!\left(1-\cos\frac{2\pi n}{N-1}\right)</span></td>
+<td style="text-align: center;"><span class="math inline">\dfrac12</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{\dfrac38}</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Hamming</strong><br><code>np.hamming(N)</code> / <code>scipy.signal.windows.hamming(N)</code></td>
+<td style="text-align: center;"><span class="math inline">0.54-0.46\cos\frac{2\pi n}{N-1}</span></td>
+<td style="text-align: center;"><span class="math inline">0.54</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{0.397}</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Blackman</strong><br><code>np.blackman(N)</code> / <code>scipy.signal.windows.blackman(N)</code></td>
+<td style="text-align: center;"><span class="math inline">0.42-0.5\cos\frac{2\pi n}{N-1}+0.08\cos\frac{4\pi n}{N-1}</span></td>
+<td style="text-align: center;"><span class="math inline">0.42</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{0.274}</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Kaiser</strong><br><code>scipy.signal.windows.kaiser(N, β)</code></td>
+<td style="text-align: center;"><span class="math inline">\dfrac{I_0\!\left(\beta\sqrt{1-\left(\frac{2n}{N-1}-1\right)^2}\right)}{I_0(\beta)}</span></td>
+<td style="text-align: center;"><span class="math inline">\dfrac{1}{2I_0(\beta)}\!\displaystyle\int_{-1}^{1}\!I_0\!\left(\beta\sqrt{1-x^2}\right)dx</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{\dfrac12\!\displaystyle\int_{-1}^{1}\!\!\left[\dfrac{I_0\!\left(\beta\sqrt{1-x^2}\right)}{I_0(\beta)}\right]^{\!2}dx}</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Tukey</strong><br><code>scipy.signal.windows.tukey(N, α)</code></td>
+<td style="text-align: center;"><span class="math inline">0.5\!\left(1+\cos\!\left(\dfrac{\pi(2n)}{\alpha N}-1\right)\right)</span></td>
+<td style="text-align: center;"><span class="math inline">1-\dfrac{\alpha}{2}</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{1-\dfrac{\alpha}{2}+\dfrac{\alpha}{4}}</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Gaussian</strong><br><code>scipy.signal.windows.gaussian(N, σ)</code></td>
+<td style="text-align: center;"><span class="math inline">\exp\!\left[-\dfrac12\left(\dfrac{n-\frac{N-1}{2}}{σ\frac{N-1}{2}}\right)^{\!2}\right]</span></td>
+<td style="text-align: center;"><span class="math inline">σ\sqrt{\dfrac{\pi}{2}}</span></td>
+<td style="text-align: center;"><span class="math inline">σ\sqrt{\pi}/2</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Bartlett</strong><br><code>np.bartlett(N)</code> / <code>scipy.signal.windows.bartlett(N)</code></td>
+<td style="text-align: center;"><span class="math inline">1-\dfrac{2\left|n-\frac{N-1}{2}\right|}{N-1}</span></td>
+<td style="text-align: center;"><span class="math inline">\dfrac12</span></td>
+<td style="text-align: center;"><span class="math inline">\sqrt{\dfrac13}</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Tukey window:</strong> α is the cosine-tapered fraction (0 ≤ α ≤ 1).<br>
+</li>
+<li><strong>Kaiser window:</strong> (I_0) is the modified Bessel function of the first kind.<br>
+</li>
+<li>Gaussian factors assume appropriate scaling of σ.</li>
+</ul>
+<p><strong>As the magnitude and energy spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.</strong></p>
+</section>
+<section id="sampling-as-a-rectangular-window" class="level2">
+<h2 class="anchored" data-anchor-id="sampling-as-a-rectangular-window">Sampling as a Rectangular Window</h2>
+<p>It is interesting to note that, when you finitely sample a continuous signal, you are actually multiplying the continuous signal by a rectangular window (i.e., the sampling function). This rectangular window will also introduce spectral leakage. Therefore, even if you do not apply any window function, the rectangular window is still applied implicitly.</p>
+<p>For the best case, the window length perfectly matches an integer multiple of the signal period, the rectangular window will not introduce any spectral leakage. However, in most cases, the rectangular window will inevitably distort the spectrum. Such a windowed signal does not only contain the original signal’s frequency components, but also additional components introduced by the rectangular window, which might have an even higher frequency than the Nyquist frequency and thus can not be completely reconstructed. That’s why the reconstruction of the 50 Hz sine waves with a one-second 100 Hz sample is still imperfect, as introduced in our <a href="../docs/chap1.html">previous chapter</a>.</p>
+</section>
+<section id="application-borwein-integral" class="level2">
+<h2 class="anchored" data-anchor-id="application-borwein-integral">Application: Borwein integral</h2>
+<p>The integral of sinc function (i.e., one of the Dirichlet Integral) is classic problem in both mathematics and physics <span class="math display">
+\int_0^\infty \frac{\mathrm{sin}x}{x}\mathrm{d}x=\frac{\pi}{2}
+</span> Despite many methods toward this problem have been given, a very beautiful insight in this integral can be given by Fourier Transform. As we rewrite this integral to <span class="math display">
+\int_0^\infty \frac{\mathrm{sin}x}{x}\ \mathrm{e}^{i2\pi x\times0}\ \mathrm{d}x=\mathcal{F}\left[\mathrm{sinc}(x)\right](0)
+</span> This integer is nothing but the zero-frequency coefficient of <span class="math display">\mathcal{F}\left[\mathrm{sinc}(x)\right]</span> , which is just known by us a subsection earlier.</p>
+<p>An even more interesting fact is, all the below integral share the same result, <span class="math display">\pi/2</span> <span class="math display">
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)}\mathrm{d}x=\frac{\pi}{2}\\
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} \mathrm{d}x=\frac{\pi}{2}\\
+...\\
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/13)}{(x/13)} \mathrm{d}x=\frac{\pi}{2}
+</span> until <span class="math display">
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/15)}{(x/15)} \mathrm{d}x&amp;=\frac{467807924713440738696537864469}{935615849440640907310521750000}\pi\\
+&amp;\approx\frac{\pi}{2}-2.31\times10^{-11}
+</span> These sinc functions have the square Fourier transform of <span class="math display">
+\mathcal{F}\left[\frac{\mathrm{sin}(x/N)}{(x/N)}\right]=\mathrm{rect}(Nk)
+</span> Convolving a function with such a rectangular function means a <strong>sliding average</strong> to the original function. Each time we adding a multiplication term inside the integral, we equivalently apply a sliding average with window length of <span class="math display">1/N</span> to the original unitary rectangular function. These sliding averages push the sharp edge at <span class="math display">x=\pm 0.5</span> toward the center with a step of <span class="math display">1/N</span>, the window length. At the 7 times, the yards gained reaches <span class="math display">1</span>, and the DC component, which is the integral value, got took down and no longer <span class="math display">\pi /2</span>.</p>
+</section>
+<section id="fence-effect-and-padding" class="level2">
+<h2 class="anchored" data-anchor-id="fence-effect-and-padding">Fence Effect and Padding</h2>
+<p>Ideally, a rectangular windowed sinusoidal signal has a DFT spectrum expressed as a <span class="math inline">\mathrm{sinc}</span> function (<span class="math inline">{\mathrm{sin}\ \pi x}/{\pi x}</span>) centered at the sinusoid frequency (<span class="math inline">f_0</span>): <span class="math display">
+|X[k]|=A_k\cdot (N/2) \cdot \mathrm{sinc}\left(\frac{k\cdot \delta f - f_0}{\delta f}\right)
+</span> instead of a single spike at the signal frequency. This spectrum spread up to <strong>infinite frequency</strong> but the amplitude approximately decreases by <span class="math inline">1/k</span>. The form of <span class="math inline">\mathrm{sinc}</span> function is adaptable to any sampling window of sampling rate. Any finite samples of this continuous signal will just reveal a Fourier spectrum with discrete points on the <span class="math inline">\mathrm{sinc}</span> function, like observing a mountain range through a picket fence. This is known as the <strong><em><u>fence effect</u></em></strong>. If the signal frequency does not align with a <em>DFT</em> bin (i.e., <span class="math inline">f_0/\delta f \notin \mathbb{Z}</span>), the peak of the <span class="math inline">\mathrm{sinc}</span> function will fall between two bins, leading to an underestimation of the true amplitude. Conversely, if the signal length is exactly an integer multiple of the wave period, the peak will coincide with a frequency bin, yielding an accurate amplitude estimate. Meanwhile, all the side-lobes will disappear because every other frequency bins satisfy <span class="math inline">(k\delta f-f_0)/f_0\in \mathbb{Z}</span> and is the zero point of the <span class="math inline">\mathrm{sinc}</span> function.</p>
+<p>Therefore, a common strategy to mitigate the fence effect is to increase the total number of samples, thereby moving the frequency bins closer to the signal frequency. This can be achieved by extending the signal duration by adding zeros, so called <strong><em><u>zero-padding</u></em></strong>. Zero-padding does not improve true frequency resolution, but it interpolates between bins, producing smoother spectra and clearer peak locations. It is especially helpful for peak detection, cross-spectral analysis, and visualization, where finer granularity aids interpretation without adding new information.</p>
+<p align="center">
+<img src="../Figure/figure_dft_fence_effect_zero_padding.png" width="100%">
+</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example of Zero-padding</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.rfft(sig, n <span class="op">=</span> signal.size <span class="op">+</span> n_padding)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.rfftfreq(coef.size, dt)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="other-padding-type" class="level2">
+<h2 class="anchored" data-anchor-id="other-padding-type">Other Padding Type</h2>
+<p>Package <code>pywt</code> supports several <a href="https://pywavelets.readthedocs.io/en/latest/ref/signal-extension-modes.html">other padding types</a>. These padding types can also be used in Fourier transform to reduce the edge effect. The following figure illustrates the different padding types:</p>
+<p align="center">
+<img src="../Figure/figure_padding_type.png" width="100%">
+</p>
+<p align="center">
+Different Pat Padding Mode Supported by pywt.pad
+</p>
+<p>The padding can be implemented using:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pywt.pad(x, pad_widths, mode)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>where <code>pad_widths</code> is a tuple of two integers indicating the number of values padded to the edges of each axis, and <code>mode</code> is a string representing the padding type. The supported padding types include:</p>
+<ul>
+<li><p><code>zero</code> - <strong>zero-padding</strong> - signal is extended by adding zero samples:</p>
+<pre><code>... 0  0 | x1 x2 ... xn | 0  0 ...</code></pre></li>
+<li><p><code>constant</code> - <strong>constant-padding</strong> - border values are replicated:</p>
+<pre><code>... x1 x1 | x1 x2 ... xn | xn xn ...</code></pre></li>
+<li><p><code>symmetric</code> - <strong>symmetric-padding</strong> - signal is extended by <em>mirroring</em> samples. This mode is also known as half-sample symmetric.:</p>
+<pre><code>... x2 x1 | x1 x2 ... xn | xn xn-1 ...</code></pre></li>
+<li><p><code>reflect</code> - <strong>reflect-padding</strong> - signal is extended by <em>reflecting</em> samples. This mode is also known as whole-sample symmetric.:</p>
+<pre><code>... x3 x2 | x1 x2 ... xn | xn-1 xn-2 ...</code></pre></li>
+<li><p><code>periodic</code> - <strong>periodic-padding</strong> - signal is treated as a periodic one:</p>
+<pre><code>... xn-1 xn | x1 x2 ... xn | x1 x2 ...</code></pre></li>
+<li><p><code>smooth</code> - <strong>smooth-padding</strong> - signal is extended according to the first derivatives calculated on the edges (straight line)</p></li>
+<li><p><code>antisymmetric</code> - <strong>anti-symmetric padding</strong> - signal is extended by <em>mirroring</em> and negating samples. This mode is also known as half-sample anti-symmetric:</p>
+<pre><code>... -x2 -x1 | x1 x2 ... xn | -xn -xn-1 ...</code></pre></li>
+<li><p><code>antireflect</code> - <strong>anti-symmetric-reflect padding</strong> - signal is extended by <em>reflecting</em> anti-symmetrically about the edge samples. This mode is also known as whole-sample anti-symmetric:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>... (<span class="dv">2</span><span class="op">*</span>x1 <span class="op">-</span> x3) (<span class="dv">2</span><span class="op">*</span>x1 <span class="op">-</span> x2) <span class="op">|</span> x1 x2 ... xn <span class="op">|</span> (<span class="dv">2</span><span class="op">*</span>xn <span class="op">-</span> xn<span class="op">-</span><span class="dv">1</span>) (<span class="dv">2</span><span class="op">*</span>xn <span class="op">-</span> xn<span class="op">-</span><span class="dv">2</span>) ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ul>
+</section>
+<section id="application-stiffness-of-a-piano-string" class="level2">
+<h2 class="anchored" data-anchor-id="application-stiffness-of-a-piano-string">Application: Stiffness of a Piano String</h2>
+<p>$$ =T-ESK</p>
+
+
+</section>
+</u></u></section><u><u>
+
+</u></u></main><u><u> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</u></u></div><u><u> <!-- /content -->
+
+
+
+
+</u></u></body></html>

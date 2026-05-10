@@ -1,0 +1,252 @@
+/* Custom styles for Spectral Analysis Guide */
+
+:root {
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+}
+
+/* Body and general text */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.7;
+  color: #333;
+}
+
+/* Code blocks with better styling */
+pre {
+  background-color: #f5f5f5;
+  border-left: 4px solid var(--primary-color);
+  padding: 1em;
+  border-radius: 0.25em;
+}
+
+code {
+  background-color: #f5f5f5;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+}
+
+table th {
+  background-color: #f5f5f5;
+  padding: 0.75em;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #ddd;
+}
+
+table td {
+  padding: 0.75em;
+  border: 1px solid #ddd;
+}
+
+table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  border-bottom: 3px solid var(--primary-color);
+  padding-bottom: 0.5em;
+  font-size: 2.5em;
+}
+
+h2 {
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.3em;
+  font-size: 2em;
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #f8f9fa;
+}
+
+.sidebar .nav-link {
+  color: #333;
+}
+
+.sidebar .nav-link.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 1em;
+  color: #666;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Alerts and callouts */
+.callout {
+  border-left: 4px solid var(--primary-color);
+  padding: 0.75em 1em;
+  border-radius: 0.25em;
+}
+
+.callout-note {
+  background-color: #e7f3ff;
+  border-left-color: #0066cc;
+}
+
+.callout-warning {
+  background-color: #fff4e6;
+  border-left-color: #ff9800;
+}
+
+.callout-important {
+  background-color: #ffe7e7;
+  border-left-color: #d32f2f;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.25em;
+}
+
+/* Math */
+.math.display {
+  margin: 1em 0;
+  padding: 1em;
+  background-color: #f5f5f5;
+  border-radius: 0.25em;
+  overflow-x: auto;
+}
+
+/* Tabs */
+.panel-tabset {
+  margin: 1.5em 0;
+}
+
+.nav-tabs {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-tabs .nav-link {
+  color: #666;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.75em 1em;
+}
+
+.nav-tabs .nav-link:hover {
+  border-bottom-color: #e0e0e0;
+  color: #333;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  background-color: transparent;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3em;
+  color: var(--primary-color);
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid #e0e0e0;
+  margin-top: 3em;
+  padding-top: 2em;
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+
+  .sidebar {
+    display: none;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #e0e0e0;
+    background-color: #1e1e1e;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #f0f0f0;
+  }
+
+  pre, code {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+  }
+
+  table th {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+
+  table td {
+    border-color: #444;
+  }
+
+  table tbody tr:hover {
+    background-color: #333;
+  }
+
+  .sidebar {
+    background-color: #2a2a2a;
+  }
+
+  blockquote {
+    color: #b0b0b0;
+  }
+
+  .navbar {
+    background-color: #2a2a2a;
+    border-bottom-color: #444;
+  }
+}

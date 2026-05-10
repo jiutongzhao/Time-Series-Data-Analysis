@@ -1,0 +1,6 @@
+# Changelog and Upcoming Content
+
+## Done
+
+- [x] Add a practical example for cepstrum (gear-box fault detection) — `chap3.md`, `chap3.ipynb`. (2026-05-09)
+- [x] Add an example for the Wiener–Khinchin the
