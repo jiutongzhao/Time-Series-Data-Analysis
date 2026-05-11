@@ -4,7 +4,7 @@
 
 project:
   type: website
-  output-dir: _build/html
+  output-dir: docs/
   render:
     - index.qmd
     - chap0_preface.qmd

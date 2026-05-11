@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>chap1 – Practical Spectral Analysis</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-2c8cc3c1f6f54eb30af177bca3ef8a8e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<!-- Google Fonts — non-blocking async load.
+     preconnect reduces DNS+TLS latency; the media="print" trick lets the
+     browser download the stylesheet without blocking render, then swaps to
+     screen once loaded.  noscript provides a synchronous fallback. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+</noscript>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Practical Spectral Analysis</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap1.html">1. Data Initialization</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Getting Started</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Core Concepts</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">1. Data Initialization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2. Frequency Domain</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3. Power Spectral Density</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4. More about FFT</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Advanced Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5. Noise</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6. Signal Processing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7. Time-Frequency Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">8. Multi-Channel Signals</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Changelog</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Gallery</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">All Examples</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/cuckoo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Indian Cuckoo Song</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/sunspot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sunspot Cycle</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/exoplanet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exoplanet 51 Peg b</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/gearbox.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gear-Box Fault Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/coherence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">AO–Baltic Coherence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/windowing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spectral Leakage &amp; Windowing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/dwt_image.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DWT Image Compression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/aliasing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aliasing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/stft_cwt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STFT vs.&nbsp;CWT</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#sampling" id="toc-sampling" class="nav-link active" data-scroll-target="#sampling">Sampling</a>
+  <ul class="collapse">
+  <li><a href="#aliasing" id="toc-aliasing" class="nav-link" data-scroll-target="#aliasing">Aliasing</a></li>
+  <li><a href="#reconstruction" id="toc-reconstruction" class="nav-link" data-scroll-target="#reconstruction">Reconstruction</a></li>
+  <li><a href="#application-anti-aliasing-filter" id="toc-application-anti-aliasing-filter" class="nav-link" data-scroll-target="#application-anti-aliasing-filter">Application: Anti-Aliasing Filter</a></li>
+  <li><a href="#application-nyquist-folding-receiver" id="toc-application-nyquist-folding-receiver" class="nav-link" data-scroll-target="#application-nyquist-folding-receiver">Application: Nyquist Folding Receiver</a></li>
+  <li><a href="#sampling-method" id="toc-sampling-method" class="nav-link" data-scroll-target="#sampling-method">Sampling Method</a></li>
+  </ul></li>
+  <li><a href="#read-signals-from-data" id="toc-read-signals-from-data" class="nav-link" data-scroll-target="#read-signals-from-data">Read Signals From Data</a></li>
+  <li><a href="#generate-signals-artificially" id="toc-generate-signals-artificially" class="nav-link" data-scroll-target="#generate-signals-artificially">Generate Signals Artificially</a></li>
+  <li><a href="#management-of-timestamps" id="toc-management-of-timestamps" class="nav-link" data-scroll-target="#management-of-timestamps">Management of Timestamps</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap1.html">1. Data Initialization</a></li></ol></nav></header>
+
+
+
+
+
+#
+<center>
+<p>Data Initialization</p>
+<section id="sampling" class="level2">
+<h2 class="anchored" data-anchor-id="sampling">Sampling</h2>
+<blockquote class="blockquote">
+<p><strong><a href="https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem">Nyquist-Shannon Sampling Theorem</a>:</strong></p>
+<p>If a continuous, band-limited signal <span class="math inline">x(t)</span> contains no frequencies higher than <span class="math inline">f_{max}</span>, then it can be perfectly reconstructed from its samples—provided the sampling rate <span class="math inline">f_s</span> is greater than twice that maximum frequency: <span class="math display">
+f_s &gt; 2f_{max}
+</span> The value <span class="math inline">f_s/2</span> is known as the <strong><u><em>Nyquist Frequency</em></u></strong>, and it represents the highest frequency that can be captured without aliasing.</p>
+</blockquote>
+<section id="aliasing" class="level3">
+<h3 class="anchored" data-anchor-id="aliasing">Aliasing</h3>
+<p>All the data that await analysis are yield from <strong><em><u>sampling</u></em></strong>, no matter it originates from the real-world observation or a simulation program. When one measure a high frequency signal with a low cadence instrument, one will not only miss the high frequency component, <strong><u>but also measure a signal that may lead misunderstanding</u></strong>, so called <strong><em><u><a href="https://en.wikipedia.org/wiki/Aliasing">Aliasing</a></u></em></strong>.</p>
+<!-- fig-tabset:figure_aliasing.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 16</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><img src="docs/Figure/figure_aliasing.png" width="100%"></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">10.0</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>N_DOWNSAMPLE <span class="op">=</span> <span class="dv">111</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k-'</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%.1f</span><span class="st"> Hz'</span> <span class="op">%</span> (fs <span class="op">/</span> N_DOWNSAMPLE), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], scipy.signal.decimate(sig, N_DOWNSAMPLE, ftype<span class="op">=</span><span class="st">'fir'</span>, zero_phase<span class="op">=</span><span class="va">True</span>), <span class="st">'C0-'</span>, label<span class="op">=</span><span class="st">'Anti-aliased'</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], scipy.signal.decimate(sig, N_DOWNSAMPLE, ftype<span class="op">=</span><span class="st">'fir'</span>, zero_phase<span class="op">=</span><span class="va">True</span>), <span class="st">'C0s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='upper center', frameon=False, ncol = 3, bbox_to_anchor=(0.5, 1.18))</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Aliasing', y = 1.13, **title_font)</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc<span class="op">=</span><span class="st">'lower right'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.</span>, <span class="fl">0.95</span>), labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>, )</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Aliasing Effect</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Wave</span><span class="ch">\ </span><span class="vs">Frequency: %</span><span class="dv">.</span><span class="vs">1f</span><span class="ch">\ </span><span class="vs">Hz}</span><span class="dv">$</span><span class="vs">'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi),  <span class="op">**</span>title_font)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.savefig(save_path + 'figure_aliasing' + '.png',bbox_inches='tight',dpi=300)</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p align="center">
+<i>Aliasing effcet in a virtual signal sampling.</i>
+</p>
+<p><strong>With an insufficient sampling rate, the measurement cannot faithfully capture the signal’s waveform.</strong> In the example above, sampling a 10 Hz sine wave at 9 Hz produces an apparent 1 Hz oscillation (aliasing): because the sampling frequency is 1 Hz lower than the true signal frequency, successive samples advance through the wave’s phase by only a small amount each time, so it takes about one second for the samples to span an entire cycle from trough to peak and back.</p>
+<p align="center">
+<img src="docs/Figure/figure_moire_pattern.png" width="100%">
+</p>
+<p>Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to <span class="math inline">f_s/2</span> and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel. Particularly, the aliasing effect in image downsampling is called <strong><em><u><a href="https://en.wikipedia.org/wiki/Moir%C3%A9_pattern">Moiré Pattern</a></u></em></strong>.</p>
+<p align="center">
+<img src="docs/Figure/figure_helicopter.gif" width="100%">
+</p>
+<p align="center">
+<i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i>
+</p>
+</section>
+<section id="reconstruction" class="level3">
+<h3 class="anchored" data-anchor-id="reconstruction">Reconstruction</h3>
+<p><u><strong>Even a sampling frequency of two times of the wave frequency can not guarantee fully “capturing” the waveform by naked eye.</strong></u> This fact is even true for pure sine waves. Like when you sample a 50 Hz sinusoidal waves with a 101 Hz sampling frequency, you will still see something like a wave packet, which shows the amplitude modulation.</p>
+<p>This fact actually signify the <strong><u>difference between “visualization” and “reconstruction”</u></strong>. When visualizing the signal, one may not only plot the sampled points, but also connect them with lines. However, such connections can only be made assuming that the signal between two sampled points is linear, which is not true for sinusoidal waves. Therefore, the visualization can be misleading. Human senses actually automatically make such assumptions and interpretations, which is why aliasing can be so deceptive.</p>
+<p>However, when reconstructing <a href="./chap6.html#reconstruction-and-interpolation">see Chapter 6/Reconstruction and Interpolation</a> the signal, one can use the <strong><u><a href="https://en.wikipedia.org/wiki/Whittaker%E2%80%93Shannon_interpolation_formula">Whittaker–Shannon interpolation formula (a.k.a sinc interpolation)</a></u></strong> to perfectly reconstruct the original signal from its samples, provided that the sampling frequency is greater than twice the maximum frequency of the signal. This reconstruction is mathematically guaranteed and does not rely on any assumptions about the signal between sampled points.</p>
+<!-- fig-tabset:figure_nyquist_reconstruction.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 22</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p><img src="docs/Figure/figure_nyquist_reconstruction.png" width="100%"></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> figsize_normal)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="fl">2.5</span> <span class="op">+</span> sig, <span class="st">'k-'</span>, label<span class="op">=</span><span class="vs">r'   </span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs, zorder <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">101</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> fs <span class="op">/</span> <span class="fl">2.02</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'C1-'</span>, label<span class="op">=</span><span class="vs">r'     </span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs, zorder <span class="op">=</span> <span class="dv">1</span>, alpha <span class="op">=</span> <span class="fl">1.0</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'C1s'</span>, zorder <span class="op">=</span> <span class="dv">1</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>t_interp <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sinc_interp(t_interp):</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    weight <span class="op">=</span> np.sinc((t_interp[:, <span class="va">None</span>] <span class="op">-</span> t[<span class="va">None</span>, :]) <span class="op">/</span> dt)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">@</span> sig</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, <span class="op">-</span><span class="fl">2.5</span> <span class="op">+</span> sinc_interp(t_interp), <span class="st">'C0-'</span>, label<span class="op">=</span><span class="st">'Reconstruction'</span>, zorder <span class="op">=</span> <span class="dv">2</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_ylim(-1.2, 1.2)</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc<span class="op">=</span><span class="st">'lower right'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.03</span>, <span class="fl">.95</span>), labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Reconstruction or Visulization</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Wave</span><span class="ch">\ </span><span class="vs">Frequency: %</span><span class="dv">.</span><span class="vs">1f</span><span class="ch">\ </span><span class="vs">Hz}</span><span class="dv">$</span><span class="vs">'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi),  <span class="op">**</span>title_font)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_nyquist_reconstruction'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p align="center">
+<i>A sampling frequency (128 Hz) that slightly higher than the Nyquist frequency (2 × 62.4=124.8 Hz). The sampled signal is shown as a wave packet.</i>
+</p>
+<p>Ideally, you can perfectly reconstruct the complete signal when you got a <strong><u>long enough samples</u></strong> when the sampling frequency is slightly higher than the Nyquist frequency. However, <strong><u>every realistic sample has a finite length</u></strong>. Thus, reconstruction is still imperfect especially when the sample length is not far longer than the wave period, as shown by the above cases near the edges. The principle behind this (i.e., finite-length rectangular window) will be introduced in <a href="./chap2.html#windowing-effect">Chapter 2/Windowing Effect</a> of this document.</p>
+<p>In terms of experience, the higher sampling frequency you have, the shorter sample length is required.</p>
+</section>
+<section id="application-anti-aliasing-filter" class="level3">
+<h3 class="anchored" data-anchor-id="application-anti-aliasing-filter">Application: Anti-Aliasing Filter</h3>
+<p>Aliasing effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter (so called, <strong><em><u>anti-aliasing filter</u></em></strong>) so that the high frequency component doesn’t contribute to the unreal signal. This technique and its python implementation, <code>scipy.signal.decimate</code>, will be introduced in <a href="./chap5.html">Chapter 5</a>. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.</p>
+<p align="center">
+<img src="docs/Figure/figure_anti_aliasing_filter_design.jpg" width="100%">
+</p>
+<p align="center">
+<i>An example circuit diagram of anti-aliasing filter.</i>
+</p>
+</section>
+<section id="application-nyquist-folding-receiver" class="level3">
+<h3 class="anchored" data-anchor-id="application-nyquist-folding-receiver">Application: Nyquist Folding Receiver</h3>
+<!-- fig-tabset:figure_aliasing_folding.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 18</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><img src="docs/Figure/figure_aliasing_folding.png" width="100%"></p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ax3 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>ax4 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">4</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>N_DOWNSAMPLE <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">3.0</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">17.0</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>ax3.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>ax3.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>ax3.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ax3.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>ax2.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>ax2.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>ax2.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">26.0</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>ax4.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>ax4.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>ax4.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># ax4.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi), **title_font)</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>)</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='upper center', frameon=False, ncol = 3, bbox_to_anchor=(0.5, 1.18))</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Aliasing', y = 1.13, **title_font)</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='lower right', frameon=False, ncol = 1, bbox_to_anchor=(1., 0.95), labelcolor="linecolor", handlelength = 0, handletextpad = 0, )</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> [ax1, ax2, ax3, ax4]:</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    ax.legend(loc<span class="op">=</span><span class="st">'upper left'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, bbox_to_anchor <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">1.08</span>), handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>, )</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.6</span>)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_locator(ticker.MultipleLocator(<span class="fl">0.2</span>))</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>    ax.label_outer()</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Aliased Signal with Sampling Frequency of </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (fs <span class="op">/</span> N_DOWNSAMPLE), <span class="op">**</span>title_font)</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_aliasing_folding'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<!-- fig-tabset:figure_nyquist_zone.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 20</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p><img src="docs/Figure/figure_nyquist_zone.png" width="100%"></p>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> turtle <span class="im">import</span> color</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot()</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>slope <span class="op">=</span> <span class="fl">0.03</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1000</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> slope <span class="op">*</span> x</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'none'</span>, <span class="st">'k'</span>]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>freqs <span class="op">=</span> [<span class="dv">3</span>, <span class="dv">6</span>]</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>amps <span class="op">=</span> [<span class="fl">0.6</span>, <span class="fl">0.4</span>]</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>zones <span class="op">=</span> [<span class="st">'I'</span>, <span class="st">'II'</span>, <span class="st">'III'</span>, <span class="st">'IV'</span>]</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>):</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    ax1.fill_between(x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], <span class="dv">1</span> <span class="op">+</span> y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], color <span class="op">=</span> colors[i<span class="op">%</span><span class="dv">2</span>], alpha <span class="op">=</span> <span class="fl">0.5</span>, edgecolor <span class="op">=</span> <span class="st">'k'</span>, linewidth <span class="op">=</span> <span class="fl">2.5</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        ax1.text((i <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">1.0</span> <span class="op">+</span> fs <span class="op">*</span> slope <span class="op">/</span> <span class="dv">2</span>, <span class="st">'$f_s/2=$</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(fs <span class="op">*</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>) <span class="sc">:d}</span><span class="ss"> Hz'</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ax1.text((i + 0.5) * fs / 2, 0.85, f"Nyquist\nZone {zones[i]}", fontsize = 16, ha = 'center', va = 'bottom', rotation = 20 * (-1) ** i, weight = 'bold')</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        ax1.text((i <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">1.0</span> <span class="op">+</span> <span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> (i <span class="op">%</span> <span class="dv">2</span>) <span class="op">+</span> fs <span class="op">*</span> slope <span class="op">/</span> <span class="dv">2</span>, <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(fs <span class="op">*</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>) <span class="sc">:d}</span><span class="ss"> Hz'</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    ax1.text((i <span class="op">+</span> <span class="fl">0.5</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">0.85</span>, <span class="ss">f"Nyquist</span><span class="ch">\n</span><span class="ss">Zone </span><span class="sc">{</span>zones[i]<span class="sc">}</span><span class="ss">"</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>, rotation <span class="op">=</span> <span class="dv">23</span> <span class="op">*</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i, weight <span class="op">=</span> <span class="st">'bold'</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> freqs[j] <span class="cf">if</span> i <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> fs <span class="op">-</span> freqs[j]</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">+=</span> (i <span class="op">-</span> i <span class="op">%</span> <span class="dv">2</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(freq)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        ax1.fill_between(x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i] <span class="op">+</span> amps[j] <span class="op">*</span> np.exp(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> ((x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span> <span class="op">-</span> freq) <span class="op">/</span> <span class="fl">0.1</span>) <span class="op">**</span> <span class="dv">2</span>), color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>, alpha<span class="op">=</span><span class="dv">1</span>, edgecolor<span class="op">=</span><span class="st">'none'</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        ax1.text(freq, amps[j] <span class="op">+</span> <span class="fl">0.1</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> j <span class="op">%</span> <span class="dv">2</span>), <span class="ss">f'</span><span class="sc">{</span>freq<span class="sc">:.0f}</span><span class="ss"> Hz'</span>, fontsize<span class="op">=</span><span class="dv">16</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>ax1.axis(<span class="st">'off'</span>)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.autoscale(enable=True, axis='y', tight=True)</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_nyquist_zone'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="sampling-method" class="level3">
+<h3 class="anchored" data-anchor-id="sampling-method">Sampling Method</h3>
+<p>After get your data, you should know that <strong>what does each timestamps represent?</strong> Is it accurately the time you get the <strong>instantaneous sample</strong> or the <strong>middle point</strong> of the whole <strong>sampling period</strong>?</p>
+<!-- fig-tabset:figure_sampling_methods.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 35</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<p><img src="docs/Figure/figure_sampling_methods.png" width="100%"></p>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4000</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k'</span>, label <span class="op">=</span> <span class="st">'Signal'</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>n_downsample <span class="op">=</span> <span class="dv">125</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, N <span class="op">//</span> n_downsample <span class="op">-</span> <span class="dv">1</span>, <span class="dv">2</span>):</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ax1.axvspan(t[::n_downsample][i], t[::n_downsample][i<span class="op">+</span><span class="dv">1</span>], <span class="dv">0</span>, <span class="dv">1</span>, color <span class="op">=</span> <span class="st">'C1'</span>, alpha <span class="op">=</span> <span class="fl">0.1</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>ax1.step(t.reshape(<span class="op">-</span><span class="dv">1</span>, n_downsample).mean(axis <span class="op">=</span> <span class="dv">1</span>), sig.reshape(<span class="op">-</span><span class="dv">1</span>, n_downsample).mean(axis <span class="op">=</span> <span class="dv">1</span>) <span class="op">+</span> <span class="op">-</span><span class="fl">.0</span>, <span class="st">'C1-'</span>, where <span class="op">=</span> <span class="st">'mid'</span>, label <span class="op">=</span> <span class="st">'Average'</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[n_downsample <span class="op">//</span> <span class="dv">2</span>::n_downsample], sig[n_downsample <span class="op">//</span> <span class="dv">2</span>::n_downsample] <span class="op">+</span> <span class="fl">.0</span>, <span class="st">'C0o'</span>, label <span class="op">=</span> <span class="st">'Instantaneous'</span>, markersize <span class="op">=</span> <span class="dv">8</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>ax1.legend()</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Sampling Methods'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_sampling_methods'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>Real instruments always integrate over a finite dwell time, so truly instantaneous samples do not exist. If that dwell time is much shorter than the sampling interval—or shorter than the timescales of interest—the measurement can be <strong>approximated as instantaneous</strong>. Otherwise, the averaging acts like a low-pass filter, providing some built-in anti-aliasing.</p>
+<p>For artificial signals you can choose either approach, <strong>but be mindful of which one you are using when comparing simulations with real observations</strong>.</p>
+</section>
+</section>
+<section id="read-signals-from-data" class="level2">
+<h2 class="anchored" data-anchor-id="read-signals-from-data">Read Signals From Data</h2>
+<p><a href="https://numpy.org/doc/stable/reference/routines.io.html">Numpy</a>, <a href="https://docs.scipy.org/doc/scipy/tutorial/io.html">Scipy.io</a>, and <a href="https://pandas.pydata.org/docs/reference/io.html">Pandas</a> provide several input/output interfaces for reading the commonly used data format.</p>
+<ul>
+<li>MATLAB <code>.mat</code> (v7.2 and below): <strong><code>scipy.io.loadmat('*.mat')</code></strong>—handles structs, nested arrays; HDF5 v7.3 requires HDF5 libraries.</li>
+<li>IDL <code>.sav</code>: <strong><code>scipy.io.readsav('*.sav')</code></strong> gives you a dict-like structure.</li>
+<li>NetCDF3 (<code>.nc</code>): <strong><code>scipy.io.netcdf.NetCDFFile('*.nc','r')</code></strong>, though it’s deprecated—prefer <strong><code>netCDF4</code>/<code>xarray</code></strong>.</li>
+<li>NASA CDF (<code>.cdf</code>): <strong><code>spacepy.pycdf.CDF('*.cdf');</code></strong>—dict-like API with lazy loading, but needs the NASA CDF C library</li>
+<li>Raw Binary, e.g., <code>.dat</code>: <strong><code>numpy.fromfile('*.dat', dtype = [np.int8, np.float64, ...])</code></strong></li>
+<li>Text, e.g., <code>.txt, .csv, .TAB</code>: <strong><code>pandas.read_csv('*.txt', sep = '\s+')</code></strong></li>
+</ul>
+<p>If you feel your data processing speed is limited by the data I/O, you should consider using the most efficient python package. This is always task-specific, and you should profile your code to find the bottleneck.</p>
+</section>
+<section id="generate-signals-artificially" class="level2">
+<h2 class="anchored" data-anchor-id="generate-signals-artificially">Generate Signals Artificially</h2>
+<ul>
+<li><p><strong>Generate the </strong> <strong><em>Relative Timestamps</em></strong> <strong>given two of signal length (<code>N</code>), total duration (<code>T</code>), and sampling frequency (<code>fs</code>).</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>N, T <span class="op">=</span> <span class="dv">100</span>, <span class="dv">1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, T, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># [0.0, 0.01, 0.02, ..., 0.99]</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure parameter endpoint is set to False, or use</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># t = np.linspace(0, T, N + 1, endpoint = True)</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># to get a series with dt = T / N</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># [0.0, 0.01, 0.02, ..., 1.00]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Correspondingly, the ungiven parameter can be derived uniquely.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Generate the signal</strong></p>
+<ul>
+<li>Real sine wave</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Complex sine wave according to Euler’s formula <span class="math inline">e^{i\theta}=\mathrm{cos}\theta+i\mathrm{sin}\theta</span>:</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.exp(<span class="ot">1j</span> <span class="op">*</span> omega <span class="op">*</span> t) <span class="co">#where 1j is the imaginary unit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The usage of complex signal bring convenience for phase operation (e.g., <span class="math inline">e^{i\theta_1}\cdot e^{i\theta_2}=\mathrm{cos}[\theta_1+\theta_2]+i\mathrm{sin}[\theta_1+\theta_2]</span>). In addition, it aids in shortening the code sometime, but also reduce the readability.</p></li>
+</ul>
+<!-- fig-tabset:figure_typical_signals.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 22</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<p><img src="docs/Figure/figure_typical_signals.png" width="100%"></p>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>plt.cla()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_normal)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt  <span class="co"># Sampling frequency</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>gap <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">0</span> <span class="op">*</span> gap <span class="op">+</span> np.sin(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Sine'</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">0</span> <span class="op">*</span> gap <span class="op">+</span> np.cos(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Cosine'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">1</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.chirp(t, omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, <span class="dv">1</span>, omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi <span class="op">*</span> <span class="dv">3</span>), label <span class="op">=</span> <span class="st">'Chirp'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>), label <span class="op">=</span> <span class="st">'Guassian Packet'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>, retenv <span class="op">=</span> <span class="va">True</span>)[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">'#888888'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">-</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>, retenv <span class="op">=</span> <span class="va">True</span>)[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">'#888888'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">3</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.square(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Square'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">4</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sawtooth(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Sawtooth'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">5</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.unit_impulse(t.size, <span class="st">'mid'</span>), label <span class="op">=</span> <span class="st">'Dirac Delta'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(t, 6 * gap + np.random.randn(t.size), label = 'White Noise', linestyle = '-')</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>ax1.legend(ncol <span class="op">=</span> <span class="dv">3</span>)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(frameon=True, ncol=3, loc='upper center', edgecolor = 'none', framealpha = 0.8)</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">38</span>)</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Signal\n' + r'$x(t) =\mathrm{sin}(2\pi \cdot 5 t)$', **title_font)</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Typical Signals'</span> , <span class="op">**</span>title_font)</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis<span class="op">=</span><span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_typical_signals'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<ul>
+<li><p><strong><u>Using these <code>scipy.signal</code> built-in functions</u></strong> helps to <strong><u>improve your code readability and reduce your chances of creating bugs: </u></strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>sig_cos <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sig_chrip <span class="op">=</span> scipy.signal.chirp(t, f0 <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, t1 <span class="op">=</span> <span class="dv">1</span>, f1 <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi <span class="op">*</span> <span class="dv">3</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># f0: Frequency at t = 0</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># f1: Frequency at t = t1</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>sig_gauss_pulse <span class="op">=</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># fc: central frequency</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># bw: bandwidth</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>sig_square <span class="op">=</span> scipy.signal.square(omega0 <span class="op">*</span> t)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>sig_sawtooth <span class="op">=</span> scipy.signal.sawtooth(omega0 <span class="op">*</span> t)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>sig_unit_impulse <span class="op">=</span> scipy.signal.unit_impulse(t.size, idx <span class="op">=</span> <span class="st">'mid'</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># idx : None or int or tuple of int or 'mid', optional</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ul>
+</section>
+<section id="management-of-timestamps" class="level2">
+<h2 class="anchored" data-anchor-id="management-of-timestamps">Management of Timestamps</h2>
+<p>There are several packages in Python for managing timestamps, and the choice depends on your project’s specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 88%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Library</th>
+<th style="text-align: center;">Advantages</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Pandas</td>
+<td style="text-align: center;">Rich time series functionality, easy integration with DataFrames <strong>[Use in Reading Table Files]</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NumPy</td>
+<td style="text-align: center;">Efficient for large arrays and vectorized time operations <strong>[Use in Data Analysis]</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">datetime</td>
+<td style="text-align: center;">Part of Python standard library for basic date/time operations <strong>[Use in Timestamps Format Conversion]</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Astropy</td>
+<td style="text-align: center;">High precision handling of special time formats and leap seconds <strong>[Use in Time System Conversion]</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>datetime</code> as a built-in package, is always supported by different third-party package, therefore is suitable to be used during <strong>format conversion</strong>. While, <code>numpy.datetime64</code> is more efficient in <strong>data processing</strong> and <strong>scientific computing</strong>. <code>pandas.Timestamp</code> and <code>astropy.time.Time</code> are more powerful in <strong>reading table files</strong> and <strong>time system conversion</strong>, respectively.</p>
+<ul>
+<li><p><strong>Use <code>numpy.datetime64</code> to represent the timestamps</strong>. It is a fixed-size data type that represents dates and times in a variety of formats, including year-month-day, hour-minute-second, and nanoseconds since the Unix epoch. It is also compatible with many NumPy’s array operations, making it easy to perform calculations and manipulations on large datasets.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.time</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pandas</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>t_pd <span class="op">=</span> pd.Timestamp(<span class="st">'2000-01-01T00:00:00'</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Using astropy</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>t_astropy <span class="op">=</span> astropy.time.Time(<span class="st">'2000-01-01T00:00:00'</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Using datetime</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>t_datetime <span class="op">=</span> datetime.datetime(<span class="dv">2000</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to numpy.datetime64</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_pd)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_astropy.to_datetime())</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_datetime)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>convert</strong> the precision to milliseconds or nanoseconds.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(<span class="st">'2000-01-01T00:00:00'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>t_np_ms <span class="op">=</span> t_np.astype(<span class="st">'datetime64[ms]'</span>) <span class="co"># np.datetime64('2000-01-01T00:00:00.000')</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>t_np_ns <span class="op">=</span> t_np.astype(<span class="st">'datetime64[ns]'</span>) <span class="co"># np.datetime64('2000-01-01T00:00:00.000000000')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>A <strong><u><em>Unix timestamp</em></u></strong> is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds. Use <code>*.astype(float)</code> to convert <code>numpy.datetime64[s]</code> to Unix timestamp. When the unit is not seconds, the result is the number of time units since the epoch.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># np.datetime64 to Unix timestamp</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>t_np.astype(<span class="bu">float</span>) <span class="co"># np.float64(946684800.0)</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>t_np.astype(<span class="st">'datetime64[ns]'</span>).astype(<span class="bu">float</span>) <span class="co"># np.float64(9.466848e+17)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>If you need to consider <strong><u><em>leap seconds</em></u></strong> in your investigation, use <code>astropy</code>.</p>
+<pre class="mermaid"><code>---
+config:
+  theme: 'base'
+---
+
+flowchart LR
+A[*pandas.Timestamp*] --*.to_datetime64()--&gt; B[*datetime.datetime*] --np.datetime64(*)--&gt; C[*numpy.datetime64*] --astropy.time.Time(*)--&gt; D[astropy.time.Time]
+B --pd.Timestamp(*)--&gt; A
+C --.astype(object)--&gt; B
+A --astropy.time.Time(*)--&gt; D
+B --astropy.time.Time(*)--&gt; D
+D --.to_datetime(*)--&gt; B
+A --np.datetime64(*)--&gt; C
+C --pd.Timestamp(*)--&gt; A</code></pre></li>
+<li><p><code>np.timedelta64(timedelta, unit)</code> is a fixed-size data type that represents a duration, the difference between two dates or times. It can be used to perform arithmetic operations on dates and times, such as adding or subtracting a certain number of days or hours. The input <code>timedelta</code> can only be integer. You can also use <code>*.astype('timedelta64[s]')</code> to convert integer seconds to <code>np.timedelta64</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year_array, month_array, and day_array</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> np.array([<span class="dv">2023</span>, <span class="dv">2023</span>, <span class="dv">2023</span>])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>month <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>day <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.array([np.datetime64(<span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:04d}</span><span class="ss">-</span><span class="sc">{</span>m<span class="sc">:02d}</span><span class="ss">-</span><span class="sc">{</span>d<span class="sc">:02d}</span><span class="ss">"</span>) <span class="cf">for</span> y, m, d <span class="kw">in</span> <span class="bu">zip</span>(year, month, day)])</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year_array and doy_array (day of year)</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>doy <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">32</span>, <span class="dv">60</span>])  <span class="co"># Day of year for Jan 1, Feb 1, Mar 1 in a non-leap year</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.array([np.datetime64(<span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:04d}</span><span class="ss">-01-01"</span>) <span class="op">+</span> np.timedelta64(d <span class="op">-</span> <span class="dv">1</span>, <span class="st">'D'</span>) <span class="cf">for</span> y, d <span class="kw">in</span> <span class="bu">zip</span>(year, doy)])</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year and doy (day of year)</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> <span class="dv">2023</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>doy <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">32</span>, <span class="dv">60</span>])</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.datetime64(<span class="ss">f"</span><span class="sc">{</span>year<span class="sc">:04d}</span><span class="ss">-01-01"</span>) <span class="op">+</span> (doy <span class="op">-</span> <span class="dv">1</span>).astype(<span class="st">'timedelta64[D]'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><code>pd.Timestamp()</code> and <code>np.datetime64()</code> can not take <strong>array</strong> as input. So <strong><em><u>list comprehension</u></em></strong> is required in the conversion</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert datetime_array to pandas.Timestamp array</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>datetime_array_to_pd <span class="op">=</span> [pd.Timestamp(dt) <span class="cf">for</span> dt <span class="kw">in</span> datetime_array]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ul>
+<div style="page-break-after: always;">
+
+</div>
+
+
+</section>
+
+</center></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<!-- Mermaid: load from CDN, detect Quarto's colour scheme correctly,
+     and pre-process node labels so common LaTeX commands render as
+     readable plain text / Unicode (mermaid itself doesn't parse LaTeX). -->
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+  // ---------------------------------------------------------------------
+  // 1. Pre-process the mermaid source so labels with $$...$$ math at
+  //    least look readable.  We do NOT try to render real LaTeX — that
+  //    would require a heavy KaTeX-inside-SVG hack — we just substitute
+  //    the commands that show up in the chapter diagrams.
+  // ---------------------------------------------------------------------
+  const REPLACEMENTS = [
+    // Strip math delimiters and the dollar-sign noise.
+    [/\$\$([^$]*)\$\$/g, "$1"],
+    [/\$([^$]+)\$/g, "$1"],
+
+    // Escaped braces: protect them with placeholders so the later
+    // brace-stripping pass doesn't gobble them.
+    [/\\\{/g, "\uE000"],
+    [/\\\}/g, "\uE001"],
+
+    // Common operators / symbols ------------------------------------------
+    [/\\langle\s*/g, "⟨"],
+    [/\\rangle/g, "⟩"],
+    [/\\Re\b/g, "Re"],
+    [/\\Im\b/g, "Im"],
+    [/\\times\b/g, "×"],
+    [/\\cdot\b/g, "·"],
+    [/\\parallel\b/g, "∥"],
+    [/\\perp\b/g, "⊥"],
+    [/\\to\b/g, "→"],
+    [/\\rightarrow\b/g, "→"],
+    [/\\leftarrow\b/g, "←"],
+
+    // Greek letters we actually need ---------------------------------------
+    [/\\alpha\b/g, "α"],
+    [/\\beta\b/g, "β"],
+    [/\\gamma\b/g, "γ"],
+    [/\\delta\b/g, "δ"],
+    [/\\Delta\b/g, "Δ"],
+    [/\\epsilon\b/g, "ε"],
+    [/\\zeta\b/g, "ζ"],
+    [/\\theta\b/g, "θ"],
+    [/\\kappa\b/g, "κ"],
+    [/\\lambda\b/g, "λ"],
+    [/\\Lambda\b/g, "Λ"],
+    [/\\mu\b/g, "μ"],
+    [/\\nu\b/g, "ν"],
+    [/\\pi\b/g, "π"],
+    [/\\rho\b/g, "ρ"],
+    [/\\sigma\b/g, "σ"],
+    [/\\Sigma\b/g, "Σ"],
+    [/\\tau\b/g, "τ"],
+    [/\\phi\b/g, "φ"],
+    [/\\Phi\b/g, "Φ"],
+    [/\\chi\b/g, "χ"],
+    [/\\psi\b/g, "ψ"],
+    [/\\omega\b/g, "ω"],
+    [/\\Omega\b/g, "Ω"],
+
+    // Wrappers --------------------------------------------------------------
+
+    // Braceless forms first: "\hat B"  ->  "B̂"
+    [/\\hat\s+(\S)/g, "$1̂"],
+    [/\\bar\s+(\S)/g, "$1̄"],
+    [/\\vec\s+(\S)/g, "$1⃗"],
+
+    [/\\hat\{([^{}]+)\}/g, "$1̂"],   // combining circumflex -> Â
+    [/\\bar\{([^{}]+)\}/g, "$1̄"],   // combining macron
+    [/\\vec\{([^{}]+)\}/g, "$1⃗"],   // combining arrow
+    [/\\boldsymbol\{([^{}]+)\}/g, "$1"],
+    [/\\mathrm\{([^{}]+)\}/g, "$1"],
+    [/\\mathbf\{([^{}]+)\}/g, "$1"],
+    [/\\mathcal\{([^{}]+)\}/g, "$1"],
+    [/\\mathbb\{([^{}]+)\}/g, "$1"],
+    [/\\text\{([^{}]+)\}/g, "$1"],
+
+    // Spacing / line-break --------------------------------------------------
+    [/\\,/g, " "],         // thin space
+    [/\\;/g, " "],
+    [/\\:/g, " "],
+    [/\\\s/g, " "],
+    [/\\\\/g, " "],        // double-backslash line break
+
+    // Braces: drop the LaTeX grouping braces but keep their content.
+    [/\{([^{}]*)\}/g, "$1"],
+
+    // Lone backslash at start of word (anything we missed) -> drop.
+    [/\\([A-Za-z]+)/g, "$1"],
+
+    // Restore escaped-brace placeholders -> visible { } characters.
+    [/\uE000/g, "{"],
+    [/\uE001/g, "}"],
+  ];
+
+  function delatex(s) {
+    // Apply each replacement repeatedly until it converges, because
+    // nested {} or \hat{\bar{x}} need multiple passes.
+    let prev;
+    do {
+      prev = s;
+      for (const [re, rep] of REPLACEMENTS) s = s.replace(re, rep);
+    } while (s !== prev);
+    return s;
+  }
+
+  // Quarto wraps the source as <pre class="mermaid"><code>...</code></pre>.
+  // textContent already decodes HTML entities (--&gt; -> -->).
+  document.querySelectorAll("pre.mermaid").forEach(function (pre) {
+    const codeEl = pre.querySelector("code");
+    let src = codeEl ? codeEl.textContent : pre.textContent;
+    src = delatex(src);
+    pre.textContent = src;   // remove <code>, put cleaned source directly
+  });
+
+  // ---------------------------------------------------------------------
+  // 2. Theme: prefer Quarto's <body> class (quarto-light / quarto-dark)
+  //    over the OS preference, which can disagree with the site setting.
+  // ---------------------------------------------------------------------
+  const body = document.body;
+  let dark;
+  if (body.classList.contains("quarto-dark")) {
+    dark = true;
+  } else if (body.classList.contains("quarto-light")) {
+    dark = false;
+  } else {
+    // Fallback to Bootstrap's data-bs-theme on <html> or <body>.
+    const bs = document.documentElement.dataset.bsTheme || body.dataset.bsTheme;
+    dark = bs === "dark";
+  }
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: dark ? "dark" : "default",
+    securityLevel: "loose",
+    flowchart: { htmlLabels: true, curve: "basis" },
+    fontFamily: "Inter, system-ui, sans-serif",
+  });
+
+  // Re-render when the user toggles the Quarto colour scheme.
+  document.addEventListener("quarto-color-scheme-toggled", function () {
+    location.reload();
+  });
+</script>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
