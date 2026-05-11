@@ -1,0 +1,93 @@
+# AO–Baltic Coherence
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Cross-spectral coherence — identifying coupled oscillation modes between two geophysical time series.
+**Chapter:** [8 — Multi-Channel Signals](../chap8.qmd)
+
+---
+
+## Background
+
+The **Arctic Oscillation (AO)** index measures the strength of the polar vortex; a positive AO corresponds to a strong vortex that confines cold Arctic air. The **Baltic Sea ice extent** responds to large-scale atmospheric forcing, but is also modulated by local temperature and sea-surface salinity. Cross-spectral coherence tests whether the two series share significant variance at specific frequencies — a necessary (though not sufficient) condition for a physical link.
+
+Both records span roughly 1900–present at monthly resolution, placing the analysis in the 2–15 year interannual band.
+
+## Key idea
+
+The **magnitude-squared coherence** between two zero-mean stationary processes $x$ and $y$ is
+
+$$
+C_{xy}(f) = \frac{|S_{xy}(f)|^2}{S_{xx}(f)\, S_{yy}(f)}, \quad 0 \le C_{xy}(f) \le 1
+$$
+
+where $S_{xy}(f) = \mathbb{E}[\hat{X}^*(f)\hat{Y}(f)]$ is the cross-power spectral density. A value near 1 means the two signals are linearly related at that frequency; a value near 0 means they are independent. The **phase spectrum** $\angle S_{xy}(f)$ gives the phase lag.
+
+Significance level for $K$ averaged segments: a coherence value exceeds the $1-\alpha$ threshold when
+
+$$
+C_{xy}(f) > 1 - \alpha^{1/(K-1)}
+$$
+
+## Code
+
+```python
+import numpy as np
+import scipy.signal
+import matplotlib.pyplot as plt
+
+# Monthly AO index (NOAA) and Baltic ice extent (SMHI)
+ao   = np.loadtxt('docs/Data/jao.txt',     usecols=1)
+ice  = np.loadtxt('docs/Data/jbaltic.txt', usecols=1)
+
+# Align and de-trend both records
+n = min(len(ao), len(ice))
+ao, ice = scipy.signal.detrend(ao[:n]), scipy.signal.detrend(ice[:n])
+
+fs = 12.0   # samples per year
+
+# Welch cross-spectral density
+f, Cxy = scipy.signal.coherence(ao, ice, fs=fs,
+                                 window='hann',
+                                 nperseg=fs * 20,     # 20-year segments
+                                 noverlap=fs * 10)
+
+# Cross-power phase
+_, Pxy = scipy.signal.csd(ao, ice, fs=fs,
+                           window='hann',
+                           nperseg=fs * 20,
+                           noverlap=fs * 10)
+phase = np.angle(Pxy, deg=True)
+
+# Significance threshold (K ≈ 5 segments, 95 %)
+K = int(n / (fs * 20 * 0.5))
+sig_95 = 1.0 - 0.05 ** (1.0 / (K - 1))
+
+fig, axes = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
+
+period = 1.0 / f[1:]
+axes[0].semilogx(period, Cxy[1:], lw=1.2)
+axes[0].axhline(sig_95, color='C1', ls='--', label=f'95 % sig. ({sig_95:.2f})')
+axes[0].set_ylabel('Coherence')
+axes[0].set_ylim(0, 1)
+axes[0].legend()
+
+axes[1].semilogx(period, phase[1:], lw=1.0)
+axes[1].set_xlabel('Period (years)')
+axes[1].set_ylabel('Phase (°)')
+axes[1].set_xlim(1, 50)
+
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![Coherence and phase spectrum between AO index and Baltic Sea ice extent](../docs/Figure/figure_ao_baltic_truncated.png)
+</div>
+
+Statistically significant coherence appears at periods of 6–8 years and ~14 years, with the Baltic ice lagging the AO by roughly 90°. These bands are candidates for physically coupled interannual variability driven by the North Atlantic Oscillation.
+
+---
+
+*See [Chapter 8](../chap8.qmd) for cross-spectral density, coherence estimation, and multi-channel signal decomposition.*

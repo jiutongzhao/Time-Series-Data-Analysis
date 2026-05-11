@@ -1,0 +1,73 @@
+# Aliasing
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The Nyquist–Shannon sampling theorem — what happens when it is violated.
+**Chapter:** [4 — More about FFT](../chap4.qmd)
+
+---
+
+## Background
+
+Sampling converts a continuous signal into a discrete sequence. The **Nyquist theorem** states that perfect reconstruction is possible if and only if the sampling rate $f_s$ exceeds twice the signal's highest frequency: $f_s > 2f_\text{max}$. When this condition is violated, high-frequency components **fold back** into lower frequencies — a phenomenon called **aliasing**. The aliased frequency is not an artifact of the DFT; it is genuinely present in the sampled sequence and cannot be removed after the fact.
+
+## Key idea
+
+A sinusoid at frequency $f_0$ sampled at rate $f_s$ is indistinguishable from a sinusoid at the **aliased frequency**
+
+$$
+f_\text{alias} = \left| \left( f_0 + \frac{f_s}{2} \right) \bmod f_s - \frac{f_s}{2} \right|
+$$
+
+For $f_0 = 1.2$ kHz and $f_s = 1$ kHz: $f_\text{alias} = |1.2 - 1.0| = 0.2$ kHz. The spectrum reports a 200 Hz tone, though the physical signal was at 1.2 kHz.
+
+## Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+f_true = 1200.0      # Hz — above Nyquist
+fs_bad  = 1000.0     # Hz — violates Nyquist
+fs_good = 3000.0     # Hz — satisfies Nyquist
+
+t_cont = np.linspace(0, 0.02, 10_000)
+x_cont = np.cos(2 * np.pi * f_true * t_cont)
+
+t_bad  = np.arange(0, 0.02, 1.0 / fs_bad)
+t_good = np.arange(0, 0.02, 1.0 / fs_good)
+x_bad  = np.cos(2 * np.pi * f_true * t_bad)
+x_good = np.cos(2 * np.pi * f_true * t_good)
+
+def compute_spectrum(x, fs):
+    N = len(x)
+    X = np.fft.rfft(x) / N
+    f = np.fft.rfftfreq(N, d=1.0 / fs)
+    return f, np.abs(X)
+
+f_bad,  A_bad  = compute_spectrum(x_bad,  fs_bad)
+f_good, A_good = compute_spectrum(x_good, fs_good)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+axes[0].stem(f_bad,  A_bad,  markerfmt='C1o', basefmt='k-')
+axes[0].set_title(f'fs = {int(fs_bad)} Hz (aliased)')
+axes[0].set_xlabel('Frequency (Hz)')
+axes[1].stem(f_good, A_good, markerfmt='C0o', basefmt='k-')
+axes[1].set_title(f'fs = {int(fs_good)} Hz (correct)')
+axes[1].set_xlabel('Frequency (Hz)')
+for ax in axes:
+    ax.set_ylabel('Amplitude')
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![Aliasing demonstration: 1.2 kHz tone sampled at 1 kHz appears at 200 Hz](../docs/Figure/figure_aliasing.png)
+</div>
+
+Left panel: sampling at 1 kHz places the 1.2 kHz tone at 200 Hz — a completely wrong frequency. Right panel: sampling at 3 kHz correctly identifies the 1.2 kHz component. Anti-aliasing low-pass filters must be applied *before* sampling to prevent the fold-back.
+
+---
+
+*See [Chapter 4](../chap4.qmd) for the Nyquist theorem proof, folding diagrams, and anti-aliasing filter design.*

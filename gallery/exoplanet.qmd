@@ -1,0 +1,86 @@
+# Exoplanet 51 Peg b
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Lomb–Scargle periodogram for unevenly sampled astronomical time series.
+**Chapter:** [2 — Frequency Domain](../chap2.qmd)
+
+---
+
+## Background
+
+51 Pegasi b was the first exoplanet confirmed around a Sun-like star (Mayor & Queloz, 1995). It was detected via the **radial-velocity method**: the planet's gravity causes the host star to wobble, Doppler-shifting its spectral lines periodically. Observations from ground-based telescopes are necessarily sparse and irregular — the DFT requires uniformly sampled data, but the Lomb–Scargle periodogram handles arbitrary sampling gaps.
+
+The orbital period is 4.23 days, corresponding to a frequency of ~0.236 day⁻¹.
+
+## Key idea
+
+For an unevenly sampled dataset $\{(t_i, x_i)\}$, the Lomb–Scargle periodogram is defined as
+
+$$
+P(\omega) = \frac{1}{2\sigma^2}\left[
+  \frac{\left(\sum_i x_i \cos\omega(t_i - \tau)\right)^2}{\sum_i \cos^2\omega(t_i - \tau)}
+  +
+  \frac{\left(\sum_i x_i \sin\omega(t_i - \tau)\right)^2}{\sum_i \sin^2\omega(t_i - \tau)}
+\right]
+$$
+
+where $\tau$ is chosen to make the two terms statistically independent. The false-alarm probability quantifies how likely a peak of given height is under the null hypothesis of pure noise.
+
+## Code
+
+```python
+import numpy as np
+from astropy.timeseries import LombScargle
+import matplotlib.pyplot as plt
+
+# Load 51 Peg radial-velocity measurements
+# Columns: BJD, RV (m/s), uncertainty (m/s)
+data = np.loadtxt('docs/Data/UID_0113357_RVC_001.tbl.txt', comments='#')
+t, rv, rv_err = data[:, 0], data[:, 1], data[:, 2]
+
+# Normalise to zero mean
+rv -= rv.mean()
+
+# Lomb-Scargle
+ls = LombScargle(t, rv, rv_err)
+freq, power = ls.autopower(minimum_frequency=0.05,
+                            maximum_frequency=2.0,
+                            samples_per_peak=10)
+
+# False-alarm levels
+fap_levels = [0.1, 0.01, 0.001]
+fap_powers = [ls.false_alarm_level(fap) for fap in fap_levels]
+
+fig, axes = plt.subplots(2, 1, figsize=(9, 6))
+
+# Data
+axes[0].errorbar(t % 4.23, rv, yerr=rv_err, fmt='o', ms=3, lw=0.8,
+                 label='phase-folded at 4.23 d')
+axes[0].set_xlabel('Phase (days)')
+axes[0].set_ylabel('RV (m/s)')
+
+# Periodogram
+axes[1].plot(1.0 / freq, power, lw=0.9)
+for fap, pwr in zip(fap_levels, fap_powers):
+    axes[1].axhline(pwr, ls='--', lw=0.8, label=f'FAP = {fap}')
+axes[1].axvline(4.23, color='C1', lw=1.5, label='P = 4.23 d')
+axes[1].set_xscale('log')
+axes[1].set_xlabel('Period (days)')
+axes[1].set_ylabel('Lomb–Scargle power')
+axes[1].legend(fontsize=8)
+
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![Lomb–Scargle periodogram of 51 Peg b radial-velocity data showing peak at 4.23 days](../docs/Figure/figure_lombscargle_51Pegasib.png)
+</div>
+
+The periodogram shows an overwhelming peak at a period of 4.23 days, far above all three false-alarm thresholds. No other significant peaks are present, confirming a single-planet system with a 4.23-day orbital period.
+
+---
+
+*See [Chapter 2](../chap2.qmd) for the full derivation of the Lomb–Scargle statistic, false-alarm probabilities, and comparisons with the standard DFT periodogram.*

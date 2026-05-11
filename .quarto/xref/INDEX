@@ -232,5 +232,35 @@
   },
   "WSL_COMMANDS.md": {
     "WSL_COMMANDS.html": "0b394778"
+  },
+  "gallery.qmd": {
+    "gallery.html": "9688959e"
+  },
+  "gallery/cuckoo.qmd": {
+    "cuckoo.html": "49a0394f"
+  },
+  "gallery/sunspot.qmd": {
+    "sunspot.html": "14730aea"
+  },
+  "gallery/exoplanet.qmd": {
+    "exoplanet.html": "e466dfcf"
+  },
+  "gallery/gearbox.qmd": {
+    "gearbox.html": "caff2858"
+  },
+  "gallery/coherence.qmd": {
+    "coherence.html": "82db88e6"
+  },
+  "gallery/windowing.qmd": {
+    "windowing.html": "e6bded6d"
+  },
+  "gallery/dwt_image.qmd": {
+    "dwt_image.html": "735d865a"
+  },
+  "gallery/aliasing.qmd": {
+    "aliasing.html": "4a6b555a"
+  },
+  "gallery/stft_cwt.qmd": {
+    "stft_cwt.html": "6183fc89"
   }
 }

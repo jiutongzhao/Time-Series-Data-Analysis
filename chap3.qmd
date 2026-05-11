@@ -446,4 +446,310 @@ quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
 
 ### Worked Example: Gear-Box Fault Detection
 
-A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration sp
+A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration spectrum is dominated by the *gear-mesh frequency* $f_m = N_t f_r$ (number of teeth $\times$ shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the *shaft-rotation frequency* $f_r$, introducing a family of side-bands $f_m \pm k f_r$ around every mesh harmonic.
+
+In the spectrum these side-bands form a **comb** with spacing $f_r$. The cepstrum collapses each such comb into a single peak (a *rahmonic*) at quefrency $\tau_r = 1/f_r$ — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.
+
+The synthetic signal below imitates a gear-box with $N_t = 21$ teeth at $f_r = 25\,\mathrm{Hz}$. The mesh and its first harmonic are amplitude-modulated by a once-per-revolution envelope; a faint impulse train is added at $N_t f_r$; and the whole signal is buried in white noise. The cepstrum recovers a clear rahmonic family at $\tau_r = 40\,\mathrm{ms}$ even though $f_r$ is invisible in the raw waveform.
+
+<!-- fig-tabset:figure_cepstrum_gearbox.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_cepstrum_gearbox.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 46</small>
+
+```python
+# === Cepstrum example: gear-box fault detection ===
+fs   = 20_000.0                     # Hz
+T    = 2.0                          # s
+t    = np.arange(0, T, 1.0 / fs)
+fr   = 25.0                         # shaft rotation frequency (Hz)
+Nt   = 21                           # number of teeth
+fm   = Nt * fr                      # gear-mesh frequency  -> 525 Hz
+
+# Once-per-revolution amplitude modulation -> sidebands fm +/- k*fr
+mod  = 1.0 + 0.6 * np.cos(2 * np.pi * fr * t)
+sig  = mod * np.sin(2 * np.pi * fm * t)
+sig += 0.5 * mod * np.sin(2 * np.pi * 2 * fm * t)
+
+# Faint tooth-impact impulse train
+impulses = np.zeros_like(t)
+impulses[::int(fs / fm)] = 1.0
+sig += 0.05 * impulses
+
+# Add white noise
+sig += 0.2 * np.random.default_rng(0).standard_normal(t.size)
+
+# Real cepstrum
+freq      = np.fft.rfftfreq(sig.size, 1.0 / fs)
+log_mag   = np.log(np.abs(np.fft.rfft(sig)) + 1e-12)
+log_mag  -= log_mag.mean()
+cepstrum  = np.fft.irfft(log_mag).real
+quefrency = np.arange(cepstrum.size) / fs
+```
+
+:::
+
+---
+
+## [Hankel Transform](https://en.wikipedia.org/wiki/Hankel_transform)
+
+The **Hankel transform** (also called the **Fourier–Bessel transform**) is the natural spectral transform for signals with **radial symmetry**. It arises whenever the 2-D Fourier transform is applied to a function that depends only on the distance from the origin, $r = \sqrt{x^2+y^2}$, and has no azimuthal dependence.
+
+### Derivation from the 2-D Fourier Transform
+
+For a radially symmetric function $f(\mathbf{r}) = f(r)$, the 2-D Fourier transform is:
+$$
+F(\mathbf{k}) = \int_{\mathbb{R}^2} f(r)\,e^{-i\mathbf{k}\cdot\mathbf{r}}\,d^2\mathbf{r}
+$$
+Switching to polar coordinates $\mathbf{r} = (r,\phi)$ and $\mathbf{k} = (k,\psi)$:
+$$
+F(k) = \int_0^\infty f(r)\,r\left[\int_0^{2\pi}e^{-ikr\cos(\phi-\psi)}\,d\phi\right]dr
+= 2\pi\int_0^\infty f(r)\,J_0(kr)\,r\,dr
+$$
+where the Bessel identity $\frac{1}{2\pi}\int_0^{2\pi}e^{iz\cos\theta}\,d\theta = J_0(z)$ was used. The result is independent of $\psi$, confirming that the 2-D spectrum of a radially symmetric function is itself radially symmetric.
+
+> **Hankel Transform (order $\nu$):**
+> $$
+> \mathcal{H}_\nu[f](k) = \int_0^\infty f(r)\,J_\nu(kr)\,r\,dr
+> $$
+> **Inverse Hankel Transform:**
+> $$
+> f(r) = \int_0^\infty \mathcal{H}_\nu[f](k)\,J_\nu(kr)\,k\,dk
+> $$
+> The transform is **self-reciprocal**: the forward and inverse kernels have exactly the same form. The 2-D Fourier transform of a radially symmetric function satisfies $\mathcal{F}_{2D}[f(r)] = 2\pi\,\mathcal{H}_0[f](k)$.
+
+The order $\nu$ selects which Bessel function acts as the kernel. In practice:
+
+| $\nu$ | Application |
+|:---:|---|
+| 0 | 2-D optics, acoustic radiation, plasma profiles |
+| 1 | Vortex beams, vector potential in cylindrical coordinates |
+| $n$ | Cylindrical waveguides, angular momentum eigenstates |
+
+**Key property — Hankel transform of a Gaussian.** The function $f(r) = e^{-ar^2}$ satisfies:
+$$
+\mathcal{H}_0\!\left[e^{-ar^2}\right](k) = \frac{1}{2a}\,e^{-k^2/(4a)}
+$$
+In particular, for $a = \tfrac{1}{2}$: $\mathcal{H}_0\!\left[e^{-r^2/2}\right](k) = e^{-k^2/2}$ — the Gaussian is its own Hankel transform, which provides a convenient numerical benchmark.
+
+### Quasi-Discrete Hankel Transform (QDHT)
+
+Unlike the Fourier transform, there is no general $O(N\log N)$ Hankel transform. However, a near-exact discrete version exists for **bandlimited** functions (Guizar-Sicairos & Gutiérrez-Vega, *J. Opt. Soc. Am. A*, 2004).
+
+The **QDHT** algorithm samples at the zeros of $J_0$:
+
+1. Let $j_n$ denote the $n$-th positive zero of $J_0$ ($j_1 \approx 2.405$, $j_2 \approx 5.520$, …).
+2. For a function supported on $r \le R$ and bandlimited to $k \le k_{\max} = j_{N+1}/R$, the sample grids are:
+$$
+r_n = \frac{j_n}{k_{\max}} = \frac{j_n R}{j_{N+1}}, \qquad k_m = \frac{j_m}{R}, \qquad m,n = 1,\ldots,N
+$$
+3. The discrete transform is the matrix–vector product:
+$$
+\boxed{F(k_m) = \frac{2}{k_{\max}^2}\sum_{n=1}^N \frac{J_0\!\left(j_m j_n / j_{N+1}\right)}{J_1^2(j_m)}\,f(r_n)}
+$$
+
+The transform matrix $T_{mn} \propto J_0(j_m j_n / j_{N+1})$ is **symmetric** and approximately **unitary**: the inverse transform has the same structure with $k_{\max}^2$ replaced by $R^2$.  Complexity: $O(N^2)$, practical for $N \lesssim 10^3$.
+
+```python
+import numpy as np
+from scipy.special import jn_zeros, j0, j1
+
+def qdht(f, R):
+    """Zeroth-order quasi-discrete Hankel transform (Guizar-Sicairos 2004).
+
+    f : array, values of f(r) sampled at r_n = qdht_grid(R, N)
+    R : float, maximum radius
+
+    Returns
+    -------
+    k : wavenumber sample grid
+    F : transform values F(k_m)
+    r : radial sample grid  (= qdht_grid(R, len(f)))
+    """
+    N  = len(f)
+    z  = jn_zeros(0, N + 1)          # j_{0,1}, …, j_{0,N+1}
+    jn, z_p = z[:N], z[N]            # sample zeros / bandwidth product
+    k_max = z_p / R
+    r     = jn / k_max               # radial samples in (0, R)
+    k     = jn / R                   # wavenumber samples in (0, k_max)
+    J0mat = j0(np.outer(jn, jn) / z_p)
+    F     = (2.0 / k_max**2) * (J0mat / j1(jn)[:, None]**2) @ f
+    return k, F, r
+
+def qdht_grid(R, N):
+    """Return the N radial sample points for a QDHT on [0, R)."""
+    z = jn_zeros(0, N + 1)
+    return z[:N] * R / z[N]
+```
+
+<!-- fig-tabset:figure_hankel.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_hankel.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 54</small>
+
+```python
+from scipy.special import jn_zeros, j0, j1
+
+def qdht(f, R):
+    N = len(f); z = jn_zeros(0, N + 1); jn, z_p = z[:N], z[N]
+    k_max = z_p / R; r = jn / k_max; k = jn / R
+    F = (2.0 / k_max**2) * (j0(np.outer(jn, jn) / z_p) / j1(jn)[:, None]**2) @ f
+    return k, F, r
+
+# --- Panel (a): Gaussian self-dual ---
+N, R = 128, 6.0
+r = jn_zeros(0, N + 1)[:N] * R / jn_zeros(0, N + 1)[N]
+f_gauss = np.exp(-r**2 / 2)
+k, F_gauss, _ = qdht(f_gauss, R)
+
+# --- Panel (b): Airy pattern from unit circular aperture ---
+N2, R2 = 512, 5.0
+r2 = jn_zeros(0, N2 + 1)[:N2] * R2 / jn_zeros(0, N2 + 1)[N2]
+f_circ = (r2 <= 1.0).astype(float)
+k2, F_airy, _ = qdht(f_circ, R2)
+F_exact = np.where(k2 > 0, j1(k2) / k2, 0.5)
+```
+
+:::
+
+### Example: Airy Pattern of a Circular Aperture
+
+When a monochromatic plane wave illuminates a circular aperture of unit radius with uniform transmittance $f(r) = \mathrm{circ}(r)$, the Fraunhofer far-field amplitude is:
+$$
+F(k) = \int_0^1 J_0(kr)\,r\,dr = \frac{J_1(k)}{k}
+$$
+using the identity $\int_0^x J_0(u)\,u\,du = x\,J_1(x)$. The intensity pattern $I(k)\propto [J_1(k)/k]^2$ is the **Airy pattern**. Its first zero — the edge of the Airy disk — occurs at $k = j_{1,1} \approx 3.832$, corresponding to the Rayleigh angular resolution criterion $\theta \approx 1.22\,\lambda/D$.
+
+---
+
+## [Legendre Spectral Transform](https://en.wikipedia.org/wiki/Legendre_polynomials)
+
+While the Fourier series decomposes functions on a circle and the Hankel transform handles radial structure in the plane, the **Legendre spectral transform** provides the natural decomposition for functions on a **sphere** — or for any function on $[-1, 1]$. It underlies the angular power spectrum of the CMB introduced earlier in this chapter.
+
+### Legendre Polynomials and Orthogonality
+
+The **Legendre polynomials** $\{P_\ell(x)\}_{\ell=0}^\infty$ form a complete orthogonal basis on $[-1, 1]$:
+$$
+\int_{-1}^1 P_m(x)\,P_n(x)\,dx = \frac{2}{2n+1}\,\delta_{mn}
+$$
+They satisfy the Legendre differential equation
+$$
+\frac{d}{dx}\!\left[(1-x^2)\,\frac{dP_\ell}{dx}\right] + \ell(\ell+1)\,P_\ell(x) = 0
+$$
+and are generated by the three-term recurrence $(\ell+1)P_{\ell+1} = (2\ell+1)x\,P_\ell - \ell\,P_{\ell-1}$, starting from $P_0=1$, $P_1=x$.
+
+The index $\ell$ plays the role of "angular wavenumber" (or multipole): $P_\ell$ oscillates approximately $\ell$ times on $[-1,1]$, just as $e^{2\pi i n x/L}$ oscillates $n$ times on $[0,L]$.
+
+### Forward and Inverse Transform
+
+> **Legendre Spectral Transform (forward):**
+> $$
+> a_\ell = \frac{2\ell+1}{2}\int_{-1}^1 f(x)\,P_\ell(x)\,dx, \qquad \ell = 0,1,2,\ldots
+> $$
+>
+> **Inverse (synthesis):**
+> $$
+> f(x) = \sum_{\ell=0}^{\infty} a_\ell\,P_\ell(x)
+> $$
+
+The coefficient $a_\ell$ measures how much of the "angular frequency" $\ell$ is present in $f$. The orthogonality relation ensures the two formulas are consistent: substituting the synthesis into the forward transform recovers the original coefficients exactly.
+
+### Fast Computation via Gauss–Legendre Quadrature
+
+The forward integral is computed exactly for polynomials of degree $\le 2N-1$ by **Gauss–Legendre (GL) quadrature** with $N$ nodes:
+$$
+a_\ell \approx \frac{2\ell+1}{2}\sum_{i=1}^N w_i\,P_\ell(x_i)\,f(x_i)
+$$
+where $x_i$ are the roots of $P_N$ and $w_i$ the associated weights. Written for all modes simultaneously this is a **matrix–vector product**:
+$$
+\mathbf{a} = \mathbf{P}\,(\mathbf{w} \circ \mathbf{f}), \qquad \mathbf{P}_{\ell i} = \frac{2\ell+1}{2}\,P_\ell(x_i)
+$$
+Cost: $O(L_{\max}\cdot N)$. For $L_{\max} = N-1$ the matrix $\mathbf{P}$ is square, and the inverse is simply $\mathbf{f} = \mathbf{P}^T\mathbf{a}$ (exact because GL nodes diagonalise the Legendre system).
+
+```python
+import numpy as np
+from scipy.special import eval_legendre
+
+def legendre_transform(f, x, w, L_max):
+    """Forward Legendre spectral transform via Gauss–Legendre quadrature.
+
+    f, x, w : function values and GL nodes/weights (np.polynomial.legendre.leggauss)
+    L_max   : maximum degree
+    Returns a : coefficients a_ell for ell = 0, …, L_max
+    """
+    ell   = np.arange(L_max + 1)
+    P_mat = eval_legendre(ell[:, None], x[None, :])   # (L_max+1, N)
+    return (2 * ell + 1) / 2 * (P_mat @ (w * f))
+
+def legendre_synthesis(a, x):
+    """Reconstruct f at points x from Legendre coefficients a."""
+    ell   = np.arange(len(a))
+    P_mat = eval_legendre(ell[:, None], x[None, :])
+    return a @ P_mat
+
+# Usage
+N = 256
+x, w = np.polynomial.legendre.leggauss(N)   # GL nodes and weights on [-1, 1]
+f    = np.exp(-5 * x**2) * np.cos(3 * np.pi * x)
+a    = legendre_transform(f, x, w, L_max=N - 1)
+f_rec = legendre_synthesis(a, x)
+# max |f - f_rec| ~ 1e-14 (machine precision for smooth f)
+```
+
+### Connection to the CMB Angular Power Spectrum
+
+For a statistically **isotropic** random field on the sphere — the CMB temperature $T(\hat{n})$ — the two-point correlation function depends only on the angle between two directions:
+$$
+C(\theta) = \langle T(\hat{n}_1)\,T(\hat{n}_2)\rangle, \quad \hat{n}_1\!\cdot\!\hat{n}_2 = \cos\theta
+$$
+Expanding in Legendre polynomials:
+$$
+C(\theta) = \frac{1}{4\pi}\sum_{\ell=0}^{\infty}(2\ell+1)\,C_\ell\,P_\ell(\cos\theta)
+$$
+The **angular power spectrum** $C_\ell$ is the Legendre transform of $C(\theta)$:
+$$
+C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d(\cos\theta)
+$$
+This is the **spherical analogue of the Wiener–Khinchin theorem**: just as the PSD is the Fourier transform of the autocorrelation function, $C_\ell$ is the Legendre transform of the angular correlation function. In `healpy`, `hp.anafast(T_map)` implements exactly this computation for a full-sky map.
+
+<!-- fig-tabset:figure_legendre.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_legendre.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 56</small>
+
+```python
+from scipy.special import eval_legendre
+
+N = 256
+x, w = np.polynomial.legendre.leggauss(N)
+ell  = np.arange(N)
+P_mat = eval_legendre(ell[:, None], x[None, :])          # (N, N)
+
+# Forward transform
+f_vals = np.exp(-5 * x**2) * np.cos(3 * np.pi * x)
+a      = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))
+
+# Inverse (synthesis)
+f_rec  = a @ P_mat
+
+# Angular power spectrum of the 1-D synthetic CMB strip from above
+# (re-use T_x from the Wiener–Khinchin example)
+x_strip = np.linspace(-1, 1, N, endpoint=False)
+T_strip = np.interp(x_strip, np.linspace(-1, 1, T_x.size), T_x - T_x.mean())
+a_cmb   = (2 * ell + 1) / 2 * (P_mat @ (w * np.interp(x, x_strip, T_strip)))
+Cl      = a_cmb**2 / (2 * ell + 1)     # angular power spectrum estimator
+```
+
+:::

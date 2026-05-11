@@ -1,0 +1,74 @@
+# Indian Cuckoo Song
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Short-Time Fourier Transform (STFT) applied to bioacoustics.
+**Chapter:** [7 — Time-Frequency Analysis](../chap7.qmd)
+
+---
+
+## Background
+
+The Indian Cuckoo (*Cuculus micropterus*) produces a highly stereotyped four-note call — often described as the phrase *"one more bottle"*. In the raw pressure waveform the repeated phrase is barely distinguishable by eye. The STFT maps each short frame onto a local spectrum, stacking them into a spectrogram that makes the periodic phrase and the individual note frequencies immediately visible.
+
+The call sits in the 1–3 kHz band. Each note shows a slight downward frequency glide, and the inter-note silences appear as clean gaps in the time-frequency plane.
+
+## Key idea
+
+The STFT of a signal $x(t)$ with analysis window $g(t)$ is
+
+$$
+X(\tau, f) = \int_{-\infty}^{\infty} x(t)\, g(t - \tau)\, e^{-j2\pi f t}\, dt
+$$
+
+The **spectrogram** is the squared magnitude $|X(\tau, f)|^2$, giving instantaneous power as a function of both time and frequency. Window length $L$ sets the time–frequency resolution trade-off: longer windows give finer frequency resolution at the cost of poorer time localisation.
+
+## Code
+
+```python
+import numpy as np
+import scipy.signal
+import matplotlib.pyplot as plt
+from scipy.io import wavfile
+
+fs, x = wavfile.read('docs/Data/indian_cuckoo_short.wav')
+x = x.astype(float) / np.iinfo(x.dtype).max   # normalise to [-1, 1]
+
+N_window = 4096
+window = scipy.signal.windows.hann(N_window, sym=True)
+STFT = scipy.signal.ShortTimeFFT(window, hop=128, fs=fs,
+                                  scale_to='psd', fft_mode='onesided2X')
+
+Sxx = STFT.spectrogram(x)
+
+fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
+
+# Waveform
+t = np.arange(len(x)) / fs
+axes[0].plot(t, x, lw=0.5, color='steelblue')
+axes[0].set_ylabel('Amplitude')
+axes[0].set_xlabel('Time (s)')
+
+# Spectrogram
+t_stft = STFT.t(len(x))
+f_stft = STFT.f
+axes[1].pcolormesh(t_stft, f_stft / 1e3, 10 * np.log10(Sxx + 1e-12),
+                   shading='gouraud', cmap='inferno', vmin=-60, vmax=0)
+axes[1].set_ylim(0, 6)
+axes[1].set_ylabel('Frequency (kHz)')
+axes[1].set_xlabel('Time (s)')
+
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![Indian Cuckoo STFT spectrogram showing four-note phrase structure](../docs/Figure/figure_indian_cuckoo_with_bird.png)
+</div>
+
+The spectrogram reveals the four-note phrase repeating with roughly 0.5 s between calls. Each note occupies ~1.5–2.5 kHz and lasts about 0.2 s. This structure is completely invisible in the waveform alone.
+
+---
+
+*See [Chapter 7](../chap7.qmd) for a full treatment of STFT, window choice, and the uncertainty principle.*

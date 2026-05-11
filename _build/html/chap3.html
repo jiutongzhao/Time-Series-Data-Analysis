@@ -110,6 +110,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<!-- Google Fonts — non-blocking async load.
+     preconnect reduces DNS+TLS latency; the media="print" trick lets the
+     browser download the stylesheet without blocking render, then swaps to
+     screen once loaded.  noscript provides a synchronous fallback. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" media="print" onload="this.media='all'">
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+</noscript>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -474,6 +484,77 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Gallery</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">All Examples</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/cuckoo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Indian Cuckoo Song</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/sunspot.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sunspot Cycle</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/exoplanet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exoplanet 51 Peg b</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/gearbox.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gear-Box Fault Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/coherence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">AO–Baltic Coherence</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/windowing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spectral Leakage &amp; Windowing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/dwt_image.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DWT Image Compression</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/aliasing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Aliasing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery/stft_cwt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">STFT vs.&nbsp;CWT</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
@@ -495,6 +576,19 @@ window.Quarto = {
   <li><a href="#cepstrum" id="toc-cepstrum" class="nav-link" data-scroll-target="#cepstrum">Cepstrum</a>
   <ul class="collapse">
   <li><a href="#worked-example-gear-box-fault-detection" id="toc-worked-example-gear-box-fault-detection" class="nav-link" data-scroll-target="#worked-example-gear-box-fault-detection">Worked Example: Gear-Box Fault Detection</a></li>
+  </ul></li>
+  <li><a href="#hankel-transform" id="toc-hankel-transform" class="nav-link" data-scroll-target="#hankel-transform">Hankel Transform</a>
+  <ul class="collapse">
+  <li><a href="#derivation-from-the-2-d-fourier-transform" id="toc-derivation-from-the-2-d-fourier-transform" class="nav-link" data-scroll-target="#derivation-from-the-2-d-fourier-transform">Derivation from the 2-D Fourier Transform</a></li>
+  <li><a href="#quasi-discrete-hankel-transform-qdht" id="toc-quasi-discrete-hankel-transform-qdht" class="nav-link" data-scroll-target="#quasi-discrete-hankel-transform-qdht">Quasi-Discrete Hankel Transform (QDHT)</a></li>
+  <li><a href="#example-airy-pattern-of-a-circular-aperture" id="toc-example-airy-pattern-of-a-circular-aperture" class="nav-link" data-scroll-target="#example-airy-pattern-of-a-circular-aperture">Example: Airy Pattern of a Circular Aperture</a></li>
+  </ul></li>
+  <li><a href="#legendre-spectral-transform" id="toc-legendre-spectral-transform" class="nav-link" data-scroll-target="#legendre-spectral-transform">Legendre Spectral Transform</a>
+  <ul class="collapse">
+  <li><a href="#legendre-polynomials-and-orthogonality" id="toc-legendre-polynomials-and-orthogonality" class="nav-link" data-scroll-target="#legendre-polynomials-and-orthogonality">Legendre Polynomials and Orthogonality</a></li>
+  <li><a href="#forward-and-inverse-transform" id="toc-forward-and-inverse-transform" class="nav-link" data-scroll-target="#forward-and-inverse-transform">Forward and Inverse Transform</a></li>
+  <li><a href="#fast-computation-via-gausslegendre-quadrature" id="toc-fast-computation-via-gausslegendre-quadrature" class="nav-link" data-scroll-target="#fast-computation-via-gausslegendre-quadrature">Fast Computation via Gauss–Legendre Quadrature</a></li>
+  <li><a href="#connection-to-the-cmb-angular-power-spectrum" id="toc-connection-to-the-cmb-angular-power-spectrum" class="nav-link" data-scroll-target="#connection-to-the-cmb-angular-power-spectrum">Connection to the CMB Angular Power Spectrum</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -881,7 +975,277 @@ Y(f) &amp;= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>quefrency <span class="op">=</span> np.fft.rfftfreq(log_abs_coef.size, df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="worked-example-gear-box-fault-detection" class="level3">
 <h3 class="anchored" data-anchor-id="worked-example-gear-box-fault-detection">Worked Example: Gear-Box Fault Detection</h3>
-<p>A textbook industrial application of cepstral analysis is <strong>gear-mesh diagnostics</strong>. A healthy gear-box vibration sp</p>
+<p>A textbook industrial application of cepstral analysis is <strong>gear-mesh diagnostics</strong>. A healthy gear-box vibration spectrum is dominated by the <em>gear-mesh frequency</em> <span class="math inline">f_m = N_t f_r</span> (number of teeth <span class="math inline">\times</span> shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the <em>shaft-rotation frequency</em> <span class="math inline">f_r</span>, introducing a family of side-bands <span class="math inline">f_m \pm k f_r</span> around every mesh harmonic.</p>
+<p>In the spectrum these side-bands form a <strong>comb</strong> with spacing <span class="math inline">f_r</span>. The cepstrum collapses each such comb into a single peak (a <em>rahmonic</em>) at quefrency <span class="math inline">\tau_r = 1/f_r</span> — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.</p>
+<p>The synthetic signal below imitates a gear-box with <span class="math inline">N_t = 21</span> teeth at <span class="math inline">f_r = 25\,\mathrm{Hz}</span>. The mesh and its first harmonic are amplitude-modulated by a once-per-revolution envelope; a faint impulse train is added at <span class="math inline">N_t f_r</span>; and the whole signal is buried in white noise. The cepstrum recovers a clear rahmonic family at <span class="math inline">\tau_r = 40\,\mathrm{ms}</span> even though <span class="math inline">f_r</span> is invisible in the raw waveform.</p>
+<!-- fig-tabset:figure_cepstrum_gearbox.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code <small>chap3.ipynb · cell 46</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p><img src="docs/Figure/figure_cepstrum_gearbox.png" width="100%"></p>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># === Cepstrum example: gear-box fault detection ===</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fs   <span class="op">=</span> <span class="fl">20_000.0</span>                     <span class="co"># Hz</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>T    <span class="op">=</span> <span class="fl">2.0</span>                          <span class="co"># s</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>t    <span class="op">=</span> np.arange(<span class="dv">0</span>, T, <span class="fl">1.0</span> <span class="op">/</span> fs)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>fr   <span class="op">=</span> <span class="fl">25.0</span>                         <span class="co"># shaft rotation frequency (Hz)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>Nt   <span class="op">=</span> <span class="dv">21</span>                           <span class="co"># number of teeth</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>fm   <span class="op">=</span> Nt <span class="op">*</span> fr                      <span class="co"># gear-mesh frequency  -&gt; 525 Hz</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Once-per-revolution amplitude modulation -&gt; sidebands fm +/- k*fr</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>mod  <span class="op">=</span> <span class="fl">1.0</span> <span class="op">+</span> <span class="fl">0.6</span> <span class="op">*</span> np.cos(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> fr <span class="op">*</span> t)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>sig  <span class="op">=</span> mod <span class="op">*</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> fm <span class="op">*</span> t)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">+=</span> <span class="fl">0.5</span> <span class="op">*</span> mod <span class="op">*</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> fm <span class="op">*</span> t)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Faint tooth-impact impulse train</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>impulses <span class="op">=</span> np.zeros_like(t)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>impulses[::<span class="bu">int</span>(fs <span class="op">/</span> fm)] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>sig <span class="op">+=</span> <span class="fl">0.05</span> <span class="op">*</span> impulses</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Add white noise</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>sig <span class="op">+=</span> <span class="fl">0.2</span> <span class="op">*</span> np.random.default_rng(<span class="dv">0</span>).standard_normal(t.size)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Real cepstrum</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>freq      <span class="op">=</span> np.fft.rfftfreq(sig.size, <span class="fl">1.0</span> <span class="op">/</span> fs)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>log_mag   <span class="op">=</span> np.log(np.<span class="bu">abs</span>(np.fft.rfft(sig)) <span class="op">+</span> <span class="fl">1e-12</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>log_mag  <span class="op">-=</span> log_mag.mean()</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>cepstrum  <span class="op">=</span> np.fft.irfft(log_mag).real</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>quefrency <span class="op">=</span> np.arange(cepstrum.size) <span class="op">/</span> fs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="hankel-transform" class="level2">
+<h2 class="anchored" data-anchor-id="hankel-transform"><a href="https://en.wikipedia.org/wiki/Hankel_transform">Hankel Transform</a></h2>
+<p>The <strong>Hankel transform</strong> (also called the <strong>Fourier–Bessel transform</strong>) is the natural spectral transform for signals with <strong>radial symmetry</strong>. It arises whenever the 2-D Fourier transform is applied to a function that depends only on the distance from the origin, <span class="math inline">r = \sqrt{x^2+y^2}</span>, and has no azimuthal dependence.</p>
+<section id="derivation-from-the-2-d-fourier-transform" class="level3">
+<h3 class="anchored" data-anchor-id="derivation-from-the-2-d-fourier-transform">Derivation from the 2-D Fourier Transform</h3>
+<p>For a radially symmetric function <span class="math inline">f(\mathbf{r}) = f(r)</span>, the 2-D Fourier transform is: <span class="math display">
+F(\mathbf{k}) = \int_{\mathbb{R}^2} f(r)\,e^{-i\mathbf{k}\cdot\mathbf{r}}\,d^2\mathbf{r}
+</span> Switching to polar coordinates <span class="math inline">\mathbf{r} = (r,\phi)</span> and <span class="math inline">\mathbf{k} = (k,\psi)</span>: <span class="math display">
+F(k) = \int_0^\infty f(r)\,r\left[\int_0^{2\pi}e^{-ikr\cos(\phi-\psi)}\,d\phi\right]dr
+= 2\pi\int_0^\infty f(r)\,J_0(kr)\,r\,dr
+</span> where the Bessel identity <span class="math inline">\frac{1}{2\pi}\int_0^{2\pi}e^{iz\cos\theta}\,d\theta = J_0(z)</span> was used. The result is independent of <span class="math inline">\psi</span>, confirming that the 2-D spectrum of a radially symmetric function is itself radially symmetric.</p>
+<blockquote class="blockquote">
+<p><strong>Hankel Transform (order <span class="math inline">\nu</span>):</strong> <span class="math display">
+\mathcal{H}_\nu[f](k) = \int_0^\infty f(r)\,J_\nu(kr)\,r\,dr
+</span> <strong>Inverse Hankel Transform:</strong> <span class="math display">
+f(r) = \int_0^\infty \mathcal{H}_\nu[f](k)\,J_\nu(kr)\,k\,dk
+</span> The transform is <strong>self-reciprocal</strong>: the forward and inverse kernels have exactly the same form. The 2-D Fourier transform of a radially symmetric function satisfies <span class="math inline">\mathcal{F}_{2D}[f(r)] = 2\pi\,\mathcal{H}_0[f](k)</span>.</p>
+</blockquote>
+<p>The order <span class="math inline">\nu</span> selects which Bessel function acts as the kernel. In practice:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\nu</span></th>
+<th>Application</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td>2-D optics, acoustic radiation, plasma profiles</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td>Vortex beams, vector potential in cylindrical coordinates</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">n</span></td>
+<td>Cylindrical waveguides, angular momentum eigenstates</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key property — Hankel transform of a Gaussian.</strong> The function <span class="math inline">f(r) = e^{-ar^2}</span> satisfies: <span class="math display">
+\mathcal{H}_0\!\left[e^{-ar^2}\right](k) = \frac{1}{2a}\,e^{-k^2/(4a)}
+</span> In particular, for <span class="math inline">a = \tfrac{1}{2}</span>: <span class="math inline">\mathcal{H}_0\!\left[e^{-r^2/2}\right](k) = e^{-k^2/2}</span> — the Gaussian is its own Hankel transform, which provides a convenient numerical benchmark.</p>
+</section>
+<section id="quasi-discrete-hankel-transform-qdht" class="level3">
+<h3 class="anchored" data-anchor-id="quasi-discrete-hankel-transform-qdht">Quasi-Discrete Hankel Transform (QDHT)</h3>
+<p>Unlike the Fourier transform, there is no general <span class="math inline">O(N\log N)</span> Hankel transform. However, a near-exact discrete version exists for <strong>bandlimited</strong> functions (Guizar-Sicairos &amp; Gutiérrez-Vega, <em>J. Opt. Soc. Am. A</em>, 2004).</p>
+<p>The <strong>QDHT</strong> algorithm samples at the zeros of <span class="math inline">J_0</span>:</p>
+<ol type="1">
+<li>Let <span class="math inline">j_n</span> denote the <span class="math inline">n</span>-th positive zero of <span class="math inline">J_0</span> (<span class="math inline">j_1 \approx 2.405</span>, <span class="math inline">j_2 \approx 5.520</span>, …).</li>
+<li>For a function supported on <span class="math inline">r \le R</span> and bandlimited to <span class="math inline">k \le k_{\max} = j_{N+1}/R</span>, the sample grids are: <span class="math display">
+r_n = \frac{j_n}{k_{\max}} = \frac{j_n R}{j_{N+1}}, \qquad k_m = \frac{j_m}{R}, \qquad m,n = 1,\ldots,N
+</span></li>
+<li>The discrete transform is the matrix–vector product: <span class="math display">
+\boxed{F(k_m) = \frac{2}{k_{\max}^2}\sum_{n=1}^N \frac{J_0\!\left(j_m j_n / j_{N+1}\right)}{J_1^2(j_m)}\,f(r_n)}
+</span></li>
+</ol>
+<p>The transform matrix <span class="math inline">T_{mn} \propto J_0(j_m j_n / j_{N+1})</span> is <strong>symmetric</strong> and approximately <strong>unitary</strong>: the inverse transform has the same structure with <span class="math inline">k_{\max}^2</span> replaced by <span class="math inline">R^2</span>. Complexity: <span class="math inline">O(N^2)</span>, practical for <span class="math inline">N \lesssim 10^3</span>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> jn_zeros, j0, j1</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> qdht(f, R):</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Zeroth-order quasi-discrete Hankel transform (Guizar-Sicairos 2004).</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">    f : array, values of f(r) sampled at r_n = qdht_grid(R, N)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">    R : float, maximum radius</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">    -------</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">    k : wavenumber sample grid</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">    F : transform values F(k_m)</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">    r : radial sample grid  (= qdht_grid(R, len(f)))</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    N  <span class="op">=</span> <span class="bu">len</span>(f)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    z  <span class="op">=</span> jn_zeros(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>)          <span class="co"># j_{0,1}, …, j_{0,N+1}</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    jn, z_p <span class="op">=</span> z[:N], z[N]            <span class="co"># sample zeros / bandwidth product</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    k_max <span class="op">=</span> z_p <span class="op">/</span> R</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    r     <span class="op">=</span> jn <span class="op">/</span> k_max               <span class="co"># radial samples in (0, R)</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    k     <span class="op">=</span> jn <span class="op">/</span> R                   <span class="co"># wavenumber samples in (0, k_max)</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    J0mat <span class="op">=</span> j0(np.outer(jn, jn) <span class="op">/</span> z_p)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    F     <span class="op">=</span> (<span class="fl">2.0</span> <span class="op">/</span> k_max<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> (J0mat <span class="op">/</span> j1(jn)[:, <span class="va">None</span>]<span class="op">**</span><span class="dv">2</span>) <span class="op">@</span> f</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> k, F, r</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> qdht_grid(R, N):</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the N radial sample points for a QDHT on [0, R)."""</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> jn_zeros(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> z[:N] <span class="op">*</span> R <span class="op">/</span> z[N]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- fig-tabset:figure_hankel.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code <small>chap3.ipynb · cell 54</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<p><img src="docs/Figure/figure_hankel.png" width="100%"></p>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> jn_zeros, j0, j1</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> qdht(f, R):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="bu">len</span>(f)<span class="op">;</span> z <span class="op">=</span> jn_zeros(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>)<span class="op">;</span> jn, z_p <span class="op">=</span> z[:N], z[N]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    k_max <span class="op">=</span> z_p <span class="op">/</span> R<span class="op">;</span> r <span class="op">=</span> jn <span class="op">/</span> k_max<span class="op">;</span> k <span class="op">=</span> jn <span class="op">/</span> R</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    F <span class="op">=</span> (<span class="fl">2.0</span> <span class="op">/</span> k_max<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> (j0(np.outer(jn, jn) <span class="op">/</span> z_p) <span class="op">/</span> j1(jn)[:, <span class="va">None</span>]<span class="op">**</span><span class="dv">2</span>) <span class="op">@</span> f</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> k, F, r</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Panel (a): Gaussian self-dual ---</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>N, R <span class="op">=</span> <span class="dv">128</span>, <span class="fl">6.0</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> jn_zeros(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>)[:N] <span class="op">*</span> R <span class="op">/</span> jn_zeros(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>)[N]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>f_gauss <span class="op">=</span> np.exp(<span class="op">-</span>r<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>k, F_gauss, _ <span class="op">=</span> qdht(f_gauss, R)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Panel (b): Airy pattern from unit circular aperture ---</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>N2, R2 <span class="op">=</span> <span class="dv">512</span>, <span class="fl">5.0</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>r2 <span class="op">=</span> jn_zeros(<span class="dv">0</span>, N2 <span class="op">+</span> <span class="dv">1</span>)[:N2] <span class="op">*</span> R2 <span class="op">/</span> jn_zeros(<span class="dv">0</span>, N2 <span class="op">+</span> <span class="dv">1</span>)[N2]</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>f_circ <span class="op">=</span> (r2 <span class="op">&lt;=</span> <span class="fl">1.0</span>).astype(<span class="bu">float</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>k2, F_airy, _ <span class="op">=</span> qdht(f_circ, R2)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>F_exact <span class="op">=</span> np.where(k2 <span class="op">&gt;</span> <span class="dv">0</span>, j1(k2) <span class="op">/</span> k2, <span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-airy-pattern-of-a-circular-aperture" class="level3">
+<h3 class="anchored" data-anchor-id="example-airy-pattern-of-a-circular-aperture">Example: Airy Pattern of a Circular Aperture</h3>
+<p>When a monochromatic plane wave illuminates a circular aperture of unit radius with uniform transmittance <span class="math inline">f(r) = \mathrm{circ}(r)</span>, the Fraunhofer far-field amplitude is: <span class="math display">
+F(k) = \int_0^1 J_0(kr)\,r\,dr = \frac{J_1(k)}{k}
+</span> using the identity <span class="math inline">\int_0^x J_0(u)\,u\,du = x\,J_1(x)</span>. The intensity pattern <span class="math inline">I(k)\propto [J_1(k)/k]^2</span> is the <strong>Airy pattern</strong>. Its first zero — the edge of the Airy disk — occurs at <span class="math inline">k = j_{1,1} \approx 3.832</span>, corresponding to the Rayleigh angular resolution criterion <span class="math inline">\theta \approx 1.22\,\lambda/D</span>.</p>
+<hr>
+</section>
+</section>
+<section id="legendre-spectral-transform" class="level2">
+<h2 class="anchored" data-anchor-id="legendre-spectral-transform"><a href="https://en.wikipedia.org/wiki/Legendre_polynomials">Legendre Spectral Transform</a></h2>
+<p>While the Fourier series decomposes functions on a circle and the Hankel transform handles radial structure in the plane, the <strong>Legendre spectral transform</strong> provides the natural decomposition for functions on a <strong>sphere</strong> — or for any function on <span class="math inline">[-1, 1]</span>. It underlies the angular power spectrum of the CMB introduced earlier in this chapter.</p>
+<section id="legendre-polynomials-and-orthogonality" class="level3">
+<h3 class="anchored" data-anchor-id="legendre-polynomials-and-orthogonality">Legendre Polynomials and Orthogonality</h3>
+<p>The <strong>Legendre polynomials</strong> <span class="math inline">\{P_\ell(x)\}_{\ell=0}^\infty</span> form a complete orthogonal basis on <span class="math inline">[-1, 1]</span>: <span class="math display">
+\int_{-1}^1 P_m(x)\,P_n(x)\,dx = \frac{2}{2n+1}\,\delta_{mn}
+</span> They satisfy the Legendre differential equation <span class="math display">
+\frac{d}{dx}\!\left[(1-x^2)\,\frac{dP_\ell}{dx}\right] + \ell(\ell+1)\,P_\ell(x) = 0
+</span> and are generated by the three-term recurrence <span class="math inline">(\ell+1)P_{\ell+1} = (2\ell+1)x\,P_\ell - \ell\,P_{\ell-1}</span>, starting from <span class="math inline">P_0=1</span>, <span class="math inline">P_1=x</span>.</p>
+<p>The index <span class="math inline">\ell</span> plays the role of “angular wavenumber” (or multipole): <span class="math inline">P_\ell</span> oscillates approximately <span class="math inline">\ell</span> times on <span class="math inline">[-1,1]</span>, just as <span class="math inline">e^{2\pi i n x/L}</span> oscillates <span class="math inline">n</span> times on <span class="math inline">[0,L]</span>.</p>
+</section>
+<section id="forward-and-inverse-transform" class="level3">
+<h3 class="anchored" data-anchor-id="forward-and-inverse-transform">Forward and Inverse Transform</h3>
+<blockquote class="blockquote">
+<p><strong>Legendre Spectral Transform (forward):</strong> <span class="math display">
+a_\ell = \frac{2\ell+1}{2}\int_{-1}^1 f(x)\,P_\ell(x)\,dx, \qquad \ell = 0,1,2,\ldots
+</span></p>
+<p><strong>Inverse (synthesis):</strong> <span class="math display">
+f(x) = \sum_{\ell=0}^{\infty} a_\ell\,P_\ell(x)
+</span></p>
+</blockquote>
+<p>The coefficient <span class="math inline">a_\ell</span> measures how much of the “angular frequency” <span class="math inline">\ell</span> is present in <span class="math inline">f</span>. The orthogonality relation ensures the two formulas are consistent: substituting the synthesis into the forward transform recovers the original coefficients exactly.</p>
+</section>
+<section id="fast-computation-via-gausslegendre-quadrature" class="level3">
+<h3 class="anchored" data-anchor-id="fast-computation-via-gausslegendre-quadrature">Fast Computation via Gauss–Legendre Quadrature</h3>
+<p>The forward integral is computed exactly for polynomials of degree <span class="math inline">\le 2N-1</span> by <strong>Gauss–Legendre (GL) quadrature</strong> with <span class="math inline">N</span> nodes: <span class="math display">
+a_\ell \approx \frac{2\ell+1}{2}\sum_{i=1}^N w_i\,P_\ell(x_i)\,f(x_i)
+</span> where <span class="math inline">x_i</span> are the roots of <span class="math inline">P_N</span> and <span class="math inline">w_i</span> the associated weights. Written for all modes simultaneously this is a <strong>matrix–vector product</strong>: <span class="math display">
+\mathbf{a} = \mathbf{P}\,(\mathbf{w} \circ \mathbf{f}), \qquad \mathbf{P}_{\ell i} = \frac{2\ell+1}{2}\,P_\ell(x_i)
+</span> Cost: <span class="math inline">O(L_{\max}\cdot N)</span>. For <span class="math inline">L_{\max} = N-1</span> the matrix <span class="math inline">\mathbf{P}</span> is square, and the inverse is simply <span class="math inline">\mathbf{f} = \mathbf{P}^T\mathbf{a}</span> (exact because GL nodes diagonalise the Legendre system).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> eval_legendre</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> legendre_transform(f, x, w, L_max):</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Forward Legendre spectral transform via Gauss–Legendre quadrature.</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">    f, x, w : function values and GL nodes/weights (np.polynomial.legendre.leggauss)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">    L_max   : maximum degree</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns a : coefficients a_ell for ell = 0, …, L_max</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    ell   <span class="op">=</span> np.arange(L_max <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    P_mat <span class="op">=</span> eval_legendre(ell[:, <span class="va">None</span>], x[<span class="va">None</span>, :])   <span class="co"># (L_max+1, N)</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="dv">2</span> <span class="op">*</span> ell <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span> <span class="op">*</span> (P_mat <span class="op">@</span> (w <span class="op">*</span> f))</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> legendre_synthesis(a, x):</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Reconstruct f at points x from Legendre coefficients a."""</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    ell   <span class="op">=</span> np.arange(<span class="bu">len</span>(a))</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    P_mat <span class="op">=</span> eval_legendre(ell[:, <span class="va">None</span>], x[<span class="va">None</span>, :])</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">@</span> P_mat</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Usage</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">256</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>x, w <span class="op">=</span> np.polynomial.legendre.leggauss(N)   <span class="co"># GL nodes and weights on [-1, 1]</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>f    <span class="op">=</span> np.exp(<span class="op">-</span><span class="dv">5</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> np.cos(<span class="dv">3</span> <span class="op">*</span> np.pi <span class="op">*</span> x)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>a    <span class="op">=</span> legendre_transform(f, x, w, L_max<span class="op">=</span>N <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>f_rec <span class="op">=</span> legendre_synthesis(a, x)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co"># max |f - f_rec| ~ 1e-14 (machine precision for smooth f)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="connection-to-the-cmb-angular-power-spectrum" class="level3">
+<h3 class="anchored" data-anchor-id="connection-to-the-cmb-angular-power-spectrum">Connection to the CMB Angular Power Spectrum</h3>
+<p>For a statistically <strong>isotropic</strong> random field on the sphere — the CMB temperature <span class="math inline">T(\hat{n})</span> — the two-point correlation function depends only on the angle between two directions: <span class="math display">
+C(\theta) = \langle T(\hat{n}_1)\,T(\hat{n}_2)\rangle, \quad \hat{n}_1\!\cdot\!\hat{n}_2 = \cos\theta
+</span> Expanding in Legendre polynomials: <span class="math display">
+C(\theta) = \frac{1}{4\pi}\sum_{\ell=0}^{\infty}(2\ell+1)\,C_\ell\,P_\ell(\cos\theta)
+</span> The <strong>angular power spectrum</strong> <span class="math inline">C_\ell</span> is the Legendre transform of <span class="math inline">C(\theta)</span>: <span class="math display">
+C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d(\cos\theta)
+</span> This is the <strong>spherical analogue of the Wiener–Khinchin theorem</strong>: just as the PSD is the Fourier transform of the autocorrelation function, <span class="math inline">C_\ell</span> is the Legendre transform of the angular correlation function. In <code>healpy</code>, <code>hp.anafast(T_map)</code> implements exactly this computation for a full-sky map.</p>
+<!-- fig-tabset:figure_legendre.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code <small>chap3.ipynb · cell 56</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<p><img src="docs/Figure/figure_legendre.png" width="100%"></p>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> eval_legendre</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">256</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>x, w <span class="op">=</span> np.polynomial.legendre.leggauss(N)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>ell  <span class="op">=</span> np.arange(N)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>P_mat <span class="op">=</span> eval_legendre(ell[:, <span class="va">None</span>], x[<span class="va">None</span>, :])          <span class="co"># (N, N)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward transform</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>f_vals <span class="op">=</span> np.exp(<span class="op">-</span><span class="dv">5</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> np.cos(<span class="dv">3</span> <span class="op">*</span> np.pi <span class="op">*</span> x)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>a      <span class="op">=</span> (<span class="dv">2</span> <span class="op">*</span> ell <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span> <span class="op">*</span> (P_mat <span class="op">@</span> (w <span class="op">*</span> f_vals))</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Inverse (synthesis)</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>f_rec  <span class="op">=</span> a <span class="op">@</span> P_mat</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Angular power spectrum of the 1-D synthetic CMB strip from above</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># (re-use T_x from the Wiener–Khinchin example)</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>x_strip <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>T_strip <span class="op">=</span> np.interp(x_strip, np.linspace(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>, T_x.size), T_x <span class="op">-</span> T_x.mean())</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>a_cmb   <span class="op">=</span> (<span class="dv">2</span> <span class="op">*</span> ell <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span> <span class="op">*</span> (P_mat <span class="op">@</span> (w <span class="op">*</span> np.interp(x, x_strip, T_strip)))</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>Cl      <span class="op">=</span> a_cmb<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> ell <span class="op">+</span> <span class="dv">1</span>)     <span class="co"># angular power spectrum estimator</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
 
 
 </section>

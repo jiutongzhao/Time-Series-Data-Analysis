@@ -1,0 +1,91 @@
+# STFT vs. CWT
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Fixed-resolution vs. adaptive-resolution time-frequency analysis — STFT and CWT on a chirp signal.
+**Chapter:** [7 — Time-Frequency Analysis](../chap7.qmd)
+
+---
+
+## Background
+
+Both the STFT and the Continuous Wavelet Transform (CWT) decompose a signal into a two-dimensional time-frequency (or time-scale) representation. Their key difference is the **resolution trade-off**:
+
+- The **STFT** uses a fixed-length window, giving constant time and frequency resolution at all frequencies.
+- The **CWT** dilates and translates a mother wavelet, giving wide windows (good frequency resolution) at low frequencies and narrow windows (good time resolution) at high frequencies.
+
+This adaptive behaviour makes the CWT naturally suited to signals like speech, seismic records, or chirps, where transients at high frequency must be localised while low-frequency oscillations are tracked over long durations.
+
+## Key idea
+
+The CWT of $x(t)$ with mother wavelet $\psi$ is
+
+$$
+W(a, b) = \frac{1}{\sqrt{a}} \int_{-\infty}^{\infty} x(t)\, \psi^*\!\left(\frac{t - b}{a}\right) dt
+$$
+
+where $a > 0$ is the **scale** (inversely related to frequency) and $b$ is the **translation** (time centre). The Morlet wavelet $\psi(t) = e^{j\omega_0 t} e^{-t^2/2}$ gives an approximate frequency $f \approx \omega_0 / (2\pi a)$.
+
+The **Heisenberg uncertainty principle** limits the product of time and frequency resolutions:
+
+$$
+\Delta t \cdot \Delta f \geq \frac{1}{4\pi}
+$$
+
+The STFT uses a constant $\Delta t$ and $\Delta f$; the CWT trades them adaptively across scales.
+
+## Code
+
+```python
+import numpy as np
+import scipy.signal
+import matplotlib.pyplot as plt
+
+fs = 1000.0
+t = np.arange(0, 2.0, 1.0 / fs)
+# Linear chirp: 10 Hz at t=0 to 200 Hz at t=2
+x = scipy.signal.chirp(t, f0=10, f1=200, t1=2.0, method='linear')
+x += 0.3 * np.random.default_rng(42).standard_normal(len(x))
+
+# --- STFT (fixed window) ---
+N_win = 256
+window = scipy.signal.windows.hann(N_win, sym=True)
+STFT_obj = scipy.signal.ShortTimeFFT(window, hop=8, fs=fs,
+                                      scale_to='psd', fft_mode='onesided2X')
+Sxx = STFT_obj.spectrogram(x)
+
+# --- CWT (Morlet) ---
+widths = np.logspace(np.log10(fs / 200), np.log10(fs / 5), 200)
+cwtmatr, freqs_cwt = scipy.signal.cwt(x, scipy.signal.morlet2,
+                                       widths, w=6, fs=fs)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 5))
+
+axes[0].pcolormesh(STFT_obj.t(len(x)), STFT_obj.f,
+                   10 * np.log10(Sxx + 1e-12),
+                   shading='gouraud', cmap='magma', vmin=-40)
+axes[0].set_xlabel('Time (s)')
+axes[0].set_ylabel('Frequency (Hz)')
+axes[0].set_title('STFT (fixed window, N=256)')
+
+axes[1].pcolormesh(t, freqs_cwt, np.abs(cwtmatr),
+                   shading='gouraud', cmap='magma')
+axes[1].set_xlabel('Time (s)')
+axes[1].set_ylabel('Frequency (Hz)')
+axes[1].set_title('CWT — Morlet (adaptive scale)')
+axes[1].set_ylim(0, 250)
+
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![STFT vs CWT on a chirp signal — fixed vs adaptive time-frequency resolution](../docs/Figure/figure_stft_vs_cwt.png)
+</div>
+
+The STFT tracks the chirp with constant resolution: the time smearing at high frequencies is the same as at low frequencies. The CWT narrows its window at high frequencies, giving sharper time localisation for fast transients while maintaining good frequency resolution at low frequencies — a direct visual demonstration of Heisenberg's uncertainty principle.
+
+---
+
+*See [Chapter 7](../chap7.qmd) for Morlet wavelet construction, scalogram interpretation, and the full CWT–STFT comparison.*

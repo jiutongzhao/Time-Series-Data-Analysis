@@ -18,15 +18,25 @@ project:
     - chap8.qmd
     - chap10_appendix.qmd
     - chap_todo.qmd
+    - gallery.qmd
+    - gallery/cuckoo.qmd
+    - gallery/sunspot.qmd
+    - gallery/exoplanet.qmd
+    - gallery/gearbox.qmd
+    - gallery/coherence.qmd
+    - gallery/windowing.qmd
+    - gallery/dwt_image.qmd
+    - gallery/aliasing.qmd
+    - gallery/stft_cwt.qmd
   resources:
-    # Whole figure folder (66 MB) - copied once, freeze caches the rest.
+    # Whole figure folder - copied once, freeze caches the rest.
     - docs/Figure/
-    # docs/Data/ is 412 MB total; only the specific media referenced by
-    # the .qmd files needs shipping with the site.  Add new entries
-    # here whenever you embed another audio/video clip.
+    # docs/Data/ is large; only list specific media files referenced by .qmd files.
     - docs/Data/indian_cuckoo_short.wav
     # - docs/Data/sound_frequency.mp4   # add when the file lands
     - styles.css
+    # figure_code_map.js is lazy-loaded on first figure click (figure_modal.js is inlined).
+    - js/figure_code_map.js
 
 website:
   title: "Practical Spectral Analysis"
@@ -73,6 +83,28 @@ website:
             file: chap10_appendix.qmd
           - text: "Changelog"
             file: chap_todo.qmd
+      - section: "Gallery"
+        contents:
+          - text: "All Examples"
+            file: gallery.qmd
+          - text: "Indian Cuckoo Song"
+            file: gallery/cuckoo.qmd
+          - text: "Sunspot Cycle"
+            file: gallery/sunspot.qmd
+          - text: "Exoplanet 51 Peg b"
+            file: gallery/exoplanet.qmd
+          - text: "Gear-Box Fault Detection"
+            file: gallery/gearbox.qmd
+          - text: "AO–Baltic Coherence"
+            file: gallery/coherence.qmd
+          - text: "Spectral Leakage & Windowing"
+            file: gallery/windowing.qmd
+          - text: "DWT Image Compression"
+            file: gallery/dwt_image.qmd
+          - text: "Aliasing"
+            file: gallery/aliasing.qmd
+          - text: "STFT vs. CWT"
+            file: gallery/stft_cwt.qmd
   page-footer:
     center: "© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT"
 
@@ -82,6 +114,8 @@ format:
       light: cosmo
       dark: darkly
     css: styles.css
+    include-in-header:
+      file: _includes/fonts.html
     include-after-body:
       file: _includes/mermaid-init.html
     toc: true
