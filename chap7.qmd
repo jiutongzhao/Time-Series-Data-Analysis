@@ -25,7 +25,7 @@ frequency_stft = np.fft.rfftfreq(window_hann, d=dt)
 
 ### Figure
 
-<img src="docs/Figure/figure_stft.png" width="100%"/>
+<img src="Figure/figure_stft.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 72</small>
 
@@ -162,7 +162,7 @@ Although the STFT can represent a signal on the time–frequency plane, it does 
 
 ### Figure
 
-<img src="docs/Figure/figure_stft_vs_cwt.png" width="100%"/>
+<img src="Figure/figure_stft_vs_cwt.png" width="100%"/>
 
 ### Code  <small>chap7.ipynb · cell 34</small>
 
@@ -251,7 +251,7 @@ The **wavelet transform** turns this static trade-off into an **adaptive resolut
 
 ### Figure
 
-<img src="docs/Figure/figure_wavelet.png" width="100%"/>
+<img src="Figure/figure_wavelet.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 74</small>
 
@@ -424,7 +424,7 @@ A --σ=omega_0--> D[*Wikipedia*]
 The Discrete Wavelet Transform (DWT) decomposes a signal into **approximation coefficients** (representing low-frequency components that capture the coarse structure) and **detail coefficients** (representing high-frequency components that capture rapid changes and local details). In contrast to the FFT—which decomposes a signal into sine and cosine functions spanning the entire duration—the DWT breaks the signal into wavelets that are localized in both time and frequency. This inherent multi-resolution analysis enables the DWT to capture transient time-domain information while still revealing its frequency content, effectively offering both temporal and spectral insights.
 
 <p align = 'center'>
-<img src="docs/Figure/figure_dwt_processing.png" width="100%"/>
+<img src="Figure/figure_dwt_processing.png" width="100%"/>
 </p>
 
 
@@ -513,7 +513,7 @@ We generate a noisy sinusoidal signal and denoise it using soft thresholding.
 
 ### Figure
 
-<img src="docs/Figure/figure_dwt_denoise.png" width="100%"/>
+<img src="Figure/figure_dwt_denoise.png" width="100%"/>
 
 ### Code  <small>chap7.ipynb · cell 20</small>
 
@@ -664,7 +664,7 @@ for r in ratios:
 
 ### Figure
 
-<img src="docs/Figure/figure_dwt_image_compression.png" width="100%"/>
+<img src="Figure/figure_dwt_image_compression.png" width="100%"/>
 
 ### Code  <small>chap7.ipynb · cell 30</small>
 
@@ -772,7 +772,7 @@ The story starts with the *Gabor window* (1946), a Gaussian-modulated sinusoid t
 
 ### Figure
 
-<img src="docs/Figure/figure_cwt_family.png" width="100%"/>
+<img src="Figure/figure_cwt_family.png" width="100%"/>
 
 ### Code  <small>chap7.ipynb · cell 16</small>
 
@@ -839,7 +839,7 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
 
 ### Figure
 
-<img src="docs/Figure/figure_dwt_family.png" width="100%"/>
+<img src="Figure/figure_dwt_family.png" width="100%"/>
 
 ### Code  <small>chap7.ipynb · cell 32</small>
 

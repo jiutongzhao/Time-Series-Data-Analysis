@@ -76,7 +76,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Lomb–Scargle periodogram of 51 Peg b radial-velocity data showing peak at 4.23 days](../docs/Figure/figure_lombscargle_51Pegasib.png)
+![Lomb–Scargle periodogram of 51 Peg b radial-velocity data showing peak at 4.23 days](../Figure/figure_lombscargle_51Pegasib.png)
 </div>
 
 The periodogram shows an overwhelming peak at a period of 4.23 days, far above all three false-alarm thresholds. No other significant peaks are present, confirming a single-planet system with a 4.23-day orbital period.

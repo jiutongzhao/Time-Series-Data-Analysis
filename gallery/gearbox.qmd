@@ -65,7 +65,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Cepstrum of gear-box vibration revealing bearing defect quefrency peak](../docs/Figure/figure_cepstrum.png)
+![Cepstrum of gear-box vibration revealing bearing defect quefrency peak](../Figure/figure_cepstrum.png)
 </div>
 
 The cepstrum peak at a quefrency corresponding to the ball-pass outer-race frequency is clearly visible, even though the individual sidebands in the power spectrum are hard to count by eye. Liftering above the structural quefrency leaves only the fault signature.

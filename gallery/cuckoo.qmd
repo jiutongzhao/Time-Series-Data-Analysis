@@ -64,7 +64,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Indian Cuckoo STFT spectrogram showing four-note phrase structure](../docs/Figure/figure_indian_cuckoo_with_bird.png)
+![Indian Cuckoo STFT spectrogram showing four-note phrase structure](../Figure/figure_indian_cuckoo_with_bird.png)
 </div>
 
 The spectrogram reveals the four-note phrase repeating with roughly 0.5 s between calls. Each note occupies ~1.5–2.5 kHz and lasts about 0.2 s. This structure is completely invisible in the waveform alone.

@@ -184,7 +184,7 @@ freq_wk  = np.fft.rfftfreq(acf_win.size, dx)
 
 ### Figure
 
-<img src="docs/Figure/figure_wk_cmb.png" width="100%"/>
+<img src="Figure/figure_wk_cmb.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 49</small>
 
@@ -266,7 +266,7 @@ scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
 
 ### Figure
 
-<img src="docs/Figure/figure_detrend.png" width="100%"/>
+<img src="Figure/figure_detrend.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 43</small>
 
@@ -327,7 +327,7 @@ A non-sinuous, periodic signal usually has a broad Fourier spectrum concentratin
 
 ### Figure
 
-<img src="docs/Figure/figure_cepstrum.png" width="100%"/>
+<img src="Figure/figure_cepstrum.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 26</small>
 
@@ -457,7 +457,7 @@ The synthetic signal below imitates a gear-box with $N_t = 21$ teeth at $f_r = 2
 
 ### Figure
 
-<img src="docs/Figure/figure_cepstrum_gearbox.png" width="100%"/>
+<img src="Figure/figure_cepstrum_gearbox.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 46</small>
 
@@ -591,7 +591,7 @@ def qdht_grid(R, N):
 
 ### Figure
 
-<img src="docs/Figure/figure_hankel.png" width="100%"/>
+<img src="Figure/figure_hankel.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 54</small>
 
@@ -725,7 +725,7 @@ This is the **spherical analogue of the Wiener–Khinchin theorem**: just as the
 
 ### Figure
 
-<img src="docs/Figure/figure_legendre.png" width="100%"/>
+<img src="Figure/figure_legendre.png" width="100%"/>
 
 ### Code  <small>chap3.ipynb · cell 56</small>
 

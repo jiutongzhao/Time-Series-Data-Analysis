@@ -13,7 +13,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/cuckoo.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
+<img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Indian Cuckoo Song</div>
 <p class="gallery-card-desc">STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.</p>
@@ -24,7 +24,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/sunspot.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
+<img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Sunspot Cycle</div>
 <p class="gallery-card-desc">Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.</p>
@@ -35,7 +35,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/exoplanet.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
+<img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Exoplanet 51 Peg b</div>
 <p class="gallery-card-desc">Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.</p>
@@ -46,7 +46,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/gearbox.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
+<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Gear-Box Fault Detection</div>
 <p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
@@ -57,7 +57,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/coherence.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
+<img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
 <div class="gallery-card-body">
 <div class="gallery-card-title">AO–Baltic Coherence</div>
 <p class="gallery-card-desc">Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.</p>
@@ -68,7 +68,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/windowing.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
+<img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Spectral Leakage &amp; Windowing</div>
 <p class="gallery-card-desc">Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.</p>
@@ -79,7 +79,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/dwt_image.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_dwt_image_compression.png" alt="DWT image compression">
+<img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
 <div class="gallery-card-body">
 <div class="gallery-card-title">DWT Image Compression</div>
 <p class="gallery-card-desc">Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.</p>
@@ -90,7 +90,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_aliasing.png" alt="Aliasing demonstration">
+<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Aliasing</div>
 <p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
@@ -101,7 +101,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/stft_cwt.qmd">
-<img class="gallery-card-img" src="docs/Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
+<img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
 <div class="gallery-card-body">
 <div class="gallery-card-title">STFT vs. CWT</div>
 <p class="gallery-card-desc">Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.</p>

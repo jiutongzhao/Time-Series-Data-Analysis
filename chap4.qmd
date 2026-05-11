@@ -14,7 +14,7 @@ $$
 
 ### Figure
 
-<img src="docs/Figure/figure_uncertainty_principle.png" width="100%"/>
+<img src="Figure/figure_uncertainty_principle.png" width="100%"/>
 
 ### Code  <small>chap4.ipynb · cell 14</small>
 
@@ -127,7 +127,7 @@ Although the Fourier transform can perfectly reconstruct **discrete** signal poi
 
 ### Figure
 
-<img src="docs/Figure/figure_gibbs.png" width="100%"/>
+<img src="Figure/figure_gibbs.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 18</small>
 
@@ -246,7 +246,7 @@ $$
 and the solution of the thermal diffusion problem can be given by the inverse Fourier transform of $\hat{T}(\mathbf{k},t)$.
 
 <p align = 'center'>
-<img src="docs/Figure/heat_diffusion.gif" width="100%"/>
+<img src="Figure/heat_diffusion.gif" width="100%"/>
 </p>
 Another application is solving the Maxwell's equation in the vaccum:
 $$
@@ -272,7 +272,7 @@ $$
 
 
 <p align = 'center'>
-<img src="docs/Figure/unit_pulse.gif" width="100%"/>
+<img src="Figure/unit_pulse.gif" width="100%"/>
 </p>
 However, the Fourier method intrinsically assume a periodic boundary condition of the solution and limit its own applicable situations. More importantly, the Fourier transform takes the whole information from the global area of interest and therefore become parallelization-difficult. This defect becomes even more fatal as the advances in parallelized, GPU-based computation. 
 
@@ -289,7 +289,7 @@ Still, the divide-and-conquer strategy fails when the signal length *N* consists
 
 ### Figure
 
-<img src="docs/Figure/figure_numpy_fft_performance.png" width="100%"/>
+<img src="Figure/figure_numpy_fft_performance.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 27</small>
 

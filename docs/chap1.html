@@ -338,8 +338,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Practical Spectral Analysis</span>
@@ -605,7 +605,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 16</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p><img src="docs/Figure/figure_aliasing.png" width="100%"></p>
+<p><img src="Figure/figure_aliasing.png" width="100%"></p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
@@ -653,11 +653,11 @@ f_s &gt; 2f_{max}
 </p>
 <p><strong>With an insufficient sampling rate, the measurement cannot faithfully capture the signal’s waveform.</strong> In the example above, sampling a 10 Hz sine wave at 9 Hz produces an apparent 1 Hz oscillation (aliasing): because the sampling frequency is 1 Hz lower than the true signal frequency, successive samples advance through the wave’s phase by only a small amount each time, so it takes about one second for the samples to span an entire cycle from trough to peak and back.</p>
 <p align="center">
-<img src="docs/Figure/figure_moire_pattern.png" width="100%">
+<img src="Figure/figure_moire_pattern.png" width="100%">
 </p>
 <p>Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to <span class="math inline">f_s/2</span> and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel. Particularly, the aliasing effect in image downsampling is called <strong><em><u><a href="https://en.wikipedia.org/wiki/Moir%C3%A9_pattern">Moiré Pattern</a></u></em></strong>.</p>
 <p align="center">
-<img src="docs/Figure/figure_helicopter.gif" width="100%">
+<img src="Figure/figure_helicopter.gif" width="100%">
 </p>
 <p align="center">
 <i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i>
@@ -673,7 +673,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 22</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p><img src="docs/Figure/figure_nyquist_reconstruction.png" width="100%"></p>
+<p><img src="Figure/figure_nyquist_reconstruction.png" width="100%"></p>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
@@ -741,7 +741,7 @@ f_s &gt; 2f_{max}
 <h3 class="anchored" data-anchor-id="application-anti-aliasing-filter">Application: Anti-Aliasing Filter</h3>
 <p>Aliasing effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter (so called, <strong><em><u>anti-aliasing filter</u></em></strong>) so that the high frequency component doesn’t contribute to the unreal signal. This technique and its python implementation, <code>scipy.signal.decimate</code>, will be introduced in <a href="./chap5.html">Chapter 5</a>. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.</p>
 <p align="center">
-<img src="docs/Figure/figure_anti_aliasing_filter_design.jpg" width="100%">
+<img src="Figure/figure_anti_aliasing_filter_design.jpg" width="100%">
 </p>
 <p align="center">
 <i>An example circuit diagram of anti-aliasing filter.</i>
@@ -754,7 +754,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 18</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<p><img src="docs/Figure/figure_aliasing_folding.png" width="100%"></p>
+<p><img src="Figure/figure_aliasing_folding.png" width="100%"></p>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
@@ -835,7 +835,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code <small>chap1.ipynb · cell 20</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<p><img src="docs/Figure/figure_nyquist_zone.png" width="100%"></p>
+<p><img src="Figure/figure_nyquist_zone.png" width="100%"></p>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> turtle <span class="im">import</span> color</span>
@@ -887,7 +887,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 35</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
-<p><img src="docs/Figure/figure_sampling_methods.png" width="100%"></p>
+<p><img src="Figure/figure_sampling_methods.png" width="100%"></p>
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
@@ -970,7 +970,7 @@ f_s &gt; 2f_{max}
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 22</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
-<p><img src="docs/Figure/figure_typical_signals.png" width="100%"></p>
+<p><img src="Figure/figure_typical_signals.png" width="100%"></p>
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>

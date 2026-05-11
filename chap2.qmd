@@ -20,7 +20,7 @@ $$
 
 ### Figure
 
-<img src="docs/Figure/figure_4types_of_ft.png" width="100%"/>
+<img src="Figure/figure_4types_of_ft.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 6</small>
 
@@ -163,10 +163,10 @@ In frequency analysis using the *DFT*, or its practical implementation **<u>*Fas
 ::: {.panel-tabset}
 
 ## Single-Sided
-<img src="docs/Figure/figure_fft_single_side.png" width="100%"/>
+<img src="Figure/figure_fft_single_side.png" width="100%"/>
 
 ## Double-Sided
-<img src="docs/Figure/figure_fft_double_side.png" width="100%"/>
+<img src="Figure/figure_fft_double_side.png" width="100%"/>
 
 :::
 
@@ -250,7 +250,7 @@ However, if the total sampling duration does not exactly match an integer multip
 
 ### Figure
 
-<img src="docs/Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
+<img src="Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 24</small>
 
@@ -422,7 +422,7 @@ $$
 The convolution theorem states how operations performed on a signal in the time domain or in the frequency domain will affect that signal in its dual domain. 
 
 <p align = 'center'>
-<img src="docs/Figure/convolution_theorem.gif" width="100%"/>
+<img src="Figure/convolution_theorem.gif" width="100%"/>
 <i>Some Other Window Functions (without normalization).</i>
 </p>
 
@@ -441,7 +441,7 @@ Some other window functions are also supported by `numpy` and `scipy`, which is 
 
 ### Figure
 
-<img src="docs/Figure/figure_window_functions.png" width="100%"/>
+<img src="Figure/figure_window_functions.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 20</small>
 
@@ -559,7 +559,7 @@ Therefore, a common strategy to mitigate the fence effect is to increase the tot
 
 ### Figure
 
-<img src="docs/Figure/figure_dft_fence_effect_zero_padding.png" width="100%"/>
+<img src="Figure/figure_dft_fence_effect_zero_padding.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 30</small>
 
@@ -649,7 +649,7 @@ Package `pywt` supports several [other padding types](https://pywavelets.readthe
 
 ### Figure
 
-<img src="docs/Figure/figure_padding_type.png" width="100%"/>
+<img src="Figure/figure_padding_type.png" width="100%"/>
 
 ### Code  <small>chap2.ipynb · cell 28</small>
 

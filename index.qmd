@@ -25,34 +25,34 @@ This guide aims to bridge that gap by offering a **practical approach** to spect
 ::: {.panel-tabset}
 
 ## Indian Cuckoo
-<p align="center"><img src="docs/Figure/figure_indian_cuckoo_with_bird.png" width="100%" alt="Indian Cuckoo spectrogram"/></p>
+<p align="center"><img src="Figure/figure_indian_cuckoo_with_bird.png" width="100%" alt="Indian Cuckoo spectrogram"/></p>
 
 The time series of the voice of Indian Cuckoo and its time-frequency spectrogram.
 
 <p align="center">
 <audio controls style="width: 100%; max-width: 500px;">
-  <source src="docs/Data/indian_cuckoo_short.wav" type="audio/wav">
+  <source src="Data/indian_cuckoo_short.wav" type="audio/wav">
   Your browser does not support the audio element.
 </audio>
 </p>
 
 ## Sunspot Number
-<p align="center"><img src="docs/Figure/figure_sunspot.png" width="100%" alt="Sunspot number spectrogram"/></p>
+<p align="center"><img src="Figure/figure_sunspot.png" width="100%" alt="Sunspot number spectrogram"/></p>
 
 The time series of sunspot numbers and its frequency spectrogram, showing periodic patterns in solar activity.
 
 ## AO-Baltic Coherence
-<p align="center"><img src="docs/Figure/figure_ao_baltic_truncated.png" width="100%" alt="AO-Baltic coherence analysis"/></p>
+<p align="center"><img src="Figure/figure_ao_baltic_truncated.png" width="100%" alt="AO-Baltic coherence analysis"/></p>
 
 Analysis of the Arctic Oscillation and Baltic index coherence in climate data.
 
 ## Mode Decomposition
-<p align="center"><img src="docs/Figure/figure_seismic_waves.png" width="100%" alt="Seismic wave mode decomposition"/></p>
+<p align="center"><img src="Figure/figure_seismic_waves.png" width="100%" alt="Seismic wave mode decomposition"/></p>
 
 Decomposition of seismic wave data into different modes of oscillation.
 
 ## Chorus Wave SVD Analysis
-<p align="center"><img src="docs/Figure/figure_svd_erg.png" width="100%" alt="Chorus wave SVD analysis"/></p>
+<p align="center"><img src="Figure/figure_svd_erg.png" width="100%" alt="Chorus wave SVD analysis"/></p>
 
 Singular Value Decomposition analysis of chorus wave data from magnetospheric observations.
 

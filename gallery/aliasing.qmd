@@ -63,7 +63,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Aliasing demonstration: 1.2 kHz tone sampled at 1 kHz appears at 200 Hz](../docs/Figure/figure_aliasing.png)
+![Aliasing demonstration: 1.2 kHz tone sampled at 1 kHz appears at 200 Hz](../Figure/figure_aliasing.png)
 </div>
 
 Left panel: sampling at 1 kHz places the 1.2 kHz tone at 200 Hz — a completely wrong frequency. Right panel: sampling at 3 kHz correctly identifies the 1.2 kHz component. Anti-aliasing low-pass filters must be applied *before* sampling to prevent the fold-back.

@@ -29,7 +29,7 @@ These color names condense how energy spreads across frequencies and guide filte
 
 ### Figure
 
-<img src="docs/Figure/figure_noise.png" width="100%"/>
+<img src="Figure/figure_noise.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 45</small>
 
@@ -151,7 +151,7 @@ The uniformly distributed requirement can be fulfilled by the full-amplitude tri
 
 ### Figure
 
-<img src="docs/Figure/figure_quantization_noise.png" width="100%"/>
+<img src="Figure/figure_quantization_noise.png" width="100%"/>
 
 ### Code  <small>chap5.ipynb · cell 6</small>
 
@@ -239,7 +239,7 @@ Thus, the $PSD$ noise level increases 10 dB for each 10-fold increase in signal 
 
 ### Figure
 
-<img src="docs/Figure/figure_shot_noise.png" width="100%"/>
+<img src="Figure/figure_shot_noise.png" width="100%"/>
 
 ### Code  <small>chap5.ipynb · cell 4</small>
 
@@ -344,7 +344,7 @@ x[n]=\varphi x[n-1] + \mathcal{N}(0,1)
 $$
 whose single coefficient $\varphi$ sets the memory length. When $\varphi=0$ the series is white noise; as $\varphi\to1^{-}$ it approaches an integrated (Brownian) path with power piling up at low frequencies. 
 
-<p align = 'center'><img src="docs/Figure/figure_ar1.png" width="100%"/></p>
+<p align = 'center'><img src="Figure/figure_ar1.png" width="100%"/></p>
 <p align = 'center'><i> AR1 Time series with different AR1 coefficient (alpha = 0.10, 0.90, and 0.99).</i></p>
 
 The spectrum makes this clear:
@@ -396,7 +396,7 @@ can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n
 
 ### Figure
 
-<img src="docs/Figure/figure_noise_hist.png" width="100%"/>
+<img src="Figure/figure_noise_hist.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 52</small>
 
@@ -489,7 +489,7 @@ For each segement, you can also chose the window function to reduce the spectral
 
 ### Figure
 
-<img src="docs/Figure/figure_noise_welch.png" width="100%"/>
+<img src="Figure/figure_noise_welch.png" width="100%"/>
 
 ### Code  <small>chap5.ipynb · cell 8</small>
 
@@ -593,7 +593,7 @@ The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \la
 
 ### Figure
 
-<img src="docs/Figure/figure_gamma_distribution.png" width="100%"/>
+<img src="Figure/figure_gamma_distribution.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 60</small>
 
@@ -674,7 +674,7 @@ Apart from splitting the signal into several segments, one can also downsample t
 
 ### Figure
 
-<img src="docs/Figure/figure_noise_blackman_tukey.png" width="100%"/>
+<img src="Figure/figure_noise_blackman_tukey.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 57</small>
 
@@ -778,7 +778,7 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 
 ### Figure
 
-<img src="docs/Figure/figure_signal_over_noise_hist.png" width="100%"/>
+<img src="Figure/figure_signal_over_noise_hist.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 55</small>
 

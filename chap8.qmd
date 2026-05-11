@@ -60,7 +60,7 @@ In this framework, $\mathbf{e}_1$ (maximum-variance), $\mathbf{e}_2$ (intermedia
 
 ### Figure
 
-<img src="docs/Figure/figure_pca.png" width="100%"/>
+<img src="Figure/figure_pca.png" width="100%"/>
 
 ### Code  <small>chap8.ipynb · cell 10</small>
 
@@ -218,7 +218,7 @@ where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $x$ and $y
 
 ### Figure
 
-<img src="docs/Figure/figure_coherency.png" width="100%"/>
+<img src="Figure/figure_coherency.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 66</small>
 
@@ -599,10 +599,10 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 ::: {.panel-tabset}
 
 ## Spectra
-<p align = 'center'><img src="docs/Figure/figure_svd_spectra.png" width="100%"/></p>
+<p align = 'center'><img src="Figure/figure_svd_spectra.png" width="100%"/></p>
 
 ## Line Plot
-<p align = 'center'><img src="docs/Figure/figure_svd_line.png" width="100%"/></p>
+<p align = 'center'><img src="Figure/figure_svd_line.png" width="100%"/></p>
 
 :::
 

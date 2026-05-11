@@ -338,8 +338,8 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Practical Spectral Analysis</span>
@@ -596,7 +596,7 @@ window.Quarto = {
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>chap4.ipynb · cell 14</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p><img src="docs/Figure/figure_uncertainty_principle.png" width="100%"></p>
+<p><img src="Figure/figure_uncertainty_principle.png" width="100%"></p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -700,7 +700,7 @@ x(t)= Ae^{-(t-t_0)^2/B^{2}}\mathrm{cos}\omega t,
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 18</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p><img src="docs/Figure/figure_gibbs.png" width="100%"></p>
+<p><img src="Figure/figure_gibbs.png" width="100%"></p>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -850,7 +850,7 @@ x(t)= Ae^{-(t-t_0)^2/B^{2}}\mathrm{cos}\omega t,
 \hat{T}(\mathbf{k},t)=\hat{T}(\mathbf{k},0)\cdot\exp(-\alpha k^2t)
 </span> and the solution of the thermal diffusion problem can be given by the inverse Fourier transform of <span class="math inline">\hat{T}(\mathbf{k},t)</span>.</p>
 <p align="center">
-<img src="docs/Figure/heat_diffusion.gif" width="100%">
+<img src="Figure/heat_diffusion.gif" width="100%">
 </p>
 <p>Another application is solving the Maxwell’s equation in the vaccum: <span class="math display">
 \frac{\partial \mathbf{E}}{\partial t}=\frac{1}{c^2}\nabla\times \mathbf{B} + \mu_0\mathbf{J}\\
@@ -866,7 +866,7 @@ x(t)= Ae^{-(t-t_0)^2/B^{2}}\mathrm{cos}\omega t,
 \mathbf{\hat{B}}^{n+3/2}=\mathbf{\hat{B}}^{n+1/2}-\Delta t \cdot i\mathbf{k}\times\mathbf{\hat{E}}^{n+1}\\
 </span></p>
 <p align="center">
-<img src="docs/Figure/unit_pulse.gif" width="100%">
+<img src="Figure/unit_pulse.gif" width="100%">
 </p>
 <p>However, the Fourier method intrinsically assume a periodic boundary condition of the solution and limit its own applicable situations. More importantly, the Fourier transform takes the whole information from the global area of interest and therefore become parallelization-difficult. This defect becomes even more fatal as the advances in parallelized, GPU-based computation.</p>
 </section>
@@ -880,7 +880,7 @@ x(t)= Ae^{-(t-t_0)^2/B^{2}}\mathrm{cos}\omega t,
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 27</small></a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<p><img src="docs/Figure/figure_numpy_fft_performance.png" width="100%"></p>
+<p><img src="Figure/figure_numpy_fft_performance.png" width="100%"></p>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>

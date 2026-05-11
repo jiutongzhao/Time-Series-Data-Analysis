@@ -79,7 +79,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![DWT image compression: original vs 90% thresholded reconstruction](../docs/Figure/figure_dwt_image_compression.png)
+![DWT image compression: original vs 90% thresholded reconstruction](../Figure/figure_dwt_image_compression.png)
 </div>
 
 With 90 % of wavelet coefficients zeroed out the reconstructed image retains sharp edges and smooth gradients. The visible degradation is limited to fine texture in high-contrast regions, demonstrating the energy compaction property of the wavelet basis.

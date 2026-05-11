@@ -63,7 +63,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Welch PSD of sunspot numbers showing the 11-year Schwabe cycle](../docs/Figure/figure_sunspot.png)
+![Welch PSD of sunspot numbers showing the 11-year Schwabe cycle](../Figure/figure_sunspot.png)
 </div>
 
 The dominant peak at 11 years stands more than two orders of magnitude above the local continuum. The secondary peak near 22 years corresponds to the full Hale magnetic cycle (two successive Schwabe cycles with opposite polarity).

@@ -67,7 +67,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Spectral leakage comparison: rectangular, Hann, Blackman, and Kaiser windows](../docs/Figure/figure_dft_spectral_leakage_window.png)
+![Spectral leakage comparison: rectangular, Hann, Blackman, and Kaiser windows](../Figure/figure_dft_spectral_leakage_window.png)
 </div>
 
 The rectangular window keeps the main lobe narrow but sidelobes reach only −13 dB. The Blackman window suppresses sidelobes to below −57 dB, making it possible to detect a tone 1000× weaker sitting just a few bins away from a strong one.

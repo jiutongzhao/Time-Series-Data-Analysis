@@ -20,7 +20,7 @@ The choice of interpolation method can significantly affect the quality of the r
 
 ### Figure
 
-<img src="docs/Figure/figure_interpolation.png" width="100%"/>
+<img src="Figure/figure_interpolation.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 37</small>
 
@@ -118,7 +118,7 @@ There is no a universal best interpolation method. The choice depends on the spe
 ## Filter Circuit
 
 <p align = 'center'>
-<img src="docs/Figure/figure_rc_hp_diagram.png" width="30%"/><img src="docs/Figure/figure_rc_hp_response.png" width="30%"/>
+<img src="Figure/figure_rc_hp_diagram.png" width="30%"/><img src="Figure/figure_rc_hp_response.png" width="30%"/>
 </p><p align = 'center'>
     Different  interpolation methods applied to a two frequencies (1.1 Hz and 2.2 Hz) signal.
 </p>
@@ -166,7 +166,7 @@ That is, the output is the **average of the most recent $L$ input samples**. **T
 
 ### Figure
 
-<img src="docs/Figure/figure_moving_average.png" width="100%"/>
+<img src="Figure/figure_moving_average.png" width="100%"/>
 
 ### Code  <small>chap6.ipynb · cell 4</small>
 
@@ -271,7 +271,7 @@ For IIR filters, the **<u>*Butterworth*</u>** filter, `scipy.signal.butter`, is 
 
 ### Figure
 
-<img src="docs/Figure/figure_filters.png" width="100%"/>
+<img src="Figure/figure_filters.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 48</small>
 
@@ -352,7 +352,7 @@ The effect of a digital filter can be fully characterized by its **<u>*frequency
 
 ### Figure
 
-<img src="docs/Figure/figure_filters_response.png" width="100%"/>
+<img src="Figure/figure_filters_response.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 49</small>
 
@@ -449,7 +449,7 @@ plt.show()
 
 ### Figure
 
-<img src="docs/Figure/figure_filtered_noise.png" width="100%"/>
+<img src="Figure/figure_filtered_noise.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 50</small>
 
@@ -501,7 +501,7 @@ The **<u>*Hilbert transform*</u>** is a fundamental tool for analyzing the insta
 
 ### Figure
 
-<img src="docs/Figure/figure_hilbert.png" width="100%"/>
+<img src="Figure/figure_hilbert.png" width="100%"/>
 
 ### Code  <small>practical_spectral_analysis_plot.ipynb · cell 62</small>
 

@@ -29,11 +29,9 @@ project:
     - gallery/aliasing.qmd
     - gallery/stft_cwt.qmd
   resources:
-    # Whole figure folder - copied once, freeze caches the rest.
-    - docs/Figure/
-    # docs/Data/ is large; only list specific media files referenced by .qmd files.
-    - docs/Data/indian_cuckoo_short.wav
-    # - docs/Data/sound_frequency.mp4   # add when the file lands
+    # Figures and data live at project root; Quarto copies them into docs/
+    - Figure/
+    - Data/indian_cuckoo_short.wav
     - styles.css
     # figure_code_map.js is lazy-loaded on first figure click (figure_modal.js is inlined).
     - js/figure_code_map.js
@@ -44,7 +42,7 @@ website:
   repo-url: https://github.com/jiutongzhao/Time-Series-Data-Analysis
   navbar:
     title: "Practical Spectral Analysis"
-    logo: docs/Figure/figure_icon.png
+    logo: Figure/figure_icon.png
     search: true
     background: light
   sidebar:

@@ -16,6 +16,6 @@ title: "Changelog & Roadmap"
 2. Cover the related Fourier / Hankel / Radon / Abel transforms and spherical harmonics in a dedicated chapter.
 3. End-to-end runnable test of every chapter notebook in CI.
 4. Flesh out chapter 9 — *Usage Examples* — with one or two end-to-end physics case studies.
-5. Generate the new figures locally (`figure_cepstrum_gearbox.png`, `figure_wk_cmb.png`, `figure_dwt_image_compression.png`) by re-executing the relevant notebooks, then commit the PNGs to `docs/Figure/`.
+5. Generate the new figures locally (`figure_cepstrum_gearbox.png`, `figure_wk_cmb.png`, `figure_dwt_image_compression.png`) by re-executing the relevant notebooks, then commit the PNGs to `Figure/`.
 
 *Lastly updated on 9th May 2026.*

@@ -83,7 +83,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![Coherence and phase spectrum between AO index and Baltic Sea ice extent](../docs/Figure/figure_ao_baltic_truncated.png)
+![Coherence and phase spectrum between AO index and Baltic Sea ice extent](../Figure/figure_ao_baltic_truncated.png)
 </div>
 
 Statistically significant coherence appears at periods of 6–8 years and ~14 years, with the Baltic ice lagging the AO by roughly 90°. These bands are candidates for physically coupled interannual variability driven by the North Atlantic Oscillation.

@@ -81,7 +81,7 @@ plt.tight_layout()
 ## Result
 
 <div class="gallery-result">
-![STFT vs CWT on a chirp signal — fixed vs adaptive time-frequency resolution](../docs/Figure/figure_stft_vs_cwt.png)
+![STFT vs CWT on a chirp signal — fixed vs adaptive time-frequency resolution](../Figure/figure_stft_vs_cwt.png)
 </div>
 
 The STFT tracks the chirp with constant resolution: the time smearing at high frequencies is the same as at low frequencies. The CWT narrows its window at high frequencies, giving sharper time localisation for fast transients while maintaining good frequency resolution at low frequencies — a direct visual demonstration of Heisenberg's uncertainty principle.
