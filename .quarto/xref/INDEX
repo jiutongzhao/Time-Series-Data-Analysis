@@ -190,5 +190,47 @@
   },
   "walkthrough.qmd": {
     "walkthrough.html": "a95619dd"
+  },
+  "SETUP_CLEAN.md": {
+    "SETUP_CLEAN.html": "3c9dca9b"
+  },
+  "chap0_preface.qmd": {
+    "chap0_preface.html": "20802e28"
+  },
+  "chap1.qmd": {
+    "chap1.html": "76412da5"
+  },
+  "chap10_appendix.qmd": {
+    "chap10_appendix.html": "9cc216ac"
+  },
+  "chap2.qmd": {
+    "chap2.html": "a013cd10"
+  },
+  "chap3.qmd": {
+    "chap3.html": "7e771c0d"
+  },
+  "chap4.qmd": {
+    "chap4.html": "1ca4906e"
+  },
+  "chap5.qmd": {
+    "chap5.html": "6a9e4ecc"
+  },
+  "chap6.qmd": {
+    "chap6.html": "6f01daaa"
+  },
+  "chap7.qmd": {
+    "chap7.html": "5039275e"
+  },
+  "chap8.qmd": {
+    "chap8.html": "b1be7f2f"
+  },
+  "chap_todo.qmd": {
+    "chap_todo.html": "0ada8631"
+  },
+  "FINAL_FIX.md": {
+    "FINAL_FIX.html": "246e0687"
+  },
+  "WSL_COMMANDS.md": {
+    "WSL_COMMANDS.html": "0b394778"
   }
 }

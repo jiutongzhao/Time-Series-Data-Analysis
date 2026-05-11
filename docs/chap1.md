@@ -17,7 +17,7 @@ $$
 All the data that await analysis are yield from ***<u>sampling</u>***, no matter it originates from the real-world observation or a simulation program. When one measure a high frequency signal with a low cadence instrument, one will not only miss the high frequency component, **<u>but also measure a signal that may lead misunderstanding</u>**, so called ***<u>[Aliasing](https://en.wikipedia.org/wiki/Aliasing)</u>***. 
 
 <p align = 'center'><img src="Figure/figure_aliasing.png" width="100%"/></p><p align = 'center'>
-    <i>Aliasing effcet in a virtual signal sampling.</i>
+<i>Aliasing effcet in a virtual signal sampling.</i>
 </p>
 
 
@@ -28,7 +28,7 @@ Such a phenomenon is essentially unrelated to the Fourier transform as its frequ
 
 <p align = 'center'><img src="Figure/figure_helicopter.gif" width="100%"/></p>
 
-<p align = 'center'><i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i><p>
+<p align = 'center'><i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i></p>
 
 ### Reconstruction
 
@@ -41,7 +41,7 @@ However, when reconstructing [see Chapter 6/Reconstruction and Interpolation](ch
 <p align = 'center'>
 <img src="Figure/figure_nyquist_reconstruction.png" width="100%"/>
 </p><p align = 'center'>
-    <i>A sampling frequency (128 Hz) that slightly higher than the Nyquist frequency (2 × 62.4=124.8 Hz). The sampled signal is shown as a wave packet.</i>
+<i>A sampling frequency (128 Hz) that slightly higher than the Nyquist frequency (2 × 62.4=124.8 Hz). The sampled signal is shown as a wave packet.</i>
 </p>
 Ideally, you can perfectly reconstruct the complete signal when you got a **<u>long enough samples</u>** when the sampling frequency is slightly higher than the Nyquist frequency. However, **<u>every realistic sample has a finite length</u>**. Thus, reconstruction is still imperfect especially when the sample length is not far longer than the wave period, as shown by the above cases near the edges. The principle behind this (i.e., finite-length rectangular window) will be introduced in [Chapter 2/Windowing Effect](chap2.md#windowing-effect) of this document. 
 
@@ -54,7 +54,7 @@ Aliasing effect always happens when you (down-)sampling the signal, a common way
 <p align = 'center'>
 <img src="Figure/figure_anti_aliasing_filter_design.jpg" width="100%"/>
 </p><p align = 'center'>
-    <i>An example circuit diagram of anti-aliasing filter.</i>
+<i>An example circuit diagram of anti-aliasing filter.</i>
 </p>
 
 

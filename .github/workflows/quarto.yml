@@ -1,0 +1,48 @@
+# Render the Quarto site on every push to main and publish it to
+# `gh-pages` so GitHub Pages can serve _build/html/.
+#
+# Repo Settings -> Pages should be set to "Deploy from branch:
+# gh-pages / (root)".
+
+name: Build Quarto site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: pre-release
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install notebook deps (only those needed at render time)
+        run: |
+          python -m pip install --upgrade pip
+          # 'execute: freeze: auto' means cached outputs are reused, but
+          # any cell with no cached output will still be re-run.
+          # Keep this list lean; the full env is environment.yml locally.
+          pip install jupyter ipykernel nbformat \
+                      numpy matplotlib pandas scipy pywavelets \
+                      bottleneck scienceplots
+
+      - name: Render Quarto
+        run: quarto render
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _build/html
+          publish_branch: gh-pages
+          force_orphan: true

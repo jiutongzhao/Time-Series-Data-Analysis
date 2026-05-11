@@ -1,0 +1,102 @@
+# Quarto website configuration.  Build with:
+#     quarto preview        # dev server with live reload
+#     quarto render         # static build -> _build/html/
+
+project:
+  type: website
+  output-dir: _build/html
+  render:
+    - index.qmd
+    - chap0_preface.qmd
+    - chap1.qmd
+    - chap2.qmd
+    - chap3.qmd
+    - chap4.qmd
+    - chap5.qmd
+    - chap6.qmd
+    - chap7.qmd
+    - chap8.qmd
+    - chap10_appendix.qmd
+    - chap_todo.qmd
+  resources:
+    # Whole figure folder (66 MB) - copied once, freeze caches the rest.
+    - docs/Figure/
+    # docs/Data/ is 412 MB total; only the specific media referenced by
+    # the .qmd files needs shipping with the site.  Add new entries
+    # here whenever you embed another audio/video clip.
+    - docs/Data/indian_cuckoo_short.wav
+    # - docs/Data/sound_frequency.mp4   # add when the file lands
+    - styles.css
+
+website:
+  title: "Practical Spectral Analysis"
+  description: "A practical guide to spectral analysis with Python."
+  repo-url: https://github.com/jiutongzhao/Time-Series-Data-Analysis
+  navbar:
+    title: "Practical Spectral Analysis"
+    logo: docs/Figure/figure_icon.png
+    search: true
+    background: light
+  sidebar:
+    style: docked
+    collapse-level: 2
+    contents:
+      - text: "Home"
+        file: index.qmd
+      - section: "Getting Started"
+        contents:
+          - text: "Preface"
+            file: chap0_preface.qmd
+      - section: "Core Concepts"
+        contents:
+          - text: "1. Data Initialization"
+            file: chap1.qmd
+          - text: "2. Frequency Domain"
+            file: chap2.qmd
+          - text: "3. Power Spectral Density"
+            file: chap3.qmd
+          - text: "4. More about FFT"
+            file: chap4.qmd
+      - section: "Advanced Topics"
+        contents:
+          - text: "5. Noise"
+            file: chap5.qmd
+          - text: "6. Signal Processing"
+            file: chap6.qmd
+          - text: "7. Time-Frequency Analysis"
+            file: chap7.qmd
+          - text: "8. Multi-Channel Signals"
+            file: chap8.qmd
+      - section: "Reference"
+        contents:
+          - text: "Appendix"
+            file: chap10_appendix.qmd
+          - text: "Changelog"
+            file: chap_todo.qmd
+  page-footer:
+    center: "© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT"
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: styles.css
+    include-after-body:
+      file: _includes/mermaid-init.html
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github
+    smooth-scroll: true
+    fig-cap-location: bottom
+    tbl-cap-location: top
+
+html-math-method: katex
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false

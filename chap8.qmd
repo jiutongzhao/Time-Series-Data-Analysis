@@ -55,9 +55,80 @@ sig_transformed = eigenvectors @ sig
 
 In this framework, $\mathbf{e}_1$ (maximum-variance), $\mathbf{e}_2$ (intermediate), and $\mathbf{e}_3$ (minimum-variance) provide a natural triad for dimensionality reduction, feature extraction, and physical interpretation of multicomponent time series.
 
-<p align = 'center'>
-<img src="Figure/figure_pca.png" width="100%"/>
-</p>
+<!-- fig-tabset:figure_pca.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_pca.png" width="100%"/>
+
+### Code  <small>chap8.ipynb · cell 10</small>
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import sklearn.decomposition
+
+import scipy.signal
+import scienceplots
+
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+%matplotlib ipympl
+plt.close()
+
+plt.figure(figsize=(8, 8))
+
+ax1 = plt.subplot(2, 1, 1)
+ax2 = plt.subplot(2, 1, 2, sharex = ax1, sharey = ax1)
+
+N = 2 ** 10
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+omega = 2 * np.pi * 8.0
+
+signal_x = np.sin(omega * t + np.pi * 0.0) * (0.6 * np.hanning(t.size)) + np.random.randn(t.size) * 0.02
+signal_y = np.sin(omega * t + np.pi * 0.5) * (0.7 * np.hanning(t.size)) + np.random.randn(t.size) * 0.02
+signal_z = np.sin(omega * t + np.pi * 1.0) * (0.8 * np.hanning(t.size)) + np.random.randn(t.size) * 0.02
+
+ax1.plot(t, signal_x)
+ax1.plot(t, signal_y)
+ax1.plot(t, signal_z)
+
+sig = np.vstack((signal_x, signal_y, signal_z)).T
+pca = sklearn.decomposition.PCA(n_components=3)
+pca.fit(sig)
+
+singular_values_ = (pca.singular_values_)
+
+ax2.plot(t, pca.transform(sig)[:, 0], label = "$\mathbf{n_1}=$" + f"{np.array2string(pca.components_[0], separator = ', ', formatter={'float': lambda x: f'{x: .1f}'})}")
+ax2.plot(t, pca.transform(sig)[:, 1], label = "$\mathbf{n_2}=$" + f"{np.array2string(pca.components_[1], separator = ', ', formatter={'float': lambda x: f'{x: .1f}'})}")
+ax2.plot(t, pca.transform(sig)[:, 2], label = "$\mathbf{n_3}=$" + f"{np.array2string(pca.components_[2], separator = ', ', formatter={'float': lambda x: f'{x: .1f}'})}")
+
+ax2.text(0.98, -1.1, f'Singular Values: {np.array2string(singular_values_, separator = ", ", formatter={"float": lambda x: f"{x: .1f}"})}', ha = 'right', va = 'top', fontsize = 12)
+
+ax2.legend(frameon = False, loc = 'upper right', ncols = 1, fontsize = 12, facecolor = 'white', edgecolor = 'black', labelcolor="linecolor", handlelength = 0, handletextpad = 0)
+
+ax2.set_xlabel('Time [s]')
+ax1.set_ylabel('Intensity [Arb]')
+ax2.set_ylabel('Intensity [Arb]')
+
+ax1.autoscale(axis = 'x', tight = True)
+ax2.autoscale(axis = 'x', tight = True)
+
+ax1.set_ylim(-1.3, 1.3)
+ax1.set_title('Raw Signals', **title_font)
+ax2.set_title('PCA/MVA Transformed Signals', **title_font)
+
+plt.tight_layout()
+
+# plt.savefig(save_path + 'figure_pca' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
 
 However, this transformation do not ensure the projected coordinates system to be right-handed. A simple check of the determinant of the eigenvector matrix can identify whether a flip is needed.
 
@@ -142,9 +213,158 @@ where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $x$ and $y
 
 **Coherence is a function of not only the spectral matrix but also the smoothing operator, $\langle...\rangle$.** Without any smoothing, **the coherency is always unity** no matter the signal is coherent or noisy and thus meaningless. You need to check at least two individual points for knowing whether the signals are coherent. A real coherent signal can resist a high coherency while the off-diagonal term $S_{xy}$ contributed by random noise will cancel out in the smoothing operation. Two common approaches of smoothing have been introduced in the last section.
 
+<!-- fig-tabset:figure_coherency.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_coherency.png" width="100%"/>
+
+### Code  <small>practical_spectral_analysis_plot.ipynb · cell 66</small>
+
+```python
+cmap = 'jet'
+plt.close()
+
+plt.figure(figsize=figsize_normal)
+plt.subplots_adjust(hspace = 0.5, right = 0.85)
+ax1 = plt.subplot(2, 1, 1)
+ax2 = plt.subplot(2, 2, 3)
+ax3 = plt.subplot(2, 2, 4, sharex=ax2, sharey=ax2)
+
+N = 2**14
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+sig = np.random.normal(0, 1, (N, 3))
+bins = np.linspace(0, 100, 100) * dt
+
+window = 128
+step = window
+mfft = 1 * window
+
+hann_window = scipy.signal.windows.hann(window,
+                                        sym=True)  # symmetric Gaussian window
+STFT = scipy.signal.ShortTimeFFT(hann_window,
+                                 hop=step,
+                                 fs=fs,
+                                 scale_to='magnitude',
+                                 fft_mode='onesided2X',
+                                 mfft=mfft)  # create the STFT object
+stft_coef = STFT.stft(sig[:, :], axis=0)  # perform the STFT
+stft_coef = stft_coef.transpose((2, 0, 1))  # Transpose to (Nf, Nt, Nch) format
+stft_matrix = np.einsum(
+    'ijk, ijl -> ijkl', stft_coef,
+    stft_coef.conj())  # Compute the outer product of the coefficients
+
+tmin, tmax, fmin, fmax = STFT.extent(N)
+
+t = np.linspace(tmin, tmax, stft_matrix.shape[0])
+freq = np.linspace(fmin, fmax, stft_matrix.shape[1])
+
+avg_stft_matrix = np.copy(stft_matrix)
+time_window = 3
+freq_window = 3
+
+avg_stft_matrix = bn.move_mean(avg_stft_matrix,
+                               time_window,
+                               min_count=time_window,
+                               axis=0)
+avg_stft_matrix = bn.move_mean(avg_stft_matrix,
+                               freq_window,
+                               min_count=freq_window,
+                               axis=1)
+
+coherency = np.abs(avg_stft_matrix[:, :, 0, 1]) / np.sqrt(
+    np.abs(avg_stft_matrix[:, :, 0, 0] * avg_stft_matrix[:, :, 1, 1]))
+ax1.pcolormesh(t, freq, coherency.T, cmap=cmap, vmax=1.0, vmin=0.0)
+ax1.set_facecolor('C1')
+
+N_TIME_WINDOW = 30
+N_FREQ_WINDOW = 30
+avg_coherency = np.zeros((N_TIME_WINDOW, N_FREQ_WINDOW))
+std_coherency = np.zeros((N_TIME_WINDOW, N_FREQ_WINDOW))
+
+for time_window in np.arange(N_TIME_WINDOW):
+    for freq_window in np.arange(N_FREQ_WINDOW):
+        avg_stft_matrix = np.copy(stft_matrix)
+        if time_window != 0:
+            avg_stft_matrix = bn.move_mean(avg_stft_matrix,
+                                           time_window,
+                                           min_count=time_window,
+                                           axis=0)
+        if freq_window != 0:
+            avg_stft_matrix = bn.move_mean(avg_stft_matrix,
+                                           freq_window,
+                                           min_count=freq_window,
+                                           axis=1)
+
+        avg_coherency[time_window, freq_window] = np.nanmean(
+            np.abs(avg_stft_matrix[:, :, 0, 1]) / np.sqrt(
+                np.abs(avg_stft_matrix[:, :, 0, 0] *
+                       avg_stft_matrix[:, :, 1, 1])))
+        std_coherency[time_window, freq_window] = np.nanstd(
+            np.abs(avg_stft_matrix[:, :, 0, 1]) / np.sqrt(
+                np.abs(avg_stft_matrix[:, :, 0, 0] *
+                       avg_stft_matrix[:, :, 1, 1])))
+
+ax2.pcolormesh(np.arange(N_TIME_WINDOW),
+               np.arange(N_FREQ_WINDOW),
+               avg_coherency,
+               cmap=cmap,
+               vmax=1.0,
+               vmin=0.0)
+pc = ax3.pcolormesh(np.arange(N_TIME_WINDOW),
+                    np.arange(N_FREQ_WINDOW),
+                    std_coherency,
+                    cmap=cmap,
+                    vmax=1.0,
+                    vmin=0.0)
+
+ax2.set_xlim(0.5, N_TIME_WINDOW - 0.5)
+ax2.set_ylim(0.5, N_FREQ_WINDOW - 0.5)
+
+ax1.set_title('Coherency of White Noise\nAfter Boxcar Smoothing', **title_font)
+ax2.set_title('Average', **title_font)
+ax3.set_title('Standard Deviation', **title_font)
+
+ax1.set_xlabel('Time [s]')
+ax1.set_ylabel('Frequency [Hz]')
+ax2.set_xlabel('Time Window')
+ax2.set_ylabel('Frequency Window')
+ax3.set_xlabel('Time Window')
+# ax3.set_ylabel('Frequency Window')
+plt.setp(ax3.get_yticklabels(), visible=False)
+
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(5))
+ax2.yaxis.set_major_locator(ticker.MultipleLocator(5))
+ax3.xaxis.set_major_locator(ticker.MultipleLocator(5))
+ax3.yaxis.set_major_locator(ticker.MultipleLocator(5))
+
+# cbar_ax = plt.gcf().add_axes([
+#     ax2.get_position().x0,
+#     ax2.get_position().y0 - 0.08,
+#     ax3.get_position().x1 - ax2.get_position().x0, 0.03
+# ])
+# plt.colorbar(pc, cax=cbar_ax, orientation='horizontal')
+
+# plt.tight_layout()
+
+cbar_ax = plt.gcf().add_axes([
+    ax1.get_position().x1 + 0.02,
+    ax2.get_position().y0,
+    0.03, ax1.get_position().y1 - ax2.get_position().y0
+])
+plt.colorbar(pc, cax=cbar_ax)
+
+# plt.tight_layout()
+plt.savefig(save_path + 'figure_coherency' + '.png', bbox_inches='tight', dpi=300)
+
+plt.show()
+```
+
+:::
 <p align = 'center'>
-<img src="Figure/figure_coherency.png" alt="An example of DFT." width="100%"/>
-</p><p align = 'center'>
     The coherence  between two white noise signals after smoothing.
 </p>
 
@@ -376,15 +596,15 @@ degree_of_polarization = (w[:, :, 2] - w[:, :, 1]) / np.sum(w, axis = -1)
 
 
 
-<!-- tabs:start -->
+::: {.panel-tabset}
 
-#### **Spectra**
-<p align = 'center'><img src="Figure/figure_svd_spectra.png" width="100%"/></p>
+## Spectra
+<p align = 'center'><img src="docs/Figure/figure_svd_spectra.png" width="100%"/></p>
 
-#### **Line Plot**
-<p align = 'center'><img src="Figure/figure_svd_line.png" width="100%"/></p>
+## Line Plot
+<p align = 'center'><img src="docs/Figure/figure_svd_line.png" width="100%"/></p>
 
-<!-- tabs:end -->
+:::
 
 Similar to **Coherence, Planarity and Degree of Polarization** are also a a functional properties of the smoothing operator. A strong smoothing operator will promote the planarity and degree of polarization as it suppresses the noise contribution. However, a too strong smoothing operator will also smear out the temporal and frequency variations of the wave properties. Thus, a proper choice of the smoothing operator is necessary.
 

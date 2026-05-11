@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Chapter 4 - More about DFT/FFT – Practical Spectral Analysis with Python</title>
+<title>chap4 – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -61,7 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -74,14 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-2c9aed11d1b70b0b2e0b9c8c3ae51c6c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-2c8cc3c1f6f54eb30af177bca3ef8a8e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -109,11 +109,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+<style>html{ scroll-behavior: smooth; }</style>
 
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -288,28 +328,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Spectral Analysis</span>
+    <span class="navbar-title">Practical Spectral Analysis</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+        <div class="quarto-navbar-tools tools-end">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
+          <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
   <nav class="quarto-secondary-nav">
@@ -317,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Chapter 4 - More about DFT/FFT</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap4.html">4. More about FFT</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -329,6 +358,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -340,7 +375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap0_preface.html" class="sidebar-item-text sidebar-link">
+  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -357,26 +392,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Data Initialization</span></a>
+  <a href="./chap1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Frequency Domain</span></a>
+  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap3.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Power Spectral Density</span></a>
+  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap4.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">More About FFT</span></a>
+  <a href="./chap4.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
       </ul>
@@ -392,26 +427,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap5.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Noise</span></a>
+  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap6.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Signal Processing</span></a>
+  <a href="./chap6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap7.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Time-Frequency Spectrum</span></a>
+  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap8.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Multi-Channel Signal</span></a>
+  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
       </ul>
@@ -427,13 +462,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap10_appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/_todo.qmd" class="sidebar-item-text sidebar-link">
+  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -449,477 +484,460 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a>
+  <li><a href="#more-about-dftfft" id="toc-more-about-dftfft" class="nav-link active" data-scroll-target="#more-about-dftfft">More about DFT/FFT</a>
   <ul class="collapse">
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">-</a></li>
-  <li><a href="#wmap_ilc_9yrs-astropy.io.fits.opendocsdatawmap_ilc_9yr_v5.fits" id="toc-wmap_ilc_9yrs-astropy.io.fits.opendocsdatawmap_ilc_9yr_v5.fits" class="nav-link" data-scroll-target="#wmap_ilc_9yrs-astropy.io.fits.opendocsdatawmap_ilc_9yr_v5.fits"><code>wmap_ilc_9yrs = astropy.io.fits.open('docs/Data/wmap_ilc_9yr_v5.fits')</code></a></li>
-  <li><a href="#temperature-wmap_ilc_9yrs1.datatemperature" id="toc-temperature-wmap_ilc_9yrs1.datatemperature" class="nav-link" data-scroll-target="#temperature-wmap_ilc_9yrs1.datatemperature"><code>temperature = wmap_ilc_9yrs[1].data['temperature']</code></a></li>
-  <li><a href="#tmap" id="toc-tmap" class="nav-link" data-scroll-target="#tmap"><code>tmap</code></a></li>
-  <li><a href="#indices" id="toc-indices" class="nav-link" data-scroll-target="#indices"><code>indices</code></a></li>
-  <li><a href="#频域谱" id="toc-频域谱" class="nav-link" data-scroll-target="#频域谱">频域谱</a></li>
+  <li><a href="#uncertainty-principle" id="toc-uncertainty-principle" class="nav-link" data-scroll-target="#uncertainty-principle">Uncertainty Principle</a></li>
+  <li><a href="#gibbs-phenomenon" id="toc-gibbs-phenomenon" class="nav-link" data-scroll-target="#gibbs-phenomenon">Gibbs Phenomenon</a></li>
+  <li><a href="#application-solve-differential-equations-with-fft" id="toc-application-solve-differential-equations-with-fft" class="nav-link" data-scroll-target="#application-solve-differential-equations-with-fft">Application: Solve Differential Equations with FFT</a></li>
+  <li><a href="#fft-algorithm-performance" id="toc-fft-algorithm-performance" class="nav-link" data-scroll-target="#fft-algorithm-performance">FFT Algorithm Performance</a></li>
   </ul></li>
-  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Chapter 4 - More about DFT/FFT</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap4.html">4. More about FFT</a></li></ol></nav></header>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<p>Practical considerations of the FFT: the uncertainty principle, performance of numpy.fft vs scipy.signal.fft, and angular-power-spectrum computations on a sphere.</p>
+<section id="more-about-dftfft" class="level1">
+<h1>More about DFT/FFT</h1>
+<section id="uncertainty-principle" class="level2">
+<h2 class="anchored" data-anchor-id="uncertainty-principle">Uncertainty Principle</h2>
 <blockquote class="blockquote">
-<p>The narrative chapter is in <a href="./docs/chap4.html"><code>docs/chap4.md</code></a>. This notebook reproduces every figure and table from that chapter, organised section-by-section so the code is easy to read alongside the prose.</p>
+<p><strong>Uncertainty Principle:</strong> A signal <span class="math inline">x(t)</span> and its Fourier transform <span class="math inline">X(f)</span> cannot both be sharply localized. If <span class="math inline">\Delta t</span> denotes the effective duration of the signal and <span class="math inline">\Delta f</span> its effective bandwidth, then <span class="math display">
+\Delta t \,\Delta f \;\ge\; \tfrac{1}{4\pi}
+</span> meaning you can trade time resolution for frequency resolution, but never improve both simultaneously beyond this bound.</p>
 </blockquote>
-<section id="setup" class="level2">
-<h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>Common imports, plot styling and data paths used throughout this notebook.</p>
-<div id="cell-3" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> bottleneck <span class="im">as</span> bn</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.dates <span class="im">as</span> mdates</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patheffects <span class="im">as</span> pe</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> ticker</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.special</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn.decomposition</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.io</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.time</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Rectangle</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mpl_toolkits.axes_grid1.inset_locator <span class="im">import</span> inset_axes</span>
+<!-- fig-tabset:figure_uncertainty_principle.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>chap4.ipynb · cell 14</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><img src="docs/Figure/figure_uncertainty_principle.png" width="100%"></p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>plt.gcf()</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>plt.gca()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">14</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>omega <span class="op">=</span> <span class="fl">50.0</span> <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> np.pi</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>bws <span class="op">=</span> np.array([<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>])</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>figsize_short <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">4</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>figsize_normal <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>figsize_tall <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">8</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> figsize_short</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'axes.labelpad'</span>] <span class="op">=</span> <span class="fl">6.0</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.frameon'</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.framealpha'</span>] <span class="op">=</span> <span class="fl">0.8</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.edgecolor'</span>] <span class="op">=</span> <span class="st">'none'</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>title_font <span class="op">=</span> {<span class="st">'fontsize'</span>: <span class="dv">16</span>, <span class="st">'weight'</span>: <span class="st">'bold'</span>, <span class="st">'style'</span>: <span class="st">'italic'</span>}</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>path_effect <span class="op">=</span> [pe.withStroke(linewidth<span class="op">=</span><span class="fl">2.0</span>, foreground<span class="op">=</span><span class="st">"k"</span>)]</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>read_path <span class="op">=</span> <span class="st">'docs/Data/'</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>save_path <span class="op">=</span> <span class="st">'docs/Figure/'</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>perula_df <span class="op">=</span> pd.read_csv(read_path <span class="op">+</span> <span class="st">'matlab_perula.txt'</span>, header <span class="op">=</span> <span class="va">None</span>, sep <span class="op">=</span> <span class="st">'</span><span class="er">\</span><span class="st">s+'</span>)</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>matlab_perula <span class="op">=</span> matplotlib.colors.LinearSegmentedColormap.from_list(<span class="st">'matlab_perula'</span>, np.array(perula_df))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, bw <span class="kw">in</span> <span class="bu">enumerate</span>(bws):</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># sig = np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)) * np.cos(omega * t)  # 50 Hz 的正弦波调制的高斯脉冲</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    sig, sig_env <span class="op">=</span> scipy.signal.gausspulse(t <span class="op">-</span> np.mean(t), fc <span class="op">=</span> omega <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> bw, retenv <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">+</span> sig, label <span class="op">=</span> <span class="vs">r"</span><span class="dv">$</span><span class="vs">bw</span><span class="dv">$</span><span class="vs"> = %</span><span class="dv">.</span><span class="vs">2f"</span> <span class="op">%</span> bw, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">+</span> sig_env, <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">-</span> sig_env, <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ax1.plot(t, 3.0 * idx + np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)), 'k--', alpha = 0.3)</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ax1.plot(t, 3.0 * idx - np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)), 'k--', alpha = 0.3)</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    sig <span class="op">-=</span> np.mean(sig)  <span class="co"># 去除直流分量</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ----- 频域谱 -----</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    freq, psd <span class="op">=</span> scipy.signal.welch(sig, fs, nperseg <span class="op">=</span> N)  <span class="co"># 使用Welch方法计算功率谱密度</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    t0 <span class="op">=</span> np.<span class="bu">sum</span>(t <span class="op">*</span> np.<span class="bu">abs</span>(sig)<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> np.<span class="bu">sum</span>(sig <span class="op">**</span> <span class="dv">2</span>)        <span class="co"># 中心时刻</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>(((t <span class="op">-</span> t0)<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> np.<span class="bu">sum</span>(sig<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    f0 <span class="op">=</span> np.<span class="bu">sum</span>(freq <span class="op">*</span> psd) <span class="op">/</span> np.<span class="bu">sum</span>(psd)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    delta_f <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>(((freq <span class="op">-</span> f0)<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> psd) <span class="op">/</span> np.<span class="bu">sum</span>(psd))</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    ax2.plot(freq, psd <span class="op">/</span> np.<span class="bu">max</span>(psd), label <span class="op">=</span> <span class="vs">r"</span><span class="dv">$</span><span class="vs">4</span><span class="er">\</span><span class="vs">pi </span><span class="er">\</span><span class="vs">cdot </span><span class="dv">\D</span><span class="vs">elta f </span><span class="er">\</span><span class="vs">cdot </span><span class="dv">\D</span><span class="vs">elta t</span><span class="dv">$</span><span class="vs"> = %</span><span class="dv">.</span><span class="vs">2f"</span> <span class="op">%</span> (<span class="dv">4</span> <span class="op">*</span> np.pi <span class="op">*</span> delta_t <span class="op">*</span> delta_f), linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>jet_df <span class="op">=</span> pd.read_csv(read_path <span class="op">+</span> <span class="st">'matlab_jet.txt'</span>, header <span class="op">=</span> <span class="va">None</span>, sep <span class="op">=</span> <span class="st">'</span><span class="er">\</span><span class="st">s+'</span>)</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>matlab_jet <span class="op">=</span> matplotlib.colors.LinearSegmentedColormap.from_list(<span class="st">'matlab_jet'</span>, np.array(jet_df))</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>&lt;&gt;:41: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:44: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:41: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:44: SyntaxWarning: invalid escape sequence '\s'
-/tmp/ipykernel_992/3118345031.py:41: SyntaxWarning: invalid escape sequence '\s'
-  perula_df = pd.read_csv(read_path + 'matlab_perula.txt', header = None, sep = '\s+')
-/tmp/ipykernel_992/3118345031.py:44: SyntaxWarning: invalid escape sequence '\s'
-  jet_df = pd.read_csv(read_path + 'matlab_jet.txt', header = None, sep = '\s+')</code></pre>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------- 轴标签与图例 ----------------</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title("Gaussian Pulses (Time Domain)")</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Time [s]"</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Intensity [Arb]"</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.set_title("Magnitude Spectra (Frequency Domain)")</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"Frequency [Hz]"</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Normalized Magnitude [Arb]"</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="fl">0.68</span>, <span class="fl">7.0</span>, <span class="st">'Gaussian Pulse</span><span class="ch">\n</span><span class="st">(bw: Bandwidth)'</span>, <span class="op">**</span>title_font, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">10</span>)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>ax1.yaxis.set_major_locator(ticker.MultipleLocator(<span class="dv">3</span>))</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncols <span class="op">=</span> <span class="dv">2</span>, loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>ax2.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncols <span class="op">=</span> <span class="dv">1</span>, loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>ax2.set_xlim(<span class="dv">10</span>, <span class="dv">90</span>)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(<span class="op">-</span><span class="fl">0.1</span>, <span class="fl">1.7</span>)</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Uncertainty Principle'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_uncertainty_principle'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section">-</h3>
-<div id="cell-5" class="cell" data-execution_count="6">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> healpy <span class="im">as</span> hp</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) 设定参数</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>nside <span class="op">=</span> <span class="dv">256</span>                  <span class="co"># 分辨率：像素数 ~ 12*nside^2</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>lmax <span class="op">=</span> <span class="dv">3</span> <span class="op">*</span> nside <span class="op">-</span> <span class="dv">1</span>         <span class="co"># 常用选择</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>seed <span class="op">=</span> <span class="dv">100</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) 构造一个“示例”功率谱</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#    你也可以把这里换成你的真实 Cl 或 Dl</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>ell <span class="op">=</span> np.arange(lmax <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 示例：用 Dl = A * (ell/ell0)^(ns-1) * exp[-ell(ell+1)/ld^2] + noise_floor</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 这不是精确的ΛCDM，只是演示流程的一个“有形状”的谱</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>ell0 <span class="op">=</span> <span class="fl">80.0</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fl">2e-9</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> <span class="fl">0.965</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>ld <span class="op">=</span> <span class="fl">1200.0</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>noise_floor <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>Dl <span class="op">=</span> A <span class="op">*</span> (np.maximum(ell, <span class="dv">1</span>) <span class="op">/</span> ell0) <span class="op">**</span> (ns <span class="op">-</span> <span class="fl">1.0</span>) <span class="op">*</span> np.exp(<span class="op">-</span>(ell <span class="op">*</span> (ell <span class="op">+</span> <span class="fl">1.0</span>)) <span class="op">/</span> (ld <span class="op">**</span> <span class="dv">2</span>)) <span class="op">+</span> noise_floor</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Dl[0] = 0.0  # 避免 monopole</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Dl[1] = 0.0  # 避免 dipole（可选）</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>Dl[<span class="dv">4</span>:] <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>Dl[:<span class="dv">3</span>] <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co"># 把 Dl 转成 Cl： Dl = ell(ell+1)Cl/2pi  =&gt;  Cl = 2pi*Dl/[ell(ell+1)]</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>Cl <span class="op">=</span> np.zeros_like(Dl)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> ell <span class="op">&gt;=</span> <span class="dv">2</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>Cl[valid] <span class="op">=</span> <span class="fl">2.0</span> <span class="op">*</span> np.pi <span class="op">*</span> Dl[valid] <span class="op">/</span> (ell[valid] <span class="op">*</span> (ell[valid] <span class="op">+</span> <span class="fl">1.0</span>))</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># 3) 用 synfast 生成随机天空图（高斯各向同性）</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>np.random.seed(seed)  <span class="co"># synfast 用 numpy 的全局随机数</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> hp.synfast(Cl, nside<span class="op">=</span>nside, lmax<span class="op">=</span>lmax, new<span class="op">=</span><span class="va">True</span>, verbose<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 可选：如果你想把单位改成“微开尔文”那种观感，可以整体放大</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co"># m *= 1e6</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="co"># 4) 可视化：全天球图（Mollweide）</span></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>hp.mollview(</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    m,</span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f"Synthesized map from C_ell (nside=</span><span class="sc">{</span>nside<span class="sc">}</span><span class="ss">)"</span>,</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    unit<span class="op">=</span><span class="st">"arb."</span>,</span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    cmap<span class="op">=</span><span class="st">"jet"</span>,  <span class="co"># 你也可以换成 "planck" 风格等</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>hp.graticule()</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co"># 5) 反算谱：从生成的图估计 C_ell，并对比输入谱</span></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>Cl_est <span class="op">=</span> hp.anafast(m, lmax<span class="op">=</span>lmax)</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co"># 对比用 Dl 更直观：Dl = ell(ell+1)Cl/2pi</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>Dl_est <span class="op">=</span> np.zeros_like(Cl_est)</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>Dl_est[valid] <span class="op">=</span> ell[valid] <span class="op">*</span> (ell[valid] <span class="op">+</span> <span class="fl">1.0</span>) <span class="op">*</span> Cl_est[valid] <span class="op">/</span> (<span class="fl">2.0</span> <span class="op">*</span> np.pi)</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>plt.loglog(ell[valid], Dl[valid], label<span class="op">=</span><span class="st">"Input D_l"</span>)</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>plt.loglog(ell[valid], Dl_est[valid], label<span class="op">=</span><span class="st">"Estimated D_l from map"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">ell</span><span class="dv">$</span><span class="vs">"</span>)</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="vs">r"</span><span class="dv">$</span><span class="vs">D_</span><span class="er">\</span><span class="vs">ell=</span><span class="er">\</span><span class="vs">ell</span><span class="kw">(</span><span class="er">\</span><span class="vs">ell</span><span class="op">+</span><span class="vs">1</span><span class="kw">)</span><span class="vs">C_</span><span class="er">\</span><span class="vs">ell/2</span><span class="er">\</span><span class="vs">pi</span><span class="dv">$</span><span class="vs">"</span>)</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Power spectrum check"</span>)</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+</div>
+<p align="center">
+<i>Top: Gaussian pulses with narrow (purple) to wide (blue) time span; Bottom: Their Fourier coefficient with wide to narrow frequency bandwidth. </i>
+</p>
+<p>Here the central time <span class="math inline">t_0</span> and bandwidth <span class="math inline">f_0</span> are defined as the first moments of the energy density <span class="math inline">|x(t)|^2</span> and <span class="math inline">|X(f)|^2</span>, respectively, while <span class="math inline">\Delta t</span> and <span class="math inline">\Delta f</span> are their standard deviations. The integrals are taken over all time and frequency, respectively. <span class="math display">
+t_0 = \frac{\int t\,|x(t)|^{2} \, \mathrm{d}t}{\int |x(t)|^{2} \, \mathrm{d}t},
+\qquad
+\Delta t = \sqrt{\frac{\int (t-t_0)^{2}\,|x(t)|^{2} \, \mathrm{d}t}{\int |x(t)|^{2} \, \mathrm{d}t}}
+</span></p>
+<p><span class="math display">
+f_0 = \frac{\int f\,|X(f)|^{2} \, \mathrm{d}f}{\int |X(f)|^{2} \, \mathrm{d}f},
+\qquad
+\Delta f = \sqrt{\frac{\int (f-f_0)^{2}\,|X(f)|^{2} \, \mathrm{d}f}{\int |X(f)|^{2} \, \mathrm{d}f}}
+</span></p>
+<p>This is often summarized as: “A signal cannot be <strong>both time-limited and band-limited</strong>.” Practically, <strong>a shorter pulse spreads its spectrum, while a narrow-band tone must last longer</strong>. The lower bound of the time–bandwidth product is achieved by Gaussian functions: <span class="math display">
+x(t)= Ae^{-(t-t_0)^2/B^{2}}\mathrm{cos}\omega t,
+</span></p>
+<p>which are optimal in the sense that they minimize the product <span class="math inline">\Delta t \Delta f</span>.</p>
+<p>This trade-off is a fundamental limitation of the Fourier transform and is mathematically expressed through time–bandwidth products. It implies that <strong>short-duration signals must occupy a wide frequency range</strong>, while <strong>narrow-band signals cannot be sharply confined in time</strong>—a concept closely related to Heisenberg’s uncertainty principle in quantum mechanics.</p>
+<p>One direct application of this principle is the choice of the window length in the <strong><u><em>Short-Time Fourier Transform (STFT)</em></u></strong>. A longer window improves frequency resolution but reduces time resolution, while a shorter window does the opposite. The optimal choice depends on the specific characteristics of the signal being analyzed.</p>
+<div style="page-break-after: always;">
+
+</div>
+</section>
+<section id="gibbs-phenomenon" class="level2">
+<h2 class="anchored" data-anchor-id="gibbs-phenomenon">Gibbs Phenomenon</h2>
+<p>Although the Fourier transform can perfectly reconstruct <strong>discrete</strong> signal points, it struggles to represent analytic functions with sharp discontinuities. Such a sharp jump is so temporal local thus spread the whole frequency range, up to the infinity. This is because a finite number of sinusoids cannot fully capture the infinite-frequency behavior near a jump, leading to <strong>the Gibbs phenomenon</strong>—persistent overshoot and ringing near discontinuities.</p>
+<!-- fig-tabset:figure_gibbs.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 18</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p><img src="docs/Figure/figure_gibbs.png" width="100%"></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>plt.gcf()</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>plt.gca()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span> <span class="op">**</span> <span class="dv">13</span>, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">4.0</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>omega1 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">11.0</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>omega2 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">25.0</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>sig0 <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>sig1 <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> np.sin(omega1 <span class="op">*</span> t)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>sig2 <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> np.sin(omega2 <span class="op">*</span> t)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> sig0 <span class="op">+</span> sig1 <span class="op">+</span> sig2 <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.01</span>, t.shape)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k.-'</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig0 <span class="op">-</span> <span class="dv">0</span>, <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'4 Hz Component'</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig1 <span class="op">-</span> <span class="dv">0</span>, <span class="st">'C0-'</span>, label<span class="op">=</span><span class="st">'11 Hz Component'</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig2 <span class="op">-</span> <span class="dv">0</span>, <span class="st">'C2-'</span>, label<span class="op">=</span><span class="st">'25 Hz Component'</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">6.2</span>, <span class="fl">1.2</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.savefig(save_path + 'figure_gibbs' + '.png',bbox_inches='tight',dpi=300)</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>The variation of the signal concentrates sharply localized, which means the bandwidth should be infinitely wide. Such a transient signal has a Fourier coefficient propotional to <span class="math inline">{(2k+1)}^{-1}</span> and <span class="math inline">\delta f</span> can not converged.</p>
+<p>Despite increasing the number of harmonics, the overshoot becomes narrower but remains at a constant: ~8.95%, which is the average of the <span class="math inline">\mathrm{sinc}</span> function between <span class="math inline">0</span> and <span class="math inline">\pi</span>: <span class="math display">
+\frac{1}{\pi}\int_0^\pi \frac{\mathrm{sin} u}{u} \mathrm{d}u \approx 0.08949\ldots
+</span> ## More Practical Properties</p>
+<p>A super powerful property of Fourier transform is that: <span class="math display">
+\mathcal{F}\left[\frac{\mathrm{d}}{\mathrm{d}t}x(t)\right]=(i2\pi f)\cdot X(f)
+</span></p>
+<p>which can be easily proved by doing derivative to the both sides of the inverse Fourier transform: <span class="math display">
+\begin{align}
+\frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&amp;=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
+&amp;=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
+&amp;=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
+\end{align}
+</span></p>
+<p>It can be denoted as <span class="math display">
+{{\mathrm{d}}/{\mathrm{d}t}}\leftrightarrow i 2\pi f
+</span></p>
+<p>One can also extend this property to <span class="math display">
+({{\mathrm{d}/}{\mathrm{d}t}})^n\leftrightarrow (i 2\pi f)^n
+</span></p>
+<p>It should be noted that this <strong>derivation property change a little bit</strong> for <span class="math inline">\Delta x/\Delta t</span> in the <em>DFT</em>:</p>
+<p><span class="math display">
+\begin{align}
+\frac{\Delta x(t)}{\Delta  t}&amp;=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
+&amp;=\mathcal{F}^{-1}\left[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)\right]
+\end{align}
+</span></p>
+<p>The following table summarizes some common properties of the Continuous-Time Fourier Transform (FT) and the Discrete Fourier Transform (DFT/FFT):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 38%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Continuous-Time Fourier Transform (FT)</th>
+<th style="text-align: left;">Discrete Fourier Transform (DFT/FFT)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linearity</td>
+<td><span class="math inline">\mathcal{F}\{a\,x(t) + b\,y(t)\} = a\,X(f) + b\,Y(f)</span></td>
+<td style="text-align: left;"><span class="math inline">\mathrm{DFT}\{a\,x[n] + b\,y[n]\} = a\,X[k] + b\,Y[k]</span></td>
+</tr>
+<tr class="even">
+<td>Time Shift</td>
+<td><span class="math inline">x(t - t_0) \rightarrow X(f)\,e^{-j 2\pi f t_0}</span></td>
+<td style="text-align: left;"><span class="math inline">x[n - n_0] \rightarrow X[k]\,e^{-j 2\pi k n_0 / N}</span></td>
+</tr>
+<tr class="odd">
+<td>Frequency Shift</td>
+<td><span class="math inline">x(t)\,e^{j 2\pi f_0 t} \rightarrow X(f - f_0)</span></td>
+<td style="text-align: left;"><span class="math inline">x[n]\,e^{j 2\pi k_0 n / N} \rightarrow X[(k - k_0)\bmod N]</span></td>
+</tr>
+<tr class="even">
+<td>Time-Domain Convolution</td>
+<td><span class="math inline">x(t) * h(t) \rightarrow X(f)\,H(f)</span></td>
+<td style="text-align: left;"><span class="math inline">x[n] \circledast h[n] \rightarrow X[k]\,H[k]</span> (circular)</td>
+</tr>
+<tr class="odd">
+<td>Time-Domain Multiplication</td>
+<td><span class="math inline">x(t)\,h(t) \rightarrow X(f) * H(f)</span></td>
+<td style="text-align: left;"><span class="math inline">x[n]\,h[n] \rightarrow X[k] * H[k] / N</span></td>
+</tr>
+<tr class="even">
+<td>Derivative (Time Domain)</td>
+<td><span class="math inline">\frac{d^n x(t)}{dt^n} \rightarrow (j 2 \pi f)^n X(f)</span></td>
+<td style="text-align: left;"><span class="math inline">\Delta^n x[n] \rightarrow X[k] \cdot (e^{j 2 \pi k / N} - 1)^n</span></td>
+</tr>
+<tr class="odd">
+<td>Conjugate Symmetry</td>
+<td><span class="math inline">x(t) \in \mathbb{R} \Rightarrow X(-f) = X^*(f)</span></td>
+<td style="text-align: left;"><span class="math inline">x[n] \in \mathbb{R} \Rightarrow X[N - k] = X^*[k]</span></td>
+</tr>
+<tr class="even">
+<td>Parseval’s Theorem</td>
+<td><span class="math inline">\int |x(t)|^2\,dt = \int |X(f)|^2\,df</span></td>
+<td style="text-align: left;"><span class="math inline">\sum |x[n]|^2 = \frac{1}{N} \sum |X[k]|^2</span></td>
+</tr>
+<tr class="odd">
+<td>Spectral Periodicity</td>
+<td><span class="math inline">X(f)</span> not periodic</td>
+<td style="text-align: left;"><span class="math inline">X[k]</span> is periodic with period <span class="math inline">N</span></td>
+</tr>
+<tr class="even">
+<td>Periodic Input Duality</td>
+<td>Periodic <span class="math inline">x(t) \Rightarrow</span> discrete <span class="math inline">X(f)</span></td>
+<td style="text-align: left;">Periodic <span class="math inline">x[n] \Rightarrow</span> sparse <span class="math inline">X[k]</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="application-solve-differential-equations-with-fft" class="level2">
+<h2 class="anchored" data-anchor-id="application-solve-differential-equations-with-fft">Application: Solve Differential Equations with FFT</h2>
+<p>As the physics field, e.g., temperature field, electromagnetic field, has finite energy and therefore can be decomposed by Fourier transform. Mathematicians surprisingly find that the physics law these field follows can be largely simplified in its Fourier space. For example, the thermal diffusion equation written as <span class="math display">
+\frac{\mathrm{d}T(\mathbf{r},t)}{\mathrm{d}t}=\alpha\nabla^2T(\mathbf{r},t) \\ \frac{\mathrm{d}\hat{T}(\mathbf{k},t)}{\mathrm{d}t} = -\alpha k^2\hat{T}(\mathbf{k},t)
+</span> The transformed differential equation has a very apparent solution: <span class="math display">
+\hat{T}(\mathbf{k},t)=\hat{T}(\mathbf{k},0)\cdot\exp(-\alpha k^2t)
+</span> and the solution of the thermal diffusion problem can be given by the inverse Fourier transform of <span class="math inline">\hat{T}(\mathbf{k},t)</span>.</p>
+<p align="center">
+<img src="docs/Figure/heat_diffusion.gif" width="100%">
+</p>
+<p>Another application is solving the Maxwell’s equation in the vaccum: <span class="math display">
+\frac{\partial \mathbf{E}}{\partial t}=\frac{1}{c^2}\nabla\times \mathbf{B} + \mu_0\mathbf{J}\\
+\frac{\partial \mathbf{B}}{\partial t}=-\nabla\times \mathbf{E}
+</span> Accordingly, these equations in the Fourier space are: <span class="math display">
+\frac{\partial \mathbf{\hat{E}}}{\partial t}=\frac{1}{c^2}i\mathbf{k}\times \mathbf{\hat{B}} + \mu_0\mathbf{\hat{J}}\\
+\frac{\partial \mathbf{\hat{B}}}{\partial t}=-i\mathbf{k}\times \mathbf{\hat{E}}
+</span> These equations does not have a general analytic solution but can still be solved numerically through finite-difference method in the time domain. <span class="math display">
+\mathbf{\hat{E}}^{n+1}=\mathbf{\hat{E}}^{n}+\Delta t \cdot \frac{1}{c^2}i\mathbf{k}\times\mathbf{\hat{B}}^{n+1/2}\\
+\mathbf{\hat{B}}^{n+3/2}=\mathbf{\hat{B}}^{n+1/2}-\Delta t \cdot i\mathbf{k}\times\mathbf{\hat{E}}^{n+1}\\
+</span> This kind of algorithm take the Fourier decomposition in the position space but keep using <span class="math display">
+\mathbf{\hat{E}}^{n+1}=\mathbf{\hat{E}}^{n}+\Delta t \cdot \frac{1}{c^2}i\mathbf{k}\times\mathbf{\hat{B}}^{n+1/2}\\
+\mathbf{\hat{B}}^{n+3/2}=\mathbf{\hat{B}}^{n+1/2}-\Delta t \cdot i\mathbf{k}\times\mathbf{\hat{E}}^{n+1}\\
+</span></p>
+<p align="center">
+<img src="docs/Figure/unit_pulse.gif" width="100%">
+</p>
+<p>However, the Fourier method intrinsically assume a periodic boundary condition of the solution and limit its own applicable situations. More importantly, the Fourier transform takes the whole information from the global area of interest and therefore become parallelization-difficult. This defect becomes even more fatal as the advances in parallelized, GPU-based computation.</p>
+</section>
+<section id="fft-algorithm-performance" class="level2">
+<h2 class="anchored" data-anchor-id="fft-algorithm-performance">FFT Algorithm Performance</h2>
+<p>The invention of the <a href="https://www.ams.org/journals/mcom/1965-19-090/S0025-5718-1965-0178586-1/S0025-5718-1965-0178586-1.pdf"><strong><em>(Cooley–Tukey) Fast Fourier Transform (FFT) algorithm</em></strong></a> reduced the time complexity of DFT from <span class="math inline">\mathcal{O}(N^2)</span> to <span class="math inline">\mathcal{O}(N\mathrm{log}N)</span> by efficiently decomposing the DFT into smaller computations, i.e., <a href="https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm">divide-and-conquer</a>.</p>
+<p>Most tutorials introduce the <strong><em>radix-2</em></strong> FFT, which splits the signal into <strong><em>two</em></strong> sub-signals with exactly the same length and requires the length of the signal to be an integer power of <strong><em>2</em></strong>. This requirement is hard to satisfy in common applications without zero-padding, which actually includes unwanted modification of the original signal. To overcome that, <strong><em>radix-3</em></strong> and <strong><em>radix-5</em></strong> FFTs are developed and implemented.</p>
+<p>Still, the divide-and-conquer strategy fails when the signal length <em>N</em> consists of at least one big prime number factor (e.g, 10007) as the signal is hard to split. In that situation, the <a href="https://ieeexplore.ieee.org/document/1162132"><strong><em>Bluestein’s algorithm</em></strong></a>, which is essentially a <strong><em>Chirping-Z transform</em></strong>, is used. This algorithm takes the <span class="math inline">\mathcal{F}</span> operation as a convolution and then uses the <em>convolution theorem</em> in the calculation of DFT coefficients. The convolution property allows us to extend the signal length to a proper, highly composite number with zero-padding (denoted as <em>M</em>), but the coefficients and frequency resolution remain unchanged. The final time complexity of <em>Bluestein’s algorithm</em> goes to <span class="math inline">\mathcal{O}(N+M\mathrm{log}M)</span>, where the first term originates from the iterate all the frequency component.</p>
+<!-- fig-tabset:figure_numpy_fft_performance.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 27</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><img src="docs/Figure/figure_numpy_fft_performance.png" width="100%"></p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sympy</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>single_panel_figsize, tight_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>N_LENGTHS <span class="op">=</span> np.arange(<span class="dv">2</span>, <span class="dv">256</span>, <span class="dv">1</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>TIME_PER_THOUSAND_RUNS_NUMPY <span class="op">=</span> np.zeros(N_LENGTHS.size)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>TIME_PER_THOUSAND_RUNS_SCIPY <span class="op">=</span> np.zeros(N_LENGTHS.size)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>N_REPEATS <span class="op">=</span> <span class="dv">10000</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> N_LENGTH <span class="kw">in</span> N_LENGTHS:</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    sig <span class="op">=</span> np.random.randn(N_LENGTH)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    _start_time <span class="op">=</span> time.perf_counter_ns()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(N_REPEATS):</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        coefs <span class="op">=</span> np.fft.rfft(sig)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    _end_time <span class="op">=</span> time.perf_counter_ns()</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    TIME_PER_THOUSAND_RUNS_NUMPY[</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        N_LENGTHS <span class="op">==</span> N_LENGTH] <span class="op">=</span> (_end_time <span class="op">-</span> _start_time) <span class="op">/</span> <span class="fl">1e9</span> <span class="op">/</span> N_REPEATS</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># _start_time = time.perf_counter_ns()</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># for _ in range (N_REPEATS):</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     coefs = scipy.fft.fft(signal, workers = -1)</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># _end_time = time.perf_counter_ns()</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># TIME_PER_THOUSAND_RUNS_SCIPY[N_LENGTHS == N_LENGTH] = (_end_time - _start_time) / 1e9 / N_REPEATS</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> N_LENGTHS:</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> N_LENGTHS[i <span class="op">-</span> <span class="dv">2</span>]</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    n_prime_factor <span class="op">=</span> <span class="bu">sum</span>(sympy.ntheory.factor_.factorint(N).values())</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    sc1 <span class="op">=</span> ax1.plot(N,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>                   <span class="fl">1e9</span> <span class="op">*</span> TIME_PER_THOUSAND_RUNS_NUMPY[i <span class="op">-</span> <span class="dv">2</span>],</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>                   color<span class="op">=</span>matplotlib.cm.jet_r(((n_prime_factor <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">7</span>)),</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>                   marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>circled_numbers <span class="op">=</span> [<span class="dv">181</span>, <span class="dv">191</span>, <span class="dv">197</span>, <span class="dv">199</span>]</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, circled_number <span class="kw">in</span> <span class="bu">enumerate</span>(circled_numbers):</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> circled_number</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    n_prime_factor <span class="op">=</span> <span class="bu">sum</span>(sympy.ntheory.factor_.factorint(N).values())</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    ax1.plot(N,</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>             <span class="fl">1e9</span> <span class="op">*</span> TIME_PER_THOUSAND_RUNS_NUMPY[N_LENGTHS <span class="op">==</span> N],</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>             <span class="st">'s'</span>,</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>             color<span class="op">=</span><span class="ss">f"C</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>             fillstyle<span class="op">=</span><span class="st">'none'</span>,</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>             markersize<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>             label<span class="op">=</span><span class="ss">f'Prime </span><span class="sc">{</span>N<span class="sc">}</span><span class="ss">'</span>,</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>             zorder<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    ax1.text(N,</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>             <span class="fl">1e9</span> <span class="op">*</span> TIME_PER_THOUSAND_RUNS_NUMPY[N_LENGTHS <span class="op">==</span> N] <span class="op">+</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>             (<span class="dv">1000</span> <span class="cf">if</span> N <span class="op">==</span> <span class="dv">199</span> <span class="cf">else</span> <span class="dv">500</span>),</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>             <span class="ss">f'</span><span class="sc">{</span>N<span class="sc">}</span><span class="ss">'</span>,</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>             color<span class="op">=</span><span class="ss">f"C</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">"</span>,</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>             ha<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>             va<span class="op">=</span><span class="st">'bottom'</span>,</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>             weight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>             path_effects<span class="op">=</span>[</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>                 matplotlib.patheffects.withStroke(linewidth<span class="op">=</span><span class="dv">2</span>, foreground<span class="op">=</span><span class="st">'w'</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>             ])</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Computational Time [ns]'</span>)</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Signal Length N'</span>)</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Performance Test'</span> <span class="op">+</span> <span class="ss">f" [</span><span class="sc">{</span>N_REPEATS<span class="sc">}</span><span class="ss"> times]</span><span class="ch">\n</span><span class="ss">"</span> <span class="op">+</span> <span class="st">'numpy.fft.fft'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.set_title('scipy.fft.fft Performance\n' + f"Repeat {N_REPEATS} times")</span></span>
 <span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/tmp/ipykernel_992/3192184960.py:42: HealpyDeprecationWarning: "verbose" was deprecated in version 1.15.0 and will be removed in a future version. 
-  m = hp.synfast(Cl, nside=nside, lmax=lmax, new=True, verbose=False)</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"1ab83280bb3e42c08c06f47a40dea862","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"f3175ed7f6f2459790d7d1d643c07a27","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-</div>
-</section>
-<section id="wmap_ilc_9yrs-astropy.io.fits.opendocsdatawmap_ilc_9yr_v5.fits" class="level3">
-<h3 class="anchored" data-anchor-id="wmap_ilc_9yrs-astropy.io.fits.opendocsdatawmap_ilc_9yr_v5.fits"><code>wmap_ilc_9yrs = astropy.io.fits.open('docs/Data/wmap_ilc_9yr_v5.fits')</code></h3>
-<div id="cell-7" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>wmap_ilc_9yrs <span class="op">=</span> astropy.io.fits.<span class="bu">open</span>(<span class="st">'docs/Data/wmap_ilc_9yr_v5.fits'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy_healpix <span class="im">import</span> HEALPix</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy.coordinates <span class="im">import</span> Galactic</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>nside <span class="op">=</span> wmap_ilc_9yrs[<span class="dv">1</span>].header[<span class="st">'NSIDE'</span>]</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>order <span class="op">=</span> wmap_ilc_9yrs[<span class="dv">1</span>].header[<span class="st">'ORDERING'</span>]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>hp <span class="op">=</span> HEALPix(nside<span class="op">=</span>nside, order<span class="op">=</span>order, frame<span class="op">=</span>Galactic())</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>temperature <span class="op">=</span> wmap_ilc_9yrs[<span class="dv">1</span>].data[<span class="st">'temperature'</span>]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>lon, lat <span class="op">=</span> hp.healpix_to_lonlat(np.arange(<span class="dv">3145728</span>))</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># lon = lon.deg</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># lat = lat.deg</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy <span class="im">import</span> units <span class="im">as</span> u</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>ra <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">180.</span>, <span class="fl">180.</span>, <span class="dv">360</span> <span class="op">*</span> <span class="dv">10</span>) <span class="op">*</span> u.deg</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>dec <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">90.</span>, <span class="fl">90.</span>, <span class="dv">180</span> <span class="op">*</span> <span class="dv">10</span>) <span class="op">*</span> u.deg</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>ra_grid, dec_grid <span class="op">=</span> np.meshgrid(ra, dec)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up Astropy coordinate objects</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy.coordinates <span class="im">import</span> SkyCoord</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>coords <span class="op">=</span> SkyCoord(ra_grid.ravel(), dec_grid.ravel(), frame<span class="op">=</span>Galactic())</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>tmap <span class="op">=</span> hp.interpolate_bilinear_skycoord(coords, temperature)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>tmap <span class="op">=</span> tmap.reshape((dec.size, ra.size))</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>plt.cla()</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(projection <span class="op">=</span> <span class="st">'mollweide'</span>)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>ax1.pcolormesh(np.array(<span class="op">-</span>ra <span class="op">*</span> np.pi <span class="op">/</span> <span class="dv">180</span>), np.array(dec <span class="op">*</span> np.pi <span class="op">/</span> <span class="dv">180</span>), np.array(tmap <span class="op">*</span> <span class="fl">1e3</span>),  cmap<span class="op">=</span>plt.cm.jet, vmax <span class="op">=</span> <span class="dv">200</span>, vmin <span class="op">=</span> <span class="op">-</span><span class="dv">200</span>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.scatter(lon, lat, c = temperature * 1e3, cmap = 'jet', vmax = 200, vmin = -200)</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>ax1.axis(<span class="st">'off'</span>)</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"e4e64d220b714879b3f6462763c1d622","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_yscale('log')</span></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>cmap <span class="op">=</span> matplotlib.cm.jet_r</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>bounds <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>]</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>norm <span class="op">=</span> matplotlib.colors.BoundaryNorm(bounds, cmap.N, extend<span class="op">=</span><span class="st">'both'</span>)</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> ax1.inset_axes([<span class="fl">1.02</span>, <span class="fl">0.00</span>, <span class="fl">0.04</span>, <span class="fl">1.0</span>])</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>cbar <span class="op">=</span> plt.gcf().colorbar(matplotlib.cm.ScalarMappable(norm<span class="op">=</span>norm, cmap<span class="op">=</span>cmap),</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>                          cax<span class="op">=</span>ax2,</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>                          orientation<span class="op">=</span><span class="st">'vertical'</span>,</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>                          label<span class="op">=</span><span class="st">"Number of Prime Factors"</span>)</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>plt.text(<span class="fl">0.7</span>,</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>         <span class="op">-</span><span class="fl">.08</span>,</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>         <span class="st">'Prime'</span>,</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>         transform<span class="op">=</span>ax2.transAxes,</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>         ha<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>         va<span class="op">=</span><span class="st">'top'</span>,</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>         color<span class="op">=</span><span class="st">'r'</span>,</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>         fontweight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>         fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>plt.text(<span class="fl">0.7</span>,</span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>         <span class="fl">1.08</span>,</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>         <span class="st">'$</span><span class="er">\</span><span class="st">mathbf{2^n}$'</span>,</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>         transform<span class="op">=</span>ax2.transAxes,</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>         ha<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>         va<span class="op">=</span><span class="st">'bottom'</span>,</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>         color<span class="op">=</span><span class="st">'b'</span>,</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>         fontweight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>         fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_yscale('log')</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_numpy_fft_performance'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-</section>
-<section id="temperature-wmap_ilc_9yrs1.datatemperature" class="level3">
-<h3 class="anchored" data-anchor-id="temperature-wmap_ilc_9yrs1.datatemperature"><code>temperature = wmap_ilc_9yrs[1].data['temperature']</code></h3>
-<div id="cell-9" class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> healpy <span class="im">as</span> hp</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 假设 tmap 是一维的 HEALPix 数组</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 去除单极子和偶极子 (非常重要!)</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>temperature <span class="op">=</span> wmap_ilc_9yrs[<span class="dv">1</span>].data[<span class="st">'temperature'</span>]</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>tmap_cleaned <span class="op">=</span> hp.remove_dipole(tmap)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 直接计算角功率谱 Cl (基于快速球谐变换)</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># lmax 是你想要计算到的最大多极矩</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>Cl <span class="op">=</span> hp.anafast(tmap_cleaned, lmax<span class="op">=</span><span class="dv">1000</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>ell <span class="op">=</span> np.arange(<span class="bu">len</span>(Cl))</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 绘制功率谱 (通常习惯乘以 l(l+1)/2pi 来平坦化大尺度信号)</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>Dl <span class="op">=</span> Cl <span class="op">*</span> ell <span class="op">*</span> (ell <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> np.pi)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.plot(ell, Dl)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="er">\</span><span class="vs">ell</span><span class="dv">$</span><span class="vs">'</span>)</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athcal{D}_</span><span class="er">\</span><span class="vs">ell = </span><span class="er">\</span><span class="vs">ell</span><span class="kw">(</span><span class="er">\</span><span class="vs">ell</span><span class="op">+</span><span class="vs">1</span><span class="kw">)</span><span class="vs">C_</span><span class="er">\</span><span class="vs">ell / 2</span><span class="er">\</span><span class="vs">pi</span><span class="dv">$</span><span class="vs">'</span>)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'CMB Angular Power Spectrum'</span>)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-error">
-<div class="ansi-escaped-output">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[57]</span><span class="ansi-green-fg">, line 7</span>
-<span class="ansi-green-fg">      3</span> <span style="font-weight:bold;color:rgb(0,135,0)">import</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg ansi-bold">matplotlib</span><span class="ansi-blue-fg ansi-bold">.</span><span class="ansi-blue-fg ansi-bold">pyplot</span><span style="color:rgb(188,188,188)"> </span><span style="font-weight:bold;color:rgb(0,135,0)">as</span><span style="color:rgb(188,188,188)"> </span><span class="ansi-blue-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      5</span> <span style="font-style:italic;color:rgb(95,135,135)"># 假设 tmap 是一维的 HEALPix 数组</span>
-<span class="ansi-green-fg">      6</span> <span style="font-style:italic;color:rgb(95,135,135)"># 去除单极子和偶极子 (非常重要!)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span> tmap_cleaned = <span class="ansi-yellow-bg">hp</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">remove_dipole</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">tmap</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">      9</span> <span style="font-style:italic;color:rgb(95,135,135)"># 直接计算角功率谱 Cl (基于快速球谐变换)</span>
-<span class="ansi-green-fg">     10</span> <span style="font-style:italic;color:rgb(95,135,135)"># lmax 是你想要计算到的最大多极矩</span>
-<span class="ansi-green-fg">     11</span> Cl = hp.anafast(tmap_cleaned, lmax=<span class="ansi-green-fg">1000</span>)
+</div>
+<p>From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example: <span class="math display">
+\begin{align}
+N&amp;=181=182-1=2^1\times\boxed{7^1\times13^1}-1\\
+N&amp;=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
+\end{align}
+</span> In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.</p>
+<p>However, some prime numbers like: <span class="math display">
+\begin{align}
+N&amp;=191=192-1=2^6\times3^1-1\\
+N&amp;=199=200-1 = 2^3\times5^2-1
+\end{align}
+</span> can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.</p>
+<p>Modern implementation of the FFT algorithm, such as <code>pocketfft</code>, combines the above two methods (<em>Cooley–Tukey</em> and <em>Bluestein</em>). This <em>C++</em> package is used in both <code>numpy</code> and <code>scipy(1.4.0+)</code> for their FFT implementation. Besides, <a href="https://www.fftw.org/"><em>fftw</em></a>, which stands for the somewhat whimsical title of <em>“Fastest Fourier Transform in the West”</em>, is also very popular and used in the <code>fft/ifft</code> functions of <a href="https://dsp.stackexchange.com/questions/24375/fastest-implementation-of-fft-in-c"><em>MATLAB</em></a>. Its <em>Python</em> implementation can be found in the <code>pyfftw</code> package.</p>
+<p>The <code>scipy.signal.fft</code> additionally provides an input parameter <code>workers:</code> <em><code>int, optional</code></em> to assign the maximum number of workers to use for parallel computation. If negative, the value wraps around from <code>os.cpu_count()</code>. For parallel computation, you need to input a batch of signals with shape of <span class="math inline">N\times K</span>.</p>
+<div style="page-break-after: always;">
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/ts/lib/python3.13/site-packages/astropy/utils/decorators.py:620</span>, in <span class="ansi-cyan-fg">deprecated_renamed_argument.&lt;locals&gt;.decorator.&lt;locals&gt;.wrapper</span><span class="ansi-blue-fg">(*args, **kwargs)</span>
-<span class="ansi-green-fg">    617</span>             msg += <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span style="font-weight:bold;color:rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">        Use </span><span style="font-weight:bold;color:rgb(175,95,135)">{</span>alternative<span style="font-weight:bold;color:rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> instead.</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    618</span>         warnings.warn(msg, warning_type, stacklevel=<span class="ansi-green-fg">2</span>)
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">620</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">function</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/ts/lib/python3.13/site-packages/healpy/pixelfunc.py:1649</span>, in <span class="ansi-cyan-fg">remove_dipole</span><span class="ansi-blue-fg">(m, nest, bad, gal_cut, fitval, copy, verbose)</span>
-<span class="ansi-green-fg">   1647</span> m = np.array(m, copy=copy)
-<span class="ansi-green-fg">   1648</span> npix = m.size
-<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1649</span> nside = <span class="ansi-yellow-bg">npix2nside</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">npix</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">   1650</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> nside &gt; <span class="ansi-green-fg">128</span>:
-<span class="ansi-green-fg">   1651</span>     bunchsize = npix // <span class="ansi-green-fg">24</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/ts/lib/python3.13/site-packages/healpy/pixelfunc.py:1121</span>, in <span class="ansi-cyan-fg">npix2nside</span><span class="ansi-blue-fg">(npix)</span>
-<span class="ansi-green-fg">   1089</span> <span style="font-style:italic" class="ansi-yellow-fg">"""Give the nside parameter for the given number of pixels.</span>
-<span class="ansi-green-fg">   1090</span> 
-<span class="ansi-green-fg">   1091</span> <span style="font-style:italic" class="ansi-yellow-fg">Parameters</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">   1118</span> <span style="font-style:italic" class="ansi-yellow-fg">ValueError: Wrong pixel number (it is not 12*nside**2)</span>
-<span class="ansi-green-fg">   1119</span> <span style="font-style:italic" class="ansi-yellow-fg">"""</span>
-<span class="ansi-green-fg">   1120</span> <span style="font-weight:bold;color:rgb(0,135,0)">if</span> <span style="font-weight:bold;color:rgb(175,0,255)">not</span> isnpixok(npix):
-<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">1121</span>     <span style="font-weight:bold;color:rgb(0,135,0)">raise</span> <span style="font-weight:bold;color:rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Wrong pixel number (it is not 12*nside**2)</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">   1122</span> <span style="font-weight:bold;color:rgb(0,135,0)">return</span> <span style="color:rgb(0,135,0)">int</span>(np.sqrt(npix / <span class="ansi-green-fg">12.0</span>))
-
-<span class="ansi-red-fg">ValueError</span>: Wrong pixel number (it is not 12*nside**2)</pre>
 </div>
-</div>
-</div>
-</section>
-<section id="tmap" class="level3">
-<h3 class="anchored" data-anchor-id="tmap"><code>tmap</code></h3>
-<div id="cell-11" class="cell" data-execution_count="56">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy.coordinates <span class="im">import</span> SkyCoord</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> astropy <span class="im">import</span> units <span class="im">as</span> u</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>tmap</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># np.random.seed(seed)</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly select N pairs of points from tmap</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2000000</span>  <span class="co"># Number of pairs</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> np.random.choice(tmap.size, <span class="dv">2</span> <span class="op">*</span> N, replace<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>coords1 <span class="op">=</span> SkyCoord(ra_grid.ravel()[indices[:N]], dec_grid.ravel()[indices[:N]], frame<span class="op">=</span>Galactic)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>coords2 <span class="op">=</span> SkyCoord(ra_grid.ravel()[indices[N:]], dec_grid.ravel()[indices[N:]], frame<span class="op">=</span>Galactic)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate angular separations for all pairs</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>angular_separations <span class="op">=</span> coords1.separation(coords2)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># print(f"Angular Separations: {angular_separations}")</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Define bins for angular distances</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>bin_edges <span class="op">=</span> np.linspace(<span class="dv">0</span>, np.pi, <span class="dv">3000</span>)  <span class="co"># 20 bins from 0 to π radians</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>bin_indices <span class="op">=</span> np.digitize(angular_separations.radian, bin_edges)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute correlation function for each bin</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>correlation_function <span class="op">=</span> []</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="bu">len</span>(bin_edges)):</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (bin_indices <span class="op">==</span> i)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.<span class="bu">any</span>(mask):</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        correlation <span class="op">=</span> np.mean(tmap.ravel()[indices[:N][mask]] <span class="op">*</span> tmap.ravel()[indices[N:][mask]])</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        correlation_function.append(correlation)</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        correlation_function.append(<span class="dv">0</span>)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>plt.cla()</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>ax1.plot(bin_edges[:<span class="op">-</span><span class="dv">1</span>], correlation_function, marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>ax2.plot(np.<span class="bu">abs</span>(np.fft.rfft(correlation_function)), marker<span class="op">=</span><span class="st">'o'</span>)</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"552269956d2245e785bad57a6e76e657","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-</div>
-</section>
-<section id="indices" class="level3">
-<h3 class="anchored" data-anchor-id="indices"><code>indices</code></h3>
-<div id="cell-13" class="cell" data-execution_count="27">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>indices</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
-<pre><code>array([4592487, 5290758, 2031058,  758285, 1188428, 2069606, 3902365,
-       2779160, 5944237, 3715413, 4670981,  261660, 5567585, 4529783,
-       3055424, 6477653, 6025683, 3000077, 6199585, 3890507, 2969663,
-       3209242, 4073961, 4614875,  143610, 3529588,   32235, 2670751,
-       4844679,  771832, 4508338,  461123, 5551865,  273968,  298973,
-       4217813, 3377267, 1248042, 1279627, 1519514, 1195490, 3762719,
-       3229596, 1265933, 5858041, 2576717, 2368996, 4851990, 3048798,
-        940085, 1134288, 4083410, 1789297, 4978128, 2773216, 3522849,
-       1578672,  556618, 5749421, 1704517, 3788451, 6014446, 3292733,
-       2514822, 2727627, 3001552, 1795975, 3273503, 4680073, 5766696,
-       2913967, 1618672, 2938707,  865126, 1332863, 3495851, 4338818,
-       5607789, 4623173, 2244668, 2447433, 3617433, 3357575, 2428798,
-       3495792, 5439322, 1996966, 2277118, 5604285, 2062215, 2414033,
-       2171077, 4019066, 2426318, 1403085,  287218, 1900184, 3645415,
-         23863, 4654312, 5000036, 6119858, 1117468, 5387890, 4918870,
-       4172296, 2474819, 1875764, 2062612,  577332, 4794255, 4908255,
-       4575613, 5515704, 5264705, 1328856, 5813906, 3654556, 2714578,
-        214995, 3826296, 2299766, 3599057, 6265915, 1563877, 2633504,
-       5361478, 1995339, 2412530,  282611, 1086406,  671201, 6189084,
-        934998, 1762228, 4023774, 4349891, 4161827,  236752,  673409,
-       1104822, 4895436, 2850847, 5032884, 1744409, 6474448, 4457981,
-       6205288, 1595936, 5596690, 3531114, 5711961, 5869098, 2094326,
-       2318281, 2981204, 4439678, 1013085, 1624591, 1647244, 4172046,
-       3896051, 5727921, 1326305, 3830825, 5394684,  723844, 2632743,
-       3566876, 3759001, 6218041, 1014627,  939059, 2842825, 1477730,
-       5410465, 6046650, 2971185, 4619010, 3828554, 4255212, 2657042,
-        986927, 1859425, 4517764, 2196386, 4067526, 4897253, 2896317,
-       5834184,  579535, 5944053, 5502002, 3616234, 4436456, 2156060,
-       2233763, 3055816, 3336256, 4142774])</code></pre>
-</div>
-</div>
-</section>
-<section id="频域谱" class="level3">
-<h3 class="anchored" data-anchor-id="频域谱">频域谱</h3>
-<div id="cell-15" class="cell" data-execution_count="14">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>plt.gcf()</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>plt.gca()</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">14</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>omega <span class="op">=</span> <span class="fl">50.0</span> <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> np.pi</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>bws <span class="op">=</span> np.array([<span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>])</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>))</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, bw <span class="kw">in</span> <span class="bu">enumerate</span>(bws):</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># sig = np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)) * np.cos(omega * t)  # 50 Hz 的正弦波调制的高斯脉冲</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    sig, sig_env <span class="op">=</span> scipy.signal.gausspulse(t <span class="op">-</span> np.mean(t), fc <span class="op">=</span> omega <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> bw, retenv <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">+</span> sig, label <span class="op">=</span> <span class="vs">r"</span><span class="dv">$</span><span class="vs">bw</span><span class="dv">$</span><span class="vs"> = %</span><span class="dv">.</span><span class="vs">2f"</span> <span class="op">%</span> bw, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">+</span> sig_env, <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>)</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, <span class="fl">3.0</span> <span class="op">*</span> idx <span class="op">-</span> sig_env, <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>)</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ax1.plot(t, 3.0 * idx + np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)), 'k--', alpha = 0.3)</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ax1.plot(t, 3.0 * idx - np.exp(-((t - np.mean(t))**2) / (2 * sigma**2)), 'k--', alpha = 0.3)</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    sig <span class="op">-=</span> np.mean(sig)  <span class="co"># 去除直流分量</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ----- 频域谱 -----</span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    freq, psd <span class="op">=</span> scipy.signal.welch(sig, fs, nperseg <span class="op">=</span> N)  <span class="co"># 使用Welch方法计算功率谱密度</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    t0 <span class="op">=</span> np.<span class="bu">sum</span>(t <span class="op">*</span> np.<span class="bu">abs</span>(sig)<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> np.<span class="bu">sum</span>(sig <span class="op">**</span> <span class="dv">2</span>)        <span class="co"># 中心时刻</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    delta_t <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>(((t <span class="op">-</span> t0)<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> sig<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> np.<span class="bu">sum</span>(sig<span class="op">**</span><span class="dv">2</span>))</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    f0 <span class="op">=</span> np.<span class="bu">sum</span>(freq <span class="op">*</span> psd) <span class="op">/</span> np.<span class="bu">sum</span>(psd)</span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    delta_f <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>(((freq <span class="op">-</span> f0)<span class="op">**</span><span class="dv">2</span>) <span class="op">*</span> psd) <span class="op">/</span> np.<span class="bu">sum</span>(psd))</span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    ax2.plot(freq, psd <span class="op">/</span> np.<span class="bu">max</span>(psd), label <span class="op">=</span> <span class="vs">r"</span><span class="dv">$</span><span class="vs">4</span><span class="er">\</span><span class="vs">pi </span><span class="er">\</span><span class="vs">cdot </span><span class="dv">\D</span><span class="vs">elta f </span><span class="er">\</span><span class="vs">cdot </span><span class="dv">\D</span><span class="vs">elta t</span><span class="dv">$</span><span class="vs"> = %</span><span class="dv">.</span><span class="vs">2f"</span> <span class="op">%</span> (<span class="dv">4</span> <span class="op">*</span> np.pi <span class="op">*</span> delta_t <span class="op">*</span> delta_f), linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------- 轴标签与图例 ----------------</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title("Gaussian Pulses (Time Domain)")</span></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">"Time [s]"</span>)</span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">"Intensity [Arb]"</span>)</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.set_title("Magnitude Spectra (Frequency Domain)")</span></span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">"Frequency [Hz]"</span>)</span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">"Normalized Magnitude [Arb]"</span>)</span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="fl">0.68</span>, <span class="fl">7.0</span>, <span class="st">'Gaussian Pulse</span><span class="ch">\n</span><span class="st">(bw: Bandwidth)'</span>, <span class="op">**</span>title_font, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect)</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">10</span>)</span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>ax1.yaxis.set_major_locator(ticker.MultipleLocator(<span class="dv">3</span>))</span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncols <span class="op">=</span> <span class="dv">2</span>, loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>ax2.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncols <span class="op">=</span> <span class="dv">1</span>, loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>ax2.set_xlim(<span class="dv">10</span>, <span class="dv">90</span>)</span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(<span class="op">-</span><span class="fl">0.1</span>, <span class="fl">1.7</span>)</span>
-<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Uncertainty Principle'</span>, <span class="op">**</span>title_font)</span>
-<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_uncertainty_principle'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"3f81bd11533848c591dbbc13a3c80b8d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
-</div>
-</section>
-</section>
-<section id="further-reading" class="level2">
-<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
-<p>The narrative chapter, complete with derivations and references, is in <a href="./docs/chap4.html"><code>docs/chap4.md</code></a>. For the full table of contents see <a href="docs/_sidebar.md"><code>docs/_sidebar.md</code></a>.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1337,8 +1355,167 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<!-- Mermaid: load from CDN, detect Quarto's colour scheme correctly,
+     and pre-process node labels so common LaTeX commands render as
+     readable plain text / Unicode (mermaid itself doesn't parse LaTeX). -->
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+  // ---------------------------------------------------------------------
+  // 1. Pre-process the mermaid source so labels with $$...$$ math at
+  //    least look readable.  We do NOT try to render real LaTeX — that
+  //    would require a heavy KaTeX-inside-SVG hack — we just substitute
+  //    the commands that show up in the chapter diagrams.
+  // ---------------------------------------------------------------------
+  const REPLACEMENTS = [
+    // Strip math delimiters and the dollar-sign noise.
+    [/\$\$([^$]*)\$\$/g, "$1"],
+    [/\$([^$]+)\$/g, "$1"],
+
+    // Escaped braces: protect them with placeholders so the later
+    // brace-stripping pass doesn't gobble them.
+    [/\\\{/g, "\uE000"],
+    [/\\\}/g, "\uE001"],
+
+    // Common operators / symbols ------------------------------------------
+    [/\\langle\s*/g, "⟨"],
+    [/\\rangle/g, "⟩"],
+    [/\\Re\b/g, "Re"],
+    [/\\Im\b/g, "Im"],
+    [/\\times\b/g, "×"],
+    [/\\cdot\b/g, "·"],
+    [/\\parallel\b/g, "∥"],
+    [/\\perp\b/g, "⊥"],
+    [/\\to\b/g, "→"],
+    [/\\rightarrow\b/g, "→"],
+    [/\\leftarrow\b/g, "←"],
+
+    // Greek letters we actually need ---------------------------------------
+    [/\\alpha\b/g, "α"],
+    [/\\beta\b/g, "β"],
+    [/\\gamma\b/g, "γ"],
+    [/\\delta\b/g, "δ"],
+    [/\\Delta\b/g, "Δ"],
+    [/\\epsilon\b/g, "ε"],
+    [/\\zeta\b/g, "ζ"],
+    [/\\theta\b/g, "θ"],
+    [/\\kappa\b/g, "κ"],
+    [/\\lambda\b/g, "λ"],
+    [/\\Lambda\b/g, "Λ"],
+    [/\\mu\b/g, "μ"],
+    [/\\nu\b/g, "ν"],
+    [/\\pi\b/g, "π"],
+    [/\\rho\b/g, "ρ"],
+    [/\\sigma\b/g, "σ"],
+    [/\\Sigma\b/g, "Σ"],
+    [/\\tau\b/g, "τ"],
+    [/\\phi\b/g, "φ"],
+    [/\\Phi\b/g, "Φ"],
+    [/\\chi\b/g, "χ"],
+    [/\\psi\b/g, "ψ"],
+    [/\\omega\b/g, "ω"],
+    [/\\Omega\b/g, "Ω"],
+
+    // Wrappers --------------------------------------------------------------
+
+    // Braceless forms first: "\hat B"  ->  "B̂"
+    [/\\hat\s+(\S)/g, "$1̂"],
+    [/\\bar\s+(\S)/g, "$1̄"],
+    [/\\vec\s+(\S)/g, "$1⃗"],
+
+    [/\\hat\{([^{}]+)\}/g, "$1̂"],   // combining circumflex -> Â
+    [/\\bar\{([^{}]+)\}/g, "$1̄"],   // combining macron
+    [/\\vec\{([^{}]+)\}/g, "$1⃗"],   // combining arrow
+    [/\\boldsymbol\{([^{}]+)\}/g, "$1"],
+    [/\\mathrm\{([^{}]+)\}/g, "$1"],
+    [/\\mathbf\{([^{}]+)\}/g, "$1"],
+    [/\\mathcal\{([^{}]+)\}/g, "$1"],
+    [/\\mathbb\{([^{}]+)\}/g, "$1"],
+    [/\\text\{([^{}]+)\}/g, "$1"],
+
+    // Spacing / line-break --------------------------------------------------
+    [/\\,/g, " "],         // thin space
+    [/\\;/g, " "],
+    [/\\:/g, " "],
+    [/\\\s/g, " "],
+    [/\\\\/g, " "],        // double-backslash line break
+
+    // Braces: drop the LaTeX grouping braces but keep their content.
+    [/\{([^{}]*)\}/g, "$1"],
+
+    // Lone backslash at start of word (anything we missed) -> drop.
+    [/\\([A-Za-z]+)/g, "$1"],
+
+    // Restore escaped-brace placeholders -> visible { } characters.
+    [/\uE000/g, "{"],
+    [/\uE001/g, "}"],
+  ];
+
+  function delatex(s) {
+    // Apply each replacement repeatedly until it converges, because
+    // nested {} or \hat{\bar{x}} need multiple passes.
+    let prev;
+    do {
+      prev = s;
+      for (const [re, rep] of REPLACEMENTS) s = s.replace(re, rep);
+    } while (s !== prev);
+    return s;
+  }
+
+  // Quarto wraps the source as <pre class="mermaid"><code>...</code></pre>.
+  // textContent already decodes HTML entities (--&gt; -> -->).
+  document.querySelectorAll("pre.mermaid").forEach(function (pre) {
+    const codeEl = pre.querySelector("code");
+    let src = codeEl ? codeEl.textContent : pre.textContent;
+    src = delatex(src);
+    pre.textContent = src;   // remove <code>, put cleaned source directly
+  });
+
+  // ---------------------------------------------------------------------
+  // 2. Theme: prefer Quarto's <body> class (quarto-light / quarto-dark)
+  //    over the OS preference, which can disagree with the site setting.
+  // ---------------------------------------------------------------------
+  const body = document.body;
+  let dark;
+  if (body.classList.contains("quarto-dark")) {
+    dark = true;
+  } else if (body.classList.contains("quarto-light")) {
+    dark = false;
+  } else {
+    // Fallback to Bootstrap's data-bs-theme on <html> or <body>.
+    const bs = document.documentElement.dataset.bsTheme || body.dataset.bsTheme;
+    dark = bs === "dark";
+  }
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: dark ? "dark" : "default",
+    securityLevel: "loose",
+    flowchart: { htmlLabels: true, curve: "basis" },
+    fontFamily: "Inter, system-ui, sans-serif",
+  });
+
+  // Re-render when the user toggles the Quarto colour scheme.
+  document.addEventListener("quarto-color-scheme-toggled", function () {
+    location.reload();
+  });
+</script>
 
 
 
 
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

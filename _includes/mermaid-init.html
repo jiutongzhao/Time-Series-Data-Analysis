@@ -1,0 +1,145 @@
+<!-- Mermaid: load from CDN, detect Quarto's colour scheme correctly,
+     and pre-process node labels so common LaTeX commands render as
+     readable plain text / Unicode (mermaid itself doesn't parse LaTeX). -->
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+  // ---------------------------------------------------------------------
+  // 1. Pre-process the mermaid source so labels with $$...$$ math at
+  //    least look readable.  We do NOT try to render real LaTeX — that
+  //    would require a heavy KaTeX-inside-SVG hack — we just substitute
+  //    the commands that show up in the chapter diagrams.
+  // ---------------------------------------------------------------------
+  const REPLACEMENTS = [
+    // Strip math delimiters and the dollar-sign noise.
+    [/\$\$([^$]*)\$\$/g, "$1"],
+    [/\$([^$]+)\$/g, "$1"],
+
+    // Escaped braces: protect them with placeholders so the later
+    // brace-stripping pass doesn't gobble them.
+    [/\\\{/g, "\uE000"],
+    [/\\\}/g, "\uE001"],
+
+    // Common operators / symbols ------------------------------------------
+    [/\\langle\s*/g, "⟨"],
+    [/\\rangle/g, "⟩"],
+    [/\\Re\b/g, "Re"],
+    [/\\Im\b/g, "Im"],
+    [/\\times\b/g, "×"],
+    [/\\cdot\b/g, "·"],
+    [/\\parallel\b/g, "∥"],
+    [/\\perp\b/g, "⊥"],
+    [/\\to\b/g, "→"],
+    [/\\rightarrow\b/g, "→"],
+    [/\\leftarrow\b/g, "←"],
+
+    // Greek letters we actually need ---------------------------------------
+    [/\\alpha\b/g, "α"],
+    [/\\beta\b/g, "β"],
+    [/\\gamma\b/g, "γ"],
+    [/\\delta\b/g, "δ"],
+    [/\\Delta\b/g, "Δ"],
+    [/\\epsilon\b/g, "ε"],
+    [/\\zeta\b/g, "ζ"],
+    [/\\theta\b/g, "θ"],
+    [/\\kappa\b/g, "κ"],
+    [/\\lambda\b/g, "λ"],
+    [/\\Lambda\b/g, "Λ"],
+    [/\\mu\b/g, "μ"],
+    [/\\nu\b/g, "ν"],
+    [/\\pi\b/g, "π"],
+    [/\\rho\b/g, "ρ"],
+    [/\\sigma\b/g, "σ"],
+    [/\\Sigma\b/g, "Σ"],
+    [/\\tau\b/g, "τ"],
+    [/\\phi\b/g, "φ"],
+    [/\\Phi\b/g, "Φ"],
+    [/\\chi\b/g, "χ"],
+    [/\\psi\b/g, "ψ"],
+    [/\\omega\b/g, "ω"],
+    [/\\Omega\b/g, "Ω"],
+
+    // Wrappers --------------------------------------------------------------
+
+    // Braceless forms first: "\hat B"  ->  "B̂"
+    [/\\hat\s+(\S)/g, "$1̂"],
+    [/\\bar\s+(\S)/g, "$1̄"],
+    [/\\vec\s+(\S)/g, "$1⃗"],
+
+    [/\\hat\{([^{}]+)\}/g, "$1̂"],   // combining circumflex -> Â
+    [/\\bar\{([^{}]+)\}/g, "$1̄"],   // combining macron
+    [/\\vec\{([^{}]+)\}/g, "$1⃗"],   // combining arrow
+    [/\\boldsymbol\{([^{}]+)\}/g, "$1"],
+    [/\\mathrm\{([^{}]+)\}/g, "$1"],
+    [/\\mathbf\{([^{}]+)\}/g, "$1"],
+    [/\\mathcal\{([^{}]+)\}/g, "$1"],
+    [/\\mathbb\{([^{}]+)\}/g, "$1"],
+    [/\\text\{([^{}]+)\}/g, "$1"],
+
+    // Spacing / line-break --------------------------------------------------
+    [/\\,/g, " "],         // thin space
+    [/\\;/g, " "],
+    [/\\:/g, " "],
+    [/\\\s/g, " "],
+    [/\\\\/g, " "],        // double-backslash line break
+
+    // Braces: drop the LaTeX grouping braces but keep their content.
+    [/\{([^{}]*)\}/g, "$1"],
+
+    // Lone backslash at start of word (anything we missed) -> drop.
+    [/\\([A-Za-z]+)/g, "$1"],
+
+    // Restore escaped-brace placeholders -> visible { } characters.
+    [/\uE000/g, "{"],
+    [/\uE001/g, "}"],
+  ];
+
+  function delatex(s) {
+    // Apply each replacement repeatedly until it converges, because
+    // nested {} or \hat{\bar{x}} need multiple passes.
+    let prev;
+    do {
+      prev = s;
+      for (const [re, rep] of REPLACEMENTS) s = s.replace(re, rep);
+    } while (s !== prev);
+    return s;
+  }
+
+  // Quarto wraps the source as <pre class="mermaid"><code>...</code></pre>.
+  // textContent already decodes HTML entities (--&gt; -> -->).
+  document.querySelectorAll("pre.mermaid").forEach(function (pre) {
+    const codeEl = pre.querySelector("code");
+    let src = codeEl ? codeEl.textContent : pre.textContent;
+    src = delatex(src);
+    pre.textContent = src;   // remove <code>, put cleaned source directly
+  });
+
+  // ---------------------------------------------------------------------
+  // 2. Theme: prefer Quarto's <body> class (quarto-light / quarto-dark)
+  //    over the OS preference, which can disagree with the site setting.
+  // ---------------------------------------------------------------------
+  const body = document.body;
+  let dark;
+  if (body.classList.contains("quarto-dark")) {
+    dark = true;
+  } else if (body.classList.contains("quarto-light")) {
+    dark = false;
+  } else {
+    // Fallback to Bootstrap's data-bs-theme on <html> or <body>.
+    const bs = document.documentElement.dataset.bsTheme || body.dataset.bsTheme;
+    dark = bs === "dark";
+  }
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: dark ? "dark" : "default",
+    securityLevel: "loose",
+    flowchart: { htmlLabels: true, curve: "basis" },
+    fontFamily: "Inter, system-ui, sans-serif",
+  });
+
+  // Re-render when the user toggles the Quarto colour scheme.
+  document.addEventListener("quarto-color-scheme-toggled", function () {
+    location.reload();
+  });
+</script>

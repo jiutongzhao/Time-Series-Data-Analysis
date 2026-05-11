@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Chapter 6 - Processing of the signal – Practical Spectral Analysis with Python</title>
+<title>chap6 – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -61,7 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -74,14 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-43b2d995d73a1754bd3a6f5d899fe64b.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-4e5466e430b1db38349d513585fd1d59.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-2c9aed11d1b70b0b2e0b9c8c3ae51c6c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-5e62b8d79374c9d25de42010913bdda0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-2c8cc3c1f6f54eb30af177bca3ef8a8e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8b4a9575a9ae77796748dc8af6baaa07.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -109,11 +109,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+<style>html{ scroll-behavior: smooth; }</style>
 
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
-<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -288,28 +328,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="./docs/Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">Spectral Analysis</span>
+    <span class="navbar-title">Practical Spectral Analysis</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
-<span class="menu-text">Home</span></a>
-  </li>  
-</ul>
-          </div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+        <div class="quarto-navbar-tools tools-end">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
+          <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
     </nav>
   <nav class="quarto-secondary-nav">
@@ -317,7 +346,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Chapter 6 - Processing of the signal</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap5.html">Advanced Topics</a></li><li class="breadcrumb-item"><a href="./chap6.html">6. Signal Processing</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -329,6 +358,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
@@ -340,7 +375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap0_preface.html" class="sidebar-item-text sidebar-link">
+  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -357,26 +392,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Data Initialization</span></a>
+  <a href="./chap1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Frequency Domain</span></a>
+  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap3.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Power Spectral Density</span></a>
+  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap4.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">More About FFT</span></a>
+  <a href="./chap4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
       </ul>
@@ -392,26 +427,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap5.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Noise</span></a>
+  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap6.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Signal Processing</span></a>
+  <a href="./chap6.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap7.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Time-Frequency Spectrum</span></a>
+  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap8.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Multi-Channel Signal</span></a>
+  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
       </ul>
@@ -427,13 +462,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/chap10_appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/_todo.qmd" class="sidebar-item-text sidebar-link">
+  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -449,110 +484,231 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a>
+  <li><a href="#processing-of-the-signal" id="toc-processing-of-the-signal" class="nav-link active" data-scroll-target="#processing-of-the-signal">Processing of the signal</a>
   <ul class="collapse">
-  <li><a href="#n-2-10" id="toc-n-2-10" class="nav-link" data-scroll-target="#n-2-10"><code>N = 2 ** 10</code></a></li>
-  <li><a href="#image-np.arrayimage.openread_path-leena.png.convertl.astypefloat" id="toc-image-np.arrayimage.openread_path-leena.png.convertl.astypefloat" class="nav-link" data-scroll-target="#image-np.arrayimage.openread_path-leena.png.convertl.astypefloat"><code>image = np.array(Image.open(read_path + 'leena.png').convert('L')).astype(float)</code></a></li>
-  <li><a href="#image.shape" id="toc-image.shape" class="nav-link" data-scroll-target="#image.shape"><code>image.shape</code></a></li>
-  <li><a href="#n-2-10-1" id="toc-n-2-10-1" class="nav-link" data-scroll-target="#n-2-10-1"><code>N = 2 ** 10</code></a></li>
+  <li><a href="#reconstruction-and-interpolation-scipy.interpolate" id="toc-reconstruction-and-interpolation-scipy.interpolate" class="nav-link" data-scroll-target="#reconstruction-and-interpolation-scipy.interpolate">Reconstruction and Interpolation [<code>scipy.interpolate</code>]</a></li>
+  <li><a href="#filter-circuit" id="toc-filter-circuit" class="nav-link" data-scroll-target="#filter-circuit">Filter Circuit</a></li>
+  <li><a href="#digital-filter-scipy.interpolate" id="toc-digital-filter-scipy.interpolate" class="nav-link" data-scroll-target="#digital-filter-scipy.interpolate">Digital Filter [<code>scipy.interpolate</code>]</a>
+  <ul class="collapse">
+  <li><a href="#moving-average-as-an-fir-filter" id="toc-moving-average-as-an-fir-filter" class="nav-link" data-scroll-target="#moving-average-as-an-fir-filter">Moving Average as an FIR Filter</a></li>
   </ul></li>
-  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  <li><a href="#implementing-digital-filters-in-scipy.signal" id="toc-implementing-digital-filters-in-scipy.signal" class="nav-link" data-scroll-target="#implementing-digital-filters-in-scipy.signal">Implementing Digital Filters in <code>scipy.signal</code></a>
+  <ul class="collapse">
+  <li><a href="#filter-representations-in-scipy.signal" id="toc-filter-representations-in-scipy.signal" class="nav-link" data-scroll-target="#filter-representations-in-scipy.signal">Filter representations in <code>scipy.signal</code>:</a></li>
+  <li><a href="#common-filter-types" id="toc-common-filter-types" class="nav-link" data-scroll-target="#common-filter-types">Common Filter Types</a></li>
+  <li><a href="#frequency-response-and-interpretation" id="toc-frequency-response-and-interpretation" class="nav-link" data-scroll-target="#frequency-response-and-interpretation">Frequency Response and Interpretation</a></li>
+  <li><a href="#artifacts-from-over-narrow-filters" id="toc-artifacts-from-over-narrow-filters" class="nav-link" data-scroll-target="#artifacts-from-over-narrow-filters">Artifacts from Over-narrow Filters</a></li>
+  </ul></li>
+  <li><a href="#hilbert-transform-scipy.signal.hilbert" id="toc-hilbert-transform-scipy.signal.hilbert" class="nav-link" data-scroll-target="#hilbert-transform-scipy.signal.hilbert">Hilbert Transform [<code>scipy.signal.hilbert</code>]</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap5.html">Advanced Topics</a></li><li class="breadcrumb-item"><a href="./chap6.html">6. Signal Processing</a></li></ol></nav></header>
 
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Chapter 6 - Processing of the signal</h1>
+
+
+
+<section id="processing-of-the-signal" class="level1">
+<h1>Processing of the signal</h1>
+<section id="reconstruction-and-interpolation-scipy.interpolate" class="level2">
+<h2 class="anchored" data-anchor-id="reconstruction-and-interpolation-scipy.interpolate">Reconstruction and Interpolation [<code>scipy.interpolate</code>]</h2>
+<p><strong>Interpolation</strong> is the process of estimating unknown values between discrete data points. In scientific data analysis, especially in signal processing and time series studies, interpolation plays a vital role in resampling, aligning datasets, filling gaps, and reconstructing higher-resolution signals from coarse measurements.</p>
+<p>The choice of interpolation method can significantly affect the quality of the reconstructed signal, particularly in terms of smoothness, fidelity to the original data, and preservation of frequency content. Below is a summary of common interpolation methods, their implementations in SciPy, and their respective advantages and caveats:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 35%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>SciPy / API</th>
+<th>Pros</th>
+<th>Caveats</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nearest neighbor</td>
+<td><code>interp1d(kind='nearest')</code></td>
+<td>Extremely fast; trivial to use</td>
+<td>Step artifacts; strong spectral distortion; not smooth</td>
+</tr>
+<tr class="even">
+<td>Linear</td>
+<td><code>interp1d(kind='linear')</code></td>
+<td>Robust; no overshoot; simple and predictable</td>
+<td>Not smooth at knots; attenuates high frequencies</td>
+</tr>
+<tr class="odd">
+<td>Cubic spline</td>
+<td><code>CubicSpline(bc_type=...)</code></td>
+<td>Very smooth (C²); configurable boundaries</td>
+<td>Overshoot/ringing near discontinuities; needs strictly increasing x</td>
+</tr>
+<tr class="even">
+<td>Akima piecewise</td>
+<td><code>Akima1DInterpolator</code></td>
+<td>Reduces overshoot; robust to local outliers/kinks</td>
+<td>Only C¹; slower than linear; not globally optimal</td>
+</tr>
+<tr class="odd">
+<td>Fourier (freq-domain)</td>
+<td><code>scipy.signal.resample</code></td>
+<td>Preserves spectrum for band-limited signals; great for upsampling</td>
+<td>Requires uniform sampling &amp; quasi-periodicity; wrap-around artifacts if not tapered</td>
+</tr>
+<tr class="even">
+<td>Ideal sinc (windowed)</td>
+<td>custom (windowed <code>sinc</code>)</td>
+<td>Theoretical best under sampling theorem; highest spectral fidelity</td>
+<td>Infinite kernel → truncation/window needed; computationally heavy; uniform sampling only</td>
+</tr>
+</tbody>
+</table>
+<!-- fig-tabset:figure_interpolation.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 37</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p><img src="docs/Figure/figure_interpolation.png" width="100%"></p>
 </div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>Signal processing: interpolation/resampling, digital filters, the Hilbert transform.</p>
-<blockquote class="blockquote">
-<p>The narrative chapter is in <a href="./docs/chap6.html"><code>docs/chap6.md</code></a>. This notebook reproduces every figure and table from that chapter, organised section-by-section so the code is easy to read alongside the prose.</p>
-</blockquote>
-<section id="setup" class="level2">
-<h2 class="anchored" data-anchor-id="setup">Setup</h2>
-<p>Common imports, plot styling and data paths used throughout this notebook.</p>
-<div id="7a635b94" class="cell" data-execution_count="1">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> bottleneck <span class="im">as</span> bn</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.dates <span class="im">as</span> mdates</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.patheffects <span class="im">as</span> pe</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> ticker</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.special</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn.decomposition</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.io</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.time</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Rectangle</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mpl_toolkits.axes_grid1.inset_locator <span class="im">import</span> inset_axes</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>figsize_short <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">4</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>figsize_normal <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>figsize_tall <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">8</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> figsize_short</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'axes.labelpad'</span>] <span class="op">=</span> <span class="fl">6.0</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.frameon'</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.framealpha'</span>] <span class="op">=</span> <span class="fl">0.8</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'legend.edgecolor'</span>] <span class="op">=</span> <span class="st">'none'</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>title_font <span class="op">=</span> {<span class="st">'fontsize'</span>: <span class="dv">16</span>, <span class="st">'weight'</span>: <span class="st">'bold'</span>, <span class="st">'style'</span>: <span class="st">'italic'</span>}</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>path_effect <span class="op">=</span> [pe.withStroke(linewidth<span class="op">=</span><span class="fl">2.0</span>, foreground<span class="op">=</span><span class="st">"k"</span>)]</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>read_path <span class="op">=</span> <span class="st">'docs/Data/'</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>save_path <span class="op">=</span> <span class="st">'docs/Figure/'</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>perula_df <span class="op">=</span> pd.read_csv(read_path <span class="op">+</span> <span class="st">'matlab_perula.txt'</span>, header <span class="op">=</span> <span class="va">None</span>, sep <span class="op">=</span> <span class="st">'</span><span class="er">\</span><span class="st">s+'</span>)</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>matlab_perula <span class="op">=</span> matplotlib.colors.LinearSegmentedColormap.from_list(<span class="st">'matlab_perula'</span>, np.array(perula_df))</span>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.interpolate</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>), tight_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">4</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">1.1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">0</span>, N <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> N</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.sin(omega0 <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> t)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko'</span>, label <span class="op">=</span> <span class="st">'Sample'</span>, zorder <span class="op">=</span> <span class="dv">3</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>nearest_interp <span class="op">=</span> scipy.interpolate.interp1d(t, sig, kind <span class="op">=</span> <span class="st">'nearest'</span>, bounds_error <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>linear_interp <span class="op">=</span> scipy.interpolate.interp1d(t, sig, bounds_error <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>akima_interp <span class="op">=</span> scipy.interpolate.Akima1DInterpolator(t, sig)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>cubic_interp <span class="op">=</span> scipy.interpolate.CubicSpline(t, sig)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sinc_interp(t_interp):</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    weight <span class="op">=</span> np.sinc((t_interp[:, <span class="va">None</span>] <span class="op">-</span> t[<span class="va">None</span>, :]) <span class="op">/</span> dt)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">@</span> sig</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>n_interp <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">4</span> <span class="op">*</span> N</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>t_interp <span class="op">=</span> np.arange(<span class="dv">0</span>, n_interp) <span class="op">/</span> n_interp</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>gap <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>sig_interp <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t_interp) <span class="op">+</span> np.sin(omega0 <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> t_interp)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">7</span>):</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        ax1.plot(t_interp, sig_interp <span class="op">+</span> i <span class="op">*</span> gap, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.15</span>, label <span class="op">=</span> <span class="st">'Ground Truth'</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        ax1.plot(t_interp, sig_interp <span class="op">+</span> i <span class="op">*</span> gap, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.15</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>ax1.step(t_interp, nearest_interp(t_interp) <span class="op">+</span> <span class="dv">1</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Nearest'</span>, where <span class="op">=</span> <span class="st">'mid'</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, linear_interp(t_interp) <span class="op">+</span> <span class="dv">2</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Linear'</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, akima_interp(t_interp) <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Akima'</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, cubic_interp(t_interp) <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Cubic'</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, sinc_interp(t_interp) <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Sinc'</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, scipy.signal.resample(sig, t_interp.size) <span class="op">+</span> <span class="dv">6</span> <span class="op">*</span> gap, label <span class="op">=</span> <span class="st">'Fourier'</span>)</span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>jet_df <span class="op">=</span> pd.read_csv(read_path <span class="op">+</span> <span class="st">'matlab_jet.txt'</span>, header <span class="op">=</span> <span class="va">None</span>, sep <span class="op">=</span> <span class="st">'</span><span class="er">\</span><span class="st">s+'</span>)</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>matlab_jet <span class="op">=</span> matplotlib.colors.LinearSegmentedColormap.from_list(<span class="st">'matlab_jet'</span>, np.array(jet_df))</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>&lt;&gt;:41: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:44: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:41: SyntaxWarning: invalid escape sequence '\s'
-&lt;&gt;:44: SyntaxWarning: invalid escape sequence '\s'
-/tmp/ipykernel_795031/3118345031.py:41: SyntaxWarning: invalid escape sequence '\s'
-  perula_df = pd.read_csv(read_path + 'matlab_perula.txt', header = None, sep = '\s+')
-/tmp/ipykernel_795031/3118345031.py:44: SyntaxWarning: invalid escape sequence '\s'
-  jet_df = pd.read_csv(read_path + 'matlab_jet.txt', header = None, sep = '\s+')</code></pre>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>ax1.axvspan(t[<span class="op">-</span><span class="dv">1</span>], <span class="dv">1</span>, <span class="dv">0</span>, <span class="fl">1.0</span>, color <span class="op">=</span> <span class="st">'#888888'</span>, edgecolor <span class="op">=</span> <span class="st">'none'</span>, zorder <span class="op">=</span> <span class="dv">2</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>ax1.text((t[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>, <span class="op">-</span><span class="fl">0.7</span>, <span class="st">'Right Bound'</span>, rotation <span class="op">=</span> <span class="dv">90</span>,          fontsize<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>         color<span class="op">=</span><span class="st">'w'</span>,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>         ha<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>         va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>         weight<span class="op">=</span><span class="st">'bold'</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">2</span>, loc <span class="op">=</span> <span class="st">'upper center'</span>)</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Interpolation &amp; Interpolator'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">2.1</span>, <span class="fl">6.2</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.grid('off')</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_interpolation'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
-<section id="n-2-10" class="level3">
-<h3 class="anchored" data-anchor-id="n-2-10"><code>N = 2 ** 10</code></h3>
-<div id="51e6a955" class="cell" data-execution_count="32">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+</div>
+<p align="center">
+Different interpolation methods applied to a two frequencies (1.1 Hz and 2.2 Hz) signal.
+</p>
+<p>Particularly, the <span class="math inline">\mathrm{sinc}</span> interpolation is the most intutive way for the <strong>reconstruction of a band-limited signal</strong>, as it do not contribute any frequency component beyond the Nyquist frequency. It is defined as: <span class="math display">
+x(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \mathrm{sinc}\left(\frac{t - n\delta t}{\delta t}\right)
+</span> where <span class="math inline">\delta t=1/f_s</span> is the sampling interval, and <span class="math inline">\mathrm{sinc}(x) = {\sin(\pi x)}/{\pi x}</span>.</p>
+<p>A practical implementation of <span class="math inline">\mathrm{sinc}</span> interpolation in Python/<code>Numpy</code> is as follows:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sinc_interp(t_interp, sig, t):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    weight <span class="op">=</span> np.sinc((t_interp[:, <span class="va">None</span>] <span class="op">-</span> t[<span class="va">None</span>, :]) <span class="op">/</span> dt)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">@</span> sig</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>sinc_interp(t_interp, sig, t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>There is no a universal best interpolation method. The choice depends on the specific application, data characteristics, and computational constraints. For example, if you need a quick and dirty upsampling for visualization, linear interpolation might suffice. If you are reconstructing a smooth physical signal from noisy measurements, cubic splines or Akima interpolation could be better. For resampling band-limited signals, Fourier-based methods or sinc interpolation are preferred.</p>
+</section>
+<section id="filter-circuit" class="level2">
+<h2 class="anchored" data-anchor-id="filter-circuit">Filter Circuit</h2>
+<p align="center">
+<img src="docs/Figure/figure_rc_hp_diagram.png" width="30%"><img src="docs/Figure/figure_rc_hp_response.png" width="30%">
+</p>
+<p align="center">
+Different interpolation methods applied to a two frequencies (1.1 Hz and 2.2 Hz) signal.
+</p>
+</section>
+<section id="digital-filter-scipy.interpolate" class="level2">
+<h2 class="anchored" data-anchor-id="digital-filter-scipy.interpolate">Digital Filter [<code>scipy.interpolate</code>]</h2>
+<p>Digital filters are fundamental tools for shaping, extracting, or suppressing specific features in time series data. The anti-aliasing is also a common application, where filters are used to prevent high-frequency components from distorting the signal before downsampling.</p>
+<p>Digital filters are divided into two main types:</p>
+<ul>
+<li><p><strong><u><em>Finite Impulse Response (FIR)</em></u>:</strong> The output depends only on the current and <u><strong>a finite number of past input samples</strong></u>. FIR filters are always stable and can have exactly linear phase. A general FIR digital filter is implemented as: <span class="math display">
+y[n] = \sum_{m=0}^{L} h[m]\, x[n-m]
+</span></p>
+<ul>
+<li><span class="math inline">x[n], y[n]</span>: Input, Output signal</li>
+<li><span class="math inline">h[m]</span>: Filter coefficients (impulse response), length <span class="math inline">L+1</span></li>
+<li><span class="math inline">L</span>: Filter order</li>
+</ul></li>
+<li><p><strong><em><u>Infinite Impulse Response (IIR)</u></em>:</strong> The output depends on both current and <strong><u>past input samples and past outputs</u></strong>. IIR filters can achieve sharp cutoffs with fewer coefficients, but may be unstable and generally do not preserve linear phase. A general IIR filter has both input and output recursion: <span class="math display">
+y[n] = \sum_{p=0}^{L} b[p]\, x[n-p] - \sum_{q=1}^{M} a[q]\, y[n-q]
+</span></p>
+<ul>
+<li><span class="math inline">b[p]</span>: Feedforward (input) coefficients</li>
+<li><span class="math inline">a[q]</span>: Feedback (output) coefficients, usually <span class="math inline">a[0] = 1</span></li>
+<li><span class="math inline">L, M</span>: Orders for input and output</li>
+</ul></li>
+</ul>
+<p>The <em>FIR</em> filter can be explicitly written as a convolution with the filter coefficients, <span class="math inline">h[k]</span>, as the kernel. The <em>IIR</em> filter involves feedback, making it recursive and more complex to analyze, but is still possible to express as an infinite series of convolutions, implicitly.</p>
+<section id="moving-average-as-an-fir-filter" class="level3">
+<h3 class="anchored" data-anchor-id="moving-average-as-an-fir-filter">Moving Average as an FIR Filter</h3>
+<p>The <strong>moving average filter</strong> is actually a simple FIR filter. For a window length <span class="math inline">L</span>, the coefficients are: <span class="math display">
+h[k] = \frac{1}{L},\quad k = 0, 1, \ldots, L-1
+</span> So the output is: <span class="math display">
+y[n] = \frac{1}{L} \sum_{k=0}^{L-1} x[n-k]
+</span> That is, the output is the <strong>average of the most recent <span class="math inline">L</span> input samples</strong>. <strong>Therefore, the moving average filter is an FIR filter whose coefficients are all equal.</strong></p>
+<!-- fig-tabset:figure_moving_average.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Code <small>chap6.ipynb · cell 4</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p><img src="docs/Figure/figure_moving_average.png" width="100%"></p>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -576,113 +732,385 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_moving_average'</span> <span class="op">+</span> <span class="st">'.png'</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>, dpi<span class="op">=</span><span class="dv">300</span>)</span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"30aae4b30d49498a8955a7350de6c1dc","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
 </div>
 </div>
+</div>
+<p align="center">
+Sine waves with white noise and its moving average [L = 20].
+</p>
+<p>The output <span class="math inline">y[n]</span> is the average of <span class="math inline">x[m]</span> between <span class="math inline">m=n-L+1</span> and <span class="math inline">m=n</span>. Therefore, the outputis delayed by about <span class="math inline">L/2</span> samples compared to the input. This delay is called <strong><em><u>phase shift</u></em></strong> of the filter. As the linear filter is essentially a convolution, its influence on the frequency content of the signal can be analyzed in the frequency domain. A filter has frequency response <span class="math inline">\mathcal{F}\{h[t]\}=H(k)=|H(k)|e^{j\phi(k)}</span>, where <span class="math inline">|H|</span> controls amplitude and <span class="math inline">\phi(\omega)</span> is the phase shift.</p>
+<p>For multi-frequency signals, the <strong>phase response</strong> <span class="math inline">\phi(\omega)</span> shapes how different components are time-shifted, which can preserve or distort waveform shape.</p>
+<ul>
+<li><strong>Linear phase.</strong> If <span class="math inline">\phi(\omega)=-\omega\tau_0</span> (a straight line), then the <strong>group delay</strong> <span class="math inline">\tau_g(\omega)=-\tfrac{d\phi}{d\omega}=\tau_0</span> is constant: every frequency is delayed by the same <span class="math inline">\tau_0</span>. Waveforms are not distorted—only shifted in time. Real, symmetric FIR filters achieve this; the delay equals <span class="math inline">(N-1)/2</span> samples.</li>
+<li><strong>Nonlinear phase.</strong> When <span class="math inline">\tau_g(\omega)</span> varies with <span class="math inline">\omega</span>, different frequencies experience different delays, causing <strong>dispersion</strong> (e.g., edge smearing, ringing). Most IIR filters (Butterworth, Chebyshev, elliptic) have nonlinear phase; <strong>Bessel</strong> IIRs trade selectivity for flatter group delay.</li>
+</ul>
+<p>To get the correct timing, you may need to shift the output back by <span class="math inline">L/2</span> samples. Equivalently, you can use a <strong>centered moving average</strong> to avoid phase distortion: <span class="math display">
+y[n]= \frac{1}{2M + 1} \sum_{k=-M}^{M} x[n-k]
+</span> Such a filter not only has the input in the past (i.e., <span class="math inline">x[n-M],\ x[n-M+1],\ ...,\ x[n-1]</span>) but also in the future (i.e., <span class="math inline">x[n+1],\ x[n+2],\ ...,\ x[n+M]</span>). This is a <strong><u><em>non-causal</em></u></strong> filter, which cannot be implemented in real-time systems but is acceptable for offline processing. Conversely, a <strong><em><u>causal</u></em></strong> filter only uses past and present inputs.</p>
+<p>Alternatively, you can apply the filter twice, once forward and once backward in time, to achieve zero-phase filtering. This is implemented in <code>scipy.signal.filtfilt</code>.</p>
 </section>
-<section id="image-np.arrayimage.openread_path-leena.png.convertl.astypefloat" class="level3">
-<h3 class="anchored" data-anchor-id="image-np.arrayimage.openread_path-leena.png.convertl.astypefloat"><code>image = np.array(Image.open(read_path + 'leena.png').convert('L')).astype(float)</code></h3>
-<div id="7afe9502" class="cell" data-execution_count="148">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> np.array(Image.<span class="bu">open</span>(read_path <span class="op">+</span> <span class="st">'leena.png'</span>).convert(<span class="st">'L'</span>)).astype(<span class="bu">float</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>image <span class="op">+=</span> <span class="dv">30</span> <span class="op">*</span> np.cos(np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, image.shape[<span class="dv">0</span>])[:, <span class="va">None</span>] <span class="op">*</span> <span class="fl">64.0</span> <span class="op">+</span> <span class="op">\</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                     np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, image.shape[<span class="dv">1</span>])[<span class="va">None</span>, :] <span class="op">*</span> <span class="fl">128.0</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> image.astype(np.uint8)</span>
+</section>
+<section id="implementing-digital-filters-in-scipy.signal" class="level2">
+<h2 class="anchored" data-anchor-id="implementing-digital-filters-in-scipy.signal">Implementing Digital Filters in <code>scipy.signal</code></h2>
+<section id="filter-representations-in-scipy.signal" class="level3">
+<h3 class="anchored" data-anchor-id="filter-representations-in-scipy.signal">Filter representations in <code>scipy.signal</code>:</h3>
+<ul>
+<li><h3 id="ba-transfer-function-coefficients" class="anchored">BA (transfer-function coefficients)</h3>
+<ul>
+<li><p>Numerator/denominator polynomials <span class="math inline">(b, a)</span> of <span class="math inline">H(z)=\frac{B(z)}{A(z)}</span> [See <a href="https://en.wikipedia.org/wiki/Z-transform">Z-transform</a> for explanation].</p></li>
+<li><p><strong>Pros:</strong> Simple, widely used; works for FIR (<code>a=[1]</code>) and IIR.</p></li>
+<li><p><strong>Cons:</strong> Can be <strong>numerically unstable</strong> for high-order IIR (coefficient sensitivity).</p></li>
+<li><p><strong>Get/Use:</strong> <code>scipy.signal.butter(..., output='ba')</code>; apply with <code>scipy.signal.lfilter(b, a, x)</code> (once, forward) or <code>scipy.signal.filtfilt(b, a, x)</code>.</p></li>
+</ul></li>
+<li><h3 id="zpk-zerospolesgain" class="anchored">ZPK (zeros–poles–gain)</h3>
+<ul>
+<li><p>Factorized form <span class="math inline">(z, p, k)</span> describing zeros, poles, overall gain.</p></li>
+<li><p><strong>Pros:</strong> Great for analysis (stability, sensitivity); easy to modify poles/zeros.</p></li>
+<li><p><strong>Cons:</strong> Still not the most stable for <em>applying</em> high-order IIR directly.</p></li>
+<li><p><strong>Get/Convert:</strong> <code>scipy.signal.butter(..., output='zpk')</code>; convert via <code>scipy.signal.zpk2tf</code>, <code>scipy.signal.zpk2sos</code>.</p></li>
+</ul></li>
+<li><h3 id="sos-second-order-sections-suggested" class="anchored">SOS (second-order sections, <u>suggested</u>)</h3>
+<ul>
+<li>Cascade of bi-quads; array of sections with 6 parameters each.</li>
+<li><strong>Pros:</strong> <strong>Most numerically stable</strong> for high-order IIR; production-friendly.</li>
+<li><strong>Cons:</strong> Slightly more verbose; must convert at design time.</li>
+<li><strong>Get/Use:</strong> <code>scipy.signal.butter(..., output='sos')</code>; apply with <code>scipy.signal.sosfilt(sos, x)</code> or <code>scipy.signal.sosfiltfilt(sos, x)</code>.</li>
+</ul></li>
+</ul>
+</section>
+<section id="common-filter-types" class="level3">
+<h3 class="anchored" data-anchor-id="common-filter-types">Common Filter Types</h3>
+<p>The following table summarizes common digital filter types, their implementations in <code>scipy.signal</code>, main features, and typical use cases:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 15%">
+<col style="width: 27%">
+<col style="width: 30%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Filter Type</th>
+<th>Function (<code>scipy.signal</code>)</th>
+<th>Main Features</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>FIR (window)</td>
+<td><code>firwin</code>, <code>firwin2</code></td>
+<td>Stable, linear phase</td>
+<td>Smoothing, band selection</td>
+</tr>
+<tr class="even">
+<td>Butterworth</td>
+<td><code>butter</code></td>
+<td>Smooth, monotonic response</td>
+<td>General purpose</td>
+</tr>
+<tr class="odd">
+<td>Chebyshev I/II</td>
+<td><code>cheby1</code>, <code>cheby2</code></td>
+<td>Sharper cutoff, ripples</td>
+<td>Strong suppression</td>
+</tr>
+<tr class="even">
+<td>Elliptic</td>
+<td><code>ellip</code></td>
+<td>Fastest cutoff, both ripples</td>
+<td>Selective, small band</td>
+</tr>
+<tr class="odd">
+<td>Bessel</td>
+<td><code>bessel</code></td>
+<td>Linear phase, slow rolloff</td>
+<td>Transient preservation</td>
+</tr>
+<tr class="even">
+<td>Median</td>
+<td><code>medfilt</code>, <code>medfilt1d</code></td>
+<td>Nonlinear, preserves edges</td>
+<td>Spike removal</td>
+</tr>
+</tbody>
+</table>
+<p>For IIR filters, the <strong><u><em>Butterworth</em></u></strong> filter, <code>scipy.signal.butter</code>, is commonly used. An example of these filters applied to a sine wave is shown below:</p>
+<!-- fig-tabset:figure_filters.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 48</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<p><img src="docs/Figure/figure_filters.png" width="100%"></p>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="dv">64</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, aspect<span class="op">=</span><span class="st">'equal'</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, aspect<span class="op">=</span><span class="st">'equal'</span>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.imshow(image)</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ax1.pcolormesh(<span class="dv">255</span> <span class="op">-</span> image[::<span class="op">-</span><span class="dv">1</span>, ::<span class="op">-</span><span class="dv">1</span>], cmap<span class="op">=</span><span class="st">'Greys'</span>, vmax <span class="op">=</span> <span class="dv">255</span>, vmin <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>image_fft <span class="op">=</span> np.fft.fft2(image.astype(<span class="bu">float</span>))</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>image_fft[::, ::][<span class="dv">64</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">64</span> <span class="op">+</span> <span class="dv">30</span>, <span class="dv">128</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">128</span> <span class="op">+</span> <span class="dv">30</span>] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>image_fft[::<span class="op">-</span><span class="dv">1</span>, ::][<span class="dv">64</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">64</span> <span class="op">+</span> <span class="dv">30</span>, <span class="dv">128</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">128</span> <span class="op">+</span> <span class="dv">30</span>] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>image_fft[::, ::<span class="op">-</span><span class="dv">1</span>][<span class="dv">64</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">64</span> <span class="op">+</span> <span class="dv">30</span>, <span class="dv">128</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">128</span> <span class="op">+</span> <span class="dv">30</span>] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>image_fft[::<span class="op">-</span><span class="dv">1</span>, ::<span class="op">-</span><span class="dv">1</span>][<span class="dv">64</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">64</span> <span class="op">+</span> <span class="dv">30</span>, <span class="dv">128</span> <span class="op">-</span> <span class="dv">30</span> : <span class="dv">128</span> <span class="op">+</span> <span class="dv">30</span>] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># for i in range(60, image_fft.shape[1] - 60):</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#     image_fft[i - 60 : i + 60, i] = 0</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>image_fft <span class="op">=</span> np.fft.fftshift(image_fft)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma = 60</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># image_fft[]</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># image_fft *= np.exp(-0.5 * (np.arange(image_fft.shape[1]) - image_fft.shape[1] // 2) ** 2 / sigma ** 2)[None, :]</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># image_fft *= np.exp(-0.5 * (np.arange(image_fft.shape[0]) - image_fft.shape[0] // 2) ** 2 / sigma ** 2)[:, None]</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>image_fft <span class="op">=</span> np.fft.fftshift(image_fft)</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>image <span class="op">=</span> np.fft.ifft2(image_fft)</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>ax2.pcolormesh(<span class="dv">255</span> <span class="op">-</span> image[::<span class="op">-</span><span class="dv">1</span>, ::<span class="op">-</span><span class="dv">1</span>].real, cmap<span class="op">=</span><span class="st">'Greys'</span>, vmax <span class="op">=</span> <span class="dv">255</span>, vmin <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.pcolormesh(np.abs(image_fft), cmap = 'jet', norm = matplotlib.colors.LogNorm(vmin = 1e3, vmax = 1e6))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"28329645b11f424fab4f216aa1fe092a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.sin(omega0 <span class="op">*</span> <span class="dv">2</span> <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.figure(figsize = (8, 6))</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>cutoff <span class="op">=</span> <span class="fl">1.5</span> <span class="op">*</span> omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>cutoff <span class="op">=</span> <span class="dv">96</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>rp <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>rs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>firwin_b <span class="op">=</span> scipy.signal.firwin(numtaps<span class="op">=</span>N, cutoff<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, width<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># FIR 不需要 sos</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>butter_sos <span class="op">=</span> scipy.signal.butter(N<span class="op">=</span>N, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>bessel_sos <span class="op">=</span> scipy.signal.bessel(N<span class="op">=</span>N, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>cheby1_sos <span class="op">=</span> scipy.signal.cheby1(N<span class="op">=</span>N, rp<span class="op">=</span>rp, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>ellip_sos <span class="op">=</span> scipy.signal.ellip(N<span class="op">=</span>N, rp<span class="op">=</span>rp, rs<span class="op">=</span>rs, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, btype<span class="op">=</span><span class="st">'lowpass'</span>, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>gap <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>):</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    ax1.plot(t, i <span class="op">*</span> gap <span class="op">+</span> np.sin(omega0 <span class="op">*</span> t), <span class="st">'k-'</span>, alpha<span class="op">=</span><span class="fl">0.25</span>, label <span class="op">=</span> <span class="st">"Ground Truth"</span> <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko-'</span>, label<span class="op">=</span><span class="st">'Input'</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">1</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sosfiltfilt(butter_sos, sig), label<span class="op">=</span><span class="st">'Butterworth'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">5</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.filtfilt(firwin_b, <span class="dv">1</span>, sig), label<span class="op">=</span><span class="st">'FIR Window'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">3</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sosfiltfilt(cheby1_sos, sig), label<span class="op">=</span><span class="st">'Chebyshev-I [rp = 3]'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">4</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sosfiltfilt(bessel_sos, sig), label<span class="op">=</span><span class="st">'Bessel'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sosfiltfilt(ellip_sos, sig), label<span class="op">=</span><span class="st">'Elliptic [rp = 3, rs = 10]'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>ax1.axvspan(<span class="fl">0.99</span>, <span class="fl">1.0</span>, color <span class="op">=</span> <span class="st">'#888888'</span>, edgecolor <span class="op">=</span> <span class="st">'none'</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="fl">0.993</span>, <span class="fl">11.5</span>, <span class="st">'Edge Effect'</span>, <span class="op">**</span>title_font, rotation <span class="op">=</span> <span class="dv">90</span>, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">2.3</span>, <span class="fl">17.8</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'N-th Order Filter'</span> <span class="op">+</span> <span class="ss">f" [N=</span><span class="sc">{</span>N<span class="sc">}</span><span class="ss">]"</span>, <span class="op">**</span>title_font)</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="fl">0.9</span>, <span class="fl">1.0</span>)</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">2</span>, loc <span class="op">=</span> <span class="st">'upper left'</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_filters'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>Please note that <strong>filtering can introduce edge effects</strong>, so always inspect the beginning and end of the filtered signal.</p>
+</section>
+<section id="frequency-response-and-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="frequency-response-and-interpretation">Frequency Response and Interpretation</h3>
+<p>The effect of a digital filter can be fully characterized by its <strong><u><em>frequency response</em></u></strong>, i.e., how it amplifies or suppresses each frequency. Use <code>scipy.signal.freqz</code> to plot the amplitude and phase response of your filter, and check that it matches your physical requirements (e.g., minimal ripple in the passband, sufficient attenuation in the stopband).</p>
+<!-- fig-tabset:figure_filters_response.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 49</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p><img src="docs/Figure/figure_filters_response.png" width="100%"></p>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="fl">1024.0</span>  <span class="co"># Hz</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>cutoff <span class="op">=</span> <span class="fl">96.0</span>  <span class="co"># Hz</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>rp <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>rs <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>butter_b, butter_a <span class="op">=</span> scipy.signal.butter(N <span class="op">=</span> N, Wn <span class="op">=</span> cutoff, fs <span class="op">=</span> fs)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>butter_w, butter_h <span class="op">=</span> scipy.signal.freqz(butter_b, butter_a, fs <span class="op">=</span> fs)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>bessel_b, bessel_a <span class="op">=</span> scipy.signal.bessel(N <span class="op">=</span> N, Wn <span class="op">=</span> cutoff, fs <span class="op">=</span> fs)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>bessel_w, bessel_h <span class="op">=</span> scipy.signal.freqz(bessel_b, bessel_a, fs <span class="op">=</span> fs)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>firwin_b <span class="op">=</span> scipy.signal.firwin(numtaps<span class="op">=</span>N, cutoff <span class="op">=</span> cutoff, fs <span class="op">=</span> fs, width <span class="op">=</span> <span class="dv">3</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>firwin_w, firwin_h <span class="op">=</span> scipy.signal.freqz(firwin_b, fs <span class="op">=</span> fs)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>cheby1_b, cheby1_a <span class="op">=</span> scipy.signal.cheby1(N <span class="op">=</span> N, rp <span class="op">=</span> rp, Wn <span class="op">=</span> cutoff, fs <span class="op">=</span> fs)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>cheby1_w, cheby1_h <span class="op">=</span> scipy.signal.freqz(cheby1_b, cheby1_a, fs <span class="op">=</span> fs)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>ellip_b, ellip_a <span class="op">=</span> scipy.signal.ellip(N <span class="op">=</span> N, rp <span class="op">=</span> rp, rs <span class="op">=</span> rs, Wn <span class="op">=</span> cutoff, fs <span class="op">=</span> fs, btype <span class="op">=</span> <span class="st">'lowpass'</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>ellip_w, ellip_h <span class="op">=</span> scipy.signal.freqz(ellip_b, ellip_a, fs <span class="op">=</span> fs)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Butterworth Filter (sos version)</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>butter_sos <span class="op">=</span> scipy.signal.butter(N<span class="op">=</span>N, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>butter_w, butter_h <span class="op">=</span> scipy.signal.sosfreqz(butter_sos, fs<span class="op">=</span>fs)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Bessel Filter (sos version)</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>bessel_sos <span class="op">=</span> scipy.signal.bessel(N<span class="op">=</span>N, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>bessel_w, bessel_h <span class="op">=</span> scipy.signal.sosfreqz(bessel_sos, fs<span class="op">=</span>fs)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co"># FIR Filter (FIR filters are already stable and linear-phase, no sos form)</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>firwin_b <span class="op">=</span> scipy.signal.firwin(numtaps<span class="op">=</span>N, cutoff<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, width<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>firwin_w, firwin_h <span class="op">=</span> scipy.signal.freqz(firwin_b, fs<span class="op">=</span>fs)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Chebyshev Type I Filter (sos version)</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>cheby1_sos <span class="op">=</span> scipy.signal.cheby1(N<span class="op">=</span>N, rp<span class="op">=</span>rp, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>cheby1_w, cheby1_h <span class="op">=</span> scipy.signal.sosfreqz(cheby1_sos, fs<span class="op">=</span>fs)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Elliptic Filter (sos version)</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>ellip_sos <span class="op">=</span> scipy.signal.ellip(N<span class="op">=</span>N, rp<span class="op">=</span>rp, rs<span class="op">=</span>rs, Wn<span class="op">=</span>cutoff, fs<span class="op">=</span>fs, btype<span class="op">=</span><span class="st">'lowpass'</span>, output<span class="op">=</span><span class="st">'sos'</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>ellip_w, ellip_h <span class="op">=</span> scipy.signal.sosfreqz(ellip_sos, fs<span class="op">=</span>fs)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>ax1.plot(firwin_w, <span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(firwin_h)), label <span class="op">=</span> <span class="st">'Firwin'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, alpha <span class="op">=</span> <span class="fl">0.75</span>)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>ax1.plot(butter_w, <span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(butter_h)), label <span class="op">=</span> <span class="st">'Butterworth'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, alpha <span class="op">=</span> <span class="fl">0.75</span>)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>ax1.plot(bessel_w, <span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(bessel_h)), label <span class="op">=</span> <span class="st">'Bessel'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, alpha <span class="op">=</span> <span class="fl">0.75</span>)</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>ax1.plot(cheby1_w, <span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(cheby1_h)), label <span class="op">=</span> <span class="st">'Chebyshev-I [rp = 3]'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, alpha <span class="op">=</span> <span class="fl">0.75</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>ax1.plot(ellip_w, <span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(ellip_h)), label <span class="op">=</span> <span class="st">'Elliptic [rp = 3, rs = 10]'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, alpha <span class="op">=</span> <span class="fl">0.75</span>)</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>ax1.hlines([<span class="op">-</span>rp, <span class="op">-</span>rs], <span class="dv">0</span>, fs <span class="op">/</span> <span class="dv">2</span>, color <span class="op">=</span> <span class="st">'w'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>, linewidth <span class="op">=</span> <span class="fl">1.0</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>ax1.pcolormesh(butter_w, np.array([<span class="op">-</span><span class="dv">120</span>, <span class="dv">10</span>]), np.outer(<span class="dv">20</span> <span class="op">*</span> np.log10(np.<span class="bu">abs</span>(butter_h)), np.ones(<span class="dv">2</span>)).T, cmap <span class="op">=</span> <span class="st">'Reds_r'</span>, vmax <span class="op">=</span> <span class="dv">0</span>, vmin <span class="op">=</span> <span class="op">-</span><span class="dv">40</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, loc <span class="op">=</span> <span class="st">'lower left'</span>)</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'N-th Order Filter</span><span class="ch">\n</span><span class="st">Frequency Response'</span> <span class="op">+</span> <span class="ss">f" [N=</span><span class="sc">{</span>N<span class="sc">}</span><span class="ss">]"</span>, <span class="op">**</span>title_font)</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="dv">24</span>, <span class="dv">2</span>, <span class="st">'Passband'</span>, <span class="op">**</span>title_font, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect, va <span class="op">=</span> <span class="st">'top'</span>)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="dv">120</span>, <span class="dv">2</span>, <span class="st">'Transition</span><span class="ch">\n</span><span class="st">Band'</span>, <span class="op">**</span>title_font, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'top'</span>)</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="dv">152</span>, <span class="dv">2</span>, <span class="st">'Stopband'</span>, <span class="op">**</span>title_font, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect, va <span class="op">=</span> <span class="st">'top'</span>)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="fl">2.02</span> <span class="op">*</span> cutoff, <span class="op">-</span>rs, <span class="st">'rs'</span>, <span class="op">**</span>title_font, ha <span class="op">=</span> <span class="st">'left'</span>, va <span class="op">=</span> <span class="st">'center'</span>, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>ax1.text(<span class="fl">2.02</span> <span class="op">*</span> cutoff, <span class="op">-</span>rp, <span class="st">'rp'</span>, <span class="op">**</span>title_font, ha <span class="op">=</span> <span class="st">'left'</span>, va <span class="op">=</span> <span class="st">'center'</span>, color <span class="op">=</span> <span class="st">'w'</span>, path_effects <span class="op">=</span> path_effect)</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_xscale('log')</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_yscale('log')</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> cutoff)</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="dv">20</span>, <span class="dv">3</span>)</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Frequency [Hz]'</span>)</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Attenuation [dB]'</span>)</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_filters_response'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </div>
 </div>
 </section>
-<section id="image.shape" class="level3">
-<h3 class="anchored" data-anchor-id="image.shape"><code>image.shape</code></h3>
-<div id="9d0e64e3" class="cell" data-execution_count="84">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>image.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="84">
-<pre><code>(512, 512)</code></pre>
+<section id="artifacts-from-over-narrow-filters" class="level3">
+<h3 class="anchored" data-anchor-id="artifacts-from-over-narrow-filters">Artifacts from Over-narrow Filters</h3>
+<p><strong>It is not suggested to apply a filter with an over-narrow bandwidth unless you are already confident about the central frequency and waveform of the signal.</strong> Like, if you apply a 5-Butterworth 6-10 Hz bandpass filter to a <strong>pure white noise</strong>, you are going to get a filtered signal that looks like a sine wave with a frequency around 8 Hz. Thus, you are introducing artificial waves into the signal.</p>
+<!-- fig-tabset:figure_filtered_noise.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 50</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<p><img src="docs/Figure/figure_filtered_noise.png" width="100%"></p>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_short)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>])</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.random.randn(t.size)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>sos <span class="op">=</span> scipy.signal.butter(<span class="dv">5</span>, [<span class="dv">6</span>, <span class="dv">10</span>], btype <span class="op">=</span> <span class="st">'bandpass'</span>, output<span class="op">=</span><span class="st">'sos'</span>, fs <span class="op">=</span> fs)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>filtered_signal <span class="op">=</span> scipy.signal.sosfiltfilt(sos, sig)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, filtered_signal, <span class="st">'C1-'</span>, label <span class="op">=</span> <span class="st">'Filtered'</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Second Order Sections</span><span class="ch">\n</span><span class="st">5-Butterworth 6-10 Hz Bandpass Filter'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">2.99</span>, <span class="fl">2.99</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight<span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_filtered_noise'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </div>
 </div>
 </section>
-<section id="n-2-10-1" class="level3">
-<h3 class="anchored" data-anchor-id="n-2-10-1"><code>N = 2 ** 10</code></h3>
-<div id="86569050" class="cell" data-execution_count="46">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="dv">10</span> <span class="op">*</span> t) <span class="op">+</span> <span class="fl">0.1</span> <span class="op">*</span> np.random.randn(N)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_short)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, color<span class="op">=</span><span class="st">'C0'</span>, label<span class="op">=</span><span class="st">'Sine Waves with White Noise'</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>sos <span class="op">=</span> scipy.signal.butter(<span class="dv">4</span>, <span class="fl">0.1</span>, <span class="st">'low'</span>, output<span class="op">=</span><span class="st">'sos'</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>sig_filtfilt <span class="op">=</span> scipy.signal.sosfiltfilt(sos, sig)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig_filtfilt, <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'Filtfilt [4th &gt;0.1 Hz Butterworth]'</span>)</span>
+</section>
+<section id="hilbert-transform-scipy.signal.hilbert" class="level2">
+<h2 class="anchored" data-anchor-id="hilbert-transform-scipy.signal.hilbert"><a href="https://en.wikipedia.org/wiki/Hilbert_transform">Hilbert Transform</a> [<code>scipy.signal.hilbert</code>]</h2>
+<p>The <strong><u><em>Hilbert transform</em></u></strong> is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.</p>
+<!-- fig-tabset:figure_hilbert.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code <small>practical_spectral_analysis_plot.ipynb · cell 62</small></a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<p><img src="docs/Figure/figure_hilbert.png" width="100%"></p>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_short)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>omega <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">8.0</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span> <span class="op">**</span> <span class="dv">7</span>, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega <span class="op">*</span> t) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> np.hanning(t.size)) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>sig_filt <span class="op">=</span> scipy.signal.sosfilt(sos, sig[::<span class="op">-</span><span class="dv">1</span>])[::<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>sig_filt_filt <span class="op">=</span> scipy.signal.sosfilt(sos, sig_filt)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>((sig_filtfilt <span class="op">/</span> sig_filt_filt))</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig_filt, <span class="st">'C2-'</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc <span class="op">=</span> <span class="st">'upper center'</span>, ncol <span class="op">=</span> <span class="dv">5</span>, labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>, frameon <span class="op">=</span> <span class="va">False</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">0.5</span>, <span class="fl">1.2</span>))</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Moving Average Filter'</span>, fontdict<span class="op">=</span>title_font, pad <span class="op">=</span> <span class="dv">30</span>)</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity</span><span class="ch">\n</span><span class="st">[Arb]'</span>)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(enable<span class="op">=</span><span class="va">True</span>, axis<span class="op">=</span><span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.savefig(save_path + 'figure_filtfilt' + '.png', bbox_inches='tight', dpi=300)</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko-'</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).real, <span class="st">'r--'</span>, label <span class="op">=</span> <span class="st">'Real'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).imag, <span class="st">'b--'</span>, label <span class="op">=</span> <span class="st">'Imaginary'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, label <span class="op">=</span> <span class="st">'Magnitude'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="op">-</span>np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="op">-</span><span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> [ax1]:</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="st">'on'</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, loc <span class="op">=</span> <span class="st">'upper center'</span>, ncol <span class="op">=</span> <span class="dv">3</span>, bbox_to_anchor <span class="op">=</span> (<span class="fl">0.5</span>, <span class="fl">1.17</span>))</span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[-36.87856014  32.37424447  16.65554763 ...   0.64079998   0.24860884
-  -0.51220258]</code></pre>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Hilbert Transform'</span>, y <span class="op">=</span> <span class="fl">1.09</span>, <span class="op">**</span>title_font)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_hilbert'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"9b5b492e3b0c40f5897263ca3c56529d","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
 </div>
 </div>
-</section>
-</section>
-<section id="further-reading" class="level2">
-<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
-<p>The narrative chapter, complete with derivations and references, is in <a href="./docs/chap6.html"><code>docs/chap6.md</code></a>. For the full table of contents see <a href="docs/_sidebar.md"><code>docs/_sidebar.md</code></a>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>signal_ht <span class="op">=</span> scipy.signal.hilbert(signal)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>signal_ht.real, sighal_ht.imag, np.<span class="bu">abs</span>(signal_ht)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The real, imaginary part and the envelope</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div style="page-break-after: always;">
+
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1100,8 +1528,167 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+<!-- Mermaid: load from CDN, detect Quarto's colour scheme correctly,
+     and pre-process node labels so common LaTeX commands render as
+     readable plain text / Unicode (mermaid itself doesn't parse LaTeX). -->
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+
+  // ---------------------------------------------------------------------
+  // 1. Pre-process the mermaid source so labels with $$...$$ math at
+  //    least look readable.  We do NOT try to render real LaTeX — that
+  //    would require a heavy KaTeX-inside-SVG hack — we just substitute
+  //    the commands that show up in the chapter diagrams.
+  // ---------------------------------------------------------------------
+  const REPLACEMENTS = [
+    // Strip math delimiters and the dollar-sign noise.
+    [/\$\$([^$]*)\$\$/g, "$1"],
+    [/\$([^$]+)\$/g, "$1"],
+
+    // Escaped braces: protect them with placeholders so the later
+    // brace-stripping pass doesn't gobble them.
+    [/\\\{/g, "\uE000"],
+    [/\\\}/g, "\uE001"],
+
+    // Common operators / symbols ------------------------------------------
+    [/\\langle\s*/g, "⟨"],
+    [/\\rangle/g, "⟩"],
+    [/\\Re\b/g, "Re"],
+    [/\\Im\b/g, "Im"],
+    [/\\times\b/g, "×"],
+    [/\\cdot\b/g, "·"],
+    [/\\parallel\b/g, "∥"],
+    [/\\perp\b/g, "⊥"],
+    [/\\to\b/g, "→"],
+    [/\\rightarrow\b/g, "→"],
+    [/\\leftarrow\b/g, "←"],
+
+    // Greek letters we actually need ---------------------------------------
+    [/\\alpha\b/g, "α"],
+    [/\\beta\b/g, "β"],
+    [/\\gamma\b/g, "γ"],
+    [/\\delta\b/g, "δ"],
+    [/\\Delta\b/g, "Δ"],
+    [/\\epsilon\b/g, "ε"],
+    [/\\zeta\b/g, "ζ"],
+    [/\\theta\b/g, "θ"],
+    [/\\kappa\b/g, "κ"],
+    [/\\lambda\b/g, "λ"],
+    [/\\Lambda\b/g, "Λ"],
+    [/\\mu\b/g, "μ"],
+    [/\\nu\b/g, "ν"],
+    [/\\pi\b/g, "π"],
+    [/\\rho\b/g, "ρ"],
+    [/\\sigma\b/g, "σ"],
+    [/\\Sigma\b/g, "Σ"],
+    [/\\tau\b/g, "τ"],
+    [/\\phi\b/g, "φ"],
+    [/\\Phi\b/g, "Φ"],
+    [/\\chi\b/g, "χ"],
+    [/\\psi\b/g, "ψ"],
+    [/\\omega\b/g, "ω"],
+    [/\\Omega\b/g, "Ω"],
+
+    // Wrappers --------------------------------------------------------------
+
+    // Braceless forms first: "\hat B"  ->  "B̂"
+    [/\\hat\s+(\S)/g, "$1̂"],
+    [/\\bar\s+(\S)/g, "$1̄"],
+    [/\\vec\s+(\S)/g, "$1⃗"],
+
+    [/\\hat\{([^{}]+)\}/g, "$1̂"],   // combining circumflex -> Â
+    [/\\bar\{([^{}]+)\}/g, "$1̄"],   // combining macron
+    [/\\vec\{([^{}]+)\}/g, "$1⃗"],   // combining arrow
+    [/\\boldsymbol\{([^{}]+)\}/g, "$1"],
+    [/\\mathrm\{([^{}]+)\}/g, "$1"],
+    [/\\mathbf\{([^{}]+)\}/g, "$1"],
+    [/\\mathcal\{([^{}]+)\}/g, "$1"],
+    [/\\mathbb\{([^{}]+)\}/g, "$1"],
+    [/\\text\{([^{}]+)\}/g, "$1"],
+
+    // Spacing / line-break --------------------------------------------------
+    [/\\,/g, " "],         // thin space
+    [/\\;/g, " "],
+    [/\\:/g, " "],
+    [/\\\s/g, " "],
+    [/\\\\/g, " "],        // double-backslash line break
+
+    // Braces: drop the LaTeX grouping braces but keep their content.
+    [/\{([^{}]*)\}/g, "$1"],
+
+    // Lone backslash at start of word (anything we missed) -> drop.
+    [/\\([A-Za-z]+)/g, "$1"],
+
+    // Restore escaped-brace placeholders -> visible { } characters.
+    [/\uE000/g, "{"],
+    [/\uE001/g, "}"],
+  ];
+
+  function delatex(s) {
+    // Apply each replacement repeatedly until it converges, because
+    // nested {} or \hat{\bar{x}} need multiple passes.
+    let prev;
+    do {
+      prev = s;
+      for (const [re, rep] of REPLACEMENTS) s = s.replace(re, rep);
+    } while (s !== prev);
+    return s;
+  }
+
+  // Quarto wraps the source as <pre class="mermaid"><code>...</code></pre>.
+  // textContent already decodes HTML entities (--&gt; -> -->).
+  document.querySelectorAll("pre.mermaid").forEach(function (pre) {
+    const codeEl = pre.querySelector("code");
+    let src = codeEl ? codeEl.textContent : pre.textContent;
+    src = delatex(src);
+    pre.textContent = src;   // remove <code>, put cleaned source directly
+  });
+
+  // ---------------------------------------------------------------------
+  // 2. Theme: prefer Quarto's <body> class (quarto-light / quarto-dark)
+  //    over the OS preference, which can disagree with the site setting.
+  // ---------------------------------------------------------------------
+  const body = document.body;
+  let dark;
+  if (body.classList.contains("quarto-dark")) {
+    dark = true;
+  } else if (body.classList.contains("quarto-light")) {
+    dark = false;
+  } else {
+    // Fallback to Bootstrap's data-bs-theme on <html> or <body>.
+    const bs = document.documentElement.dataset.bsTheme || body.dataset.bsTheme;
+    dark = bs === "dark";
+  }
+
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: dark ? "dark" : "default",
+    securityLevel: "loose",
+    flowchart: { htmlLabels: true, curve: "basis" },
+    fontFamily: "Inter, system-ui, sans-serif",
+  });
+
+  // Re-render when the user toggles the Quarto colour scheme.
+  document.addEventListener("quarto-color-scheme-toggled", function () {
+    location.reload();
+  });
+</script>
 
 
 
 
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

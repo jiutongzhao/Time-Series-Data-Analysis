@@ -80,7 +80,7 @@ $1/2$ in this equation arises from the fact that $({\int_0^{2\pi}\mathrm{sin^2}x
         psd[1:] *= 2
     ```
 
-- `scipy.signal.welch` is a more robust and efficient implementation of PSD estimation through Welch's method. This method will be introduced later in [Chapter 5](chap5.md). But it still provide a concise way to estimate PSD in one line of code, whose results can be exactly the same as above if the parameters are set properly.
+- `scipy.signal.welch` is a more robust and efficient implementation of PSD estimation through Welch's method. This method will be introduced later in [Chapter 5](chap5.qmd). But it still provide a concise way to estimate PSD in one line of code, whose results can be exactly the same as above if the parameters are set properly.
 
   ```python
   freq, psd = scipy.signal.welch(x, fs=fs, window='hann', nperseg=N, noverlap=0, detrend=False)
@@ -179,10 +179,79 @@ psd_wk   = np.abs(np.fft.rfft(acf_win)) / fs
 freq_wk  = np.fft.rfftfreq(acf_win.size, dx)
 ```
 
-<p align = 'center'>
-<img src="Figure/figure_wk_cmb.png" width="100%"/>
-</p>
+<!-- fig-tabset:figure_wk_cmb.png -->
+::: {.panel-tabset}
 
+### Figure
+
+<img src="docs/Figure/figure_wk_cmb.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 49</small>
+
+```python
+# === Wiener-Khinchin example: 1-D synthetic "CMB" strip ===
+N      = 2 ** 14
+dx     = 1.0                # arbitrary "pixel" units
+fs     = 1.0 / dx
+freq   = np.fft.rfftfreq(N, dx)
+freq_pos = np.maximum(freq, freq[1])     # avoid divide-by-zero at DC
+
+# Toy CMB-like target PSD: red-tilted continuum + acoustic-peak bump
+ell0, sigma_ell, amp_peak = 0.05, 0.012, 4.0
+C_target  = (1.0 / freq_pos) ** 1.2
+C_target += amp_peak * np.exp(-0.5 * ((freq_pos - ell0) / sigma_ell) ** 2)
+C_target[0] = 0.0                         # zero-mean field
+
+# Draw a Gaussian realisation with this PSD
+rng = np.random.default_rng(42)
+phase = rng.uniform(0, 2 * np.pi, freq.size)
+amp   = np.sqrt(C_target * fs * N / 2.0)
+amp[0] = 0.0
+T_k   = amp * np.exp(1j * phase)
+T_k[-1] = T_k[-1].real if N % 2 == 0 else T_k[-1]
+T_x   = np.fft.irfft(T_k, n=N)
+
+# --- Estimate PSD two ways ---
+# (1) Welch's method (direct spectral estimator)
+f_welch, psd_welch = scipy.signal.welch(
+    T_x, fs=fs, nperseg=1024, window='hann', detrend=False,
+)
+
+# (2) FT of the autocorrelation function (Wiener-Khinchin)
+acf = np.fft.irfft(np.abs(np.fft.rfft(T_x)) ** 2, n=N) / N
+acf = np.concatenate([acf[-N // 2:], acf[:N // 2]])  # symmetric about lag 0
+lag = (np.arange(N) - N // 2) * dx
+
+# Window the ACF (Blackman-Tukey) before FT-ing it
+M = 1024
+window = np.blackman(2 * M + 1)
+acf_win = acf[N // 2 - M : N // 2 + M + 1] * window
+psd_wk  = np.abs(np.fft.rfft(acf_win)) / fs
+freq_wk = np.fft.rfftfreq(acf_win.size, dx)
+
+# --- Plot ---
+fig, axes = plt.subplots(2, 1, figsize=(8, 7), constrained_layout=True)
+
+axes[0].plot(np.arange(N) * dx, T_x, lw=0.5)
+axes[0].set(xlim=(0, 2000), xlabel='x', ylabel=r'$T(x)$',
+            title='(a) Synthetic CMB-style temperature strip (one realisation)')
+
+axes[1].loglog(freq_pos, C_target,         'k-',  lw=2.0, label='target $C(f)$')
+axes[1].loglog(f_welch[1:], psd_welch[1:], 'C0-', alpha=0.8, label="Welch")
+axes[1].loglog(freq_wk[1:], psd_wk[1:],    'C3--', alpha=0.8,
+               label=r'$\mathcal{F}[R_x(\tau)]$  (Wiener-Khinchin)')
+axes[1].axvline(ell0, color='gray', ls=':', alpha=0.7,
+                label=f'acoustic peak @ {ell0:.3f}')
+axes[1].set(xlabel='Frequency (analogue of multipole $\\ell$)',
+            ylabel='PSD',
+            title='(b) PSD: direct estimator vs. FT of ACF agree')
+axes[1].legend()
+
+plt.savefig(save_path + 'figure_wk_cmb.png', dpi=150)
+plt.show()
+```
+
+:::
 
 ## What If the Signal Is Not Stationary? [`scipy.signal.detrend`]
 
@@ -192,9 +261,58 @@ If the constant mean condition (first condition) is not satisfied, say, due to a
 scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
 ```
 
-<p align = 'center'>
-<img src="Figure/figure_detrend.png" width="100%"/>
-</p>
+<!-- fig-tabset:figure_detrend.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_detrend.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 43</small>
+
+```python
+plt.close()
+N = 2 ** 10
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+omega0 = 1 * np.pi * 50
+sig = 2 * t + np.sin(omega0 * t) * 1
+plt.figure(figsize=figsize_short)
+ax1 = plt.subplot()
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend=False, nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C0-', label = 'No Detrend')
+ax1.plot(freq[:], psd[:], 'C0o')
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='constant', nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C1-', label = 'Constant')
+ax1.plot(freq[:], psd[:], 'C1o')
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='linear', nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C2-', label = 'Linear')
+ax1.plot(freq[:], psd[:], 'C2o')
+
+ax1.set_ylim(1e-18, 1e6)
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_ylabel('PSD [$\mathrm{Arb^2}$/Hz]')
+
+ax1.legend(loc = 'upper right', ncol = 5, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False)
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+# ax1.autoscale(axis = 'x', tight = True)
+ax1.set_title("Fourier Spectrum After Detrend\n" + "$x(t)=2t + \mathrm{sin}(50\pi t)$", **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_detrend' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
 
 If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
 
@@ -204,8 +322,76 @@ The concept of *W.S.S* essentially guides us in **selecting an appropriate windo
 
 A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its **harmonic** $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
 
-<p align = 'center'>
-    <img src="Figure/figure_cepstrum.png" width="90%"/></p>
+<!-- fig-tabset:figure_cepstrum.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_cepstrum.png" width="100%"/>
+
+### Code  <small>chap3.ipynb · cell 26</small>
+
+```python
+plt.close()
+plt.figure(figsize=(16, 4))
+
+N = 2 ** 8
+omega0 = 2 * np.pi * 4.0
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+
+sig = 2 * ((omega0 / 2 / np.pi * t) % 1.0 - 0.5)
+# Add white noise for preventing getting a log(abs(0))
+sig += np.random.randn(t.size) * 1e-2
+freq = np.fft.rfftfreq(N, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_X = np.log(np.abs(coef))
+log_abs_X -= np.mean(log_abs_X)  # Remove DC component for cepstrum calculation
+cepstrum = np.fft.rfft(log_abs_X)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_X.size, df)
+
+
+ax1 = plt.subplot(1, 3, 1)
+ax2 = plt.subplot(1, 3, 2)
+ax3 = plt.subplot(1, 3, 3)
+
+ax1.plot(t, sig, 'ko-', label='Signal')
+ax2.stem(freq, np.abs(coef), linefmt='k', markerfmt='k', basefmt='k')
+ax2.plot(freq, 4 / freq * np.abs(coef)[4], 'r--', label='1/f', zorder = 0)
+
+ax3.stem(quefrency, np.abs(cepstrum), linefmt='k', markerfmt='k', basefmt='k')
+
+ax2.text(30, 30, 'Harmonics', color = 'k', ha = 'center', va = 'bottom', **title_font)
+ax2.text(12, 30, '$X[k]\propto 1/k $', color = 'C1', ha = 'center', va = 'bottom', **title_font, rotation = -70)
+ax3.text(1 / (omega0 / (2 * np.pi)), 135, '4 Hz', color = 'k', ha = 'center', va = 'center', **title_font)
+ax3.set_ylim(-0.5, 150)
+# ax3.set_yscale('log')
+
+ax1.set_title('Signal', **title_font)
+ax2.set_title('FFT Magnitude', **title_font)
+ax3.set_title('Cepstrum', **title_font)
+
+ax1.set_xlabel('Time [s]')
+ax2.set_xlabel('Frequency [Hz]')
+ax3.set_xlabel('Quefrency [s]')
+ax1.set_ylabel('Intensity [Arb]')
+ax2.set_ylabel('Magnitude [Arb]')
+ax3.set_ylabel('Intensity [Arb]')
+
+ax2.set_ylim(-5, 90)
+ax2.set_xlim(-2, 60)
+
+plt.tight_layout()
+
+plt.savefig(save_path + 'figure_cepstrum' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
 <p align = 'center'>
 <i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
 </p>

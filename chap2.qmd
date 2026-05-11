@@ -15,7 +15,85 @@ x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X
 \end{align}
 $$
 
-<p align = 'center'><img src="Figure/figure_4types_of_ft.png" width="100%"/></p>
+<!-- fig-tabset:figure_4types_of_ft.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_4types_of_ft.png" width="100%"/>
+
+### Code  <small>chap2.ipynb · cell 6</small>
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal
+import scienceplots
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+%matplotlib ipympl
+plt.close()
+plt.gcf()
+plt.gca()
+
+plt.figure(figsize = figsize_normal)
+plt.subplots_adjust(hspace = 0.3, bottom = 0.05, left = 0.05, right = 0.95)
+ax1 = plt.subplot(2, 2, 1)
+ax2 = plt.subplot(2, 2, 2, sharex = ax1, sharey = ax1)
+ax3 = plt.subplot(2, 2, 3, sharex = ax1, sharey = ax1)
+ax4 = plt.subplot(2, 2, 4, sharex = ax1, sharey = ax1)
+
+
+t = np.linspace(0, 1, 2 ** 13, endpoint=False)
+N = t.size
+dt = t[1] - t[0]
+fs = 1 / dt
+
+omega0 = 2 * np.pi * 6.8
+sig0 = np.sin(omega0 * t)
+
+ax1.plot(t, sig0, 'C0')
+
+sample_slice = slice(N // 3 * 1, N // 3 * 2)
+ax2.plot(t[sample_slice], sig0[sample_slice], 'C0')
+
+for i in [-1, 1]:
+    ax2.plot(t[sample_slice] + i * np.ptp(t[sample_slice]), sig0[sample_slice], 'k-', alpha = 0.5)
+
+ax1.axvspan(t[sample_slice].min(), t[sample_slice].max(), color = 'C0', alpha = 0.1)
+ax2.axvspan(t[sample_slice].min(), t[sample_slice].max(), color = 'C0', alpha = 0.1)
+
+
+sample_slice = slice(0, N, 32)
+ax3.plot(t[sample_slice], sig0[sample_slice], 'C0o')
+# ax3.plot(t[sample_slice], sig0[sample_slice], 'C0-', alpha = 0.5)
+
+sample_slice = slice(N // 3 * 1, N // 3 * 2, 32)
+ax4.plot(t[sample_slice], sig0[sample_slice], 'C0o')
+# ax4.plot(t[sample_slice], sig0[sample_slice], 'C0-', alpha = 0.5)
+for i in [-1, 1]:
+    ax4.plot(t[sample_slice] + i * np.ptp(t[sample_slice]), sig0[sample_slice], 'ko', alpha = 0.5)
+
+ax4.axvspan(t[sample_slice].min(), t[sample_slice].max(), color = 'C0', alpha = 0.1)
+
+# plt.suptitle('Time Domain', weight = 'bold', fontsize = 16)
+
+_titles = ['Fourier Transform', 'Fourier Series', 'Discret Time\nFourier Transform', 'Discret\nFourier Transform']
+for i, ax in enumerate(plt.gcf().axes):
+    ax.label_outer()
+    ax.set_title(_titles[i], fontdict = title_font)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-1.2, 1.2)
+    ax.grid(False)
+    ax.axis('off')
+# plt.tight_layout()
+
+plt.savefig(save_path + 'figure_4types_of_ft' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***<u>Discrete-Time Fourier Transform (DTFT)</u>*** presents an alternative expression in:
 $$
@@ -82,15 +160,15 @@ In frequency analysis using the *DFT*, or its practical implementation **<u>*Fas
 
   Yet, please remember that only real signal can be used as an input to `numpy.fft.rfft` otherwise the program will report a `TypeError`.
 
-<!-- tabs:start -->
+::: {.panel-tabset}
 
-#### **Single-Sided**
-<p align = 'center'><img src="Figure/figure_fft_single_side.png" width="100%"/></p>
+## Single-Sided
+<img src="docs/Figure/figure_fft_single_side.png" width="100%"/>
 
-#### **Double-Sided**
-<p align = 'center'><img src="Figure/figure_fft_double_side.png" width="100%"/></p>
+## Double-Sided
+<img src="docs/Figure/figure_fft_double_side.png" width="100%"/>
 
-<!-- tabs:end -->
+:::
 
 ## Application: Polynomial & Large Integer Multiplication
 
@@ -167,9 +245,114 @@ X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \tim
 $$
 However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.
 
-<p align = 'center'>
-<img src="Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
-</p>
+<!-- fig-tabset:figure_dft_spectral_leakage_window.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
+
+### Code  <small>chap2.ipynb · cell 24</small>
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import scienceplots
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+%matplotlib ipympl
+plt.close()
+
+plt.figure(figsize=(8, 8))
+ax1 = plt.subplot(2, 1, 1)
+ax2 = plt.subplot(2, 1, 2)
+
+N = 2 ** 8
+omega0 = 2 * np.pi * 5.25
+
+t = np.linspace(0, 1, N, endpoint=False)[:220]
+
+# omega0 = 2 * np.pi * 5.
+
+# t = np.linspace(0, 1, N, endpoint=False)
+
+dt = t[1] - t[0]
+sig = np.cos(omega0 * t)
+
+ax1.plot(np.concat([t - (t[-1] + dt), t, t + (t[-1] + dt)]), np.concat([sig, sig, sig]), 'ko-')
+
+coefs = np.fft.rfft(sig)
+freq = np.fft.rfftfreq(len(t), t[1] - t[0])
+
+ax2.stem(freq, np.abs(coefs), linefmt = 'k', markerfmt = 'ko', basefmt = 'k-')
+
+
+window = np.hanning(sig.size + 1)[:-1]
+sig *= window
+
+ax1.plot(t, window, 'C1-', alpha = 0.25)
+ax1.plot(t, -window, 'C1-', alpha = 0.25)
+
+ax1.plot(t - (t.size * dt), window, 'C1-', alpha = 0.25, label = 'Hanning Window [Periodic]')
+ax1.plot(t - (t.size * dt), -window, 'C1-', alpha = 0.25)
+
+ax1.plot(t + (t.size * dt), window, 'C1-', alpha = 0.25)
+ax1.plot(t + (t.size * dt), -window, 'C1-', alpha = 0.25)
+ax1.axvspan(t[0], -1, -1.3, 1.3, color = '#888888', alpha = 0.25)
+ax1.axvspan(t[-1], 2, -1.3, 1.3, color = '#888888', alpha = 0.25)
+
+ax1.plot(np.concat([t - (t[-1] + dt), t, t + (t[-1] + dt)]), np.concat([sig, sig, sig]), 'C1o-')
+
+coefs = np.fft.rfft(sig / np.sqrt((window ** 2).mean()))
+freq = np.fft.rfftfreq(len(t), t[1] - t[0])
+
+ax2.stem(freq, -np.abs(coefs), linefmt = 'C1--', markerfmt = 'C1o', basefmt = 'C1--')
+
+# sig = np.cos(omega0 * t)
+
+# window = np.hanning(sig.size)[:]
+# sig *= window
+
+# coefs = np.fft.rfft(sig * np.sqrt(8 / 3))
+# freq = np.fft.rfftfreq(len(t), t[1] - t[0])
+
+# ax2.stem(freq, np.abs(coefs), linefmt = 'C0--', markerfmt = 'C0o', basefmt = 'C0--')
+
+ax1.set_ylim(-1.3, 1.3)
+ax1.set_title('Windowed FFT', **title_font)
+
+ax1.set_xlabel('Time [s]')
+ax1.set_ylabel('Intensity [Arb]')
+
+# ax2.set_title(r'${\hat{x}(f)}$')
+ax2.set_xlabel('Frequency [Hz]')
+ax2.set_ylabel('Magnitude [Arb]')
+
+ax2.set_xlim(-0.5, 20)
+ax2.set_ylim(-110, 110)
+
+ax1.legend(frameon = True, bbox_to_anchor = (0.5, 1.02), loc = 'upper center', ncols = 2)
+
+ax1.set_ylim(-1.6, 1.6)
+ax1.set_xlim(-0.1, 1.0)
+
+plt.tight_layout()
+
+# ax2.text(13, 50., 'Spectral Leakage', fontsize=20, ha='center', va='center', rotation=-0, color='grey', alpha=1.0)
+
+# for i in range(0, 20, 1):
+#     if i not in [5, 6]:
+#         ax2.annotate('', xy=(freq[i], np.abs(coefs[i])), xytext=(freq[i], np.abs(coefs[i]) + 10),
+                        # arrowprops=dict(arrowstyle='->', lw=1.5, color='grey', alpha=1.0),
+#                         fontsize=20, ha='center', va='center', rotation=-0, color='grey', alpha=1.0)
+
+plt.savefig(save_path + 'figure_dft_spectral_leakage_window' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
 This artificial discontinuity introduces ***<u>[Spectral Leakage](https://en.wikipedia.org/wiki/Spectral_leakage)</u>***, causing energy from specific frequency components to spread into adjacent frequencies (called ***<u>[lobe](https://en.wikipedia.org/wiki/Sidelobes)</u>***, thereby distorting the true spectral content. To mitigate this issue, a **window function**—typically denoted ${w}(t)$—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.
 
 Different window functions (e.g., **<u>*rectangular, Hamming, Hanning, Blackman*</u>**) offer different trade-offs between **frequency resolution** (main-lobe width) and **leakage suppression** (side-lobe attenuation). You should try these window functions yourself and choose the most suitable one.
@@ -239,7 +422,7 @@ $$
 The convolution theorem states how operations performed on a signal in the time domain or in the frequency domain will affect that signal in its dual domain. 
 
 <p align = 'center'>
-<img src="Figure/convolution_theorem.gif" width="100%"/>
+<img src="docs/Figure/convolution_theorem.gif" width="100%"/>
 <i>Some Other Window Functions (without normalization).</i>
 </p>
 
@@ -253,10 +436,59 @@ According to the convolution theorem, performing convolution via the *FFT* cuts 
 
 Some other window functions are also supported by `numpy` and `scipy`, which is summarized below:
 
-<p align = 'center'>
-<img src="Figure/figure_window_functions.png" width="100%"/>
+<!-- fig-tabset:figure_window_functions.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_window_functions.png" width="100%"/>
+
+### Code  <small>chap2.ipynb · cell 20</small>
+
+```python
+plt.close()
+plt.figure(figsize = (8, 8))
+plt.subplots_adjust(hspace = 0.02)
+ax1 = plt.subplot(2, 1, 1)
+ax2 = plt.subplot(2, 1, 2, sharex = ax1, sharey = ax1)
+
+N = 2 ** 10
+t = np.linspace(0, 1, N, endpoint = False)
+
+ax1.plot(t, np.hanning(N), label = 'Hanning', linestyle = '-')
+ax1.plot(t, np.hamming(N), label = 'Hamming', linestyle = '-')
+ax1.plot(t, np.blackman(N), label = 'Blackman', linestyle = '-')
+
+ax2.plot(t, np.bartlett(N), label = 'Barlett', linestyle = '-', color = 'C3')
+ax2.plot(t, scipy.signal.windows.tukey(N, alpha = 3), label = r'Tukey [$\alpha=3$]', linestyle = '-', color = 'C4')
+ax2.plot(t, scipy.signal.windows.kaiser(N, beta = 3), label = r'Kaiser [$\beta=3$]', linestyle = '-', color = 'C5')
+ax2.plot(t, scipy.signal.windows.gaussian(N, std = N * 0.1), label = r'Gaussian [$\sigma=0.1$]', linestyle = '-', color = 'k')
+
+ax1.set_ylim(-0.1, 1.6)
+# ax1.legend(frameon = False, ncol = 3)
+# ax2.legend(frameon = False, ncol = 2)
+ax1.legend(loc = 'upper center', ncol = 5, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False)
+ax2.legend(loc = 'upper center', ncol = 2, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False)
+
+ax1.set_ylabel('Intensity [Arb]')
+ax2.set_ylabel('Intensity [Arb]')
+ax2.set_xlabel('Time [s]')
+ax1.autoscale(axis = 'x', tight = True)
+
+ax1.set_title('Window Functions', **title_font)
+
+plt.setp(ax1.xaxis.get_majorticklabels(), visible = False)
+
+# plt.tight_layout()
+
+plt.savefig(save_path + 'figure_window_functions' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
 <i>Some Other Window Functions (without normalization).</i>
-</p>
 
 
 | **Window Name & Python Call** | **w[n]** | **Amplitude Normalization** | **Power Normalization** |
@@ -280,7 +512,7 @@ Some other window functions are also supported by `numpy` and `scipy`, which is 
 
 It is interesting to note that, when you finitely sample a continuous signal, you are actually multiplying the continuous signal by a rectangular window (i.e., the sampling function). This rectangular window will also introduce spectral leakage. Therefore, even if you do not apply any window function, the rectangular window is still applied implicitly.
 
-For the best case, the window length perfectly matches an integer multiple of the signal period, the rectangular window will not introduce any spectral leakage. However, in most cases, the rectangular window will inevitably distort the spectrum. Such a windowed signal does not only contain the original signal’s frequency components, but also additional components introduced by the rectangular window, which might have an even higher frequency than the Nyquist frequency and thus can not be completely reconstructed. That's why the reconstruction of the 50 Hz sine waves with a one-second 100 Hz sample is still imperfect, as introduced in our [previous chapter](chap1.md).
+For the best case, the window length perfectly matches an integer multiple of the signal period, the rectangular window will not introduce any spectral leakage. However, in most cases, the rectangular window will inevitably distort the spectrum. Such a windowed signal does not only contain the original signal’s frequency components, but also additional components introduced by the rectangular window, which might have an even higher frequency than the Nyquist frequency and thus can not be completely reconstructed. That's why the reconstruction of the 50 Hz sine waves with a one-second 100 Hz sample is still imperfect, as introduced in our [previous chapter](chap1.qmd).
 
 ## Application: Borwein integral
 
@@ -322,9 +554,80 @@ instead of a single spike at the signal frequency. This spectrum spread up to **
 
 Therefore, a common strategy to mitigate the fence effect is to increase the total number of samples, thereby moving the frequency bins closer to the signal frequency. This can be achieved by extending the signal duration by adding zeros, so called ***<u>zero-padding</u>***. Zero-padding does not improve true frequency resolution, but it interpolates between bins, producing smoother spectra and clearer peak locations. It is especially helpful for peak detection, cross-spectral analysis, and visualization, where finer granularity aids interpretation without adding new information.
 
-<p align = 'center'>
-<img src="Figure/figure_dft_fence_effect_zero_padding.png" width="100%"/>
-</p>
+<!-- fig-tabset:figure_dft_fence_effect_zero_padding.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_dft_fence_effect_zero_padding.png" width="100%"/>
+
+### Code  <small>chap2.ipynb · cell 30</small>
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import scienceplots
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+%matplotlib ipympl
+plt.close()
+
+plt.figure(figsize=(8, 6))
+ax1 = plt.subplot(1, 1, 1)
+
+omega0 = 2 * np.pi * 5.
+
+t = np.linspace(0, 1, 200, endpoint=False)
+sig = np.sin(omega0 * t)
+
+
+coefs = np.fft.fft(sig)
+freq = np.fft.fftfreq(len(t), t[1] - t[0])
+
+pos_mask = freq >= 0
+
+ax1.stem(freq[pos_mask], np.abs(coefs)[pos_mask], linefmt = 'k', markerfmt = 'ks', basefmt = 'k-', label = 'Original\n[$f_s=200\ Hz$, N = 200]')
+
+
+coefs = np.fft.fft(sig, n = 229)
+freq = np.fft.fftfreq(len(coefs), t[1] - t[0])
+
+pos_mask = freq >= 0
+
+ax1.stem(freq[pos_mask], -np.abs(coefs)[pos_mask], linefmt = 'C0', markerfmt = 'C0o', basefmt = 'C0-', label = 'Zero-Padded\n[$f_s=200\ Hz$, N = 229]')
+
+
+
+for ax in [ax1,]:
+    ax.set_xlabel('Frequency [Hz]')
+    ax.set_ylabel('Magnitude [Arb]')
+
+    ax.set_xlim(-0.5, 20)
+    ax.set_ylim(-110, 110)
+
+    ax.grid('on', linestyle = '--')
+
+    _freq = np.linspace(0, 20, 2000)
+
+    ax.plot(_freq, 100 * np.abs(np.sinc(np.abs(_freq - 5.25))), 'C1-', alpha = 1., zorder = -1, label = 'Sinc Function')
+    ax.plot(_freq, -100 * np.abs(np.sinc(np.abs(_freq - 5.25))), 'C1-', alpha = 1., zorder = -1)
+# ax1.legend(frameon = False)
+ax1.legend(loc = 'upper right', ncol = 1, labelcolor=['C1', 'k', 'C0'], frameon = False)
+
+# ax1.set_title(r'${\hat{x}(f)}$: ${N=200}$')
+# ax2.set_title(r'${\hat{x}(f)}$ Zero-Padded: ${N=229}$')
+
+ax1.set_title('Fence Effect & Zero-Padding\n' + '$x(t)=\mathrm{sin(10.5\pi t)}$', **title_font)
+
+plt.tight_layout()
+
+# plt.savefig(save_path + 'figure_dft_fence_effect_zero_padding' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
 
 
 
@@ -341,9 +644,71 @@ freq = np.fft.rfftfreq(coef.size, dt)
 
 Package `pywt` supports several [other padding types](https://pywavelets.readthedocs.io/en/latest/ref/signal-extension-modes.html). These padding types can also be used in Fourier transform to reduce the edge effect. The following figure illustrates the different padding types: 
 
-<p align = 'center'>
-<img src="Figure/figure_padding_type.png" width="100%"/>
-</p> <p align = 'center'>
+<!-- fig-tabset:figure_padding_type.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="docs/Figure/figure_padding_type.png" width="100%"/>
+
+### Code  <small>chap2.ipynb · cell 28</small>
+
+```python
+# synthetic test signal
+sig = 5 - np.linspace(-1.9, 1.1, 10) ** 2
+
+plt.close()
+plt.subplots_adjust(hspace=0.02, wspace=0.02)
+plt.figure(figsize = figsize_normal)
+
+fig, axes = plt.subplots(nrows=3, ncols=3, sharex=True, sharey=True)
+ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9 = axes.flatten()
+
+pad_width = 15  # You can modify this value as needed
+sig_padded = {
+    'constant': np.pad(sig, pad_width=pad_width, mode='constant', constant_values=0),
+    'edge': np.pad(sig, pad_width=pad_width, mode='edge'),
+    'linear_ramp': np.pad(sig, pad_width=pad_width, mode='linear_ramp', end_values=(0, 0)),
+    'reflect': np.pad(sig, pad_width=pad_width, mode='reflect'),
+    'symmetric': np.pad(sig, pad_width=pad_width, mode='symmetric'),
+    'wrap': np.pad(sig, pad_width=pad_width, mode='wrap'),
+    'mean': np.pad(sig, pad_width=pad_width, mode='mean'),
+    'maximum': np.pad(sig, pad_width=pad_width, mode='maximum'),
+    'minimum': np.pad(sig, pad_width=pad_width, mode='minimum')
+}
+
+for ax, (key, padded_sig) in zip(axes.flatten(), sig_padded.items()):
+    x_original = np.arange(len(sig))  # Indices for the original signal
+    x_padded = np.arange(-pad_width, len(sig) + pad_width)  # Indices for the padded signal
+    ax.plot(x_padded, padded_sig, '-', label='Padded Signal', color='C0')  # Padded signal in orange
+    ax.plot(x_original, sig, '-', label='Original Signal', color='C1', zorder=2)  # Original signal in blue
+    ax.plot(x_padded, padded_sig, 'o', color='C0')  # Padded signal in orange
+    ax.plot(x_original, sig, 'o', color='C1', zorder=2)  # Original signal in blue
+    ax.set_xticks(np.arange(-30, 30, 10))  # Set xticks every 10
+    ax.set_title(key, **title_font)
+    ax.set_ylabel('Intensity\n[Arb]')
+    ax.set_xlabel('Time [$\delta t$]')
+    ax.label_outer()  # Hide labels on inner plots
+    fig.set_size_inches(figsize_normal)
+    ax.autoscale(axis='x', tight=True)
+ax1.set_ylim(-1, 5.5)
+# ax1.set_xlim(-15, 20.)
+# Update the figure size to 8x6
+
+# Add a legend to the first subplot
+# axes.flatten()[0].legend(loc='upper center', frameon=False, ncol=2)
+
+axes[0][1].legend(loc = 'lower center', ncol = 2, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False, bbox_to_anchor=(0.5, 1.15))
+# plt.tight_layout()
+
+plt.savefig(save_path + 'figure_padding_type.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
+ <p align = 'center'>
     Different Pat Padding Mode Supported by pywt.pad
 </p>
 

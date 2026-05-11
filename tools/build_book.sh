@@ -1,48 +1,48 @@
 #!/usr/bin/env bash
-# Build the MyST-MD / Jupyter Book v2 site.
+# Build the Quarto site (configured by ../_quarto.yml).
 #
-#   bash tools/build_book.sh             # static site build  -> _build/html/
-#   bash tools/build_book.sh --start     # dev server with live reload
-#   bash tools/build_book.sh --clean     # wipe _build/ first
+#   bash tools/build_book.sh                       # static render -> _build/html/
+#   bash tools/build_book.sh --preview             # full-site dev server, live reload
+#   bash tools/build_book.sh --preview chap3.qmd   # preview ONE file (fast)
+#   bash tools/build_book.sh --clean               # wipe _build/ and freeze cache
 #
-# Requires the Node-based MyST-MD CLI:
-#     npm install -g mystmd
-#
-# (The package is `mystmd` on npm; it installs `myst` and `jupyter book`
-# binaries on your PATH.)
+# Requires the Quarto CLI:  https://quarto.org/docs/get-started/
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-if [[ "${1-}" == "--clean" ]]; then
-    rm -rf _build
-fi
-
-if ! command -v myst >/dev/null 2>&1; then
+if ! command -v quarto >/dev/null 2>&1; then
     cat <<'MSG'
-`myst` (MyST-MD CLI) is not on PATH.
+`quarto` is not on PATH.
 
-This repo is configured for MyST-MD / Jupyter Book v2. Install with:
+Install the Quarto CLI from
+    https://quarto.org/docs/get-started/
 
-    npm install -g mystmd
-
-If you need Node first, on macOS/Linux:
-
-    nvm install --lts && nvm use --lts          # via https://nvm.sh
-
-then re-run this script.
-
-Heads-up: there is also a Python "Jupyter Book v1" (the `pip install
-jupyter-book` one). It uses _config.yml + _toc.yml, **not** myst.yml.
-The legacy v1 config has been moved to tools/legacy_v1/ for reference.
+Legacy Jupyter Book v1 / v2 configs are archived in tools/legacy_v1/.
+The live config is _quarto.yml.
 MSG
     exit 1
 fi
 
-if [[ "${1-}" == "--start" ]]; then
-    exec myst start
-fi
+case "${1-}" in
+    --clean)
+        rm -rf _build .quarto/_freeze _freeze
+        echo "Wiped _build/ and freeze cache."
+        ;;
+    --preview)
+        # `--no-browser` keeps Quarto from invoking xdg-open, which is
+        # noisy on WSL where there's no GUI browser. Open the URL
+        # manually in your host browser.
+        if [[ -n "${2-}" ]]; then
+            # Single-file preview is dramatically faster: only re-renders
+            # the file you're editing, ignores the other 11 chapters.
+            exec quarto preview "$2" --no-browser
+        else
+            exec quarto preview --no-browser
+        fi
+        ;;
+esac
 
-myst build --html
+quarto render
 echo
 echo "Built site: $(pwd)/_build/html/index.html"

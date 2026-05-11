@@ -16,3 +16,16 @@ docs/Data/audio.zip
 docs/Data/gearbox/CWRU_48k_load_1_CNN_data.npz
 *.xls
 *.csv
+
+/.quarto/
+**/*.quarto_ipynb
+
+# Quarto build outputs
+_build/
+_freeze/
+
+# Python / IDE
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.fits

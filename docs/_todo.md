@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # Changelog and Upcoming Content
 
 ## Done
@@ -7,20 +6,14 @@
 - [x] Add an example for the Wiener–Khinchin theorem (synthetic 1-D CMB-style power spectrum) — `chap3.md`, `chap3.ipynb`. (2026-05-09)
 - [x] Add a case for discrete wavelet image compression — `chap7.md`, `chap7.ipynb`. (2026-05-09)
 - [x] Reorganise the per-chapter notebooks: each `chap*.ipynb` is now a self-contained tutorial with prose lifted from `docs/chap*.md` interleaved with the figure-generating code. (2026-05-09)
+- [x] Migrate the published site from Docsify to Quarto (cleaner LaTeX rendering, native `.qmd`/`.ipynb` rendering, `lumen` theme). (2026-05-09)
 
 ## Upcoming
 
-1. End-to-end runnable test of every reorganised notebook in CI.
-2. Port the new examples to the published Docsify site (regenerate `docs/Figure/` images locally).
-3. Flesh out `chap9.md` "Usage Example" with one or two end-to-end physics case studies.
+1. Add an example for the Kalman Filter (GPS + IMU fusion).
+2. Cover the related Fourier / Hankel / Radon / Abel transforms and spherical harmonics in a dedicated chapter.
+3. End-to-end runnable test of every reorganised notebook in CI.
+4. Flesh out `chap9.md` "Usage Example" with one or two end-to-end physics case studies.
+5. Generate the new figures locally (`figure_cepstrum_gearbox.png`, `figure_wk_cmb.png`, `figure_dwt_image_compression.png`) by re-executing the relevant notebooks, then commit the PNGs to `docs/Figure/`.
 
 Lastly updated on 9th, May, 2026.
-=======
-1. Add an partical example for cepstrum (gear box). 
-2. Add an example for WK theorem (cosmic microwave background)
-3. Add a case for discrete wavelet image compression
-4. Add an example for Kalman Filter (GPS + IMU fusion)
-5. Fourier/Hankel/Radon/Abel Transforms and Spherical Harmonic
-
-Lastly updated on 27th April, 2026.
->>>>>>> Stashed changes

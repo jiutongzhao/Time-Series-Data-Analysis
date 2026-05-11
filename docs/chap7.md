@@ -94,9 +94,9 @@ This mother wavelet is a Gaussian-windowed complex sinusoid, which provides a go
 ```mermaid
 graph LR
 
-A[*Torrence & Compo 1998*] --$$\mu=\omega_0$$--> B[*ssqueezepy*]
-A --$$B=\frac{\omega_0^2}{2\pi^2}$$-->C[*pywavelets*<br>*'cmorB-1.0'*]
-A --$$\sigma=\omega_0$$--> D[*Wikipedia*]
+A[*Torrence & Compo 1998*] --μ=omega_0--> B[*ssqueezepy*]
+A --B=fracomega_0^22π^2-->C[*pywavelets*<br>*'cmorB-1.0'*]
+A --σ=omega_0--> D[*Wikipedia*]
 
 ```
 
@@ -379,55 +379,3 @@ This affects the relationship between scale and equivalent Fourier period, as we
 
 
 $$
-\frac{\partial}{\partial s}|\hat{\psi}(2\pi s/T)|=2x^2(1-e^{-\omega_0x})-2\omega_0x-1+e^{-\omega_0x}=0
-$$
-​	For large $\omega_0$, $e^{-\omega_0x}\rightarrow 0$,
-$$
-2x^2-2\omega_0 x-1=0
-$$
-
-$$
-x_0=\frac{2\omega_0\pm\sqrt{4\omega_0^2+8}}{4}=\frac{\omega_0\pm\sqrt{2+\omega_0^2}}{2}
-$$
-
-​	For small $\omega_0$, the asymptotic solution can be given by substituting $e^{-\omega_0x}\approx1-\omega_0x+\frac{1}{2}(-\omega_0x)^2$ 
-$$
-\begin{align}
-2x^2\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)-2\omega_0x-\left(\omega_0x-\frac{1}{2}\omega_0^2x^2\right)&=0\\
-(-\omega_0x)\left[\omega_0x^3- 2x^2 + 2+1 - \frac{1}{2}\omega_0x \right]&=0\\
-\Rightarrow \omega_0x^3- 2x^2  - \frac{1}{2}\omega_0x + 3&=0
-\end{align}
-$$
-​	the asymptotic solution can be given by
-$$
-x_0=\sqrt{\frac{3}{2}}+\frac{\omega_0}{4}+\mathcal{O}(\omega_0^2)
-$$
-​	Thus, we can get the ratio of period and scale as
-$$
-T_{eq}= s\cdot\frac{2\pi}{x_0} \cdot \delta t
-$$
-
-<p align = 'center'>
-<img src="Figure/figure_fourier_period.png" width="100%"/>
-</p>
-
-
-​	This ratio is often used to convert between scale and equivalent Fourier period when interpreting wavelet transforms. For large $\omega_0$, it approaches the commonly used approximation $2\pi/\omega_0$.
-
-- <u>**Central Frequency:**</u> The central frequency $\omega_c$ of the Morlet wavelet is defined as the frequency at which the wavelet's Fourier transform attains its maximum, i.e.,
-  $$
-  \begin{align}
-  \omega_c &= \arg\max_\omega |\hat{\psi}(\omega)|\\
-  \end{align}
-  $$
-  It can be derived from the Fourier transform of the admissible Morlet wavelet:
-
-$$
-\omega_c=\omega_0\frac{1}{1-e^{-\omega_0 \omega_c}}
-$$
-
-
-​	The central frequency indicates where a wavelet is most responsive in the frequency domain, while the scale-to-period ratio specifies the scale at which it best matches a sine wave of a given period. For large $\omega_0$, this ratio converges to $2\pi/\omega_0$, a commonly used approximation.
-
-
-<div STYLE="page-break-after: always;"></div>

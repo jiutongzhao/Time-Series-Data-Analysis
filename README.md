@@ -1,5 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11.2.1/dist/mermaid.min.js"></script>
-
 # Practical Spectral Analysis with Python
 
 ## Preface
