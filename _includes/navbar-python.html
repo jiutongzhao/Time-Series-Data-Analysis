@@ -1,0 +1,51 @@
+<style>
+.navbar-brand-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.navbar-brand-sub {
+  font-size: 0.58em;
+  font-weight: 400;
+  opacity: 0.68;
+  align-self: flex-end;
+  letter-spacing: 0.07em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: -1px;
+}
+.navbar-brand-sub svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var titleSpan = document.querySelector('span.navbar-title');
+  if (!titleSpan) return;
+  var title = titleSpan.textContent.trim();
+  var wrap = document.createElement('span');
+  wrap.className = 'navbar-brand-wrap';
+  wrap.innerHTML =
+    '<span>' + title + '</span>' +
+    '<span class="navbar-brand-sub">with ' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-label="Python">' +
+        '<defs>' +
+          '<linearGradient id="nb-py1" x1="70.252" y1="1237.476" x2="170.659" y2="1098.827" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="nb-py2" x1="209.474" y1="1098.811" x2="201.945" y2="1240.2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path fill="url(#nb-py1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411H63.5v3.137H29.245c-7.196 0-13.328 4.226-15.249 13.918-2.17 11.408-2.342 18.556 0 29.513 1.666 8.108 5.184 13.918 12.38 13.918h8.102V73.809c0-8.811 7.712-16.543 15.249-16.543H71.76c6.529 0 12.346-5.68 12.346-12.05V15.833c0-6.196-5.568-10.522-12.346-11.845-4.248-.75-8.638-1.019-8.369-.999zm-7.678 7.543c2.501 0 4.617 2.241 4.617 4.84 0 2.499-2.116 4.667-4.617 4.667-2.601 0-4.782-2.168-4.782-4.667 0-2.6 2.181-4.84 4.782-4.84z"/>' +
+        '<path fill="url(#nb-py2)" d="M91.682 28.38v10.966c0 9.122-7.723 16.476-15.249 16.476H60.501c-6.269 0-12.346 5.743-12.346 12.207v22.55c0 6.196 5.568 10.724 12.346 11.843 7.803 1.253 14.573 1.625 22.51 0 5.995-1.094 12.346-4.797 12.346-11.843v-9.412H71.76v-3.137h34.733c7.196 0 9.798-5.015 12.346-13.878 2.578-9.015 2.478-17.655 0-29.513-1.805-8.393-5.084-13.918-12.346-13.918H91.682zm-8.69 37.889c2.601 0 4.782 2.168 4.782 4.667 0 2.599-2.181 4.84-4.782 4.84-2.501 0-4.617-2.241-4.617-4.84 0-2.499 2.116-4.667 4.617-4.667z"/>' +
+      '</svg>' +
+      ' Python</span>';
+  titleSpan.replaceWith(wrap);
+});
+</script>

@@ -62,7 +62,7 @@ In this framework, $\mathbf{e}_1$ (maximum-variance), $\mathbf{e}_2$ (intermedia
 
 <img src="Figure/figure_pca.png" width="100%"/>
 
-### Code  <small>chap8.ipynb · cell 10</small>
+### Code
 
 ```python
 import numpy as np
@@ -220,7 +220,7 @@ where $\hat{S}_{XY}(f)$ is the cross-spectral density between signals $x$ and $y
 
 <img src="Figure/figure_coherency.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 66</small>
+### Code
 
 ```python
 cmap = 'jet'
@@ -379,7 +379,7 @@ coherence_xy = np.abs(spec_sm[:, :, 0, 1]) ** 2 / (spec_sm[:, :, 0, 0] * spec_sm
 
 Spectral analysis gains further physical meaning when interpreted alongside Maxwell’s equations. For electromagnetic signals, the spectral content reflects underlying wave propagation, polarization, and field coupling processes. 
 $$
-\begin{align}
+\begin{align*}
 \nabla \cdot \mathbf{E}(\mathbf{r},t) & = -\frac{\rho}{\varepsilon_0}\\
 
 \nabla \cdot \mathbf{B}(\mathbf{r},t) & = 0\\
@@ -388,18 +388,18 @@ $$
 
 \nabla \times \mathbf{B}(\mathbf{r},t) & = \mu_0 \mathbf{J}(\mathbf{r},t)+\mu_0\varepsilon_0 \frac{\partial\mathbf{E}(\mathbf{r},t)}{\partial t}
 
-\end{align}
+\end{align*}
 $$
 
 As the electromagnetic field $\mathbf{E(r},t)$ and $\mathbf{B(r}, t)$ are square-integrable, Maxwell's equations can be naturally transformed into the $(\mathbf{k},\omega)$-space with the basic replacement from $\nabla \leftrightarrow i\mathbf{k}$ and $\partial/\partial t\leftrightarrow -i\omega$:
 $$
-\begin{align}
+\begin{align*}
 i \mathbf{k\cdot \hat{E}(k,\omega)}&=-\hat{\rho_e}/\varepsilon_0 \\
 i \mathbf{k\cdot \hat{B}(k,\omega)}&=0 \\
 i \mathbf{k\times \hat{E}(k,\omega)}&=i\omega\mathbf{\hat{B}(k,\omega)} \\
 i \mathbf{k\times \hat{B}(k,\omega)}&=\mu_0 \mathbf{\hat{J}(k,\omega)} -\mu_0 \varepsilon_0 i\omega\mathbf{\hat{E}(k,\omega)} \\
 
-\end{align}
+\end{align*}
 $$
 
 However, a single spacecraft measurement only allows you to observe a one-dimensional (time) signal at one position, i.e., the spacecraft position, which literally moves in the space. Thus, the signal can only be converted into the frequency space as $\mathbf{\hat{B}(\omega)}$. The second equation is the only parameter-free equation and states that the wave vector, $\mathbf{k}$ must be perpendicular to the magnetic field disturbance, $\mathbf{\hat{B}(\omega)}$. Obviously, $\mathbf{k=0}$ is a trivial, but not useful solution for satisfying the divergence-free theorem. By constraining the norm of $\mathbf{k}$ to be unity, $\boldsymbol{\kappa}\mathbf{:=k/}k$, a more meaningful solution comes out. When the real part, $\Re{\hat{\mathbf{B}}(\omega)}$ and imaginary part, $\Im{\hat{\mathbf{B}}(\omega)}$ of $\mathbf{\hat{B}(\omega)}$ are highly orthogonal, they can span a linear space whose normal vector is naturally $\boldsymbol{\kappa}$. 
@@ -416,9 +416,9 @@ $$
 
 which can still be met by the original solution. After averaging the spectral matrix in time and frequency domain, this equation can not be perfectly satisfied any more. Thus, we will look for a weaker solution in the sense of minimization:
 $$
-\begin{align}
+\begin{align*}
 \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} & ||\hat{S}\cdot \boldsymbol{\kappa}||_2^2\\ \Leftrightarrow \min \limits_{\mathbf{||\boldsymbol{\kappa}||_2^2=1}} \{&{\underline{||{\Re{\hat{S}}}\cdot \boldsymbol{\kappa}||_2^2}} + \underline{{||{\Im\hat{S}}\cdot \boldsymbol{\kappa}||_2^2}}\}\\
-\end{align}
+\end{align*}
 $$
 [McPherron et al. (1972)](https://doi.org/10.1007/BF00219165) and [Means (1972)](https://doi.org/10.1029/JA077i028p05551) adopts the real and imaginary part in the minimization optimization for the estimation of wave propagation direction, respectively. Both of these two optimization problem can be solved by eigenvalue decomposition. Then, [Santolík et al. (2003)](https://doi.org/10.1029/2000RS002523) combine both terms and construct an augmented matrix ${A}$:
 
@@ -448,9 +448,9 @@ where $U$ is a $6\times3$ matrix with orthonormal columns, $W$ is a $3\times3$ d
 
 **<u>Compressibility</u>** describe the ratio of the parallel power to the total power. It is a measure of how much of the wave power is associated with compressional (parallel) fluctuations versus transverse (perpendicular) fluctuations.
 $$
-\begin{align}
+\begin{align*}
 \mathrm{Compressibility}:=\frac{PSD(B_\parallel)}{\sum_i PSD(B_i)}
-\end{align}
+\end{align*}
 $$
 
 **<u>Planarity</u>** is a measure of how "planar" or "two-dimensional" the wave fluctuations are. It quantifies the extent to which the wave power is concentrated in a plane, as opposed to being distributed in three dimensions. A planarity of 1 indicates that the fluctuations are perfectly planar, while a planarity of 0 indicates isotropic fluctuations. It is defined as the ratio of the smallest singular value to the largest singular value of the spectral matrix:
@@ -488,10 +488,10 @@ $$
 
 with $B_L$ and $B_R$ defines below:
 $$
-\begin{align}
+\begin{align*}
 B_L = \frac{1}{\sqrt{2}}(B_{\perp1}+iB_{\perp2})\\
 B_R = \frac{1}{\sqrt{2}}(B_{\perp1}-iB_{\perp2})
-\end{align}
+\end{align*}
 $$
 with $\mathbf{e_{\perp1}}$, $\mathbf{e_{\perp2}}$, and $\mathbf{e_\parallel }$ constitute a right-hand system, i.e., $\mathbf{e_{\perp1}\times e_{\perp2}=e_\parallel}$.
 
@@ -613,62 +613,62 @@ For the frequency/scale domain, a common choice for the smooth operator is boxca
 
 
 ```mermaid
-}{}f}{}l}{}o}{}w}{}c}{}h}{}a}{}r}{}t}{} }{}T}{}D}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}I}{}n}{}p}{}u}{}t}{} }{}S}{}i}{}g}{}n}{}a}{}l}{}s}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}s}{}u}{}b}{}g}{}r}{}a}{}p}{}h}{} }{}I}{}n}{}p}{}u}{}t}{}[}{}"}{}I}{}n}{}p}{}u}{}t}{} }{}S}{}i}{}g}{}n}{}a}{}l}{}s}{}"}{}]}{}
-}{} }{} }{} }{} }{}d}{}i}{}r}{}e}{}c}{}t}{}i}{}o}{}n}{} }{}T}{}B}{}
-}{} }{} }{} }{} }{}A}{}[}{}"}{}B}{}_}{}1}{}[}{}n}{}]}{},}{} }{}B}{}_}{}2}{}[}{}n}{}]}{},}{} }{}B}{}_}{}3}{}[}{}n}{}]}{}"}{}]}{}
-}{} }{} }{}e}{}n}{}d}{}
-}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}A}{}v}{}g}{} }{}B}{}a}{}c}{}k}{}g}{}r}{}o}{}u}{}n}{}d}{} }{}F}{}i}{}e}{}l}{}d}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}A}{} }{}-}{}-}{}>}{} }{}B}{}[}{}"}{}\}{}⟨}{}B}{}\}{}⟩}{}<}{}b}{}r}{}/}{}>}{}A}{}v}{}g}{} }{}B}{}a}{}c}{}k}{}g}{}r}{}o}{}u}{}n}{}d}{} }{}F}{}i}{}e}{}l}{}d}{}"}{}]}{}
-}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}T}{}i}{}m}{}e}{}–}{}F}{}r}{}e}{}q}{}u}{}e}{}n}{}c}{}y}{} }{}T}{}r}{}a}{}n}{}s}{}f}{}o}{}r}{}m}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}A}{} }{}-}{}-}{}>}{}|}{}S}{}T}{}F}{}T}{} }{}o}{}r}{} }{}C}{}W}{}T}{}|}{} }{}C}{}[}{}"}{}B}{}̂}{}_}{}i}{}(}{}f}{},}{}n}{})}{}"}{}]}{}
-}{} }{} }{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}C}{}r}{}o}{}s}{}s}{}–}{}S}{}p}{}e}{}c}{}t}{}r}{}a}{}l}{} }{}E}{}s}{}t}{}i}{}m}{}a}{}t}{}i}{}o}{}n}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}s}{}u}{}b}{}g}{}r}{}a}{}p}{}h}{} }{}M}{}a}{}t}{}r}{}i}{}x}{}[}{}"}{}C}{}o}{}n}{}s}{}t}{}r}{}u}{}c}{}t}{} }{}S}{}p}{}e}{}c}{}t}{}r}{}a}{}l}{} }{}M}{}a}{}t}{}r}{}i}{}x}{}"}{}]}{}
-}{} }{} }{}	}{}d}{}i}{}r}{}e}{}c}{}t}{}i}{}o}{}n}{} }{}L}{}R}{}
-}{} }{} }{}	}{}C}{} }{}-}{}-}{}>}{}|}{}O}{}u}{}t}{}e}{}r}{} }{}P}{}r}{}o}{}d}{}u}{}c}{}t}{}|}{} }{}D}{}[}{}"}{}B}{}̂}{}_}{}i}{} }{}B}{}̂}{}_}{}j}{}^}{}*}{}"}{}]}{}
-}{} }{} }{}	}{}D}{} }{}-}{}-}{}>}{}|}{}S}{}m}{}o}{}o}{}t}{}h}{}i}{}n}{}g}{} }{}t}{}i}{}m}{}e}{} }{}f}{}r}{}e}{}q}{}|}{} }{}E}{}[}{}"}{}S}{}_}{}i}{}j}{}(}{}f}{})}{}"}{}]}{}
-}{} }{} }{}e}{}n}{}d}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}S}{}p}{}e}{}c}{}t}{}r}{}a}{}l}{} }{}D}{}e}{}c}{}o}{}m}{}p}{}o}{}s}{}i}{}t}{}i}{}o}{}n}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}E}{} }{}-}{}-}{}>}{}|}{}F}{}o}{}r}{}m}{} }{}6}{}×}{}3}{}|}{} }{}F}{}[}{}"}{}S}{}_}{}6}{} }{}t}{}i}{}m}{}e}{}s}{}3}{}"}{}]}{}
-}{} }{} }{}F}{} }{}-}{}-}{}>}{}|}{}R}{}e}{}a}{}l}{} }{}P}{}a}{}r}{}t}{}|}{} }{}G}{}[}{}"}{}R}{}e}{}S}{}_}{}3}{} }{}t}{}i}{}m}{}e}{}s}{}3}{}"}{}]}{}
-}{} }{} }{}F}{} }{}-}{}-}{}>}{}|}{}I}{}m}{}a}{}g}{} }{}P}{}a}{}r}{}t}{}|}{} }{}H}{}[}{}"}{}I}{}m}{}S}{}_}{}3}{} }{}t}{}i}{}m}{}e}{}s}{}3}{}"}{}]}{}
-}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}A}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{} }{}M}{}e}{}t}{}h}{}o}{}d}{}s}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}F}{} }{}-}{}-}{}>}{}|}{}S}{}V}{}D}{}<}{}b}{}r}{}/}{}>}{}S}{}a}{}n}{}t}{}o}{}n}{}̌}{}l}{}i}{}́}{}k}{} }{}e}{}t}{} }{}a}{}l}{}.}{} }{}2}{}0}{}0}{}3}{}|}{} }{}I}{}[}{}"}{}k}{},}{} }{}F}{},}{} }{}W}{}N}{}A}{}"}{}]}{}
-}{} }{} }{}G}{} }{}-}{}-}{}>}{}|}{}E}{}i}{}g}{}e}{}n}{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}<}{}b}{}r}{}/}{}>}{} }{}M}{}c}{}P}{}h}{}e}{}r}{}r}{}o}{}n}{} }{}1}{}9}{}7}{}2}{}|}{} }{}J}{}[}{}"}{}k}{},}{} }{} }{}W}{}N}{}A}{}"}{}]}{}
-}{} }{} }{}H}{} }{}-}{}-}{}>}{}|}{}E}{}i}{}g}{}e}{}n}{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}<}{}b}{}r}{}/}{}>}{} }{}M}{}e}{}a}{}n}{}s}{} }{}1}{}9}{}7}{}2}{}|}{} }{}K}{}[}{}"}{}k}{},}{} }{} }{}W}{}N}{}A}{}"}{}]}{}
-}{} }{} }{}E}{} }{}-}{}-}{}>}{}|}{}F}{}A}{}C}{}|}{} }{}L}{}[}{}"}{}B}{}_}{}\}{}∥}{},}{} }{}B}{}_}{}L}{}H}{},}{} }{}B}{}_}{}R}{}H}{},}{} }{} }{}e}{}p}{}s}{}i}{}l}{}o}{}n}{}_}{}B}{},}{} }{} }{}d}{}e}{}l}{}t}{}a}{} }{}B}{}_}{}\}{}∥}{}/}{} }{}d}{}e}{}l}{}t}{}a}{} }{}B}{}"}{}]}{}
-}{} }{} }{}B}{} }{}-}{}-}{}>}{}|}{}C}{}o}{}m}{}b}{}i}{}n}{}e}{} }{}b}{}a}{}c}{}k}{}g}{}r}{}o}{}u}{}n}{}d}{}|}{} }{}L}{}
-}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}W}{}a}{}v}{}e}{} }{}F}{}r}{}a}{}m}{}e}{} }{}A}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}E}{} }{}-}{}-}{}>}{}|}{}C}{}o}{}m}{}b}{}i}{}n}{}e}{} }{}m}{}a}{}t}{}r}{}i}{}x}{}|}{} }{}M}{}[}{}"}{}S}{}_}{}w}{}f}{}(}{}3}{} }{}t}{}i}{}m}{}e}{}s}{}3}{})}{}"}{}]}{}
-}{} }{} }{}I}{} }{}-}{}-}{}>}{}|}{}C}{}o}{}m}{}b}{}i}{}n}{}e}{} }{}k}{}|}{} }{}M}{}
-}{} }{} }{}M}{} }{}-}{}-}{}>}{} }{}N}{}[}{}"}{}R}{}e}{}S}{}_}{}w}{}f}{}"}{}]}{}
-}{} }{} }{}M}{} }{}-}{}-}{}>}{} }{}O}{}[}{}"}{}C}{}o}{}h}{}e}{}r}{}e}{}n}{}c}{}y}{}"}{}]}{}
-}{} }{} }{}M}{} }{}-}{}-}{}>}{} }{}P}{}[}{}"}{}D}{}O}{}P}{}"}{}]}{}
-}{} }{} }{}N}{} }{}-}{}-}{}>}{}|}{}E}{}i}{}g}{}e}{}n}{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}|}{} }{}Q}{}[}{}"}{} }{}e}{}p}{}s}{}i}{}l}{}o}{}n}{}_}{}k}{}"}{}]}{}
-}{} }{} }{}M}{} }{}-}{}-}{}>}{}|}{}E}{}i}{}g}{}e}{}n}{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}|}{} }{}Q}{}
-}{}
-}{} }{} }{}%}{}%}{}=}{}=}{}=}{} }{}S}{}t}{}y}{}l}{}e}{}s}{} }{}=}{}=}{}=}{}%}{}%}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}i}{}n}{}p}{}u}{}t}{}S}{}t}{}y}{}l}{}e}{} }{} }{} }{} }{}f}{}i}{}l}{}l}{}:}{}#}{}f}{}0}{}f}{}8}{}f}{}f}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}t}{}f}{}S}{}t}{}y}{}l}{}e}{} }{} }{} }{} }{} }{} }{} }{}f}{}i}{}l}{}l}{}:}{}#}{}e}{}8}{}f}{}4}{}f}{}c}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}c}{}s}{}S}{}t}{}y}{}l}{}e}{} }{} }{} }{} }{} }{} }{} }{}f}{}i}{}l}{}l}{}:}{}#}{}f}{}9}{}f}{}0}{}f}{}f}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}d}{}e}{}c}{}o}{}m}{}p}{}S}{}t}{}y}{}l}{}e}{} }{} }{} }{}f}{}i}{}l}{}l}{}:}{}#}{}f}{}0}{}f}{}f}{}f}{}0}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}S}{}t}{}y}{}l}{}e}{} }{}f}{}i}{}l}{}l}{}:}{}#}{}f}{}f}{}f}{}8}{}d}{}c}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{}D}{}e}{}f}{} }{}w}{}f}{}S}{}t}{}y}{}l}{}e}{} }{} }{} }{} }{} }{} }{} }{}f}{}i}{}l}{}l}{}:}{}#}{}f}{}f}{}e}{}4}{}e}{}1}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}:}{}#}{}3}{}3}{}3}{},}{}s}{}t}{}r}{}o}{}k}{}e}{}-}{}w}{}i}{}d}{}t}{}h}{}:}{}1}{}p}{}x}{};}{}
-}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}A}{},}{}B}{} }{}i}{}n}{}p}{}u}{}t}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}C}{} }{}t}{}f}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}D}{},}{}E}{} }{}c}{}s}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}F}{},}{}G}{},}{}H}{} }{}d}{}e}{}c}{}o}{}m}{}p}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}I}{},}{}J}{},}{}K}{},}{}L}{} }{}a}{}n}{}a}{}l}{}y}{}s}{}i}{}s}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{} }{} }{}c}{}l}{}a}{}s}{}s}{} }{}M}{},}{}N}{},}{}O}{},}{}P}{},}{}Q}{} }{}w}{}f}{}S}{}t}{}y}{}l}{}e}{};}{}
-}{}
-}{}```
+flowchart TD
+  %%=== Input Signals ===%%
+  subgraph Input["Input Signals"]
+    direction TB
+    A["B_1[n], B_2[n], B_3[n]"]
+  end
+
+  %%=== Avg Background Field ===%%
+  A --> B["\⟨B\⟩<br/>Avg Background Field"]
+
+  %%=== Time–Frequency Transform ===%%
+  A -->|STFT or CWT| C["B̂_i(f,n)"]
+  
+  %%=== Cross–Spectral Estimation ===%%
+  subgraph Matrix["Construct Spectral Matrix"]
+  	direction LR
+  	C -->|Outer Product| D["B̂_i B̂_j^*"]
+  	D -->|Smoothing time freq| E["S_ij(f)"]
+  end
+  %%=== Spectral Decomposition ===%%
+  E -->|Form 6×3| F["S_6 times3"]
+  F -->|Real Part| G["ReS_3 times3"]
+  F -->|Imag Part| H["ImS_3 times3"]
+
+  %%=== Analysis Methods ===%%
+  F -->|SVD<br/>Santoňlík et al. 2003| I["k, F, WNA"]
+  G -->|Eigenanalysis<br/> McPherron 1972| J["k,  WNA"]
+  H -->|Eigenanalysis<br/> Means 1972| K["k,  WNA"]
+  E -->|FAC| L["B_\∥, B_LH, B_RH,  epsilon_B,  delta B_\∥/ delta B"]
+  B -->|Combine background| L
+
+  %%=== Wave Frame Analysis ===%%
+  E -->|Combine matrix| M["S_wf(3 times3)"]
+  I -->|Combine k| M
+  M --> N["ReS_wf"]
+  M --> O["Coherency"]
+  M --> P["DOP"]
+  N -->|Eigenanalysis| Q[" epsilon_k"]
+  M -->|Eigenanalysis| Q
+
+  %%=== Styles ===%%
+  classDef inputStyle    fill:#f0f8ff,stroke:#333,stroke-width:1px;
+  classDef tfStyle       fill:#e8f4fc,stroke:#333,stroke-width:1px;
+  classDef csStyle       fill:#f9f0ff,stroke:#333,stroke-width:1px;
+  classDef decompStyle   fill:#f0fff0,stroke:#333,stroke-width:1px;
+  classDef analysisStyle fill:#fff8dc,stroke:#333,stroke-width:1px;
+  classDef wfStyle       fill:#ffe4e1,stroke:#333,stroke-width:1px;
+
+  class A,B inputStyle;
+  class C tfStyle;
+  class D,E csStyle;
+  class F,G,H decompStyle;
+  class I,J,K,L analysisStyle;
+  class M,N,O,P,Q wfStyle;
+
+```
 
 
 

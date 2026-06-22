@@ -4,15 +4,15 @@
 
 > **[(Continuous) Fourier Transform (CFT, or FT)](https://en.wikipedia.org/wiki/Fourier_transform)** provide the perfect way to convert the observed time series into the dual space, ***Frequency domain***. Its definition can be written as follows
 $$
-\begin{align}
+\begin{align*}
 X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t:=\mathcal{F}[x(t)]
-\end{align}
+\end{align*}
 $$
 >$\mathcal{F}$ denotes the Fourier transform operator.  This transform is invertible and the inverse (continuous) Fourier transform can be given as:
 $$
-\begin{align}
+\begin{align*}
 x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X(f)]
-\end{align}
+\end{align*}
 $$
 
 <!-- fig-tabset:figure_4types_of_ft.png -->
@@ -22,7 +22,7 @@ $$
 
 <img src="Figure/figure_4types_of_ft.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 6</small>
+### Code
 
 ```python
 import numpy as np
@@ -97,19 +97,19 @@ plt.show()
 
 However, a physical sample can only cover at discrete time nodes. Thus, ***<u>Discrete-Time Fourier Transform (DTFT)</u>*** presents an alternative expression in:
 $$
-\begin{align}
+\begin{align*}
 X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\delta t)}
-\end{align}
+\end{align*}
 $$
 
 where $x[n]=x(n\cdot\delta t)$ stands for a discrete signal and $\delta t$ (`dt`) is the sampling period. 
 
 This infinite-length discrete signal is still unrealistic. For a finite signal, the ***<u>Discrete Fourier Transform (DFT)</u>*** is the only one that applicable:
 $$
-\begin{align}
+\begin{align*}
 X[k] := X(k\cdot \delta f) & = \sum_{n=0}^N x(n\delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
 & = \sum_{n=0}^N x[n] e^{-2\pi i\cdot k \cdot \delta f \cdot t} \, \delta  t
-\end{align}
+\end{align*}
 $$
 
 and the yielding frequency is also discrete with a frequency interval of $\delta f = 1/(N\cdot\delta t)$, where $N$ is the total number of samples. The multiplier $k$ is an integer ranging from $0$ to $N-1$. But, **$X[k]$ provide no additional information beyond $k=N/2$** for a real-valued signal, as it is **symmetric about** $k=N/2$, as a manifestation of the Nyquist-Shannon sampling theorem.
@@ -238,10 +238,10 @@ The only two addition things to do are
 
 When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. 
 $$
-\begin{align}
+\begin{align*}
 X[k] & = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t\\
 & \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t
-\end{align}
+\end{align*}
 $$
 However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.
 
@@ -252,7 +252,7 @@ However, if the total sampling duration does not exactly match an integer multip
 
 <img src="Figure/figure_dft_spectral_leakage_window.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 24</small>
+### Code
 
 ```python
 import numpy as np
@@ -359,10 +359,10 @@ Different window functions (e.g., **<u>*rectangular, Hamming, Hanning, Blackman*
 
 The [Hanning window](https://en.wikipedia.org/wiki/Hann_function), which is a very wide used window function, can be written as:
 $$
-\begin{align}
+\begin{align*}
 w(t)&=\frac{1}{2}\left[1-\mathrm{cos}(2\pi t)\right]\\
 w[n]&=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
-\end{align}
+\end{align*}
 $$
 
 It can be implemented in `numpy` as follow:
@@ -382,9 +382,9 @@ However, applying a window also reduce the signal’s amplitude and energy near 
 
 The Hanning window has an average amplitude of $1/2=\int_0^1 w(x)\mathrm{d}x$ and an average energy of 
 $$
-\begin{align}
+\begin{align*}
 \int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
-\end{align}
+\end{align*}
 $$
 
 A more quantitative estimation of the signal amplitude or energy can be given by using a normalized window function.
@@ -443,7 +443,7 @@ Some other window functions are also supported by `numpy` and `scipy`, which is 
 
 <img src="Figure/figure_window_functions.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 20</small>
+### Code
 
 ```python
 plt.close()
@@ -508,6 +508,21 @@ plt.show()
 
 **As the magnitude and energy spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.**
 
+::: {.callout-tip}
+## Which window should I pick?
+
+Every window trades **main-lobe width** (frequency resolution) against **side-lobe level** (leakage suppression). Walk the decision the same way each time:
+
+- **General-purpose default → Hann.** A good balance of resolution and leakage; a safe choice when you have no special requirement.
+- **Two tones of *similar* amplitude sitting close together → narrowest main lobe.** Use **Rectangular (boxcar)** — but only when the record holds an integer number of cycles (otherwise leakage dominates). Otherwise step down to **Hann/Hamming**.
+- **A *weak* tone hiding next to a *strong* one → deepest side-lobes.** Use **Blackman**, or **Kaiser with large β** (e.g. β ≳ 8), to keep the strong tone's leakage from burying the weak one.
+- **You want one knob to sweep the trade-off → Kaiser(β).** β → 0 approaches the rectangular window (best resolution), large β approaches Blackman (best leakage suppression).
+- **Accurate *amplitude* of an off-bin tone matters more than resolution → flat-top** (`scipy.signal.windows.flattop`); its wide main lobe keeps the peak amplitude error below ~0.01 dB.
+- **Tapering only the edges of a transient while keeping most samples at unit gain → Tukey(α)** with small α.
+
+Rule of thumb: start with Hann, and only move toward Blackman/Kaiser when a nearby strong component is leaking onto the feature you care about, or toward boxcar/flat-top when resolution or amplitude accuracy is the binding constraint.
+:::
+
 ## Sampling as a Rectangular Window
 
 It is interesting to note that, when you finitely sample a continuous signal, you are actually multiplying the continuous signal by a rectangular window (i.e., the sampling function). This rectangular window will also introduce spectral leakage. Therefore, even if you do not apply any window function, the rectangular window is still applied implicitly.
@@ -524,25 +539,36 @@ Despite many methods toward this problem have been given, a very beautiful insig
 $$
 \int_0^\infty \frac{\mathrm{sin}x}{x}\ \mathrm{e}^{i2\pi x\times0}\ \mathrm{d}x=\mathcal{F}\left[\mathrm{sinc}(x)\right](0)
 $$
-This integer is nothing but the zero-frequency coefficient of $$\mathcal{F}\left[\mathrm{sinc}(x)\right]$$ , which is just known by us a subsection earlier.
+This integer is nothing but the zero-frequency coefficient of $\mathcal{F}[\mathrm{sinc}(x)]$, which is just known by us a subsection earlier.
 
-An even more interesting fact is, all the below integral share the same result, $$\pi/2$$
+An even more interesting fact is, all the below integral share the same result, $\pi/2$:
+
 $$
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)}\mathrm{d}x=\frac{\pi}{2}\\
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} \mathrm{d}x=\frac{\pi}{2}\\
-...\\
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/13)}{(x/13)} \mathrm{d}x=\frac{\pi}{2}
+\begin{gather*}
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3}\,\mathrm{d}x=\frac{\pi}{2}\\[4pt]
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3} \frac{\mathrm{sin}(x/5)}{x/5}\,\mathrm{d}x=\frac{\pi}{2}\\[4pt]
+\vdots\\[4pt]
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3} \frac{\mathrm{sin}(x/5)}{x/5} \cdots\frac{\mathrm{sin}(x/13)}{x/13}\,\mathrm{d}x=\frac{\pi}{2}
+\end{gather*}
 $$
+
 until
+
 $$
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/15)}{(x/15)} \mathrm{d}x&=\frac{467807924713440738696537864469}{935615849440640907310521750000}\pi\\
-&\approx\frac{\pi}{2}-2.31\times10^{-11}
+\begin{align*}
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} \cdots\frac{\mathrm{sin}(x/15)}{(x/15)} \mathrm{d}x
+&= \frac{467807924713440738696537864469}{935615849440640907310521750000}\pi\\
+&\approx \frac{\pi}{2}-2.31\times10^{-11}
+\end{align*}
 $$
+
 These sinc functions have the square Fourier transform of
+
 $$
 \mathcal{F}\left[\frac{\mathrm{sin}(x/N)}{(x/N)}\right]=\mathrm{rect}(Nk)
 $$
-Convolving a function with such a rectangular function means a **sliding average** to the original function. Each time we adding a multiplication term inside the integral, we equivalently apply a sliding average with window length of $$1/N$$ to the original unitary rectangular function. These sliding averages push the sharp edge at $$x=\pm 0.5$$ toward the center with a step of $$1/N$$, the window length. At the 7 times, the yards gained reaches $$1$$, and the DC component, which is the integral value, got took down and no longer $$\pi /2$$.
+
+Convolving a function with such a rectangular function means a **sliding average** to the original function. Each time we adding a multiplication term inside the integral, we equivalently apply a sliding average with window length of $1/N$ to the original unitary rectangular function. These sliding averages push the sharp edge at $x=\pm 0.5$ toward the center with a step of $1/N$, the window length. At the 7 times, the yards gained reaches $1$, and the DC component, which is the integral value, got took down and no longer $\pi/2$.
 
 ## Fence Effect and Padding
 
@@ -561,7 +587,7 @@ Therefore, a common strategy to mitigate the fence effect is to increase the tot
 
 <img src="Figure/figure_dft_fence_effect_zero_padding.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 30</small>
+### Code
 
 ```python
 import numpy as np
@@ -651,7 +677,7 @@ Package `pywt` supports several [other padding types](https://pywavelets.readthe
 
 <img src="Figure/figure_padding_type.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 28</small>
+### Code
 
 ```python
 # synthetic test signal
@@ -769,5 +795,88 @@ where `pad_widths` is a tuple of two integers indicating the number of values pa
 
 ## Application: Stiffness of a Piano String
 
+An ideal flexible string obeys the wave equation and produces overtones at exact integer multiples of the fundamental frequency $f_1$. A real piano string, however, has **bending stiffness** — it behaves like a stiff beam, governed by the Euler–Bernoulli equation:
+
 $$
-\mu \frac{\partial^2 y}{\partial t^2}=T\frac{\partial^2 y}{\partial x^2}-ESK\frac
+\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2} - EI\frac{\partial^4 y}{\partial x^4}
+$$
+
+where $\mu$ is the linear mass density, $T$ is the tension, $E$ is Young's modulus, and $I$ is the second moment of area of the cross-section. Solving this equation with fixed-end boundary conditions at $x = 0$ and $x = L$ gives the normal-mode frequencies:
+
+$$
+f_n = n f_1 \sqrt{1 + B n^2}, \qquad B = \frac{\pi^2 E I}{T L^2}
+$$
+
+The dimensionless **inharmonicity coefficient** $B$ causes each overtone to be stretched slightly sharp relative to the ideal harmonic series. For a concert grand piano at middle C ($f_1 \approx 261.6\,\mathrm{Hz}$), $B \sim 10^{-4}$. The deviation is small per octave but accumulates — by the 16th partial the frequency is $\approx 1\,\%$ sharp — which is why piano tuners apply **octave stretch**: they tune octaves wider than a perfect $2\!:\!1$ ratio so adjacent partials of high and low notes beat less.
+
+Spectral analysis makes this inharmonicity directly measurable. The Welch PSD of a piano note shows peaks at the partial frequencies; fitting $f_n = n f_1\sqrt{1+Bn^2}$ to the detected peak positions recovers $B$ with no contact measurement of the string.
+
+<!-- fig-tabset:figure_piano_harmonic.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_piano_harmonic.png" width="100%"/>
+
+### Code
+
+```python
+from scipy.signal import welch, find_peaks
+from scipy.optimize import curve_fit
+
+# ── Synthesise middle-C piano note (16 inharmonic partials) ──────────────
+f1 = 261.63          # fundamental – middle C [Hz]
+B  = 2.6e-4          # inharmonicity coefficient (concert grand, C4)
+fs = 44_100          # sample rate [Hz]
+N  = int(fs * 2.0)   # 2-second note
+t  = np.arange(N) / fs
+
+sig = np.zeros(N)
+for n in range(1, 17):
+    fn   = n * f1 * np.sqrt(1 + B * n**2)
+    sig += (1.0 / n**0.65) * np.sin(2 * np.pi * fn * t) * np.exp(-t / (0.6 + 3.0 / n))
+sig += 0.008 * np.random.default_rng(42).standard_normal(N)
+
+# ── Welch PSD ─────────────────────────────────────────────────────────────
+freq, psd = welch(sig, fs=fs, nperseg=N // 4, window='hann')
+
+# ── Harmonic peak detection ───────────────────────────────────────────────
+peak_idx, _ = find_peaks(np.log10(psd + 1e-20), prominence=0.3,
+                          distance=int(f1 * 0.7 / (freq[1] - freq[0])))
+peak_idx = peak_idx[freq[peak_idx] < 5000]
+n_det    = peak_idx.size
+n_nums   = np.arange(1, n_det + 1)
+
+# ── Fit inharmonicity model ───────────────────────────────────────────────
+popt, _ = curve_fit(lambda n, B: f1 * n * np.sqrt(1 + B * n * n),
+                    n_nums, freq[peak_idx], p0=[1e-4])
+B_fit = popt[0]
+
+# ── Plot ──────────────────────────────────────────────────────────────────
+plt.close()
+plt.figure(figsize=(8, 4))
+ax1 = plt.subplot(1, 2, 1)
+ax2 = plt.subplot(1, 2, 2)
+
+ax1.semilogy(freq, psd, 'k-', lw=0.8)
+ax1.semilogy(freq[peak_idx], psd[peak_idx], 'C0o', ms=4)
+ax1.set_xlim(0, 5000)
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_ylabel('Power Spectral Density [Arb$^2$/Hz]')
+
+n_dense = np.linspace(0.8, n_det + 0.3, 300)
+ax2.plot(n_nums, freq[peak_idx], 'C0o', ms=4, label='Measured peaks')
+ax2.plot(n_dense, f1 * n_dense, 'k--', alpha=0.6, label='$nf_1$  (ideal)')
+ax2.plot(n_dense, f1 * n_dense * np.sqrt(1 + B_fit * n_dense**2),
+         'C1-', lw=1.5, label=fr'Fit  $B={B_fit:.2e}$')
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(2))
+ax2.set_xlabel('Harmonic Number')
+ax2.set_ylabel('Frequency [Hz]')
+ax2.legend(loc='upper left', ncol=1, labelcolor=['C0', 'k', 'C1'], frameon=False)
+
+plt.suptitle('Piano String Inharmonicity', **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_piano_harmonic.png', bbox_inches='tight', dpi=300)
+```
+
+:::

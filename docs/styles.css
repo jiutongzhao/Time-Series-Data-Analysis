@@ -23,7 +23,7 @@
   --line-height: 1.7;
 }
 
-[data-bs-theme="dark"] {
+body.quarto-dark {
   --accent: #6aa9e6;
   --accent-soft: #1d2a3d;
   --accent-strong: #b9d6f4;
@@ -99,7 +99,7 @@ code {
   border-radius: 4px;
   color: #b53356;
 }
-[data-bs-theme="dark"] code { color: #ff8da1; }
+body.quarto-dark code { color: #ff8da1; }
 
 pre, .sourceCode {
   font-family: var(--font-mono);
@@ -199,6 +199,7 @@ blockquote {
   color: var(--muted);
   font-style: normal;
   border-radius: 0 6px 6px 0;
+  text-align: left;
 }
 blockquote p { margin: 0.4em 0; }
 

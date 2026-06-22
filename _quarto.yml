@@ -28,10 +28,12 @@ project:
     - gallery/dwt_image.qmd
     - gallery/aliasing.qmd
     - gallery/stft_cwt.qmd
+    - gallery/piano.qmd
   resources:
     # Figures and data live at project root; Quarto copies them into docs/
     - Figure/
     - Data/indian_cuckoo_short.wav
+    - Data/gearbox_spectraquest.npz
     - styles.css
     # figure_code_map.js is lazy-loaded on first figure click (figure_modal.js is inlined).
     - js/figure_code_map.js
@@ -49,60 +51,31 @@ website:
     style: docked
     collapse-level: 2
     contents:
-      - text: "Home"
-        file: index.qmd
-      - section: "Getting Started"
-        contents:
-          - text: "Preface"
-            file: chap0_preface.qmd
-      - section: "Core Concepts"
-        contents:
-          - text: "1. Data Initialization"
-            file: chap1.qmd
-          - text: "2. Frequency Domain"
-            file: chap2.qmd
-          - text: "3. Power Spectral Density"
-            file: chap3.qmd
-          - text: "4. More about FFT"
-            file: chap4.qmd
-      - section: "Advanced Topics"
-        contents:
-          - text: "5. Noise"
-            file: chap5.qmd
-          - text: "6. Signal Processing"
-            file: chap6.qmd
-          - text: "7. Time-Frequency Analysis"
-            file: chap7.qmd
-          - text: "8. Multi-Channel Signals"
-            file: chap8.qmd
-      - section: "Reference"
-        contents:
-          - text: "Appendix"
-            file: chap10_appendix.qmd
-          - text: "Changelog"
-            file: chap_todo.qmd
-      - section: "Gallery"
-        contents:
-          - text: "All Examples"
-            file: gallery.qmd
-          - text: "Indian Cuckoo Song"
-            file: gallery/cuckoo.qmd
-          - text: "Sunspot Cycle"
-            file: gallery/sunspot.qmd
-          - text: "Exoplanet 51 Peg b"
-            file: gallery/exoplanet.qmd
-          - text: "Gear-Box Fault Detection"
-            file: gallery/gearbox.qmd
-          - text: "AO–Baltic Coherence"
-            file: gallery/coherence.qmd
-          - text: "Spectral Leakage & Windowing"
-            file: gallery/windowing.qmd
-          - text: "DWT Image Compression"
-            file: gallery/dwt_image.qmd
-          - text: "Aliasing"
-            file: gallery/aliasing.qmd
-          - text: "STFT vs. CWT"
-            file: gallery/stft_cwt.qmd
+      - text: "Preface"
+        file: chap0_preface.qmd
+      - text: "Gallery"
+        file: gallery.qmd
+      - text: "1. Data Initialization"
+        file: chap1.qmd
+      - text: "2. Frequency Domain"
+        file: chap2.qmd
+      - text: "3. Power Spectral Density"
+        file: chap3.qmd
+      - text: "4. More about FFT"
+        file: chap4.qmd
+      - text: "5. Noise"
+        file: chap5.qmd
+      - text: "6. Signal Processing"
+        file: chap6.qmd
+      - text: "7. Time-Frequency Analysis"
+        file: chap7.qmd
+      - text: "8. Multi-Channel Signals"
+        file: chap8.qmd
+      - text: "Reference"
+      - text: "Appendix"
+        file: chap10_appendix.qmd
+      - text: "Changelog"
+        file: chap_todo.qmd
   page-footer:
     center: "© 2024–2026 Jiutong Zhao · Content CC BY 4.0 · Code MIT"
 
@@ -113,7 +86,8 @@ format:
       dark: darkly
     css: styles.css
     include-in-header:
-      file: _includes/fonts.html
+      - file: _includes/fonts.html
+      - file: _includes/navbar-python.html
     include-after-body:
       file: _includes/mermaid-init.html
     toc: true

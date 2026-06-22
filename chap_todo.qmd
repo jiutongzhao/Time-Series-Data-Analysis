@@ -12,7 +12,13 @@ title: "Changelog & Roadmap"
 
 ## Upcoming
 
-1. Add an example for the Kalman Filter (GPS + IMU fusion).
+1. **Pair every core concept with a real-world example.** Several concepts are still taught with synthetic sine waves only; replace or supplement each with a worked example on real data, in the spirit of the Gallery. Priority gaps:
+   - **Ch.2** — windowing / spectral leakage on 50/60 Hz power-line interference in an ECG/EEG trace.
+   - **Ch.4** — Gibbs phenomenon on an actual discontinuity (square wave / seismic P-wave onset); the current example uses a smooth multi-tone signal and does not show the overshoot.
+   - **Ch.5** — AR(1) on a real climate/financial series; quantization & shot noise on real ADC / photon-counting data.
+   - **Ch.7** — STFT/CWT on seismic or speech data; DWT denoising on EEG/ECG instead of a synthetic sinusoid.
+   - **Ch.8** — an end-to-end PCA → spectral-matrix → SVD → wave-vector/polarization pipeline on real magnetometer data (Cluster / Arase).
+2. Add an example for the Kalman Filter (GPS + IMU fusion).
 2. Cover the related Fourier / Hankel / Radon / Abel transforms and spherical harmonics in a dedicated chapter.
 3. End-to-end runnable test of every chapter notebook in CI.
 4. Flesh out chapter 9 — *Usage Examples* — with one or two end-to-end physics case studies.

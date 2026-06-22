@@ -31,7 +31,7 @@ These color names condense how energy spreads across frequencies and guide filte
 
 <img src="Figure/figure_noise.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 45</small>
+### Code
 
 ```python
 import numpy as np
@@ -153,7 +153,7 @@ The uniformly distributed requirement can be fulfilled by the full-amplitude tri
 
 <img src="Figure/figure_quantization_noise.png" width="100%"/>
 
-### Code  <small>chap5.ipynb · cell 6</small>
+### Code
 
 ```python
 plt.close()
@@ -241,7 +241,7 @@ Thus, the $PSD$ noise level increases 10 dB for each 10-fold increase in signal 
 
 <img src="Figure/figure_shot_noise.png" width="100%"/>
 
-### Code  <small>chap5.ipynb · cell 4</small>
+### Code
 
 ```python
 plt.close()
@@ -381,11 +381,11 @@ From the power spectra of noises, one can see that the PSD of the generated nois
 
 The Fourier coefficient computed as 
 $$
-\begin{align}
+\begin{align*}
 
 X[k]:=\sum_0^{N-1}x[n]\mathrm{e}^{\mathit{i}2\pi  n k}
 
-\end{align}
+\end{align*}
 $$
 can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n]$ are independent identically distributed (*i.i.d*) random variables, their weighted summation approaches the Normal distribution when *N* is large enough, according to the ***Central Limit Theorem***. Thus, the *PSD*, defined as the square sum of the real and imaginary parts, naturally follows the *Kappa* Distribution with the freedom of 2. The above statement requires that he real and imaginary parts are independent to each other, which can be proved by calculating their covariance.
 
@@ -398,7 +398,7 @@ can be deemed as a <u>**weighted summation**</u> of the signal $x[n]$. When $x[n
 
 <img src="Figure/figure_noise_hist.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 52</small>
+### Code
 
 ```python
 import numpy as np
@@ -491,7 +491,7 @@ For each segement, you can also chose the window function to reduce the spectral
 
 <img src="Figure/figure_noise_welch.png" width="100%"/>
 
-### Code  <small>chap5.ipynb · cell 8</small>
+### Code
 
 ```python
 import numpy as np
@@ -581,9 +581,9 @@ plt.show()
 One can also verify that the distribution of the PSD convert to *Gamma* Distribution, which has a ***Probability Density Function (PDF)*** of:
 
 $$
-\begin{align}
+\begin{align*}
 PDF(x; \alpha, \lambda)=\frac{\lambda^\alpha}{\Gamma(\alpha)} x ^{\alpha - 1} e^{-\lambda x}
-\end{align}
+\end{align*}
 $$
 
 The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \lambda^2$. When the number of segments ($\alpha$) decrease/increase to 1/$+\infty$, the Gamma distribution degenerate to exponential/normal distribution.
@@ -595,7 +595,7 @@ The mean and variance of this distribution is $\alpha/\lambda$ and $\alpha / \la
 
 <img src="Figure/figure_gamma_distribution.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 60</small>
+### Code
 
 ```python
 import numpy as np
@@ -676,7 +676,7 @@ Apart from splitting the signal into several segments, one can also downsample t
 
 <img src="Figure/figure_noise_blackman_tukey.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 57</small>
+### Code
 
 ```python
 import numpy as np
@@ -780,7 +780,7 @@ In other words, the deterministic signal provides a **complex offset** (mean $\m
 
 <img src="Figure/figure_signal_over_noise_hist.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 55</small>
+### Code
 
 ```python
 import numpy as np

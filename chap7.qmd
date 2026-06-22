@@ -27,7 +27,7 @@ frequency_stft = np.fft.rfftfreq(window_hann, d=dt)
 
 <img src="Figure/figure_stft.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 72</small>
+### Code
 
 ```python
 
@@ -164,7 +164,7 @@ Although the STFT can represent a signal on the time–frequency plane, it does 
 
 <img src="Figure/figure_stft_vs_cwt.png" width="100%"/>
 
-### Code  <small>chap7.ipynb · cell 34</small>
+### Code
 
 ```python
 import matplotlib.pyplot as plt
@@ -253,7 +253,7 @@ The **wavelet transform** turns this static trade-off into an **adaptive resolut
 
 <img src="Figure/figure_wavelet.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 74</small>
+### Code
 
 ```python
 import pywt
@@ -515,7 +515,7 @@ We generate a noisy sinusoidal signal and denoise it using soft thresholding.
 
 <img src="Figure/figure_dwt_denoise.png" width="100%"/>
 
-### Code  <small>chap7.ipynb · cell 20</small>
+### Code
 
 ```python
 # Generate synthetic noisy sinusoidal signal
@@ -666,7 +666,7 @@ for r in ratios:
 
 <img src="Figure/figure_dwt_image_compression.png" width="100%"/>
 
-### Code  <small>chap7.ipynb · cell 30</small>
+### Code
 
 ```python
 plt.close()
@@ -774,7 +774,7 @@ The story starts with the *Gabor window* (1946), a Gaussian-modulated sinusoid t
 
 <img src="Figure/figure_cwt_family.png" width="100%"/>
 
-### Code  <small>chap7.ipynb · cell 16</small>
+### Code
 
 ```python
 import matplotlib.pyplot as plt
@@ -841,7 +841,7 @@ The discrete lineage begins with the step-like *Haar* basis (1910). Jan-Olov Str
 
 <img src="Figure/figure_dwt_family.png" width="100%"/>
 
-### Code  <small>chap7.ipynb · cell 32</small>
+### Code
 
 ```python
 import pywt
@@ -967,11 +967,11 @@ If you want to go deeper into the Morlet wavelet, here are some additional detai
 - **<u>Admissibility</u>**: The strict form of Morlet wavelet should satisfy the **admissibility condition**, which requires the wavelet to have zero mean. However, the standard Morlet wavelet does not strictly satisfy this condition because
 
 $$
-\begin{align}
+\begin{align*}
 \int_{-\infty}^{+\infty} \psi_{approx}(\eta) \mathrm{d}\eta &= \sqrt{2}\pi^{1/4} e^{-\omega_0^2/2}\\
 &= \int_{-\infty}^{+\infty} \boxed{\pi^{-1/4}e^{-\omega_0^2/2}e^{-\eta^2/2}} \mathrm{d}\eta = \int_{-\infty}^{+\infty} \delta\psi(\eta) \mathrm{d}\eta\\
 &\neq 0
-\end{align}
+\end{align*}
 $$
 
 ​	To address this, a correction term is often subtracted to ensure zero mean.
@@ -1001,9 +1001,9 @@ This affects the relationship between scale and equivalent Fourier period, as we
 
 - **<u>Equivalent Fourier Period</u>:** For Morlet wavelets with a small $\omega_0$, the Gaussian envelope $e^{-\eta^2/2}$ dominates over the carrier oscillation $e^{-i\omega_0\eta}$. As a result, the CWT power spectrum of an input sine wave no longer peaks at the naive period $T = 2\pi/\omega_0$. Instead, its maximum shifts to the equivalent Fourier period $T_{\mathrm{eq}}$, which more accurately captures the signal’s power distribution in the frequency domain.
   $$
-  \begin{align}
+  \begin{align*}
   s=\arg\max_s \left|\hat{\psi}\left(\frac{2\pi s}{T_{eq}}\right)\right|\\
-  \end{align}
+  \end{align*}
   $$
   The equivalent Fourier period can be found by solving the equation:
 

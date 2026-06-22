@@ -120,6 +120,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <noscript>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
 </noscript>
+<style>
+.navbar-brand-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.navbar-brand-sub {
+  font-size: 0.58em;
+  font-weight: 400;
+  opacity: 0.68;
+  align-self: flex-end;
+  letter-spacing: 0.07em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: -1px;
+}
+.navbar-brand-sub svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var titleSpan = document.querySelector('span.navbar-title');
+  if (!titleSpan) return;
+  var title = titleSpan.textContent.trim();
+  var wrap = document.createElement('span');
+  wrap.className = 'navbar-brand-wrap';
+  wrap.innerHTML =
+    '<span>' + title + '</span>' +
+    '<span class="navbar-brand-sub">with ' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-label="Python">' +
+        '<defs>' +
+          '<linearGradient id="nb-py1" x1="70.252" y1="1237.476" x2="170.659" y2="1098.827" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="nb-py2" x1="209.474" y1="1098.811" x2="201.945" y2="1240.2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path fill="url(#nb-py1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411H63.5v3.137H29.245c-7.196 0-13.328 4.226-15.249 13.918-2.17 11.408-2.342 18.556 0 29.513 1.666 8.108 5.184 13.918 12.38 13.918h8.102V73.809c0-8.811 7.712-16.543 15.249-16.543H71.76c6.529 0 12.346-5.68 12.346-12.05V15.833c0-6.196-5.568-10.522-12.346-11.845-4.248-.75-8.638-1.019-8.369-.999zm-7.678 7.543c2.501 0 4.617 2.241 4.617 4.84 0 2.499-2.116 4.667-4.617 4.667-2.601 0-4.782-2.168-4.782-4.667 0-2.6 2.181-4.84 4.782-4.84z"/>' +
+        '<path fill="url(#nb-py2)" d="M91.682 28.38v10.966c0 9.122-7.723 16.476-15.249 16.476H60.501c-6.269 0-12.346 5.743-12.346 12.207v22.55c0 6.196 5.568 10.724 12.346 11.843 7.803 1.253 14.573 1.625 22.51 0 5.995-1.094 12.346-4.797 12.346-11.843v-9.412H71.76v-3.137h34.733c7.196 0 9.798-5.015 12.346-13.878 2.578-9.015 2.478-17.655 0-29.513-1.805-8.393-5.084-13.918-12.346-13.918H91.682zm-8.69 37.889c2.601 0 4.782 2.168 4.782 4.667 0 2.599-2.181 4.84-4.782 4.84-2.501 0-4.617-2.241-4.617-4.84 0-2.499 2.116-4.667 4.617-4.667z"/>' +
+      '</svg>' +
+      ' Python</span>';
+  titleSpan.replaceWith(wrap);
+});
+</script>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -356,7 +407,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap2.html">2. Frequency Domain</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap2.html">2. Frequency Domain</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -370,191 +421,79 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Home</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Getting Started</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Core Concepts</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gallery</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap2.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Advanced Topics</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
-      </ul>
+        <li class="sidebar-item">
+ <span class="menu-text">Reference</span>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Gallery</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">All Examples</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/cuckoo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Indian Cuckoo Song</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/sunspot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sunspot Cycle</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/exoplanet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exoplanet 51 Peg b</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/gearbox.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Gear-Box Fault Detection</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/coherence.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">AO–Baltic Coherence</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/windowing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Spectral Leakage &amp; Windowing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/dwt_image.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DWT Image Compression</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/aliasing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aliasing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/stft_cwt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">STFT vs.&nbsp;CWT</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -586,7 +525,7 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap1.html">Core Concepts</a></li><li class="breadcrumb-item"><a href="./chap2.html">2. Frequency Domain</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
@@ -598,18 +537,18 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="fourier-transform">Fourier Transform</h2>
 <blockquote class="blockquote">
 <p><strong><a href="https://en.wikipedia.org/wiki/Fourier_transform">(Continuous) Fourier Transform (CFT, or FT)</a></strong> provide the perfect way to convert the observed time series into the dual space, <strong><em>Frequency domain</em></strong>. Its definition can be written as follows <span class="math display">
-\begin{align}
+\begin{align*}
 X(f) = \int_{-\infty}^{+\infty} x(t) e^{-2\pi i f t} \, \mathrm{d}t:=\mathcal{F}[x(t)]
-\end{align}
+\end{align*}
 </span> <span class="math inline">\mathcal{F}</span> denotes the Fourier transform operator. This transform is invertible and the inverse (continuous) Fourier transform can be given as: <span class="math display">
-\begin{align}
+\begin{align*}
 x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X(f)]
-\end{align}
+\end{align*}
 </span></p>
 </blockquote>
 <!-- fig-tabset:figure_4types_of_ft.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 6</small></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p><img src="Figure/figure_4types_of_ft.png" width="100%"></p>
@@ -685,16 +624,16 @@ x(t)=\int_{-\infty}^{+\infty}X(f) e^{2\pi i f t} \mathrm{d}f:=\mathcal{F^{-1}}[X
 </div>
 </div>
 <p>However, a physical sample can only cover at discrete time nodes. Thus, <strong><em><u>Discrete-Time Fourier Transform (DTFT)</u></em></strong> presents an alternative expression in: <span class="math display">
-\begin{align}
+\begin{align*}
 X(f)=\sum_{n=-\infty}^{+\infty} x[n]\cdot e^{-i2\pi f\cdot (n\delta t)}
-\end{align}
+\end{align*}
 </span></p>
 <p>where <span class="math inline">x[n]=x(n\cdot\delta t)</span> stands for a discrete signal and <span class="math inline">\delta t</span> (<code>dt</code>) is the sampling period.</p>
 <p>This infinite-length discrete signal is still unrealistic. For a finite signal, the <strong><em><u>Discrete Fourier Transform (DFT)</u></em></strong> is the only one that applicable: <span class="math display">
-\begin{align}
+\begin{align*}
 X[k] := X(k\cdot \delta f) &amp; = \sum_{n=0}^N x(n\delta t) e^{-2\pi i \cdot k\cdot\delta f \cdot t} \, \delta  t \\
 &amp; = \sum_{n=0}^N x[n] e^{-2\pi i\cdot k \cdot \delta f \cdot t} \, \delta  t
-\end{align}
+\end{align*}
 </span></p>
 <p>and the yielding frequency is also discrete with a frequency interval of <span class="math inline">\delta f = 1/(N\cdot\delta t)</span>, where <span class="math inline">N</span> is the total number of samples. The multiplier <span class="math inline">k</span> is an integer ranging from <span class="math inline">0</span> to <span class="math inline">N-1</span>. But, <strong><span class="math inline">X[k]</span> provide no additional information beyond <span class="math inline">k=N/2</span></strong> for a real-valued signal, as it is <strong>symmetric about</strong> <span class="math inline">k=N/2</span>, as a manifestation of the Nyquist-Shannon sampling theorem.</p>
 <section id="dft-for-a-sinusoidal-signal" class="level3">
@@ -788,14 +727,14 @@ B\left[\mathrm{e}^{i2\pi l / M}\right] = \sum_{k=0}^N b_k\mathrm{e}^{i2\pi (lk /
 <section id="windowing-effect" class="level2">
 <h2 class="anchored" data-anchor-id="windowing-effect"><a href="https://en.wikipedia.org/wiki/Window_function">Windowing</a> Effect</h2>
 <p>When performing spectral analysis using the DFT, we implicitly assume that the finite-duration signal is periodically extended. <span class="math display">
-\begin{align}
+\begin{align*}
 X[k] &amp; = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M \times N} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t\\
 &amp; \propto \sum_{n=-\infty}^{+\infty} x[n] e^{-2\pi i k {t}/{T}} \, \delta  t
-\end{align}
+\end{align*}
 </span> However, if the total sampling duration does not exactly match an integer multiple of the signal’s intrinsic period, a mismatch arises between the first and last sample points. This mismatch is interpreted by the DFT as a sharp discontinuity—or a jump—at the signal boundary. It arises since the first and last measurements seen by the Fourier operator is next to each other while it is actually not.</p>
 <!-- fig-tabset:figure_dft_spectral_leakage_window.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 24</small></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p><img src="Figure/figure_dft_spectral_leakage_window.png" width="100%"></p>
@@ -901,10 +840,10 @@ X[k] &amp; = \lim_{M\rightarrow+\infty} \frac{1}{2M} \sum_{n=-(M-1)\times N}^{M 
 <p>This artificial discontinuity introduces <strong><em><u><a href="https://en.wikipedia.org/wiki/Spectral_leakage">Spectral Leakage</a></u></em></strong>, causing energy from specific frequency components to spread into adjacent frequencies (called <strong><em><u><a href="https://en.wikipedia.org/wiki/Sidelobes">lobe</a></u></em></strong>, thereby distorting the true spectral content. To mitigate this issue, a <strong>window function</strong>—typically denoted <span class="math inline">{w}(t)</span>—is applied to taper the edges of the signal, reducing the contribution of the jump and suppressing leakage.</p>
 <p>Different window functions (e.g., <strong><u><em>rectangular, Hamming, Hanning, Blackman</em></u></strong>) offer different trade-offs between <strong>frequency resolution</strong> (main-lobe width) and <strong>leakage suppression</strong> (side-lobe attenuation). You should try these window functions yourself and choose the most suitable one.</p>
 <p>The <a href="https://en.wikipedia.org/wiki/Hann_function">Hanning window</a>, which is a very wide used window function, can be written as: <span class="math display">
-\begin{align}
+\begin{align*}
 w(t)&amp;=\frac{1}{2}\left[1-\mathrm{cos}(2\pi t)\right]\\
 w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
-\end{align}
+\end{align*}
 </span></p>
 <p>It can be implemented in <code>numpy</code> as follow:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Symmetric Window, for which w[0] = w[-1]</span></span>
@@ -917,9 +856,9 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>sig <span class="op">*=</span> w</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>However, applying a window also reduce the signal’s amplitude and energy near the boundary. This can introduce ambiguity when interpreting the resulting spectrum or comparing analyses across different window shapes. To ensure physical and quantitative consistency, <strong>normalization</strong> of the window function is often necessary. <strong>Amplitude normalization</strong> ensures that the peak value of the window is one, preserving the local signal scale. <strong>Power normalization</strong> adjusts the window so that the total energy of the signal—defined as the sum of squared values—remains unchanged after windowing. The amplitude and energy normalization is also named <u><strong><span class="math inline">L_1</span> and <span class="math inline">L_2</span> normalization</strong></u> as the amplitude and energy can is proportional to the <span class="math inline">L_1</span> and <span class="math inline">L_2</span> norm of the signal, respectively. The choice of normalization method depends on the analytical goals, and plays a crucial role in ensuring accurate and meaningful spectral results.</p>
 <p>The Hanning window has an average amplitude of <span class="math inline">1/2=\int_0^1 w(x)\mathrm{d}x</span> and an average energy of <span class="math display">
-\begin{align}
+\begin{align*}
 \int_0^1 w^2(x)\mathrm{d} x = \frac{1}{4} \left\{\int_0^1 [1 - 2 \mathrm{cos}(2\pi x) + \mathrm{cos^2}(2\pi x)]\mathrm{d}x \right\}=\frac{1}{4}(1-0+\frac{1}{2}) = \frac{3}{8}
-\end{align}
+\end{align*}
 </span></p>
 <p>A more quantitative estimation of the signal amplitude or energy can be given by using a normalized window function.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Amplitude Normalization (factor of 2)</span></span>
@@ -960,7 +899,7 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 <p>Some other window functions are also supported by <code>numpy</code> and <code>scipy</code>, which is summarized below:</p>
 <!-- fig-tabset:figure_window_functions.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 20</small></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <p><img src="Figure/figure_window_functions.png" width="100%"></p>
@@ -1094,18 +1033,29 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 \int_0^\infty \frac{\mathrm{sin}x}{x}\mathrm{d}x=\frac{\pi}{2}
 </span> Despite many methods toward this problem have been given, a very beautiful insight in this integral can be given by Fourier Transform. As we rewrite this integral to <span class="math display">
 \int_0^\infty \frac{\mathrm{sin}x}{x}\ \mathrm{e}^{i2\pi x\times0}\ \mathrm{d}x=\mathcal{F}\left[\mathrm{sinc}(x)\right](0)
-</span> This integer is nothing but the zero-frequency coefficient of <span class="math display">\mathcal{F}\left[\mathrm{sinc}(x)\right]</span> , which is just known by us a subsection earlier.</p>
-<p>An even more interesting fact is, all the below integral share the same result, <span class="math display">\pi/2</span> <span class="math display">
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)}\mathrm{d}x=\frac{\pi}{2}\\
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} \mathrm{d}x=\frac{\pi}{2}\\
-...\\
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/13)}{(x/13)} \mathrm{d}x=\frac{\pi}{2}
-</span> until <span class="math display">
-\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} ...\frac{\mathrm{sin}(x/15)}{(x/15)} \mathrm{d}x&amp;=\frac{467807924713440738696537864469}{935615849440640907310521750000}\pi\\
-&amp;\approx\frac{\pi}{2}-2.31\times10^{-11}
-</span> These sinc functions have the square Fourier transform of <span class="math display">
+</span> This integer is nothing but the zero-frequency coefficient of <span class="math inline">\mathcal{F}[\mathrm{sinc}(x)]</span>, which is just known by us a subsection earlier.</p>
+<p>An even more interesting fact is, all the below integral share the same result, <span class="math inline">\pi/2</span>:</p>
+<p><span class="math display">
+\begin{gather*}
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3}\,\mathrm{d}x=\frac{\pi}{2}\\[4pt]
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3} \frac{\mathrm{sin}(x/5)}{x/5}\,\mathrm{d}x=\frac{\pi}{2}\\[4pt]
+\vdots\\[4pt]
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{x/3} \frac{\mathrm{sin}(x/5)}{x/5} \cdots\frac{\mathrm{sin}(x/13)}{x/13}\,\mathrm{d}x=\frac{\pi}{2}
+\end{gather*}
+</span></p>
+<p>until</p>
+<p><span class="math display">
+\begin{align*}
+\int_0^\infty \frac{\mathrm{sin}x}{x} \frac{\mathrm{sin}(x/3)}{(x/3)} \frac{\mathrm{sin}(x/5)}{(x/5)} \cdots\frac{\mathrm{sin}(x/15)}{(x/15)} \mathrm{d}x
+&amp;= \frac{467807924713440738696537864469}{935615849440640907310521750000}\pi\\
+&amp;\approx \frac{\pi}{2}-2.31\times10^{-11}
+\end{align*}
+</span></p>
+<p>These sinc functions have the square Fourier transform of</p>
+<p><span class="math display">
 \mathcal{F}\left[\frac{\mathrm{sin}(x/N)}{(x/N)}\right]=\mathrm{rect}(Nk)
-</span> Convolving a function with such a rectangular function means a <strong>sliding average</strong> to the original function. Each time we adding a multiplication term inside the integral, we equivalently apply a sliding average with window length of <span class="math display">1/N</span> to the original unitary rectangular function. These sliding averages push the sharp edge at <span class="math display">x=\pm 0.5</span> toward the center with a step of <span class="math display">1/N</span>, the window length. At the 7 times, the yards gained reaches <span class="math display">1</span>, and the DC component, which is the integral value, got took down and no longer <span class="math display">\pi /2</span>.</p>
+</span></p>
+<p>Convolving a function with such a rectangular function means a <strong>sliding average</strong> to the original function. Each time we adding a multiplication term inside the integral, we equivalently apply a sliding average with window length of <span class="math inline">1/N</span> to the original unitary rectangular function. These sliding averages push the sharp edge at <span class="math inline">x=\pm 0.5</span> toward the center with a step of <span class="math inline">1/N</span>, the window length. At the 7 times, the yards gained reaches <span class="math inline">1</span>, and the DC component, which is the integral value, got took down and no longer <span class="math inline">\pi/2</span>.</p>
 </section>
 <section id="fence-effect-and-padding" class="level2">
 <h2 class="anchored" data-anchor-id="fence-effect-and-padding">Fence Effect and Padding</h2>
@@ -1115,7 +1065,7 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 <p>Therefore, a common strategy to mitigate the fence effect is to increase the total number of samples, thereby moving the frequency bins closer to the signal frequency. This can be achieved by extending the signal duration by adding zeros, so called <strong><em><u>zero-padding</u></em></strong>. Zero-padding does not improve true frequency resolution, but it interpolates between bins, producing smoother spectra and clearer peak locations. It is especially helpful for peak detection, cross-spectral analysis, and visualization, where finer granularity aids interpretation without adding new information.</p>
 <!-- fig-tabset:figure_dft_fence_effect_zero_padding.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 30</small></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <p><img src="Figure/figure_dft_fence_effect_zero_padding.png" width="100%"></p>
@@ -1193,7 +1143,7 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 <p>Package <code>pywt</code> supports several <a href="https://pywavelets.readthedocs.io/en/latest/ref/signal-extension-modes.html">other padding types</a>. These padding types can also be used in Fourier transform to reduce the edge effect. The following figure illustrates the different padding types:</p>
 <!-- fig-tabset:figure_padding_type.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code <small>chap2.ipynb · cell 28</small></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <p><img src="Figure/figure_padding_type.png" width="100%"></p>
@@ -1278,7 +1228,83 @@ Different Pat Padding Mode Supported by pywt.pad
 </section>
 <section id="application-stiffness-of-a-piano-string" class="level2">
 <h2 class="anchored" data-anchor-id="application-stiffness-of-a-piano-string">Application: Stiffness of a Piano String</h2>
-<p>$$ =T-ESK</p>
+<p>An ideal flexible string obeys the wave equation and produces overtones at exact integer multiples of the fundamental frequency <span class="math inline">f_1</span>. A real piano string, however, has <strong>bending stiffness</strong> — it behaves like a stiff beam, governed by the Euler–Bernoulli equation:</p>
+<p><span class="math display">
+\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2} - EI\frac{\partial^4 y}{\partial x^4}
+</span></p>
+<p>where <span class="math inline">\mu</span> is the linear mass density, <span class="math inline">T</span> is the tension, <span class="math inline">E</span> is Young’s modulus, and <span class="math inline">I</span> is the second moment of area of the cross-section. Solving this equation with fixed-end boundary conditions at <span class="math inline">x = 0</span> and <span class="math inline">x = L</span> gives the normal-mode frequencies:</p>
+<p><span class="math display">
+f_n = n f_1 \sqrt{1 + B n^2}, \qquad B = \frac{\pi^2 E I}{T L^2}
+</span></p>
+<p>The dimensionless <strong>inharmonicity coefficient</strong> <span class="math inline">B</span> causes each overtone to be stretched slightly sharp relative to the ideal harmonic series. For a concert grand piano at middle C (<span class="math inline">f_1 \approx 261.6\,\mathrm{Hz}</span>), <span class="math inline">B \sim 10^{-4}</span>. The deviation is small per octave but accumulates — by the 16th partial the frequency is <span class="math inline">\approx 1\,\%</span> sharp — which is why piano tuners apply <strong>octave stretch</strong>: they tune octaves wider than a perfect <span class="math inline">2\!:\!1</span> ratio so adjacent partials of high and low notes beat less.</p>
+<p>Spectral analysis makes this inharmonicity directly measurable. The Welch PSD of a piano note shows peaks at the partial frequencies; fitting <span class="math inline">f_n = n f_1\sqrt{1+Bn^2}</span> to the detected peak positions recovers <span class="math inline">B</span> with no contact measurement of the string.</p>
+<!-- fig-tabset:figure_piano_harmonic.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<p><img src="Figure/figure_piano_harmonic.png" width="100%"></p>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> welch, find_peaks</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> curve_fit</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Synthesise middle-C piano note (16 inharmonic partials) ──────────────</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>f1 <span class="op">=</span> <span class="fl">261.63</span>          <span class="co"># fundamental – middle C [Hz]</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>B  <span class="op">=</span> <span class="fl">2.6e-4</span>          <span class="co"># inharmonicity coefficient (concert grand, C4)</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">44_100</span>          <span class="co"># sample rate [Hz]</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>N  <span class="op">=</span> <span class="bu">int</span>(fs <span class="op">*</span> <span class="fl">2.0</span>)   <span class="co"># 2-second note</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>t  <span class="op">=</span> np.arange(N) <span class="op">/</span> fs</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.zeros(N)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">17</span>):</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    fn   <span class="op">=</span> n <span class="op">*</span> f1 <span class="op">*</span> np.sqrt(<span class="dv">1</span> <span class="op">+</span> B <span class="op">*</span> n<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    sig <span class="op">+=</span> (<span class="fl">1.0</span> <span class="op">/</span> n<span class="op">**</span><span class="fl">0.65</span>) <span class="op">*</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> fn <span class="op">*</span> t) <span class="op">*</span> np.exp(<span class="op">-</span>t <span class="op">/</span> (<span class="fl">0.6</span> <span class="op">+</span> <span class="fl">3.0</span> <span class="op">/</span> n))</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>sig <span class="op">+=</span> <span class="fl">0.008</span> <span class="op">*</span> np.random.default_rng(<span class="dv">42</span>).standard_normal(N)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Welch PSD ─────────────────────────────────────────────────────────────</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>freq, psd <span class="op">=</span> welch(sig, fs<span class="op">=</span>fs, nperseg<span class="op">=</span>N <span class="op">//</span> <span class="dv">4</span>, window<span class="op">=</span><span class="st">'hann'</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Harmonic peak detection ───────────────────────────────────────────────</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>peak_idx, _ <span class="op">=</span> find_peaks(np.log10(psd <span class="op">+</span> <span class="fl">1e-20</span>), prominence<span class="op">=</span><span class="fl">0.3</span>,</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>                          distance<span class="op">=</span><span class="bu">int</span>(f1 <span class="op">*</span> <span class="fl">0.7</span> <span class="op">/</span> (freq[<span class="dv">1</span>] <span class="op">-</span> freq[<span class="dv">0</span>])))</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>peak_idx <span class="op">=</span> peak_idx[freq[peak_idx] <span class="op">&lt;</span> <span class="dv">5000</span>]</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>n_det    <span class="op">=</span> peak_idx.size</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>n_nums   <span class="op">=</span> np.arange(<span class="dv">1</span>, n_det <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Fit inharmonicity model ───────────────────────────────────────────────</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>popt, _ <span class="op">=</span> curve_fit(<span class="kw">lambda</span> n, B: f1 <span class="op">*</span> n <span class="op">*</span> np.sqrt(<span class="dv">1</span> <span class="op">+</span> B <span class="op">*</span> n <span class="op">*</span> n),</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>                    n_nums, freq[peak_idx], p0<span class="op">=</span>[<span class="fl">1e-4</span>])</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>B_fit <span class="op">=</span> popt[<span class="dv">0</span>]</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Plot ──────────────────────────────────────────────────────────────────</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>ax1.semilogy(freq, psd, <span class="st">'k-'</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>ax1.semilogy(freq[peak_idx], psd[peak_idx], <span class="st">'C0o'</span>, ms<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">5000</span>)</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Frequency [Hz]'</span>)</span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Power Spectral Density [Arb$^2$/Hz]'</span>)</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>n_dense <span class="op">=</span> np.linspace(<span class="fl">0.8</span>, n_det <span class="op">+</span> <span class="fl">0.3</span>, <span class="dv">300</span>)</span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>ax2.plot(n_nums, freq[peak_idx], <span class="st">'C0o'</span>, ms<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">'Measured peaks'</span>)</span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a>ax2.plot(n_dense, f1 <span class="op">*</span> n_dense, <span class="st">'k--'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>, label<span class="op">=</span><span class="st">'$nf_1$  (ideal)'</span>)</span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>ax2.plot(n_dense, f1 <span class="op">*</span> n_dense <span class="op">*</span> np.sqrt(<span class="dv">1</span> <span class="op">+</span> B_fit <span class="op">*</span> n_dense<span class="op">**</span><span class="dv">2</span>),</span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>         <span class="st">'C1-'</span>, lw<span class="op">=</span><span class="fl">1.5</span>, label<span class="op">=</span><span class="vs">fr'Fit  </span><span class="dv">$</span><span class="vs">B=</span><span class="sc">{</span>B_fit<span class="sc">:.2e}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>ax2.xaxis.set_major_locator(ticker.MultipleLocator(<span class="dv">2</span>))</span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'Harmonic Number'</span>)</span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'Frequency [Hz]'</span>)</span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>ax2.legend(loc<span class="op">=</span><span class="st">'upper left'</span>, ncol<span class="op">=</span><span class="dv">1</span>, labelcolor<span class="op">=</span>[<span class="st">'C0'</span>, <span class="st">'k'</span>, <span class="st">'C1'</span>], frameon<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Piano String Inharmonicity'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_piano_harmonic.png'</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>, dpi<span class="op">=</span><span class="dv">300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -1856,6 +1882,20 @@ Different Pat Padding Mode Supported by pywt.pad
   document.addEventListener("quarto-color-scheme-toggled", function () {
     location.reload();
   });
+</script>
+
+<!-- Double-click selects the whole paragraph, even across KaTeX spans. -->
+<script>
+document.addEventListener("dblclick", function (e) {
+  if (e.target.closest("pre, code, input, textarea, [contenteditable]")) return;
+  var el = e.target.closest("p, li, td, th, blockquote, figcaption");
+  if (!el) return;
+  var sel = window.getSelection();
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
 </script>
 
 

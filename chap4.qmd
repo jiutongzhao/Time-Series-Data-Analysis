@@ -16,7 +16,7 @@ $$
 
 <img src="Figure/figure_uncertainty_principle.png" width="100%"/>
 
-### Code  <small>chap4.ipynb · cell 14</small>
+### Code
 
 ```python
 import numpy as np
@@ -129,7 +129,7 @@ Although the Fourier transform can perfectly reconstruct **discrete** signal poi
 
 <img src="Figure/figure_gibbs.png" width="100%"/>
 
-### Code  <small>chap2.ipynb · cell 18</small>
+### Code
 
 ```python
 import numpy as np
@@ -192,11 +192,11 @@ $$
 
 which can be easily proved by doing derivative to the both sides of the inverse Fourier transform:
 $$
-\begin{align}
+\begin{align*}
 \frac{\mathrm{d}}{\mathrm{d}t}[x(t)]&=\int_{-\infty}^{+\infty} X(f) (i2\pi f)e^{i 2 \pi f t} \mathrm{d}f\\
 &=\int_{-\infty}^{+\infty} \left[(i2\pi f)\cdot X(f)\right] e^{i 2 \pi f t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}\left[(i2\pi f)\cdot X(f)\right]
-\end{align}
+\end{align*}
 $$
 
 It can be denoted as 
@@ -212,10 +212,10 @@ $$
 It should be noted that this **derivation property change a little bit** for $\Delta x/\Delta t$ in the *DFT*:
 
 $$
-\begin{align}
+\begin{align*}
 \frac{\Delta x(t)}{\Delta  t}&=\int_{-\infty}^{+\infty}X(f) \frac{e^{2\pi i f (t+\Delta t)}-e^{2\pi i f t}}{\Delta t} \mathrm{d}f\\
 &=\mathcal{F}^{-1}\left[\frac{e^{2\pi if \Delta t} - 1}{\Delta t}\cdot X(f)\right]
-\end{align}
+\end{align*}
 $$
 
 The following table summarizes some common properties of the Continuous-Time Fourier Transform (FT) and the Discrete Fourier Transform (DFT/FFT):
@@ -245,9 +245,81 @@ $$
 $$
 and the solution of the thermal diffusion problem can be given by the inverse Fourier transform of $\hat{T}(\mathbf{k},t)$.
 
-<p align = 'center'>
+<!-- fig-tabset:heat_diffusion.gif -->
+::: {.panel-tabset}
+
+### Figure
+
 <img src="Figure/heat_diffusion.gif" width="100%"/>
-</p>
+
+### Code
+
+```python
+import matplotlib.animation
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft2, ifft2, fftfreq
+
+N = 128
+dx = dy = 1.0
+alpha = 1.0          # thermal diffusivity
+T = 100.0
+dt_fdtd = dx**2 / (4 * alpha)   # stability limit for FTCS
+
+kx = 2 * np.pi * fftfreq(N, d=dx)
+ky = 2 * np.pi * fftfreq(N, d=dy)
+kx_grid, ky_grid = np.meshgrid(kx, ky, indexing='ij')
+k2 = kx_grid**2 + ky_grid**2
+
+T_init = np.zeros((N, N))
+T_init[N//4:3*N//4, N//4:3*N//4] = 1.0
+
+T_fdtd  = T_init.copy()
+T_psatd = T_init.copy()
+
+SAMPLE_RATE = 1 / dt_fdtd
+n_frames = int(T * SAMPLE_RATE + 1)
+T_fdtd_sampled  = np.zeros((n_frames, N, N))
+T_psatd_sampled = np.zeros((n_frames, N, N))
+
+for i in range(int(T / dt_fdtd + 1)):
+    t = i * dt_fdtd
+    T_fdtd_sampled[i]  = T_fdtd
+    T_psatd_sampled[i] = T_psatd
+    laplacian = (np.roll(T_fdtd,  1, 0) + np.roll(T_fdtd, -1, 0) +
+                 np.roll(T_fdtd,  1, 1) + np.roll(T_fdtd, -1, 1) - 4*T_fdtd) / dx**2
+    T_fdtd  += alpha * dt_fdtd * laplacian
+    T_psatd  = np.real(ifft2(fft2(T_init) * np.exp(-alpha * k2 * t)))
+
+fig, axes = plt.subplots(1, 2, figsize=(8, 3), sharex=True, sharey=True,
+                         gridspec_kw={'wspace': 0.05, 'bottom': 0.2, 'right': 0.8})
+for ax in axes:
+    ax.set_aspect('equal'); ax.set_xlabel('X')
+    ax.tick_params(color='w', which='both', axis='both')
+axes[0].set_ylabel('Y')
+axes[0].set_title('Finite-Difference')
+axes[1].set_title('Fourier Transform')
+
+pc1 = axes[0].pcolormesh(T_init*np.nan, cmap='bwr', vmax=1, vmin=0)
+pc2 = axes[1].pcolormesh(T_init*np.nan, cmap='bwr', vmax=1, vmin=0)
+cax = fig.add_axes([axes[1].get_position().x1+0.03, axes[1].get_position().y0,
+                    0.02, axes[1].get_position().height])
+plt.colorbar(pc2, cax=cax, label='Temperature [K]')
+text1 = axes[0].text(0.05, 0.95, '0 Iterations', transform=axes[0].transAxes,
+                     fontsize=12, color='w', va='top')
+
+def update(i):
+    pc1.set_array(T_fdtd_sampled[i].ravel())
+    pc2.set_array(T_psatd_sampled[i].ravel())
+    text1.set_text(f'{i} Iterations')
+
+ani = matplotlib.animation.FuncAnimation(fig, update, frames=n_frames,
+                                         interval=30, repeat=False)
+ani.save('Figure/heat_diffusion.gif', writer='pillow', fps=30)
+```
+
+:::
+
 Another application is solving the Maxwell's equation in the vaccum:
 $$
 \frac{\partial \mathbf{E}}{\partial t}=\frac{1}{c^2}\nabla\times \mathbf{B} + \mu_0\mathbf{J}\\
@@ -271,9 +343,104 @@ $$
 
 
 
-<p align = 'center'>
+<!-- fig-tabset:unit_pulse.gif -->
+::: {.panel-tabset}
+
+### Figure
+
 <img src="Figure/unit_pulse.gif" width="100%"/>
-</p>
+
+### Code
+
+```python
+import matplotlib.animation
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft2, ifft2, fftfreq
+
+N = 128; dx = dy = 1.0; c = 1.0; T = 200
+dt_fdtd = dx / c / np.sqrt(2)          # CFL limit (2-D)
+dt_pstd  = np.sqrt(2) / np.pi * dx / c
+
+kx = 2 * np.pi * fftfreq(N, d=dx)
+ky = 2 * np.pi * fftfreq(N, d=dy)
+kx_g, ky_g = np.meshgrid(kx, ky, indexing='ij')
+k = np.sqrt(kx_g**2 + ky_g**2); k[0, 0] = 1e-12
+
+x0 = y0 = N // 2
+X, Y = np.ogrid[:N, :N]
+init_ez = np.exp(-((X-x0)**2 + (Y-y0)**2) / 2)
+
+fields = {name: {'Ez': np.zeros((N,N)), 'Hx': np.zeros((N,N)), 'Hy': np.zeros((N,N))}
+          for name in ('FDTD', 'PSTD', 'PSATD')}
+for f in fields.values(): f['Ez'][:] = init_ez
+
+SAMPLE_RATE = 1 / (7 * dt_pstd)
+n_frames = int(T * SAMPLE_RATE + 1)
+sampled = {name: np.zeros((n_frames, N, N)) for name in fields}
+
+# FDTD (Yee leapfrog)
+t = 0.0; f = fields['FDTD']
+for i in range(int(T / dt_fdtd) + 1):
+    sampled['FDTD'][int(t * SAMPLE_RATE)] = f['Ez']
+    f['Hx'] -= 0.5*dt_fdtd*(np.roll(f['Ez'],-1,1)-f['Ez'])
+    f['Hy'] += 0.5*dt_fdtd*(np.roll(f['Ez'],-1,0)-f['Ez'])
+    f['Ez'] += dt_fdtd*((f['Hy']-np.roll(f['Hy'],1,0))-(f['Hx']-np.roll(f['Hx'],1,1)))
+    f['Hx'] -= 0.5*dt_fdtd*(np.roll(f['Ez'],-1,1)-f['Ez'])
+    f['Hy'] += 0.5*dt_fdtd*(np.roll(f['Ez'],-1,0)-f['Ez'])
+    t += dt_fdtd
+
+# PSTD (spectral spatial, leapfrog time)
+t = 0.0; f = fields['PSTD']
+for i in range(int(T / dt_pstd) + 1):
+    sampled['PSTD'][int(t * SAMPLE_RATE)] = f['Ez']
+    Ez_k = fft2(f['Ez'])
+    f['Hx'] -= dt_pstd * np.real(ifft2(1j * ky_g * Ez_k))
+    f['Hy'] += dt_pstd * np.real(ifft2(1j * kx_g * Ez_k))
+    Hx_k, Hy_k = fft2(f['Hx']), fft2(f['Hy'])
+    f['Ez'] += dt_pstd * np.real(ifft2(1j * kx_g * Hy_k - 1j * ky_g * Hx_k))
+    t += dt_pstd
+
+# PSATD (spectral spatial, analytic time integration)
+t = 0.0; f = fields['PSATD']
+Ez0_k, Hx0_k, Hy0_k = fft2(init_ez), fft2(np.zeros((N,N))), fft2(np.zeros((N,N)))
+for i in range(int(T / dt_pstd) + 1):
+    sampled['PSATD'][int(t * SAMPLE_RATE)] = f['Ez']
+    C, S = np.cos(c*k*t), np.sin(c*k*t)/k
+    f['Ez'] = np.real(ifft2(C*Ez0_k + 1j*c*S*(kx_g*Hy0_k - ky_g*Hx0_k)))
+    t += dt_pstd
+
+fig, axes = plt.subplots(1, 3, figsize=(11, 3), sharex=True, sharey=True,
+                         gridspec_kw={'wspace': 0.15, 'bottom': 0.2, 'right': 0.8})
+for ax in axes:
+    ax.set_aspect('equal'); ax.set_xlabel('X')
+    ax.tick_params(color='w', which='both', axis='both')
+axes[0].set_ylabel('Y')
+for ax, title in zip(axes, ('FDTD', 'PSTD', 'PSATD')): ax.set_title(title)
+
+vmax = 0.1
+pcs = [ax.pcolormesh(init_ez, cmap='Greys', vmax=vmax, vmin=-vmax) for ax in axes]
+cax = fig.add_axes([axes[2].get_position().x1+0.03, axes[2].get_position().y0,
+                    0.02, axes[2].get_position().height])
+plt.colorbar(pcs[2], cax=cax, label='Ez [a.u.]')
+circles = [ax.add_artist(plt.Circle((x0,y0), 0, color='C0', fill=False, ls='--', lw=1.5))
+           for ax in axes]
+text = axes[0].text(0.05, 0.95, '0 Iter', transform=axes[0].transAxes,
+                    fontsize=12, color='w', va='top')
+
+def update(i):
+    for name, pc in zip(('FDTD','PSTD','PSATD'), pcs):
+        pc.set_array(sampled[name][i].ravel())
+    r = (i + 1) / SAMPLE_RATE * c
+    for circle in circles: circle.set_radius(r)
+    text.set_text(f'{int(i / SAMPLE_RATE / dt_fdtd)} Iterations')
+
+ani = matplotlib.animation.FuncAnimation(fig, update, frames=n_frames, interval=30)
+ani.save('Figure/unit_pulse.gif', writer='pillow', fps=10)
+```
+
+:::
+
 However, the Fourier method intrinsically assume a periodic boundary condition of the solution and limit its own applicable situations. More importantly, the Fourier transform takes the whole information from the global area of interest and therefore become parallelization-difficult. This defect becomes even more fatal as the advances in parallelized, GPU-based computation. 
 
 ## FFT Algorithm Performance
@@ -291,7 +458,7 @@ Still, the divide-and-conquer strategy fails when the signal length *N* consists
 
 <img src="Figure/figure_numpy_fft_performance.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 27</small>
+### Code
 
 ```python
 import time
@@ -416,19 +583,19 @@ plt.show()
 
 From the performance test, we observe that signals with prime-number lengths (dark red dots) often incur higher computational costs. For example:
 $$
-\begin{align}
+\begin{align*}
 N&=181=182-1=2^1\times\boxed{7^1\times13^1}-1\\
 N&=197=198-1=2^1\times3^2\times\boxed{11^1}-1\\
-\end{align}
+\end{align*}
 $$
 In contrast, signals with highly composite number lengths (dark blue dots), such as those with lengths being integer powers of 2, usually have the lowest computation time.
 
 However, some prime numbers like: 
 $$
-\begin{align}
+\begin{align*}
 N&=191=192-1=2^6\times3^1-1\\
 N&=199=200-1 = 2^3\times5^2-1
-\end{align}
+\end{align*}
 $$
 can also exhibit relatively efficient performance due to their proximity to highly factorable numbers.
 

@@ -120,6 +120,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <noscript>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
 </noscript>
+<style>
+.navbar-brand-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.navbar-brand-sub {
+  font-size: 0.58em;
+  font-weight: 400;
+  opacity: 0.68;
+  align-self: flex-end;
+  letter-spacing: 0.07em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: -1px;
+}
+.navbar-brand-sub svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var titleSpan = document.querySelector('span.navbar-title');
+  if (!titleSpan) return;
+  var title = titleSpan.textContent.trim();
+  var wrap = document.createElement('span');
+  wrap.className = 'navbar-brand-wrap';
+  wrap.innerHTML =
+    '<span>' + title + '</span>' +
+    '<span class="navbar-brand-sub">with ' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-label="Python">' +
+        '<defs>' +
+          '<linearGradient id="nb-py1" x1="70.252" y1="1237.476" x2="170.659" y2="1098.827" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="nb-py2" x1="209.474" y1="1098.811" x2="201.945" y2="1240.2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path fill="url(#nb-py1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411H63.5v3.137H29.245c-7.196 0-13.328 4.226-15.249 13.918-2.17 11.408-2.342 18.556 0 29.513 1.666 8.108 5.184 13.918 12.38 13.918h8.102V73.809c0-8.811 7.712-16.543 15.249-16.543H71.76c6.529 0 12.346-5.68 12.346-12.05V15.833c0-6.196-5.568-10.522-12.346-11.845-4.248-.75-8.638-1.019-8.369-.999zm-7.678 7.543c2.501 0 4.617 2.241 4.617 4.84 0 2.499-2.116 4.667-4.617 4.667-2.601 0-4.782-2.168-4.782-4.667 0-2.6 2.181-4.84 4.782-4.84z"/>' +
+        '<path fill="url(#nb-py2)" d="M91.682 28.38v10.966c0 9.122-7.723 16.476-15.249 16.476H60.501c-6.269 0-12.346 5.743-12.346 12.207v22.55c0 6.196 5.568 10.724 12.346 11.843 7.803 1.253 14.573 1.625 22.51 0 5.995-1.094 12.346-4.797 12.346-11.843v-9.412H71.76v-3.137h34.733c7.196 0 9.798-5.015 12.346-13.878 2.578-9.015 2.478-17.655 0-29.513-1.805-8.393-5.084-13.918-12.346-13.918H91.682zm-8.69 37.889c2.601 0 4.782 2.168 4.782 4.667 0 2.599-2.181 4.84-4.782 4.84-2.501 0-4.617-2.241-4.617-4.84 0-2.499 2.116-4.667 4.617-4.667z"/>' +
+      '</svg>' +
+      ' Python</span>';
+  titleSpan.replaceWith(wrap);
+});
+</script>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -356,7 +407,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap10_appendix.html">Reference</a></li><li class="breadcrumb-item"><a href="./chap10_appendix.html">Appendix</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap10_appendix.html">Appendix</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -370,191 +421,79 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Home</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Getting Started</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Core Concepts</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gallery</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Advanced Topics</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
-      </ul>
+        <li class="sidebar-item">
+ <span class="menu-text">Reference</span>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Gallery</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">All Examples</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/cuckoo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Indian Cuckoo Song</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/sunspot.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sunspot Cycle</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/exoplanet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exoplanet 51 Peg b</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/gearbox.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Gear-Box Fault Detection</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/coherence.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">AO–Baltic Coherence</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/windowing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Spectral Leakage &amp; Windowing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/dwt_image.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DWT Image Compression</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/aliasing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aliasing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./gallery/stft_cwt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">STFT vs.&nbsp;CWT</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -593,7 +532,7 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap10_appendix.html">Reference</a></li><li class="breadcrumb-item"><a href="./chap10_appendix.html">Appendix</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
@@ -1579,6 +1518,20 @@ W=
   document.addEventListener("quarto-color-scheme-toggled", function () {
     location.reload();
   });
+</script>
+
+<!-- Double-click selects the whole paragraph, even across KaTeX spans. -->
+<script>
+document.addEventListener("dblclick", function (e) {
+  if (e.target.closest("pre, code, input, textarea, [contenteditable]")) return;
+  var el = e.target.closest("p, li, td, th, blockquote, figcaption");
+  if (!el) return;
+  var sel = window.getSelection();
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
 </script>
 
 

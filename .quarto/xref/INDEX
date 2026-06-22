@@ -262,5 +262,8 @@
   },
   "gallery/stft_cwt.qmd": {
     "stft_cwt.html": "6183fc89"
+  },
+  "gallery/piano.qmd": {
+    "piano.html": "794e4eea"
   }
 }

@@ -143,3 +143,17 @@
     location.reload();
   });
 </script>
+
+<!-- Double-click selects the whole paragraph, even across KaTeX spans. -->
+<script>
+document.addEventListener("dblclick", function (e) {
+  if (e.target.closest("pre, code, input, textarea, [contenteditable]")) return;
+  var el = e.target.closest("p, li, td, th, blockquote, figcaption");
+  if (!el) return;
+  var sel = window.getSelection();
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
+</script>

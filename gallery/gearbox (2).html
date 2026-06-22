@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>sunspot – Practical Spectral Analysis</title>
+<title>gearbox – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -120,6 +120,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <noscript>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
 </noscript>
+<style>
+.navbar-brand-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+.navbar-brand-sub {
+  font-size: 0.58em;
+  font-weight: 400;
+  opacity: 0.68;
+  align-self: flex-end;
+  letter-spacing: 0.07em;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: -1px;
+}
+.navbar-brand-sub svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var titleSpan = document.querySelector('span.navbar-title');
+  if (!titleSpan) return;
+  var title = titleSpan.textContent.trim();
+  var wrap = document.createElement('span');
+  wrap.className = 'navbar-brand-wrap';
+  wrap.innerHTML =
+    '<span>' + title + '</span>' +
+    '<span class="navbar-brand-sub">with ' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-label="Python">' +
+        '<defs>' +
+          '<linearGradient id="nb-py1" x1="70.252" y1="1237.476" x2="170.659" y2="1098.827" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#5A9FD4"/><stop offset="1" stop-color="#306998"/>' +
+          '</linearGradient>' +
+          '<linearGradient id="nb-py2" x1="209.474" y1="1098.811" x2="201.945" y2="1240.2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">' +
+            '<stop offset="0" stop-color="#FFD43B"/><stop offset="1" stop-color="#FFE873"/>' +
+          '</linearGradient>' +
+        '</defs>' +
+        '<path fill="url(#nb-py1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411H63.5v3.137H29.245c-7.196 0-13.328 4.226-15.249 13.918-2.17 11.408-2.342 18.556 0 29.513 1.666 8.108 5.184 13.918 12.38 13.918h8.102V73.809c0-8.811 7.712-16.543 15.249-16.543H71.76c6.529 0 12.346-5.68 12.346-12.05V15.833c0-6.196-5.568-10.522-12.346-11.845-4.248-.75-8.638-1.019-8.369-.999zm-7.678 7.543c2.501 0 4.617 2.241 4.617 4.84 0 2.499-2.116 4.667-4.617 4.667-2.601 0-4.782-2.168-4.782-4.667 0-2.6 2.181-4.84 4.782-4.84z"/>' +
+        '<path fill="url(#nb-py2)" d="M91.682 28.38v10.966c0 9.122-7.723 16.476-15.249 16.476H60.501c-6.269 0-12.346 5.743-12.346 12.207v22.55c0 6.196 5.568 10.724 12.346 11.843 7.803 1.253 14.573 1.625 22.51 0 5.995-1.094 12.346-4.797 12.346-11.843v-9.412H71.76v-3.137h34.733c7.196 0 9.798-5.015 12.346-13.878 2.578-9.015 2.478-17.655 0-29.513-1.805-8.393-5.084-13.918-12.346-13.918H91.682zm-8.69 37.889c2.601 0 4.782 2.168 4.782 4.667 0 2.599-2.181 4.84-4.782 4.84-2.501 0-4.617-2.241-4.617-4.84 0-2.499 2.116-4.667 4.617-4.667z"/>' +
+      '</svg>' +
+      ' Python</span>';
+  titleSpan.replaceWith(wrap);
+});
+</script>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
@@ -356,7 +407,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../gallery.html">Gallery</a></li><li class="breadcrumb-item"><a href="../gallery/sunspot.html">Sunspot Cycle</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -370,191 +421,79 @@ window.Quarto = {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Home</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Getting Started</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Core Concepts</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../gallery.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gallery</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Advanced Topics</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
-      </ul>
+        <li class="sidebar-item">
+ <span class="menu-text">Reference</span>
   </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
- <span class="menu-text">Gallery</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">All Examples</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/cuckoo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Indian Cuckoo Song</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/sunspot.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Sunspot Cycle</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/exoplanet.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Exoplanet 51 Peg b</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/gearbox.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Gear-Box Fault Detection</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/coherence.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">AO–Baltic Coherence</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/windowing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Spectral Leakage &amp; Windowing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/dwt_image.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">DWT Image Compression</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/aliasing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Aliasing</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../gallery/stft_cwt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">STFT vs.&nbsp;CWT</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -565,7 +504,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#sunspot-cycle" id="toc-sunspot-cycle" class="nav-link active" data-scroll-target="#sunspot-cycle">Sunspot Cycle</a>
+  <li><a href="#gear-box-fault-detection" id="toc-gear-box-fault-detection" class="nav-link active" data-scroll-target="#gear-box-fault-detection">Gear-Box Fault Detection</a>
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
@@ -576,79 +515,79 @@ window.Quarto = {
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../gallery.html">Gallery</a></li><li class="breadcrumb-item"><a href="../gallery/sunspot.html">Sunspot Cycle</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
 
 
-<section id="sunspot-cycle" class="level1">
-<h1>Sunspot Cycle</h1>
+<section id="gear-box-fault-detection" class="level1">
+<h1>Gear-Box Fault Detection</h1>
 <p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
-<p><strong>Topic:</strong> Power Spectral Density (PSD) estimation — Welch’s method on real geophysical data. <strong>Chapter:</strong> <a href="../chap3.html">3 — Power Spectral Density</a></p>
+<p><strong>Topic:</strong> Cepstrum analysis — separating source and transmission-path contributions in machinery vibration. <strong>Chapter:</strong> <a href="../chap3.html">3 — Power Spectral Density</a></p>
 <hr>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Daily sunspot counts have been recorded continuously since 1749, making them one of the longest instrumental time series in science. The data exhibit a well-known ~11-year solar cycle (the Schwabe cycle), plus hints of longer cycles (Hale ~22 yr, Gleissberg ~87 yr) buried in broadband variability. A direct DFT of 300 years of data is noisy; Welch’s method trades some frequency resolution for dramatically reduced variance.</p>
+<p>A rotating gear-box produces vibration at the gear-mesh frequency <span class="math inline">f_\text{mesh} = N_\text{teeth} \times f_\text{shaft}</span> and its harmonics. A bearing fault modulates these harmonics at the fault frequency <span class="math inline">f_\text{fault}</span>, creating a comb-like family of sidebands in the power spectrum. The <strong>cepstrum</strong> lifts the log-spectrum into the “quefrency” domain, turning multiplicative source–path convolutions into additive sums and making the sideband spacing (i.e., <span class="math inline">f_\text{fault}</span>) directly readable as a peak location.</p>
 </section>
 <section id="key-idea" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
-<p>Welch’s method divides the record into <span class="math inline">K</span> overlapping segments of length <span class="math inline">M</span>, tapers each with a window <span class="math inline">w[n]</span>, computes the periodogram of each, and averages:</p>
+<p>The real cepstrum is the inverse DFT of the log power spectrum:</p>
 <p><span class="math display">
-\hat{S}_{xx}(f) = \frac{1}{K} \sum_{k=0}^{K-1} \frac{1}{f_s M U} \left|\sum_{n=0}^{M-1} w[n]\, x_k[n]\, e^{-j2\pi fn/f_s}\right|^2
+c[\tau] = \mathcal{F}^{-1}\!\left\{\ln |\hat{X}(f)|^2\right\}
 </span></p>
-<p>where <span class="math inline">U = \frac{1}{M}\sum_n w^2[n]</span> normalises for window power. The variance of the estimate is reduced by a factor <span class="math inline">\approx K</span> relative to the raw periodogram.</p>
+<p>A family of harmonics spaced <span class="math inline">\Delta f</span> apart in frequency becomes a single peak at quefrency <span class="math inline">\tau = 1/\Delta f</span> in the cepstrum. Bearing defect frequencies are thus directly readable without needing to identify individual harmonics.</p>
+<p>The <strong>liftering</strong> operation removes the low-quefrency structural response, isolating the fault signature:</p>
+<p><span class="math display">
+c_\text{liftered}[\tau] = c[\tau] \cdot w[\tau], \quad w[\tau] = \begin{cases} 0 &amp; \tau &lt; \tau_0 \\ 1 &amp; \tau \geq \tau_0 \end{cases}
+</span></p>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.io <span class="im">import</span> loadmat</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load SIDC daily sunspot data (SN_d_tot_V2.0.txt)</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.loadtxt(<span class="st">'docs/Data/SN_d_tot_V2.0.txt'</span>, usecols<span class="op">=</span>(<span class="dv">4</span>,))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace -1 fill values with NaN then linear-interpolate</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>data[data <span class="op">&lt;</span> <span class="dv">0</span>] <span class="op">=</span> np.nan</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>nans <span class="op">=</span> np.isnan(data)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.arange(<span class="bu">len</span>(data))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>data[nans] <span class="op">=</span> np.interp(idx[nans], idx[<span class="op">~</span>nans], data[<span class="op">~</span>nans])</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Load CWRU bearing dataset (48 kHz, drive-end accelerometer)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>mat <span class="op">=</span> loadmat(<span class="st">'docs/Data/gearbox/CWRU_48k_load_1_CNN_data.npz'</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">48_000</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> mat[<span class="st">'drive_end_fault'</span>].ravel()[:fs <span class="op">*</span> <span class="dv">4</span>]   <span class="co"># 4-second snippet</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># PSD via Welch</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>f, Pxx <span class="op">=</span> scipy.signal.welch(x, fs<span class="op">=</span>fs, nperseg<span class="op">=</span><span class="dv">4096</span>, scaling<span class="op">=</span><span class="st">'density'</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># samples per day</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Welch PSD</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>f, Pxx <span class="op">=</span> scipy.signal.welch(data, fs<span class="op">=</span>fs,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                             window<span class="op">=</span><span class="st">'hann'</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                             nperseg<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">30</span>,   <span class="co"># 30-year segments</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                             noverlap<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">15</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                             scaling<span class="op">=</span><span class="st">'density'</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert frequency to period in years</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>period_yr <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (f[<span class="dv">1</span>:] <span class="op">*</span> <span class="fl">365.25</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Pxx_yr <span class="op">=</span> Pxx[<span class="dv">1</span>:] <span class="op">/</span> <span class="fl">365.25</span>   <span class="co"># adjust density for year axis</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">4</span>))</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>ax.loglog(period_yr, Pxx_yr, lw<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">11</span>, color<span class="op">=</span><span class="st">'C1'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'11 yr (Schwabe)'</span>)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">22</span>, color<span class="op">=</span><span class="st">'C2'</span>, ls<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'22 yr (Hale)'</span>)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Period (years)'</span>)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'PSD (sunspots² yr)'</span>)</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="dv">1</span>, <span class="dv">200</span>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Real cepstrum</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>log_psd <span class="op">=</span> np.log(Pxx <span class="op">+</span> <span class="fl">1e-30</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>cepstrum <span class="op">=</span> np.fft.irfft(log_psd).real</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>quefrency <span class="op">=</span> np.arange(<span class="bu">len</span>(cepstrum)) <span class="op">/</span> fs <span class="op">*</span> <span class="fl">1e3</span>   <span class="co"># ms</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].semilogy(f <span class="op">/</span> <span class="fl">1e3</span>, Pxx)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">'Frequency (kHz)'</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">'PSD (m²/s⁴/Hz)'</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">'Power Spectrum — bearing fault sidebands'</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(quefrency[<span class="dv">1</span>:<span class="dv">500</span>], cepstrum[<span class="dv">1</span>:<span class="dv">500</span>], lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">'Quefrency (ms)'</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">'Cepstrum amplitude'</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">'Real Cepstrum — fault period visible as peak'</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
 <div class="gallery-result">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../Figure/figure_sunspot.png" class="img-fluid figure-img"></p>
-<figcaption>Welch PSD of sunspot numbers showing the 11-year Schwabe cycle</figcaption>
+<p><img src="../Figure/figure_cepstrum.png" class="img-fluid figure-img"></p>
+<figcaption>Cepstrum of gear-box vibration revealing bearing defect quefrency peak</figcaption>
 </figure>
 </div>
 </div>
-<p>The dominant peak at 11 years stands more than two orders of magnitude above the local continuum. The secondary peak near 22 years corresponds to the full Hale magnetic cycle (two successive Schwabe cycles with opposite polarity).</p>
+<p>The cepstrum peak at a quefrency corresponding to the ball-pass outer-race frequency is clearly visible, even though the individual sidebands in the power spectrum are hard to count by eye. Liftering above the structural quefrency leaves only the fault signature.</p>
 <hr>
-<p><em>See <a href="../chap3.html">Chapter 3</a> for Welch’s method, confidence intervals, and the Wiener–Khinchin theorem.</em></p>
+<p><em>See <a href="../chap3.html">Chapter 3</a> for the cepstrum definition, liftering, and connection to homomorphic signal processing.</em></p>
 
 
 </section>
@@ -1226,6 +1165,20 @@ window.Quarto = {
   document.addEventListener("quarto-color-scheme-toggled", function () {
     location.reload();
   });
+</script>
+
+<!-- Double-click selects the whole paragraph, even across KaTeX spans. -->
+<script>
+document.addEventListener("dblclick", function (e) {
+  if (e.target.closest("pre, code, input, textarea, [contenteditable]")) return;
+  var el = e.target.closest("p, li, td, th, blockquote, figcaption");
+  if (!el) return;
+  var sel = window.getSelection();
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  sel.removeAllRanges();
+  sel.addRange(range);
+});
 </script>
 
 

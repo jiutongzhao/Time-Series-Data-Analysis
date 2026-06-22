@@ -110,4 +110,15 @@ Each card below links to a self-contained example: real data, working Python cod
 </a>
 </div>
 
+<div class="gallery-card">
+<a href="gallery/piano.qmd">
+<img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Piano String Inharmonicity</div>
+<p class="gallery-card-desc">Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.</p>
+<span class="gallery-card-tag">PSD · Curve Fitting · Physics</span>
+</div>
+</a>
+</div>
+
 :::

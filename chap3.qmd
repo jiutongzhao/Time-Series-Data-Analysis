@@ -50,10 +50,10 @@ $PSD[0]$ represents the DC component and is **ignored** in the spectral analysis
 
 According to the linearity of $\mathcal{F}$, $X[k]$, after single-side compensation, should also be proportional to the sine wave amplitude ($A_k$). Easily catch that the coefficient and power spectral density at the exact wave frequency has the form of 
 $$
-\begin{align}
+\begin{align*}
 PSD[k]& = \frac{P[k]}{\delta f} = \frac{A_k^2/2}{f_s/N}  = \frac{2}{Nf_s} |X[k]|^2   \\
 \Rightarrow|X[k]|& = \frac{1}{2}\cdot A_k \cdot N 
-\end{align}
+\end{align*}
 $$
 $1/2$ in this equation arises from the fact that $({\int_0^{2\pi}\mathrm{sin^2}x \mathrm{d}x})/{2\pi}=1/2$.
 
@@ -92,15 +92,15 @@ $1/2$ in this equation arises from the fact that $({\int_0^{2\pi}\mathrm{sin^2}x
 
 The correlation function has a similar form as the energy of the signal:
 $$
-\begin{align}
+\begin{align*}
 {R_{xy}}(t, t + \tau) := \mathbb{E}\left[ {x(t)} {y^*(t + \tau)} \right]
-\end{align}
+\end{align*}
 $$
 where the asterisk symbol represents the complex conjugate operation when $X$ and $Y$ are complex signal. Specifically, the correlation function between $X$ and itself is called **<u>*autocorrelation function (ACF)*</u>**:
 $$
-\begin{align}
+\begin{align*}
 {R_{xx}}(t, t + \tau) := \mathbb{E}\left[ {x(t)} {x^*(t + \tau)} \right]
-\end{align}
+\end{align*}
 $$
 The correlation function not only measures the similarity between two signals, but also reveals the time lag ($\tau$) between them. The autocorrelation function measures how similar a signal is to itself at different time lags, providing insights into the signal's periodicity and temporal structure.
 
@@ -132,370 +132,18 @@ This is known as the **<u>*[Wiener–Khinchin theorem](https://en.wikipedia.org/
 
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. This relationship is particularly useful because it allows us to compute the power spectral density from time-domain data by first calculating the autocorrelation function and then applying the Fourier transform. This approach is often more robust, especially for signals that may be noisy or have missing data.
 
-## Application: Angular Power Spectrum of the Cosmic Microwave Background (CMB)
-
-The Wiener–Khinchin theorem is the workhorse behind almost every estimator of the **angular power spectrum of the Cosmic Microwave Background (CMB)**. Modern pipelines (e.g. *Planck*, *ACT*) operate on the 2-sphere, but the underlying logic is one-dimensional:
-
-1. Observe a (nearly) stationary stochastic field $T(\hat n)$.
-2. Estimate its two-point correlation function $C(\theta) = \langle T(\hat n_1)\,T(\hat n_2)\rangle$ for $\hat n_1\!\cdot\!\hat n_2 = \cos\theta$.
-3. Take the (spherical) Fourier transform — equivalent to expanding $C(\theta)$ on Legendre polynomials — to obtain $C_\ell$.
-
-Wiener–Khinchin guarantees that this $C_\ell$ is the same object as $\langle |a_{\ell m}|^2\rangle$ obtained by a direct harmonic transform of $T$ — provided the field is statistically isotropic (the angular analogue of WSS).
-
-To keep things tutorial-friendly, we work in **one dimension**: build a synthetic temperature strip whose theoretical PSD is a CMB-style power-law with an *acoustic-peak* bump, draw a realisation in the Fourier domain, and verify the WK theorem by:
-
-- estimating the PSD directly with Welch's method, and
-- estimating it via the Fourier transform of the autocorrelation function.
-
-The two estimators agree to within sample variance, exactly as Wiener–Khinchin predicts.
-
-```python
-N      = 2 ** 14
-dx     = 1.0
-fs     = 1.0 / dx
-freq   = np.fft.rfftfreq(N, dx)
-freq_p = np.maximum(freq, freq[1])
-
-# Toy CMB-like target PSD: red-tilted continuum + acoustic-peak bump
-ell0, sigma_ell, amp_peak = 0.05, 0.012, 4.0
-C_target  = (1.0 / freq_p) ** 1.2
-C_target += amp_peak * np.exp(-0.5 * ((freq_p - ell0) / sigma_ell) ** 2)
-C_target[0] = 0.0
-
-# Draw a Gaussian realisation with this PSD
-phase = np.random.default_rng(42).uniform(0, 2 * np.pi, freq.size)
-T_k   = np.sqrt(C_target * fs * N / 2.0) * np.exp(1j * phase)
-T_x   = np.fft.irfft(T_k, n=N)
-
-# Estimator 1: Welch
-f_welch, psd_welch = scipy.signal.welch(T_x, fs=fs, nperseg=1024, window='hann')
-
-# Estimator 2: FT of the (Blackman-Tukey-windowed) ACF
-acf      = np.fft.irfft(np.abs(np.fft.rfft(T_x)) ** 2, n=N) / N
-acf      = np.concatenate([acf[-N // 2:], acf[:N // 2]])
-M        = 1024
-acf_win  = acf[N // 2 - M : N // 2 + M + 1] * np.blackman(2 * M + 1)
-psd_wk   = np.abs(np.fft.rfft(acf_win)) / fs
-freq_wk  = np.fft.rfftfreq(acf_win.size, dx)
-```
-
-<!-- fig-tabset:figure_wk_cmb.png -->
-::: {.panel-tabset}
-
-### Figure
-
-<img src="Figure/figure_wk_cmb.png" width="100%"/>
-
-### Code  <small>chap3.ipynb · cell 49</small>
-
-```python
-# === Wiener-Khinchin example: 1-D synthetic "CMB" strip ===
-N      = 2 ** 14
-dx     = 1.0                # arbitrary "pixel" units
-fs     = 1.0 / dx
-freq   = np.fft.rfftfreq(N, dx)
-freq_pos = np.maximum(freq, freq[1])     # avoid divide-by-zero at DC
-
-# Toy CMB-like target PSD: red-tilted continuum + acoustic-peak bump
-ell0, sigma_ell, amp_peak = 0.05, 0.012, 4.0
-C_target  = (1.0 / freq_pos) ** 1.2
-C_target += amp_peak * np.exp(-0.5 * ((freq_pos - ell0) / sigma_ell) ** 2)
-C_target[0] = 0.0                         # zero-mean field
-
-# Draw a Gaussian realisation with this PSD
-rng = np.random.default_rng(42)
-phase = rng.uniform(0, 2 * np.pi, freq.size)
-amp   = np.sqrt(C_target * fs * N / 2.0)
-amp[0] = 0.0
-T_k   = amp * np.exp(1j * phase)
-T_k[-1] = T_k[-1].real if N % 2 == 0 else T_k[-1]
-T_x   = np.fft.irfft(T_k, n=N)
-
-# --- Estimate PSD two ways ---
-# (1) Welch's method (direct spectral estimator)
-f_welch, psd_welch = scipy.signal.welch(
-    T_x, fs=fs, nperseg=1024, window='hann', detrend=False,
-)
-
-# (2) FT of the autocorrelation function (Wiener-Khinchin)
-acf = np.fft.irfft(np.abs(np.fft.rfft(T_x)) ** 2, n=N) / N
-acf = np.concatenate([acf[-N // 2:], acf[:N // 2]])  # symmetric about lag 0
-lag = (np.arange(N) - N // 2) * dx
-
-# Window the ACF (Blackman-Tukey) before FT-ing it
-M = 1024
-window = np.blackman(2 * M + 1)
-acf_win = acf[N // 2 - M : N // 2 + M + 1] * window
-psd_wk  = np.abs(np.fft.rfft(acf_win)) / fs
-freq_wk = np.fft.rfftfreq(acf_win.size, dx)
-
-# --- Plot ---
-fig, axes = plt.subplots(2, 1, figsize=(8, 7), constrained_layout=True)
-
-axes[0].plot(np.arange(N) * dx, T_x, lw=0.5)
-axes[0].set(xlim=(0, 2000), xlabel='x', ylabel=r'$T(x)$',
-            title='(a) Synthetic CMB-style temperature strip (one realisation)')
-
-axes[1].loglog(freq_pos, C_target,         'k-',  lw=2.0, label='target $C(f)$')
-axes[1].loglog(f_welch[1:], psd_welch[1:], 'C0-', alpha=0.8, label="Welch")
-axes[1].loglog(freq_wk[1:], psd_wk[1:],    'C3--', alpha=0.8,
-               label=r'$\mathcal{F}[R_x(\tau)]$  (Wiener-Khinchin)')
-axes[1].axvline(ell0, color='gray', ls=':', alpha=0.7,
-                label=f'acoustic peak @ {ell0:.3f}')
-axes[1].set(xlabel='Frequency (analogue of multipole $\\ell$)',
-            ylabel='PSD',
-            title='(b) PSD: direct estimator vs. FT of ACF agree')
-axes[1].legend()
-
-plt.savefig(save_path + 'figure_wk_cmb.png', dpi=150)
-plt.show()
-```
-
-:::
-
-## What If the Signal Is Not Stationary? [`scipy.signal.detrend`]
-
-If the constant mean condition (first condition) is not satisfied, say, due to an underlying background trend, you should first apply **<u>*detrend*</u>**. Techniques such as subtracting the mean (constant detrend) or removing a linear trend (linear detrend) help modify the signal so that its mean becomes approximately constant.
-
-```python
-scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
-```
-
-<!-- fig-tabset:figure_detrend.png -->
-::: {.panel-tabset}
-
-### Figure
-
-<img src="Figure/figure_detrend.png" width="100%"/>
-
-### Code  <small>chap3.ipynb · cell 43</small>
-
-```python
-plt.close()
-N = 2 ** 10
-t = np.linspace(0, 1, N, endpoint=False)
-dt = t[1] - t[0]
-fs = 1 / dt
-omega0 = 1 * np.pi * 50
-sig = 2 * t + np.sin(omega0 * t) * 1
-plt.figure(figsize=figsize_short)
-ax1 = plt.subplot()
-
-sig = 100 * t + np.sin(omega0 * t) * 1
-freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend=False, nfft = None, return_onesided=True, scaling='density')
-ax1.plot(freq[:], psd[:], 'C0-', label = 'No Detrend')
-ax1.plot(freq[:], psd[:], 'C0o')
-
-sig = 100 * t + np.sin(omega0 * t) * 1
-freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='constant', nfft = None, return_onesided=True, scaling='density')
-ax1.plot(freq[:], psd[:], 'C1-', label = 'Constant')
-ax1.plot(freq[:], psd[:], 'C1o')
-
-sig = 100 * t + np.sin(omega0 * t) * 1
-freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='linear', nfft = None, return_onesided=True, scaling='density')
-ax1.plot(freq[:], psd[:], 'C2-', label = 'Linear')
-ax1.plot(freq[:], psd[:], 'C2o')
-
-ax1.set_ylim(1e-18, 1e6)
-ax1.set_xlabel('Frequency [Hz]')
-ax1.set_ylabel('PSD [$\mathrm{Arb^2}$/Hz]')
-
-ax1.legend(loc = 'upper right', ncol = 5, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False)
-ax1.set_xscale('log')
-ax1.set_yscale('log')
-# ax1.autoscale(axis = 'x', tight = True)
-ax1.set_title("Fourier Spectrum After Detrend\n" + "$x(t)=2t + \mathrm{sin}(50\pi t)$", **title_font)
-plt.tight_layout()
-plt.savefig(save_path + 'figure_detrend' + '.png',bbox_inches='tight',dpi=300)
-
-plt.show()
-```
-
-:::
-
-
-If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
-
-The concept of *W.S.S* essentially guides us in **selecting an appropriate window** for spectral analysis. On one hand, the window length should be longer than the oscillation period to capture a complete cycle of the fluctuations. On the other hand, the window length should be shorter than the characteristic scale over which power or frequency variations occur, so that the signal within the window can be approximated as wide-sense stationary.
-
-## [Cepstrum](https://en.wikipedia.org/wiki/Cepstrum)
-
-A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its **harmonic** $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
-
-<!-- fig-tabset:figure_cepstrum.png -->
-::: {.panel-tabset}
-
-### Figure
-
-<img src="Figure/figure_cepstrum.png" width="100%"/>
-
-### Code  <small>chap3.ipynb · cell 26</small>
-
-```python
-plt.close()
-plt.figure(figsize=(16, 4))
-
-N = 2 ** 8
-omega0 = 2 * np.pi * 4.0
-t = np.linspace(0, 1, N, endpoint=False)
-dt = t[1] - t[0]
-fs = 1 / dt
-
-sig = 2 * ((omega0 / 2 / np.pi * t) % 1.0 - 0.5)
-# Add white noise for preventing getting a log(abs(0))
-sig += np.random.randn(t.size) * 1e-2
-freq = np.fft.rfftfreq(N, dt)
-coef = np.fft.rfft(sig)
-
-log_abs_X = np.log(np.abs(coef))
-log_abs_X -= np.mean(log_abs_X)  # Remove DC component for cepstrum calculation
-cepstrum = np.fft.rfft(log_abs_X)
-df = freq[1] - freq[0]
-quefrency = np.fft.rfftfreq(log_abs_X.size, df)
-
-
-ax1 = plt.subplot(1, 3, 1)
-ax2 = plt.subplot(1, 3, 2)
-ax3 = plt.subplot(1, 3, 3)
-
-ax1.plot(t, sig, 'ko-', label='Signal')
-ax2.stem(freq, np.abs(coef), linefmt='k', markerfmt='k', basefmt='k')
-ax2.plot(freq, 4 / freq * np.abs(coef)[4], 'r--', label='1/f', zorder = 0)
-
-ax3.stem(quefrency, np.abs(cepstrum), linefmt='k', markerfmt='k', basefmt='k')
-
-ax2.text(30, 30, 'Harmonics', color = 'k', ha = 'center', va = 'bottom', **title_font)
-ax2.text(12, 30, '$X[k]\propto 1/k $', color = 'C1', ha = 'center', va = 'bottom', **title_font, rotation = -70)
-ax3.text(1 / (omega0 / (2 * np.pi)), 135, '4 Hz', color = 'k', ha = 'center', va = 'center', **title_font)
-ax3.set_ylim(-0.5, 150)
-# ax3.set_yscale('log')
-
-ax1.set_title('Signal', **title_font)
-ax2.set_title('FFT Magnitude', **title_font)
-ax3.set_title('Cepstrum', **title_font)
-
-ax1.set_xlabel('Time [s]')
-ax2.set_xlabel('Frequency [Hz]')
-ax3.set_xlabel('Quefrency [s]')
-ax1.set_ylabel('Intensity [Arb]')
-ax2.set_ylabel('Magnitude [Arb]')
-ax3.set_ylabel('Intensity [Arb]')
-
-ax2.set_ylim(-5, 90)
-ax2.set_xlim(-2, 60)
-
-plt.tight_layout()
-
-plt.savefig(save_path + 'figure_cepstrum' + '.png',bbox_inches='tight',dpi=300)
-
-plt.show()
-```
-
-:::
-<p align = 'center'>
-<i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
-</p>
-
-
-Inspiri ng by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the ***Cepstral Analysis*** in 1963. The norm of the Fourier coefficients is taken logarithm and then inverse Fourier transformed for detecting the harmonic signature of the signal. 
-
-```mermaid
-flowchart LR
-A@ shape: lean-r, label: "x[n]" --Fourier<br>Transform--> B["X[k]"] --abs<br>+<br>log--> C["log|X[k]|"] --Inverse<br>Fourier<br>Transform--> D@ shape: lean-l, label: Cepstrum
-```
-
-This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
-
-The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as:
-$$
-y(t) = x(t) +\alpha x(t-\tau)
-$$
-It has a Fourier transform of
-$$
-\begin{align}
-Y(f) &= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
-|Y(f)|^2 &= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
-\end{align}
-$$
-
-$$
-\begin{align}
-\mathrm{log}(|Y(f)|^2) &= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
-& \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
-\end{align}
-$$
-Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
-
-However, it doesn't mean that the cepstral analysis only work for the signals composited with echoes. Another common application of cepstral analysis is the [voice recognition](https://ieeexplore.ieee.org/document/859069). The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.
-
-```python
-''' Python Implication of Cepstrum '''
-
-freq = np.fft.rfftfreq(sig.size, dt)
-coef = np.fft.rfft(sig)
-
-log_abs_coef = np.log(np.abs(coef))
-
-# Optional, Remove DC component for cepstrum calculation
-log_abs_coef -= np.mean(log_abs_coef)
-
-cepstrum = np.fft.rfft(log_abs_coef)
-df = freq[1] - freq[0]
-quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
-```
-
-### Worked Example: Gear-Box Fault Detection
-
-A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration spectrum is dominated by the *gear-mesh frequency* $f_m = N_t f_r$ (number of teeth $\times$ shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the *shaft-rotation frequency* $f_r$, introducing a family of side-bands $f_m \pm k f_r$ around every mesh harmonic.
-
-In the spectrum these side-bands form a **comb** with spacing $f_r$. The cepstrum collapses each such comb into a single peak (a *rahmonic*) at quefrency $\tau_r = 1/f_r$ — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.
-
-The synthetic signal below imitates a gear-box with $N_t = 21$ teeth at $f_r = 25\,\mathrm{Hz}$. The mesh and its first harmonic are amplitude-modulated by a once-per-revolution envelope; a faint impulse train is added at $N_t f_r$; and the whole signal is buried in white noise. The cepstrum recovers a clear rahmonic family at $\tau_r = 40\,\mathrm{ms}$ even though $f_r$ is invisible in the raw waveform.
-
-<!-- fig-tabset:figure_cepstrum_gearbox.png -->
-::: {.panel-tabset}
-
-### Figure
-
-<img src="Figure/figure_cepstrum_gearbox.png" width="100%"/>
-
-### Code  <small>chap3.ipynb · cell 46</small>
-
-```python
-# === Cepstrum example: gear-box fault detection ===
-fs   = 20_000.0                     # Hz
-T    = 2.0                          # s
-t    = np.arange(0, T, 1.0 / fs)
-fr   = 25.0                         # shaft rotation frequency (Hz)
-Nt   = 21                           # number of teeth
-fm   = Nt * fr                      # gear-mesh frequency  -> 525 Hz
-
-# Once-per-revolution amplitude modulation -> sidebands fm +/- k*fr
-mod  = 1.0 + 0.6 * np.cos(2 * np.pi * fr * t)
-sig  = mod * np.sin(2 * np.pi * fm * t)
-sig += 0.5 * mod * np.sin(2 * np.pi * 2 * fm * t)
-
-# Faint tooth-impact impulse train
-impulses = np.zeros_like(t)
-impulses[::int(fs / fm)] = 1.0
-sig += 0.05 * impulses
-
-# Add white noise
-sig += 0.2 * np.random.default_rng(0).standard_normal(t.size)
-
-# Real cepstrum
-freq      = np.fft.rfftfreq(sig.size, 1.0 / fs)
-log_mag   = np.log(np.abs(np.fft.rfft(sig)) + 1e-12)
-log_mag  -= log_mag.mean()
-cepstrum  = np.fft.irfft(log_mag).real
-quefrency = np.arange(cepstrum.size) / fs
-```
-
-:::
-
----
 
 ## [Hankel Transform](https://en.wikipedia.org/wiki/Hankel_transform)
+
+### Radial Power Spectrum — a 2-D Wiener–Khinchin Theorem
+
+For a **statistically homogeneous and isotropic** random field in 2-D — where the autocorrelation depends only on the separation distance $r = |\mathbf{r}_1 - \mathbf{r}_2|$ — the Wiener–Khinchin theorem generalises to:
+
+$$
+S(k) = 2\pi\int_0^\infty R(r)\,J_0(kr)\,r\,dr = 2\pi\,\mathcal{H}_0[R](k)
+$$
+
+The **2-D power spectral density** $S(k)$ is the **zeroth-order Hankel transform** of the radial autocorrelation $R(r)$, exactly as the 1-D PSD is the Fourier transform of $R(\tau)$.
 
 The **Hankel transform** (also called the **Fourier–Bessel transform**) is the natural spectral transform for signals with **radial symmetry**. It arises whenever the 2-D Fourier transform is applied to a function that depends only on the distance from the origin, $r = \sqrt{x^2+y^2}$, and has no azimuthal dependence.
 
@@ -593,46 +241,164 @@ def qdht_grid(R, N):
 
 <img src="Figure/figure_hankel.png" width="100%"/>
 
-### Code  <small>chap3.ipynb · cell 54</small>
+### Code
 
 ```python
 from scipy.special import jn_zeros, j0, j1
 
+leg_kw = dict(labelcolor='linecolor', handlelength=0, markerscale=0,
+              handletextpad=0, frameon=False)
+
 def qdht(f, R):
-    N = len(f); z = jn_zeros(0, N + 1); jn, z_p = z[:N], z[N]
-    k_max = z_p / R; r = jn / k_max; k = jn / R
-    F = (2.0 / k_max**2) * (j0(np.outer(jn, jn) / z_p) / j1(jn)[:, None]**2) @ f
-    return k, F, r
+    N = len(f)
+    z = jn_zeros(0, N + 1)
+    jn_z, z_p = z[:N], z[N]
+    k_max = z_p / R
+    r = jn_z / k_max
+    k = jn_z / R
+    T = j0(np.outer(jn_z, jn_z) / z_p) / j1(jn_z)[:, None]**2
+    return k, (2.0 / k_max**2) * T @ f, r
 
-# --- Panel (a): Gaussian self-dual ---
-N, R = 128, 6.0
-r = jn_zeros(0, N + 1)[:N] * R / jn_zeros(0, N + 1)[N]
-f_gauss = np.exp(-r**2 / 2)
-k, F_gauss, _ = qdht(f_gauss, R)
+# (a) Gaussian self-dual
+N_a, R_a = 256, 8.0
+z_a = jn_zeros(0, N_a + 1)
+r_a = z_a[:N_a] * R_a / z_a[N_a]
+f_gauss = np.exp(-r_a**2 / 2)
+k_a, F_gauss, _ = qdht(f_gauss, R_a)
+F_exact_gauss = np.exp(-k_a**2 / 2)
 
-# --- Panel (b): Airy pattern from unit circular aperture ---
-N2, R2 = 512, 5.0
-r2 = jn_zeros(0, N2 + 1)[:N2] * R2 / jn_zeros(0, N2 + 1)[N2]
-f_circ = (r2 <= 1.0).astype(float)
-k2, F_airy, _ = qdht(f_circ, R2)
-F_exact = np.where(k2 > 0, j1(k2) / k2, 0.5)
+# (b) Unit circular aperture → Airy pattern
+N_b, R_b = 512, 6.0
+z_b = jn_zeros(0, N_b + 1)
+r_b = z_b[:N_b] * R_b / z_b[N_b]
+f_circ = (r_b <= 1.0).astype(float)
+k_b, F_airy, _ = qdht(f_circ, R_b)
+F_exact_airy = np.where(k_b > 1e-8, j1(k_b) / k_b, 0.5)
+j11 = jn_zeros(1, 1)[0]
+
+plt.close()
+plt.figure(figsize=(8, 4))
+ax1 = plt.subplot(1, 2, 1)
+ax2 = plt.subplot(1, 2, 2)
+
+ax1.plot(r_a, f_gauss,       'C0-',  lw=1.5, label=r'$f(r)=e^{-r^2/2}$')
+ax1.plot(k_a, F_exact_gauss, 'C1--', lw=1.5, label=r'Exact $e^{-k^2/2}$')
+ax1.plot(k_a, F_gauss,       'k.',   ms=2,   label='QDHT')
+ax1.set_xlim(0, 6)
+ax1.set_xlabel(r'$r$ or $k$')
+ax1.set_ylabel('Amplitude [Arb]')
+ax1.legend(loc='upper right', ncol=1, **leg_kw)
+
+ax2.plot(k_b, F_exact_airy**2, 'C0-', lw=1.5, label=r'Exact $[J_1(k)/k]^2$')
+ax2.plot(k_b, F_airy**2,       'C1.', ms=2,   label=r'QDHT$^2$')
+ax2.axvline(j11, color='k', lw=1.0, ls='--', label=rf'Airy edge  $k={j11:.3f}$')
+ax2.set_xlim(0, 15)
+ax2.set_ylim(-0.01, 0.28)
+ax2.set_xlabel(r'$k$  [rad / aperture radius]')
+ax2.set_ylabel(r'Intensity $|F(k)|^2$ [Arb]')
+ax2.legend(loc='upper right', ncol=1, **leg_kw)
+
+plt.suptitle('Quasi-Discrete Hankel Transform', **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_hankel.png', bbox_inches='tight', dpi=300)
 ```
 
 :::
 
 ### Example: Airy Pattern of a Circular Aperture
 
-When a monochromatic plane wave illuminates a circular aperture of unit radius with uniform transmittance $f(r) = \mathrm{circ}(r)$, the Fraunhofer far-field amplitude is:
+When a monochromatic plane wave illuminates a **circular aperture** of diameter $D$, the Fraunhofer far-field intensity forms the **Airy pattern**. Normalising the transverse coordinate by the Rayleigh radius $r_\mathrm{Airy} = 1.22\,\lambda f/D$:
+
 $$
-F(k) = \int_0^1 J_0(kr)\,r\,dr = \frac{J_1(k)}{k}
+I\!\left(\frac{r}{r_\mathrm{Airy}}\right) = I_0\left[\frac{2J_1(1.22\pi\,r/r_\mathrm{Airy})}{1.22\pi\,r/r_\mathrm{Airy}}\right]^2
 $$
-using the identity $\int_0^x J_0(u)\,u\,du = x\,J_1(x)$. The intensity pattern $I(k)\propto [J_1(k)/k]^2$ is the **Airy pattern**. Its first zero — the edge of the Airy disk — occurs at $k = j_{1,1} \approx 3.832$, corresponding to the Rayleigh angular resolution criterion $\theta \approx 1.22\,\lambda/D$.
+
+The first zero — the **Airy disk edge** — is at $r = r_\mathrm{Airy}$ by construction, enclosing 83.8 % of the total diffracted energy. Successive dark rings lie at $1.83$, $2.65$, and $3.48\,r_\mathrm{Airy}$.
+
+This is the 2-D radial power spectrum of a top-hat aperture, computed via the zeroth-order Hankel transform. The figure below shows the 2-D intensity distribution on the focal plane (left) alongside the radial cross-section (right), consistent with experimental photographs of stellar Airy disks in astronomy.
+
+<!-- fig-tabset:figure_airy_disk_2d.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_airy_disk_2d.png" width="100%"/>
+
+### Code
+
+```python
+from scipy.special import j1, jn_zeros
+
+leg_kw = dict(labelcolor='linecolor', handlelength=0, markerscale=0,
+              handletextpad=0, frameon=False)
+
+def airy_intensity(q):
+    u = 1.22 * np.pi * q
+    with np.errstate(invalid='ignore', divide='ignore'):
+        return np.where(u == 0, 1.0, (2 * j1(u) / u)**2)
+
+N, lim = 600, 3.5
+xy = np.linspace(-lim, lim, N)
+X, Y = np.meshgrid(xy, xy)
+I2D = airy_intensity(np.sqrt(X**2 + Y**2))
+q1d = np.linspace(0, lim, 1000)
+I1d = airy_intensity(q1d)
+dark_rings_q = jn_zeros(1, 3) / (1.22 * np.pi)
+
+plt.close()
+plt.figure(figsize=(8, 4))
+ax2d = plt.subplot(1, 2, 1)
+ax1d = plt.subplot(1, 2, 2)
+
+eps = 3e-4
+im = ax2d.imshow(np.log10(I2D + eps), origin='lower',
+                 extent=[-lim, lim, -lim, lim], cmap='hot',
+                 vmin=np.log10(eps), vmax=0, interpolation='bilinear')
+cb = plt.colorbar(im, ax=ax2d, fraction=0.046, pad=0.04)
+cb.set_label(r'$\log_{10}(I/I_0)$')
+cb.set_ticks([-3, -2, -1, 0])
+for q_r in dark_rings_q:
+    ax2d.add_patch(plt.Circle((0, 0), q_r, color='cyan', fill=False,
+                               lw=0.8, ls='--', alpha=0.8))
+ax2d.set_xlabel(r'$x\,/\,r_\mathrm{Airy}$')
+ax2d.set_ylabel(r'$y\,/\,r_\mathrm{Airy}$')
+ax2d.set_aspect('equal')
+ax2d.grid(False)
+
+ax1d.semilogy(q1d, I1d, 'C0-', lw=1.5, label=r'$[2J_1(u)/u]^2$')
+ax1d.fill_between(q1d[q1d < dark_rings_q[0]], I1d[q1d < dark_rings_q[0]],
+                  1e-4, alpha=0.2, color='C0', label='Airy disk  (83.8 %)')
+for i, q_r in enumerate(dark_rings_q, 1):
+    ax1d.axvline(q_r, color='k', lw=0.8, ls='--',
+                 label='Dark rings' if i == 1 else '_nolegend_')
+ax1d.set_xlim(0, lim)
+ax1d.set_ylim(5e-4, 1.5)
+ax1d.set_xlabel(r'$r\,/\,r_\mathrm{Airy}$')
+ax1d.set_ylabel(r'Intensity $I/I_0$')
+ax1d.legend(loc='upper right', ncol=1, **leg_kw)
+
+plt.suptitle('Airy Disk', **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_airy_disk_2d.png', bbox_inches='tight', dpi=300)
+```
+
+:::
 
 ---
 
 ## [Legendre Spectral Transform](https://en.wikipedia.org/wiki/Legendre_polynomials)
 
-While the Fourier series decomposes functions on a circle and the Hankel transform handles radial structure in the plane, the **Legendre spectral transform** provides the natural decomposition for functions on a **sphere** — or for any function on $[-1, 1]$. It underlies the angular power spectrum of the CMB introduced earlier in this chapter.
+### Angular Power Spectrum — a Spherical Wiener–Khinchin Theorem
+
+For a **statistically isotropic** random field on the 2-sphere — where the two-point correlation $C(\theta) = \langle T(\hat{n}_1)\,T(\hat{n}_2)\rangle$ depends only on the angle $\theta$ between the two directions — the Wiener–Khinchin theorem takes the form of a **Legendre transform**:
+
+$$
+C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d(\cos\theta)
+$$
+
+The **angular power spectrum** $C_\ell$ is the **Legendre transform of the angular correlation function** $C(\theta)$, in direct analogy with $S(k)=\mathcal{F}[R(\tau)]$ on the line and $S(k)=2\pi\mathcal{H}_0[R(r)]$ in the plane.
+
+The **Legendre spectral transform** provides the natural decomposition for functions on a **sphere** — or for any function on $[-1, 1]$. While the Fourier series decomposes functions on a circle and the Hankel transform handles radial structure in the plane, the Legendre basis is adapted to the geometry of the sphere.
 
 ### Legendre Polynomials and Orthogonality
 
@@ -727,7 +493,7 @@ This is the **spherical analogue of the Wiener–Khinchin theorem**: just as the
 
 <img src="Figure/figure_legendre.png" width="100%"/>
 
-### Code  <small>chap3.ipynb · cell 56</small>
+### Code
 
 ```python
 from scipy.special import eval_legendre
@@ -743,13 +509,539 @@ a      = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))
 
 # Inverse (synthesis)
 f_rec  = a @ P_mat
+```
 
-# Angular power spectrum of the 1-D synthetic CMB strip from above
-# (re-use T_x from the Wiener–Khinchin example)
-x_strip = np.linspace(-1, 1, N, endpoint=False)
-T_strip = np.interp(x_strip, np.linspace(-1, 1, T_x.size), T_x - T_x.mean())
-a_cmb   = (2 * ell + 1) / 2 * (P_mat @ (w * np.interp(x, x_strip, T_strip)))
-Cl      = a_cmb**2 / (2 * ell + 1)     # angular power spectrum estimator
+The same Legendre machinery, applied to the two-point correlation function $C(\theta)$ of an actual sky map, yields the CMB angular power spectrum $C_\ell$ — worked out end-to-end in the [application below](#application-angular-power-spectrum-of-the-cosmic-microwave-background-cmb).
+
+:::
+
+---
+
+## [Hermite Spectral Transform](https://en.wikipedia.org/wiki/Hermite_polynomials)
+
+### Hermite–Gauss Basis
+
+The **Hermite–Gauss functions** are Hermite polynomials multiplied by a Gaussian weight:
+
+$$
+\psi_n(v) = \frac{1}{\pi^{1/4}\sqrt{2^n n!}}\, H_n(v)\, e^{-v^2/2}, \qquad n = 0, 1, 2, \ldots
+$$
+
+where $H_n(v) = (-1)^n e^{v^2}\dfrac{d^n}{dv^n}e^{-v^2}$ are the physicist's Hermite polynomials. These functions are **orthonormal**:
+
+$$
+\int_{-\infty}^{\infty} \psi_m(v)\,\psi_n(v)\,dv = \delta_{mn}
+$$
+
+and complete on $L^2(\mathbb{R})$, giving the **Hermite spectral transform pair**:
+
+$$
+\hat{f}_n = \int_{-\infty}^{\infty} f(v)\,\psi_n(v)\,dv, \qquad
+f(v) = \sum_{n=0}^{\infty} \hat{f}_n\,\psi_n(v)
+$$
+
+### Ladder Operators and the Velocity Recurrence
+
+The key property that makes the Hermite basis powerful for kinetic equations is the **recurrence**:
+
+$$
+v\,\psi_n = \sqrt{\tfrac{n+1}{2}}\;\psi_{n+1} + \sqrt{\tfrac{n}{2}}\;\psi_{n-1}
+$$
+
+In the language of quantum mechanics this is the **creation/annihilation operator** algebra:
+
+$$
+v = \tfrac{1}{\sqrt{2}}\!\left(\hat{a} + \hat{a}^\dagger\right), \quad
+\hat{a}\,\psi_n = \sqrt{n}\;\psi_{n-1}, \quad
+\hat{a}^\dagger\psi_n = \sqrt{n+1}\;\psi_{n+1}
+$$
+
+**Multiplication by $v$ in physical space couples only nearest-neighbor Hermite modes** — a sparse stencil analogous to how differentiation couples adjacent Fourier modes in a spectral PDE solver.
+
+### Application: Vlasov Equation and the Moment Hierarchy
+
+The natural home of the Hermite transform is **kinetic theory**, where the central object is the distribution function $f(v,x,t)$ — the probability density of finding a particle at position $x$ with velocity $v$ at time $t$. In a collisionless plasma this satisfies the **Vlasov (free-streaming) equation**:
+
+$$
+\frac{\partial f}{\partial t} + v\,\frac{\partial f}{\partial x} = 0
+$$
+
+Expanding $f = \sum_n \hat{f}_n(x,t)\,\psi_n(v)$ and applying the recurrence relation gives the **Hermite moment hierarchy** — an infinite chain of coupled advection equations:
+
+$$
+\frac{\partial \hat{f}_n}{\partial t}
++ \frac{\partial}{\partial x}\!\left[\sqrt{\tfrac{n+1}{2}}\;\hat{f}_{n+1}
+                                   + \sqrt{\tfrac{n}{2}}\;\hat{f}_{n-1}\right] = 0,
+\quad n = 0, 1, 2, \ldots
+$$
+
+Each moment has an immediate physical interpretation:
+
+| Mode | Physical meaning |
+|------|-----------------|
+| $\hat{f}_0$ | density perturbation $\delta n$ |
+| $\hat{f}_1$ | bulk velocity $u$ |
+| $\hat{f}_2$ | pressure / temperature perturbation $\delta T$ |
+| $\hat{f}_n,\; n \gg 1$ | fine-grained velocity-space structure |
+
+### Phase-Space Mixing and Landau Damping
+
+Starting from a pure density perturbation $\hat{f}_n(x,0) = \delta_0\,e^{ikx}\delta_{n0}$, the free-streaming solution is exactly soluble using the Hermite generating-function integral
+
+$$
+\int_{-\infty}^{\infty} H_n(v)\,e^{-v^2+\xi v}\,dv = \sqrt{\pi}\,e^{\xi^2/4}\,\xi^n
+$$
+
+with $\xi = -ikt$, which gives:
+
+$$
+\hat{f}_n(x,t) = \delta_0\,e^{ikx}\cdot\frac{\left(-ikt/\sqrt{2}\right)^n}{\sqrt{n!}}\,e^{-k^2t^2/4}
+$$
+
+The **power in each Hermite mode** follows a **Poisson distribution** in $n$:
+
+$$
+\boxed{|\hat{f}_n|^2 \;\propto\; \frac{\tau^{2n}}{n!}\,e^{-\tau^2}}, \qquad \tau \equiv \frac{kt}{\sqrt{2}}
+$$
+
+The cascade peak advances as $n_\text{peak}(t) = \tau^2 = k^2t^2/2$, while total power $\sum_n|\hat{f}_n|^2 = 1$ is **exactly conserved** (Parseval). Three physical consequences follow:
+
+1. **Landau damping** — the density mode ($n=0$) decays as $|\hat{f}_0|\propto e^{-k^2t^2/4}$, losing energy to ever-finer velocity-space structure. This is *not* thermodynamic dissipation.
+
+2. **Collisionless reversibility** — because $\sum_n|\hat{f}_n|^2$ is conserved, the phase mixing is reversible in principle; no entropy is produced.
+
+3. **Collisional entropy production** — a collision operator (e.g., Lenard–Bernstein: $\nu\,\hat{a}^\dagger\hat{a}$ damps mode $n$ at rate $\nu n$) absorbs the cascade at high $n$, breaking Parseval and producing real thermodynamic entropy.
+
+<!-- fig-tabset:figure_hermite_cascade.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_hermite_cascade.png" width="100%"/>
+
+### Code
+
+```python
+from scipy.special import eval_hermite, factorial
+
+leg_kw = dict(labelcolor='linecolor', handlelength=0, markerscale=0,
+              handletextpad=0, frameon=False)
+
+def psi_n(n, v):
+    norm = 1.0 / (np.pi**0.25 * np.sqrt(float(2**n) * float(factorial(n))))
+    return norm * eval_hermite(n, v) * np.exp(-v**2 / 2.0)
+
+v = np.linspace(-4, 4, 600)
+
+plt.close()
+plt.figure(figsize=(8, 4))
+ax1 = plt.subplot(1, 2, 1)
+ax2 = plt.subplot(1, 2, 2)
+
+# Panel (a): first five basis functions
+labels      = [r'$\psi_0$', r'$\psi_1$', r'$\psi_2$', r'$\psi_3$', r'$\psi_4$']
+line_styles = ['-', '-', '-', '--', '--']
+colors      = ['C0', 'C1', 'k', 'C0', 'C1']
+for n in range(5):
+    ax1.plot(v, psi_n(n, v), ls=line_styles[n], color=colors[n],
+             lw=1.2, label=labels[n])
+ax1.axhline(0, color='k', lw=0.4, ls=':')
+ax1.set_xlim(-4, 4); ax1.set_ylim(-0.85, 0.85)
+ax1.set_xlabel('$v$'); ax1.set_ylabel(r'$\psi_n(v)$')
+ax1.legend(loc='upper right', ncol=1, **leg_kw)
+
+# Panel (b): free-streaming Poisson cascade
+# |hat f_n|^2 = tau^(2n) / n! * exp(-tau^2),  tau = kt/sqrt(2)
+ns       = np.arange(0, 20)
+taus     = [0.5, 1.0, 2.0, 3.5]
+colors_b = ['C0', 'C1', 'k', 'C3']
+labels_b = [r'$\tau=0.5$', r'$\tau=1$', r'$\tau=2$', r'$\tau=3.5$']
+for tau, c, lb in zip(taus, colors_b, labels_b):
+    power = tau**(2*ns) / factorial(ns) * np.exp(-tau**2)
+    ax2.semilogy(ns, power, '-o', color=c, ms=3, lw=1.2, label=lb)
+ax2.set_xlim(-0.5, 19.5); ax2.set_ylim(1e-8, 1.2)
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(4))
+ax2.set_xlabel(r'Hermite mode $n$'); ax2.set_ylabel(r'$|\hat{f}_n|^2$')
+ax2.legend(loc='upper right', ncol=1, **leg_kw)
+
+plt.suptitle('Hermite Spectral Transform', **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_hermite_cascade.png', bbox_inches='tight', dpi=300)
 ```
 
 :::
+
+Panel (a) shows the first five orthonormal Hermite–Gauss functions: $\psi_0$ is a pure Gaussian; each higher mode $\psi_n$ has exactly $n$ zero-crossings inside the Gaussian envelope. Panel (b) shows the **free-streaming Poisson cascade**: power deposited initially at $n=0$ spreads toward higher modes as $|\hat{f}_n|^2\propto\tau^{2n}e^{-\tau^2}/n!$, with $\tau=kt/\sqrt{2}$. The cascade front advances as $n_\text{peak}\sim\tau^2$ while total power is exactly conserved — the spectral portrait of collisionless Landau damping.
+
+---
+
+## Application: Angular Power Spectrum of the Cosmic Microwave Background (CMB)
+
+The Wiener–Khinchin theorem is the workhorse behind almost every estimator of the **angular power spectrum of the Cosmic Microwave Background (CMB)**. Modern pipelines (e.g. *Planck*, *ACT*) operate on the 2-sphere, but the underlying logic is one-dimensional:
+
+1. Observe a (nearly) stationary stochastic field $T(\hat n)$.
+2. Estimate its two-point correlation function $C(\theta) = \langle T(\hat n_1)\,T(\hat n_2)\rangle$ for $\hat n_1\!\cdot\!\hat n_2 = \cos\theta$.
+3. Take the (spherical) Fourier transform — equivalent to expanding $C(\theta)$ on Legendre polynomials — to obtain $C_\ell$.
+
+Wiener–Khinchin guarantees that this $C_\ell$ is the same object as $\langle |a_{\ell m}|^2\rangle$ obtained by a direct harmonic transform of $T$ — provided the field is statistically isotropic (the angular analogue of WSS).
+
+We verify this by **simulating a realistic CMB sky**: draw one full-sky realisation from a theoretical $\Lambda$CDM angular power spectrum (the standard curve `totcls.dat` bundled with `healpy`), then recover $C_\ell$ two independent ways and check both against the input theory:
+
+- **Method A — spherical harmonics (`healpy.anafast`).** Expand the map in $a_{\ell m}$ and average $|a_{\ell m}|^2$ over $m$: $\;C_\ell=\langle|a_{\ell m}|^2\rangle_m$. Efficient and accurate to high $\ell$ — the standard estimator.
+- **Method B — Wiener–Khinchin.** Estimate the two-point correlation function $C(\theta)$ by averaging $T(\hat n_1)T(\hat n_2)$ over pixel **pairs** separated by $\theta$, then Legendre-transform it: $\;C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d\cos\theta$.
+
+Method B is exact *in expectation*, but a naïve implementation is wildly inaccurate. Three choices matter:
+
+::: {.callout-important}
+## Making the correlation-function route accurate
+
+1. **Integrate over the full range $\theta\in[0,\pi]$.** The transform runs over all of $\mu=\cos\theta\in[-1,1]$. Truncating $C(\theta)$ to a few degrees keeps only a thin sliver of $\mu$ (e.g. $\theta<15^\circ \Rightarrow \mu\in[0.97,1]$, *97% of the integration range discarded*). In harmonic space that truncation convolves $C_\ell$ with a broad kernel — a strong bias that apodization cannot undo. **This is the usual reason a hand-rolled estimator looks wrong.**
+2. **Use Gauss–Legendre nodes and weights** for the $\mu$-integral, so $C_\ell=2\pi\sum_i w_i\,C(\theta_i)\,P_\ell(\mu_i)$ is exact for the band-limit — not a coarse trapezoid sum over a region where $P_\ell$ oscillates $\ell$ times.
+3. **Average enough pixel pairs per node.** `anafast` implicitly uses *all* pairs. Method B's variance on $C_\ell$ is roughly white, so its $D_\ell=\ell(\ell+1)C_\ell/2\pi$ noise grows as $\ell^2$: it is fundamentally a **large-angle tool**. It tracks the first acoustic peak ($\ell\!\lesssim\!250$), but `anafast` is the right estimator for the high-$\ell$ tail no matter how many pairs you draw.
+:::
+
+The figure below confirms the picture: `anafast` traces the input $\Lambda$CDM curve — first acoustic peak at $\ell\!\approx\!220$ ($\sim\!5700\ \mu K^2$), the trough near $\ell\!\approx\!410$, the second peak near $\ell\!\approx\!540$ — across the whole range, while the Wiener–Khinchin estimator agrees through the first peak and is then dropped where its $\ell^2$ noise takes over (shaded). The pair-counting route also has one practical virtue on real data: it uses only the pixels you actually have, so on a masked sky it estimates the *true* $C(\theta)$ directly and needs **no $1/f_{\text{sky}}$ correction**.
+
+::: {.callout-note}
+## From a simulation to a real map
+
+On a *measured* map (e.g. WMAP or Planck) two extra steps are needed before the spectrum matches the textbook curve: **deconvolve the instrument beam and pixel window** ($C_\ell^{\text{true}}=C_\ell^{\text{map}}/(B_\ell^2 w_\ell^2)$), and **subtract the noise bias**. Skipping the beam step is the classic mistake — it pushes the apparent first peak to lower $\ell$ and suppresses its height, because the beam multiplies the true spectrum by a steeply falling $B_\ell^2$.
+:::
+
+<!-- fig-tabset:figure_wk_cmb_sphere.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_wk_cmb_sphere.png" width="100%"/>
+
+### Code — Method A (`anafast`)
+
+```python
+import os
+import healpy as hp
+
+# --- A realistic LCDM angular power spectrum (healpy ships the theory curve) ---
+totcls  = os.path.join(os.path.dirname(hp.__file__), 'data', 'totcls.dat')
+lmax    = 600
+ell     = np.arange(lmax + 1)
+Dl_th   = np.loadtxt(totcls)[:lmax + 1, 1]                  # LCDM D_l^TT  [uK^2]
+Cl_th   = np.zeros(lmax + 1)
+Cl_th[2:] = Dl_th[2:] * 2*np.pi / (ell[2:] * (ell[2:] + 1)) # D_l -> C_l
+
+# --- simulate one full-sky CMB realisation drawn from this spectrum ---
+nside   = 512
+cmb_map = hp.synfast(Cl_th, nside, lmax=lmax, pixwin=False)
+
+# Method A: anafast expands T(n) in a_lm and averages |a_lm|^2 over m
+Cl_A = hp.anafast(cmb_map, lmax=lmax)
+```
+
+### Code — Method B (Wiener–Khinchin)
+
+```python
+from scipy.special import eval_legendre
+
+N_nodes = lmax + 1
+mu, wmu = np.polynomial.legendre.leggauss(N_nodes)   # full-range GL nodes/weights
+theta   = np.arccos(mu)
+n_pairs = 500_000                                    # pixel pairs per node (SNR knob)
+rng     = np.random.default_rng(1)
+
+# (B1) ring sampling: for each node draw random centres and a partner at
+#      EXACTLY angular distance theta_i (random azimuth phi).
+C_theta = np.zeros(N_nodes)
+for k, th in enumerate(theta):
+    cp  = rng.integers(0, cmb_map.size, n_pairs)
+    vi  = np.array(hp.pix2vec(nside, cp))                      # (3, n_pairs) centres
+    e0  = np.eye(3)[np.argmin(np.abs(vi), axis=0)].T           # axis least || to vi
+    e1  = np.cross(vi.T, e0.T).T;  e1 /= np.linalg.norm(e1, axis=0)
+    e2  = np.cross(vi.T, e1.T).T                               # tangent-plane basis
+    phi = rng.uniform(0, 2*np.pi, n_pairs)
+    vj  = np.cos(th)*vi + np.sin(th)*(np.cos(phi)*e1 + np.sin(phi)*e2)
+    C_theta[k] = np.mean(cmb_map[cp] * cmb_map[hp.vec2pix(nside, *vj)])
+
+# (B2) exact Legendre transform on the GL grid: C_l = 2*pi * sum_i w_i C(theta_i) P_l(mu_i)
+P_mat = eval_legendre(ell[:, None], mu[None, :])              # (lmax+1, N_nodes)
+Cl_B  = 2*np.pi * (P_mat * (wmu * C_theta)).sum(axis=1)
+
+# bin in ell; show Method B only where its l^2 noise stays small
+Dl = lambda Cl: ell*(ell+1)*Cl/(2*np.pi)
+def bin_Dl(Cl, dl=20, l_hi=lmax):
+    e = np.arange(2, l_hi + 1, dl); cen = 0.5*(e[:-1] + e[1:])
+    return cen, np.array([np.mean(Dl(Cl)[a:b]) for a, b in zip(e[:-1], e[1:])])
+cA, DA = bin_Dl(Cl_A)
+cB, DB = bin_Dl(Cl_B, l_hi=280)
+```
+
+:::
+
+The left panel shows the Wiener–Khinchin intermediate — the two-point correlation function $C(\theta)$. The right panel confirms that **both estimators recover the same $\Lambda$CDM angular power spectrum** $D_\ell\equiv\ell(\ell+1)C_\ell/2\pi$ where each is reliable — the spherical-geometry analogue of "Welch and the FT of the ACF agree".
+
+### Why `anafast` and Wiener–Khinchin are the *same sum*
+
+Why does the spherical-harmonic estimator stay accurate to high $\ell$ while the pair-counting estimator does not, when both target the same $C_\ell$? Because they are **literally the same sum**, evaluated two different ways. Expanding `anafast`'s estimator,
+
+$$
+\hat C_\ell=\frac{1}{2\ell+1}\sum_{m}|a_{\ell m}|^2
+=\frac{(\Delta\Omega)^2}{4\pi}\sum_{p,\,q} T_p\,T_q\,P_\ell(\cos\theta_{pq}),
+$$
+
+which is exactly "average $T(\hat n_1)T(\hat n_2)\,P_\ell(\cos\theta)$ over pixel pairs" — the Wiener–Khinchin recipe — taken over **every** pair $(p,q)$ at once. The methods differ only in *how* they evaluate this sum:
+
+- **`anafast`** computes it **exactly** through the fast spherical-harmonic transform ($O(N_{\text{pix}}\,\ell_{\max})$, no random sampling). Its only error is **cosmic variance**: at each multipole there are merely $2\ell+1$ independent $m$-modes, an irreducible fractional uncertainty of $\sqrt{2/(2\ell+1)}$. That is a property of having a single sky, not of the algorithm.
+- **Pair-counting Wiener–Khinchin** estimates the same sum by **Monte-Carlo**, averaging a random subset of $n_{\text{pairs}}$ pairs per separation. This adds a *second* error on top of cosmic variance, scaling as $1/\sqrt{n_{\text{pairs}}}$. That sampling error is roughly white in $C_\ell$, so in $D_\ell=\ell(\ell+1)C_\ell/2\pi$ it grows as $\ell^2$. At high $\ell$, where $P_\ell$ oscillates rapidly and the true signal is a small residual left after enormous cancellation among the $\sim\!N_{\text{pix}}^2$ terms, this noise swamps the signal — which is precisely why Method B is a **large-angle tool**.
+
+Couldn't we remove the sampling noise by using *all* pairs? In principle yes, but summing all $N_{\text{pix}}^2\!\sim\!10^{13}$ pairs exactly is infeasible, and the only algorithm that performs that all-pairs, $P_\ell$-weighted sum quickly **is** the spherical-harmonic transform. The noise-free limit of Wiener–Khinchin *is* `anafast`; random pair sampling is simply the price of evaluating the same sum cheaply. (The instrument beam, by contrast, biases *both* estimators identically — that is the separate preprocessing issue flagged above, not a difference between the two methods.)
+
+## What If the Signal Is Not Stationary? [`scipy.signal.detrend`]
+
+If the constant mean condition (first condition) is not satisfied, say, due to an underlying background trend, you should first apply **<u>*detrend*</u>**. Techniques such as subtracting the mean (constant detrend) or removing a linear trend (linear detrend) help modify the signal so that its mean becomes approximately constant.
+
+```python
+scipy.signal.welch(x, fs, detrend = 'constants' (default) | 'linear' | Fasle)
+```
+
+<!-- fig-tabset:figure_detrend.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_detrend.png" width="100%"/>
+
+### Code
+
+```python
+plt.close()
+N = 2 ** 10
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+omega0 = 1 * np.pi * 50
+sig = 2 * t + np.sin(omega0 * t) * 1
+plt.figure(figsize=figsize_short)
+ax1 = plt.subplot()
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend=False, nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C0-', label = 'No Detrend')
+ax1.plot(freq[:], psd[:], 'C0o')
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='constant', nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C1-', label = 'Constant')
+ax1.plot(freq[:], psd[:], 'C1o')
+
+sig = 100 * t + np.sin(omega0 * t) * 1
+freq, psd = scipy.signal.welch(sig, fs, window = 'hann', nperseg = N, noverlap = 0, detrend='linear', nfft = None, return_onesided=True, scaling='density')
+ax1.plot(freq[:], psd[:], 'C2-', label = 'Linear')
+ax1.plot(freq[:], psd[:], 'C2o')
+
+ax1.set_ylim(1e-18, 1e6)
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_ylabel('PSD [$\mathrm{Arb^2}$/Hz]')
+
+ax1.legend(loc = 'upper right', ncol = 5, labelcolor="linecolor", handlelength = 0, handletextpad = 0, frameon = False)
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+# ax1.autoscale(axis = 'x', tight = True)
+ax1.set_title("Fourier Spectrum After Detrend\n" + "$x(t)=2t + \mathrm{sin}(50\pi t)$", **title_font)
+plt.tight_layout()
+plt.savefig(save_path + 'figure_detrend' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+
+
+If the time-invariant autocorrelation condition (second condition) is not met, which indicates that the signal's higher-order statistics vary with time, traditional spectral analysis (like using the Wiener–Khinchin theorem) may no longer yield a meaningful power spectral density. In such cases, it is advisable to use time-frequency analysis methods, such as the Short-Time Fourier Transform (STFT) or the Wavelet Transform, to properly capture the signal's evolving spectral content.
+
+The concept of *W.S.S* essentially guides us in **selecting an appropriate window** for spectral analysis. On one hand, the window length should be longer than the oscillation period to capture a complete cycle of the fluctuations. On the other hand, the window length should be shorter than the characteristic scale over which power or frequency variations occur, so that the signal within the window can be approximated as wide-sense stationary.
+## [Cepstrum](https://en.wikipedia.org/wiki/Cepstrum)
+
+A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its **harmonic** $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
+
+<!-- fig-tabset:figure_cepstrum.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_cepstrum.png" width="100%"/>
+
+### Code
+
+```python
+plt.close()
+plt.figure(figsize=(16, 4))
+
+N = 2 ** 8
+omega0 = 2 * np.pi * 4.0
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+
+sig = 2 * ((omega0 / 2 / np.pi * t) % 1.0 - 0.5)
+# Add white noise for preventing getting a log(abs(0))
+sig += np.random.randn(t.size) * 1e-2
+freq = np.fft.rfftfreq(N, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_X = np.log(np.abs(coef))
+log_abs_X -= np.mean(log_abs_X)  # Remove DC component for cepstrum calculation
+cepstrum = np.fft.rfft(log_abs_X)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_X.size, df)
+
+
+ax1 = plt.subplot(1, 3, 1)
+ax2 = plt.subplot(1, 3, 2)
+ax3 = plt.subplot(1, 3, 3)
+
+ax1.plot(t, sig, 'ko-', label='Signal')
+ax2.stem(freq, np.abs(coef), linefmt='k', markerfmt='k', basefmt='k')
+ax2.plot(freq, 4 / freq * np.abs(coef)[4], 'r--', label='1/f', zorder = 0)
+
+ax3.stem(quefrency, np.abs(cepstrum), linefmt='k', markerfmt='k', basefmt='k')
+
+ax2.text(30, 30, 'Harmonics', color = 'k', ha = 'center', va = 'bottom', **title_font)
+ax2.text(12, 30, '$X[k]\propto 1/k $', color = 'C1', ha = 'center', va = 'bottom', **title_font, rotation = -70)
+ax3.text(1 / (omega0 / (2 * np.pi)), 135, '4 Hz', color = 'k', ha = 'center', va = 'center', **title_font)
+ax3.set_ylim(-0.5, 150)
+# ax3.set_yscale('log')
+
+ax1.set_title('Signal', **title_font)
+ax2.set_title('FFT Magnitude', **title_font)
+ax3.set_title('Cepstrum', **title_font)
+
+ax1.set_xlabel('Time [s]')
+ax2.set_xlabel('Frequency [Hz]')
+ax3.set_xlabel('Quefrency [s]')
+ax1.set_ylabel('Intensity [Arb]')
+ax2.set_ylabel('Magnitude [Arb]')
+ax3.set_ylabel('Intensity [Arb]')
+
+ax2.set_ylim(-5, 90)
+ax2.set_xlim(-2, 60)
+
+plt.tight_layout()
+
+plt.savefig(save_path + 'figure_cepstrum' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+<p align = 'center'>
+<i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
+</p>
+
+
+Inspiri ng by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the ***Cepstral Analysis*** in 1963. The norm of the Fourier coefficients is taken logarithm and then inverse Fourier transformed for detecting the harmonic signature of the signal. 
+
+```mermaid
+flowchart LR
+    A["x[n]"] -->|"Fourier Transform"| B["X[k]"]
+    B -->|"abs + log"| C["log|X[k]|"]
+    C -->|"Inverse Fourier Transform"| D["Cepstrum"]
+```
+
+This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
+
+The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as:
+$$
+y(t) = x(t) +\alpha x(t-\tau)
+$$
+It has a Fourier transform of
+$$
+\begin{align*}
+Y(f) &= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
+|Y(f)|^2 &= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
+\end{align*}
+$$
+
+$$
+\begin{align*}
+\mathrm{log}(|Y(f)|^2) &= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
+& \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
+\end{align*}
+$$
+Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
+
+However, it doesn't mean that the cepstral analysis only work for the signals composited with echoes. Another common application of cepstral analysis is the [voice recognition](https://ieeexplore.ieee.org/document/859069). The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.
+
+```python
+''' Python Implication of Cepstrum '''
+
+freq = np.fft.rfftfreq(sig.size, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_coef = np.log(np.abs(coef))
+
+# Optional, Remove DC component for cepstrum calculation
+log_abs_coef -= np.mean(log_abs_coef)
+
+cepstrum = np.fft.rfft(log_abs_coef)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
+```
+
+### Worked Example: Gear-Box Fault Detection
+
+A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration spectrum is dominated by the *gear-mesh frequency* $f_m = N_t f_r$ (number of teeth $\times$ shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the *shaft-rotation frequency* $f_r$, introducing a family of side-bands $f_m \pm k f_r$ around every mesh harmonic.
+
+In the spectrum these side-bands form a **comb** with spacing $f_r$. The cepstrum collapses each such comb into a single peak (a *rahmonic*) at quefrency $\tau_r = 1/f_r$ — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.
+
+Why does this work? The key is that **convolution in time becomes multiplication in the frequency domain, and multiplication becomes addition after taking the logarithm**. A fault that fires once per revolution convolves the clean gear-mesh signal with a periodic impulse train. Following the log-spectrum through to the cepstrum, the two contributions simply add — so the fault's rahmonic appears at a fixed quefrency regardless of the machine's load or speed:
+
+```mermaid
+flowchart LR
+    A["<b>Time domain</b><br/>y = x ∗ h<br/><i>mesh ✱ fault impulse</i>"]
+    -->|"DFT"| B["<b>Frequency domain</b><br/>Y = X · H<br/><i>convolution → ×</i>"]
+    -->|"log|·|"| C["<b>Log spectrum</b><br/>log|Y| = log|X| + log|H|<br/><i>multiply → +</i>"]
+    -->|"IDFT"| D["<b>Cepstral domain</b><br/>c_y = c_x + c_h<br/><i>fault peak at τ = 1/f_r</i>"]
+```
+
+The example below uses real vibration data from the **SpectraQuest Machinery Fault Simulator** [@NREL_gearbox_2018], recorded at $f_s = 66\,667\,\mathrm{Hz}$ with the shaft running at $f_r = 30\,\mathrm{Hz}$ and 50 % load. Two conditions are compared: a healthy gear and a gear with a broken tooth. The gear-mesh frequency is $f_m = 30 \times 30 = 900\,\mathrm{Hz}$.
+
+Panel (b) shows the Welch PSD around $f_m$: the broken-tooth spectrum has a higher sideband floor at $f_m \pm f_r = 870/930\,\mathrm{Hz}$, but the difference is subtle. Panel (c) shows the **envelope cepstrum** — band-pass filtered around $f_m$, Hilbert envelope, then real cepstrum — which collapses all sidebands into a single rahmonic peak near $\tau_r = 33.3\,\mathrm{ms}$, roughly $10\times$ stronger in the broken-tooth case.
+
+<!-- fig-tabset:figure_cepstrum_gearbox.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_cepstrum_gearbox.png" width="100%"/>
+
+### Code
+
+```python
+# SpectraQuest Machinery Fault Simulator – 50 % load, 30 Hz shaft speed
+# Data: NREL / OpenEI  https://data.openei.org/files/623/gearboxdata.zip
+_data_path = save_path.replace('Figure/', 'Data/')
+data     = np.load(_data_path + 'gearbox_spectraquest.npz')
+xh, xb   = data['healthy'].astype(float), data['broken'].astype(float)
+fs_gear  = float(data['fs'])   # 66 667 Hz
+
+shaft_hz = 30.0                 # shaft rotation frequency
+gmf_hz   = 900.0                # gear-mesh freq = 30 teeth × 30 Hz
+
+# Band-pass around GMF, then Hilbert envelope, then real cepstrum
+from scipy.signal import butter, filtfilt, hilbert, welch as sp_welch
+b_bp, a_bp = butter(4, [(gmf_hz - 200) / (fs_gear / 2),
+                         (gmf_hz + 200) / (fs_gear / 2)], btype='band')
+env_h = np.abs(hilbert(filtfilt(b_bp, a_bp, xh)))
+env_b = np.abs(hilbert(filtfilt(b_bp, a_bp, xb)))
+
+def _rceps(x):
+    lX = np.log(np.abs(np.fft.rfft(x)) + 1e-12)
+    lX -= lX.mean()
+    return np.fft.irfft(lX, n=len(x))
+
+ch, cb = _rceps(env_h), _rceps(env_b)
+q_ms   = np.arange(len(ch)) / fs_gear * 1000   # quefrency in ms
+```
+
+:::
+
+---

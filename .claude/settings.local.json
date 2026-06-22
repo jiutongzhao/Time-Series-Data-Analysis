@@ -4,7 +4,16 @@
       "Bash(python3 *)",
       "Bash(git mv *)",
       "Bash(git rm *)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(quarto render *)",
+      "Bash(conda run *)",
+      "Bash(git -C /mnt/d/OneDrive/Documents/GitHub/Time-Series-Data-Analysis diff --name-only HEAD)",
+      "Bash(git -C /mnt/d/OneDrive/Documents/GitHub/Time-Series-Data-Analysis status --short)",
+      "WebFetch(domain:cdf.gsfc.nasa.gov)",
+      "WebFetch(domain:cdflib.readthedocs.io)",
+      "WebFetch(domain:spdf.gsfc.nasa.gov)"
     ]
   }
 }

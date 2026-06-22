@@ -22,7 +22,7 @@ The choice of interpolation method can significantly affect the quality of the r
 
 <img src="Figure/figure_interpolation.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 37</small>
+### Code
 
 ```python
 import scipy.interpolate
@@ -168,7 +168,7 @@ That is, the output is the **average of the most recent $L$ input samples**. **T
 
 <img src="Figure/figure_moving_average.png" width="100%"/>
 
-### Code  <small>chap6.ipynb · cell 4</small>
+### Code
 
 ```python
 plt.close()
@@ -262,6 +262,28 @@ The following table summarizes common digital filter types, their implementation
 | Bessel         | `bessel`                  | Linear phase, slow rolloff   | Transient preservation    |
 | Median         | `medfilt`, `medfilt1d`    | Nonlinear, preserves edges   | Spike removal             |
 
+::: {.callout-tip}
+## Which filter should I pick?
+
+Decide along three axes — **phase**, **transition sharpness**, and **causality** — in that order:
+
+1. **Does waveform shape / event timing matter?** (e.g. detecting an arrival time, preserving a pulse shape)
+   - *Yes* → you need (near-)**linear phase**. Pick **FIR** (`firwin`), or **Bessel** if you need an efficient IIR. For an offline FIR/IIR, `filtfilt` (forward–backward) gives **exactly zero phase** at the cost of doubling the effective order.
+   - *No* → any IIR is fine; continue.
+2. **How sharp must the transition band be, for a given order?**
+   - Gentle, maximally flat passband, general purpose → **Butterworth**.
+   - Sharper, ripple allowed in the **stopband** only → **Chebyshev II** (`cheby2`).
+   - Sharper, ripple allowed in the **passband** only → **Chebyshev I** (`cheby1`).
+   - Steepest possible for the lowest order, ripple allowed in **both** bands → **Elliptic** (`ellip`).
+3. **Real-time or offline?**
+   - Real-time / low latency → a **low-order IIR** (causal, few coefficients).
+   - Offline / latency tolerable → **FIR + `filtfilt`** for a clean zero-phase result.
+
+**Special case:** impulsive spikes / outliers (salt-and-pepper) are not a frequency-band problem — use the nonlinear **median** filter, which removes spikes without smearing genuine edges.
+
+The catch with sharper magnitude responses (Chebyshev, elliptic) is increasingly nonlinear phase and ringing near edges, so the axis-1 question always wins over axis-2.
+:::
+
 For IIR filters, the **<u>*Butterworth*</u>** filter, `scipy.signal.butter`, is commonly used. An example of these filters applied to a sine wave is shown below:
 
 
@@ -273,7 +295,7 @@ For IIR filters, the **<u>*Butterworth*</u>** filter, `scipy.signal.butter`, is 
 
 <img src="Figure/figure_filters.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 48</small>
+### Code
 
 ```python
 plt.close()
@@ -354,7 +376,7 @@ The effect of a digital filter can be fully characterized by its **<u>*frequency
 
 <img src="Figure/figure_filters_response.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 49</small>
+### Code
 
 ```python
 plt.close()
@@ -451,7 +473,7 @@ plt.show()
 
 <img src="Figure/figure_filtered_noise.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 50</small>
+### Code
 
 ```python
 import numpy as np
@@ -503,7 +525,7 @@ The **<u>*Hilbert transform*</u>** is a fundamental tool for analyzing the insta
 
 <img src="Figure/figure_hilbert.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 62</small>
+### Code
 
 ```python
 import numpy as np

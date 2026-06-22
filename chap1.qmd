@@ -1,4 +1,4 @@
-# <center> Data Initialization
+# Data Initialization
 
 ## Sampling
 
@@ -23,7 +23,7 @@ All the data that await analysis are yield from ***<u>sampling</u>***, no matter
 
 <img src="Figure/figure_aliasing.png" width="100%"/>
 
-### Code  <small>chap1.ipynb · cell 16</small>
+### Code
 
 ```python
 plt.close()
@@ -96,7 +96,7 @@ However, when reconstructing [see Chapter 6/Reconstruction and Interpolation](ch
 
 <img src="Figure/figure_nyquist_reconstruction.png" width="100%"/>
 
-### Code  <small>chap1.ipynb · cell 22</small>
+### Code
 
 ```python
 plt.close()
@@ -181,7 +181,7 @@ Aliasing effect always happens when you (down-)sampling the signal, a common way
 
 <img src="Figure/figure_aliasing_folding.png" width="100%"/>
 
-### Code  <small>chap1.ipynb · cell 18</small>
+### Code
 
 ```python
 plt.close()
@@ -268,7 +268,7 @@ plt.show()
 
 <img src="Figure/figure_nyquist_zone.png" width="100%"/>
 
-### Code  <small>chap1.ipynb · cell 20</small>
+### Code
 
 ```python
 from turtle import color
@@ -324,7 +324,7 @@ After get your data, you should know that **what does each timestamps represent?
 
 <img src="Figure/figure_sampling_methods.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 35</small>
+### Code
 
 ```python
 plt.close()
@@ -423,7 +423,7 @@ If you feel your data processing speed is limited by the data I/O, you should co
 
 <img src="Figure/figure_typical_signals.png" width="100%"/>
 
-### Code  <small>practical_spectral_analysis_plot.ipynb · cell 22</small>
+### Code
 
 ```python
 %matplotlib ipympl
@@ -594,5 +594,39 @@ There are several packages in Python for managing timestamps, and the choice dep
     datetime_array_to_pd = [pd.Timestamp(dt) for dt in datetime_array]
     ```
     
+
+### NASA CDF Epoch Types
+
+[NASA CDF (Common Data Format)](https://cdf.gsfc.nasa.gov/) is the standard container for space-physics and heliospheric data (e.g. MMS, Wind, ACE, Parker Solar Probe). It defines three dedicated epoch data types:
+
+| Type | Storage | Resolution | Reference epoch | Leap seconds |
+|------|---------|------------|-----------------|--------------|
+| `CDF_EPOCH` | `float64` (8 B) | 1 ms | 0000-01-01 00:00:00 UTC | ✗ |
+| `CDF_EPOCH16` | 2 × `float64` (16 B) | 1 ps | 0000-01-01 00:00:00 UTC | ✗ |
+| `CDF_TIME_TT2000` | `int64` (8 B) | 1 ns | 2000-01-01 12:00:00 TT (J2000) | ✓ |
+
+- **`CDF_EPOCH`** — legacy format; stores milliseconds since year 0. Good enough for most pre-2000 datasets and still the most widely encountered type.
+
+- **`CDF_EPOCH16`** — highest resolution (picoseconds), but costs 16 bytes per sample and stores the value as a complex number (`np.complex128`) in Python. Rarely needed in practice.
+
+- **`CDF_TIME_TT2000`** — recommended for all new datasets. Uses **Terrestrial Time (TT)** rather than UTC, so the integer counter never has an ambiguous leap-second repeat. The offset between TT and UTC is $\Delta AT + 32.184\ \text{s}$ (where $\Delta AT$ is the accumulated leap-second count). Valid range: 1707 – 2292.
+
+In Python, `cdflib` handles all three:
+
+```python
+import cdflib
+
+# Read a CDF file
+cdf = cdflib.CDF("data.cdf")
+
+# Convert any epoch type → numpy.datetime64[ns]
+epochs = cdf.varget("Epoch")                       # raw CDF epoch array
+times = cdflib.cdfepoch.to_datetime(epochs)        # list of datetime.datetime
+t_np  = np.array(times, dtype="datetime64[ns]")   # → numpy array
+
+# Or use cdflib's own converter directly
+t_tt2000 = cdflib.cdfepoch.compute_tt2000(         # scalar or array
+    [[2000, 1, 1, 12, 0, 0, 0, 0, 0]])             # [y,mo,d,h,m,s,ms,µs,ns]
+```
 
 <div STYLE="page-break-after: always;"></div>

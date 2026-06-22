@@ -1,0 +1,107 @@
+# Piano String Inharmonicity
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Spectral peak detection and nonlinear curve fitting — measuring piano string stiffness from a recording.
+**Chapter:** [2 — Frequency Domain](../chap2.qmd)
+
+---
+
+## Background
+
+An ideal string produces overtones at exact integer multiples $n f_1$ of the fundamental. A real piano string is a **stiff beam**: bending stiffness stretches every partial slightly sharp according to the Euler–Bernoulli inharmonicity formula. Spectral analysis makes this deviation directly measurable.
+
+## Key idea
+
+Solving the stiff-string wave equation
+
+$$
+\mu \frac{\partial^2 y}{\partial t^2} = T\frac{\partial^2 y}{\partial x^2} - EI\frac{\partial^4 y}{\partial x^4}
+$$
+
+with fixed-end boundary conditions gives the partial frequencies
+
+$$
+f_n = n f_1 \sqrt{1 + B n^2}, \qquad B = \frac{\pi^2 E I}{T L^2}
+$$
+
+The **inharmonicity coefficient** $B$ is fitted from the positions of the spectral peaks. For a concert grand at middle C, $B \sim 2\times10^{-4}$ — small per note but large enough that piano tuners must apply octave stretch to keep the instrument in tune across the keyboard.
+
+## Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import scienceplots
+from scipy.signal import welch, find_peaks
+from scipy.optimize import curve_fit
+
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+# ── Synthesise middle-C piano note (16 inharmonic partials) ──────────────
+f1 = 261.63          # fundamental – middle C [Hz]
+B  = 2.6e-4          # inharmonicity coefficient (concert grand, C4)
+fs = 44_100          # sample rate [Hz]
+N  = int(fs * 2.0)   # 2-second note
+t  = np.arange(N) / fs
+
+sig = np.zeros(N)
+for n in range(1, 17):
+    fn   = n * f1 * np.sqrt(1 + B * n**2)
+    sig += (1.0 / n**0.65) * np.sin(2 * np.pi * fn * t) * np.exp(-t / (0.6 + 3.0 / n))
+sig += 0.008 * np.random.default_rng(42).standard_normal(N)
+
+# ── Welch PSD ─────────────────────────────────────────────────────────────
+freq, psd = welch(sig, fs=fs, nperseg=N // 4, window='hann')
+
+# ── Harmonic peak detection ───────────────────────────────────────────────
+peak_idx, _ = find_peaks(np.log10(psd + 1e-20), prominence=0.3,
+                          distance=int(f1 * 0.7 / (freq[1] - freq[0])))
+peak_idx = peak_idx[freq[peak_idx] < 5000]
+n_det    = peak_idx.size
+n_nums   = np.arange(1, n_det + 1)
+
+# ── Fit inharmonicity model ───────────────────────────────────────────────
+popt, _ = curve_fit(lambda n, B: f1 * n * np.sqrt(1 + B * n * n),
+                    n_nums, freq[peak_idx], p0=[1e-4])
+B_fit = popt[0]
+
+# ── Plot ──────────────────────────────────────────────────────────────────
+plt.close()
+plt.figure(figsize=(8, 4))
+ax1 = plt.subplot(1, 2, 1)
+ax2 = plt.subplot(1, 2, 2)
+
+ax1.semilogy(freq, psd, 'k-', lw=0.8)
+ax1.semilogy(freq[peak_idx], psd[peak_idx], 'C0o', ms=4)
+ax1.set_xlim(0, 5000)
+ax1.set_xlabel('Frequency [Hz]')
+ax1.set_ylabel('Power Spectral Density [Arb$^2$/Hz]')
+
+n_dense = np.linspace(0.8, n_det + 0.3, 300)
+ax2.plot(n_nums, freq[peak_idx], 'C0o', ms=4, label='Measured peaks')
+ax2.plot(n_dense, f1 * n_dense, 'k--', alpha=0.6, label='$nf_1$  (ideal)')
+ax2.plot(n_dense, f1 * n_dense * np.sqrt(1 + B_fit * n_dense**2),
+         'C1-', lw=1.5, label=fr'Fit  $B={B_fit:.2e}$')
+ax2.xaxis.set_major_locator(ticker.MultipleLocator(2))
+ax2.set_xlabel('Harmonic Number')
+ax2.set_ylabel('Frequency [Hz]')
+ax2.legend(loc='upper left', ncol=1, labelcolor=['C0', 'k', 'C1'], frameon=False)
+
+plt.suptitle('Piano String Inharmonicity', fontsize=16, weight='bold', style='italic')
+plt.tight_layout()
+plt.savefig('figure_piano_harmonic.png', bbox_inches='tight', dpi=300)
+```
+
+## Result
+
+<div class="gallery-result">
+![Piano C4 power spectrum (left) and inharmonic overtone positions fitted with the stiff-string model (right)](../Figure/figure_piano_harmonic.png)
+</div>
+
+Panel (a) shows the Welch PSD of a synthesised middle-C piano note; red dots mark the 16 detected partials. Panel (b) plots their frequencies against harmonic number: the dashed line is the ideal harmonic series $n f_1$, the orange curve is the fitted stiff-string model $n f_1\sqrt{1+Bn^2}$ with $B \approx 2 \times 10^{-4}$. The upward curvature grows rapidly above $n \approx 10$, which is why the highest bass strings of a concert grand deviate by more than a semitone from equal temperament at the upper partials.
+
+---
+
+*See [Chapter 2](../chap2.qmd) for the Euler–Bernoulli derivation and the connection between octave stretch and inharmonicity.*
