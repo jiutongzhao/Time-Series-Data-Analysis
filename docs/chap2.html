@@ -1021,6 +1021,28 @@ w[n]&amp;=\frac{1}{2}\left[1-\mathrm{cos} \left(\frac{2\pi n}{N}\right)\right]
 <li>Gaussian factors assume appropriate scaling of σ.</li>
 </ul>
 <p><strong>As the magnitude and energy spectra have different normalization factors, it is suggested that apply the normalization before the data outputting/plotting but not immediately after you proceed the Fourier transform.</strong></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Which window should I pick?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every window trades <strong>main-lobe width</strong> (frequency resolution) against <strong>side-lobe level</strong> (leakage suppression). Walk the decision the same way each time:</p>
+<ul>
+<li><strong>General-purpose default → Hann.</strong> A good balance of resolution and leakage; a safe choice when you have no special requirement.</li>
+<li><strong>Two tones of <em>similar</em> amplitude sitting close together → narrowest main lobe.</strong> Use <strong>Rectangular (boxcar)</strong> — but only when the record holds an integer number of cycles (otherwise leakage dominates). Otherwise step down to <strong>Hann/Hamming</strong>.</li>
+<li><strong>A <em>weak</em> tone hiding next to a <em>strong</em> one → deepest side-lobes.</strong> Use <strong>Blackman</strong>, or <strong>Kaiser with large β</strong> (e.g.&nbsp;β ≳ 8), to keep the strong tone’s leakage from burying the weak one.</li>
+<li><strong>You want one knob to sweep the trade-off → Kaiser(β).</strong> β → 0 approaches the rectangular window (best resolution), large β approaches Blackman (best leakage suppression).</li>
+<li><strong>Accurate <em>amplitude</em> of an off-bin tone matters more than resolution → flat-top</strong> (<code>scipy.signal.windows.flattop</code>); its wide main lobe keeps the peak amplitude error below ~0.01 dB.</li>
+<li><strong>Tapering only the edges of a transient while keeping most samples at unit gain → Tukey(α)</strong> with small α.</li>
+</ul>
+<p>Rule of thumb: start with Hann, and only move toward Blackman/Kaiser when a nearby strong component is leaking onto the feature you care about, or toward boxcar/flat-top when resolution or amplitude accuracy is the binding constraint.</p>
+</div>
+</div>
 </section>
 <section id="sampling-as-a-rectangular-window" class="level2">
 <h2 class="anchored" data-anchor-id="sampling-as-a-rectangular-window">Sampling as a Rectangular Window</h2>
