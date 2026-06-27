@@ -133,6 +133,87 @@ This is known as the **<u>*[Wiener–Khinchin theorem](https://en.wikipedia.org/
 This theorem tells the intrinsic relationship between the *PSD* and *ACF*. This relationship is particularly useful because it allows us to compute the power spectral density from time-domain data by first calculating the autocorrelation function and then applying the Fourier transform. This approach is often more robust, especially for signals that may be noisy or have missing data.
 
 
+## A Family of Spectral Transforms
+
+The Fourier transform is one member of a family. Every transform in this chapter does the *same* thing — it projects a signal onto a complete set of orthogonal basis functions — but each set is the one **natural to a particular geometry** (precisely: the eigenfunctions of the Laplacian on that domain). Choosing the transform whose symmetry matches the data is what makes a spectrum *sparse* and physically meaningful.
+
+| Transform | Kernel | Natural domain | Appears in |
+| :-- | :--: | :-- | :-- |
+| **Fourier** | $e^{ikx}$ | the line — translation symmetry | PSD, Wiener–Khinchin |
+| **Hankel** | $J_m(kr)$ | the disk — rotational symmetry | circular apertures, Airy pattern |
+| **Legendre** | $P_\ell(\cos\theta)$ | the sphere — polar angle | CMB angular power spectrum |
+| **Hermite** | $H_n(x)\,e^{-x^2/2}$ | the line with a harmonic well | velocity space, Vlasov moments |
+
+<!-- fig-tabset:figure_spectral_transforms_overview.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_spectral_transforms_overview.png" width="100%"/>
+
+### Code
+
+```python
+from scipy.special import jn, eval_legendre, eval_hermite, factorial
+
+C = ['#1f77b4', '#d62728', '#2ca02c', '#9467bd']
+
+def deco(ax, name, sub, loc='lower center', ncol=3):
+    ax.axhline(0, color='0.7', lw=0.6, zorder=0)
+    ax.set_title(name, fontsize=10.5, fontweight='bold', pad=16)
+    ax.text(0.5, 1.04, sub, transform=ax.transAxes, ha='center', va='bottom',
+            fontsize=8, color='0.30')
+    ax.tick_params(labelsize=7)
+    for s in ('top', 'right'):
+        ax.spines[s].set_visible(False)
+    leg = ax.legend(fontsize=6.8, ncol=ncol, loc=loc, handlelength=1.0,
+                    columnspacing=0.9, frameon=True, framealpha=0.85)
+    leg.get_frame().set_edgecolor('none')
+
+plt.close()
+fig, ax = plt.subplots(2, 2, figsize=(8.2, 5.6))
+
+# (1) Fourier — complex exponentials on the line
+x = np.linspace(0, 2*np.pi, 400)
+for k in (1, 2, 3):
+    ax[0, 0].plot(x, np.cos(k*x), color=C[k-1], lw=1.6, label=f'$k={k}$')
+ax[0, 0].set_xlim(0, 2*np.pi); ax[0, 0].set_xticks([0, np.pi, 2*np.pi])
+ax[0, 0].set_xticklabels(['0', r'$\pi$', r'$2\pi$']); ax[0, 0].set_xlabel('$x$', fontsize=8)
+deco(ax[0, 0], 'Fourier', r'$e^{\,ikx}$  ·  line, translation-invariant')
+
+# (2) Hankel — Bessel functions on the disk (radial part)
+r = np.linspace(0, 16, 500)
+for m in (0, 1, 2):
+    ax[0, 1].plot(r, jn(m, r), color=C[m], lw=1.6, label=f'$J_{m}$')
+ax[0, 1].set_xlim(0, 16); ax[0, 1].set_xlabel('$kr$', fontsize=8)
+deco(ax[0, 1], 'Hankel', r'$J_m(kr)$  ·  disk, rotation-invariant')
+
+# (3) Legendre — Legendre polynomials on the sphere (polar angle)
+mu = np.linspace(-1, 1, 400)
+for l in (1, 2, 3, 4):
+    ax[1, 0].plot(mu, eval_legendre(l, mu), color=C[l-1], lw=1.6, label=fr'$P_{l}$')
+ax[1, 0].set_xlim(-1, 1); ax[1, 0].set_ylim(-1.15, 1.15)
+ax[1, 0].set_xlabel(r'$\cos\theta$', fontsize=8)
+deco(ax[1, 0], 'Legendre', r'$P_\ell(\cos\theta)$  ·  sphere, polar angle', ncol=4)
+
+# (4) Hermite — Hermite-Gauss functions (quantum harmonic oscillator)
+xx = np.linspace(-5, 5, 500)
+def psi(n, x):
+    return (2.0**n * factorial(n) * np.sqrt(np.pi))**-0.5 * eval_hermite(n, x) * np.exp(-x**2/2)
+for n in (0, 1, 2, 3):
+    ax[1, 1].plot(xx, psi(n, xx), color=C[n], lw=1.6, label=fr'$\psi_{n}$')
+ax[1, 1].set_xlim(-5, 5); ax[1, 1].set_xlabel('$x$', fontsize=8)
+deco(ax[1, 1], 'Hermite', r'$H_n(x)\,e^{-x^2/2}$  ·  line, harmonic well', ncol=4)
+
+fig.suptitle('Each spectral transform projects a signal onto the eigenfunctions natural to its geometry',
+             fontsize=10.5, y=1.02)
+plt.tight_layout(rect=[0, 0, 1, 0.98])
+plt.savefig(save_path + 'figure_spectral_transforms_overview.png', bbox_inches='tight', dpi=150)
+```
+
+:::
+
+
 ## [Hankel Transform](https://en.wikipedia.org/wiki/Hankel_transform)
 
 ### Radial Power Spectrum — a 2-D Wiener–Khinchin Theorem
