@@ -161,6 +161,10 @@ table tbody td {
 
 table tbody tr:hover { background: var(--accent-soft); }
 
+/* Utility: keep the first column on a single line (no wrapping) */
+.nowrap-1st td:first-child,
+.nowrap-1st th:first-child { white-space: nowrap; }
+
 /* ---- 6. Links -------------------------------------------------------- */
 
 a {

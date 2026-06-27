@@ -497,12 +497,16 @@ plt.show()
 
 There are several packages in Python for managing timestamps, and the choice depends on your project's specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed. 
 
+::: {.nowrap-1st}
+
 | Library  |                          Advantages                          |
 | :------: | :----------------------------------------------------------: |
 |  [Pandas](https://pandas.pydata.org/docs/user_guide/timeseries.html)  | Rich time series functionality, easy integration with DataFrames **[Use in Reading Table Files]** |
 |  [NumPy](https://numpy.org/doc/stable/reference/arrays.datetime.html)   | Efficient for large arrays and vectorized time operations **[Use in Data Analysis]** |
 | [datetime](https://docs.python.org/3/library/datetime.html) | Part of Python standard library for basic date/time operations **[Use in Timestamps Format Conversion]** |
 | [Astropy](https://docs.astropy.org/en/stable/time/)  | High precision handling of special time formats and leap seconds **[Use in Time System Conversion]** |
+
+:::
 
 
 

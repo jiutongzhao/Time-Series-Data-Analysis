@@ -982,6 +982,7 @@ f_s &gt; 2f_{max}
 <section id="management-of-timestamps" class="level2">
 <h2 class="anchored" data-anchor-id="management-of-timestamps">Management of Timestamps</h2>
 <p>There are several packages in Python for managing timestamps, and the choice depends on your project’s specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed.</p>
+<div class="nowrap-1st">
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1008,6 +1009,7 @@ f_s &gt; 2f_{max}
 </tr>
 </tbody>
 </table>
+</div>
 <p><code>datetime</code> as a built-in package, is always supported by different third-party package, therefore is suitable to be used during <strong>format conversion</strong>. While, <code>numpy.datetime64</code> is more efficient in <strong>data processing</strong> and <strong>scientific computing</strong>. <code>pandas.Timestamp</code> and <code>astropy.time.Time</code> are more powerful in <strong>reading table files</strong> and <strong>time system conversion</strong>, respectively.</p>
 <ul>
 <li><p><strong>Use <code>numpy.datetime64</code> to represent the timestamps</strong>. It is a fixed-size data type that represents dates and times in a variety of formats, including year-month-day, hour-minute-second, and nanoseconds since the Unix epoch. It is also compatible with many NumPy’s array operations, making it easy to perform calculations and manipulations on large datasets.</p>
