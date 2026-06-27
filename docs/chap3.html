@@ -541,23 +541,6 @@ window.Quarto = {
   <li><a href="#worked-example-gear-box-fault-detection" id="toc-worked-example-gear-box-fault-detection" class="nav-link" data-scroll-target="#worked-example-gear-box-fault-detection">Worked Example: Gear-Box Fault Detection</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#data-initialization" id="toc-data-initialization" class="nav-link" data-scroll-target="#data-initialization">Data Initialization</a>
-  <ul class="collapse">
-  <li><a href="#sampling" id="toc-sampling" class="nav-link" data-scroll-target="#sampling">Sampling</a>
-  <ul class="collapse">
-  <li><a href="#aliasing" id="toc-aliasing" class="nav-link" data-scroll-target="#aliasing">Aliasing</a></li>
-  <li><a href="#reconstruction" id="toc-reconstruction" class="nav-link" data-scroll-target="#reconstruction">Reconstruction</a></li>
-  <li><a href="#application-anti-aliasing-filter" id="toc-application-anti-aliasing-filter" class="nav-link" data-scroll-target="#application-anti-aliasing-filter">Application: Anti-Aliasing Filter</a></li>
-  <li><a href="#application-nyquist-folding-receiver" id="toc-application-nyquist-folding-receiver" class="nav-link" data-scroll-target="#application-nyquist-folding-receiver">Application: Nyquist Folding Receiver</a></li>
-  <li><a href="#sampling-method" id="toc-sampling-method" class="nav-link" data-scroll-target="#sampling-method">Sampling Method</a></li>
-  </ul></li>
-  <li><a href="#read-signals-from-data" id="toc-read-signals-from-data" class="nav-link" data-scroll-target="#read-signals-from-data">Read Signals From Data</a></li>
-  <li><a href="#generate-signals-artificially" id="toc-generate-signals-artificially" class="nav-link" data-scroll-target="#generate-signals-artificially">Generate Signals Artificially</a></li>
-  <li><a href="#management-of-timestamps" id="toc-management-of-timestamps" class="nav-link" data-scroll-target="#management-of-timestamps">Management of Timestamps</a>
-  <ul class="collapse">
-  <li><a href="#nasa-cdf-epoch-types" id="toc-nasa-cdf-epoch-types" class="nav-link" data-scroll-target="#nasa-cdf-epoch-types">NASA CDF Epoch Types</a></li>
-  </ul></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -903,11 +886,11 @@ I\!\left(\frac{r}{r_\mathrm{Airy}}\right) = I_0\left[\frac{2J_1(1.22\pi\,r/r_\ma
 </div>
 <section id="numerical-prediction-vs.-a-real-diffraction-photograph" class="level4">
 <h4 class="anchored" data-anchor-id="numerical-prediction-vs.-a-real-diffraction-photograph">Numerical prediction vs.&nbsp;a real diffraction photograph</h4>
-<p>The curve above is a <em>prediction</em>. Does a physical aperture obey it? The image below is a public-domain photograph (<a href="https://commons.wikimedia.org/wiki/File:Beugungsscheibchen.k.720.jpg">CC0</a>, B. Bautsch) of monochromatic <strong>red laser light</strong> diffracted by a <strong>0.09 mm circular pinhole</strong>, recorded 65 mm downstream — a textbook Fraunhofer setup that resolves diffraction orders out to the 27th ring. We linearise the photograph (undo the sRGB gamma), <strong>azimuthally average</strong> it into a measured radial profile, fit the <em>single</em> scale <span class="math inline">r_\mathrm{Airy}</span> to the first five dark rings, and overlay the parameter-free Airy prediction.</p>
+<p>The curve above is a <em>prediction</em>. Does a physical aperture obey it? The image below is a public-domain photograph (<a href="https://commons.wikimedia.org/wiki/File:Beugungsscheibchen.k.720.jpg">CC0</a>, B. Bautsch) of monochromatic <strong>red laser light</strong> diffracted by a <strong>0.09 mm circular pinhole</strong>, recorded 65 mm downstream — a textbook Fraunhofer setup that resolves diffraction orders out to the 27th ring. We linearise the photograph (undo the sRGB gamma), recover the pattern centre by <strong>minimising the azimuthal variance</strong> (a correct centre makes the rings concentric), <strong>azimuthally average</strong> it into a measured radial profile, fit the <em>single</em> scale <span class="math inline">r_\mathrm{Airy}</span> to the first three dark rings, and overlay the parameter-free Airy prediction.</p>
 <p>What the theory actually fixes is the <strong>geometry</strong>, and that is what matches: the dark rings fall at <span class="math inline">r/r_\mathrm{Airy} = 1,\,1.83,\,2.66,\,3.48,\dots</span> — the scaled zeros of <span class="math inline">J_1</span> — to within a few percent (panel <strong>a</strong>, the red circles land squarely in the dark gaps). The fitted first null, <span class="math inline">r_\mathrm{Airy}\approx 0.53</span> mm, is consistent with <span class="math inline">1.22\,\lambda f/D</span> for the quoted pinhole and a red ($$600 nm) laser.</p>
 <p>A real measurement also forces two honesties that a synthetic plot hides:</p>
 <ul>
-<li><strong>The core is saturated.</strong> To expose the faint high-order rings, the central disk is deliberately over-exposed (clipped at the sensor maximum), so measured <em>amplitudes</em> inside <span class="math inline">r\lesssim 1.2\,r_\mathrm{Airy}</span> are <strong>not</strong> photometric — only ring <em>positions</em> are. The secondary maxima also sit above the ideal envelope because of stray light and the camera’s finite contrast.</li>
+<li><strong>The core is saturated.</strong> To expose the faint high-order rings, the central disk is deliberately over-exposed (clipped at the sensor maximum), so measured <em>amplitudes</em> inside <span class="math inline">r\lesssim r_\mathrm{Airy}</span> are <strong>not</strong> photometric — only ring <em>positions</em> are. The secondary maxima also sit above the ideal envelope because of stray light and the camera’s finite contrast.</li>
 <li><strong>Only ratios are parameter-free.</strong> Absolute ring radii require <span class="math inline">\lambda</span>, <span class="math inline">f</span>, and <span class="math inline">D</span>; the <em>ratios</em> <span class="math inline">1:1.83:2.66</span> require nothing — they are the fingerprint that this really is the <span class="math inline">J_1</span> diffraction pattern of a circular aperture and not, say, a Gaussian blur.</li>
 </ul>
 <!-- fig-tabset:figure_airy_experiment.png -->
@@ -921,86 +904,107 @@ I\!\left(\frac{r}{r_\mathrm{Airy}}\right) = I_0\left[\frac{2J_1(1.22\pi\,r/r_\ma
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> j1, jn_zeros</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> argrelmin</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- load the photograph and linearise the red channel (undo sRGB gamma) ---</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> srgb_lin(c):</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c <span class="op">/</span> <span class="fl">255.0</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.where(c <span class="op">&lt;=</span> <span class="fl">0.04045</span>, c <span class="op">/</span> <span class="fl">12.92</span>, ((c <span class="op">+</span> <span class="fl">0.055</span>) <span class="op">/</span> <span class="fl">1.055</span>)<span class="op">**</span><span class="fl">2.4</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> np.asarray(Image.<span class="bu">open</span>(read_path <span class="op">+</span> <span class="st">'airy_experiment_pinhole.jpg'</span>).convert(<span class="st">'RGB'</span>)).astype(<span class="bu">float</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>I  <span class="op">=</span> srgb_lin(im[:, :, <span class="dv">0</span>])                       <span class="co"># red laser -&gt; use the red channel</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># --- locate the pattern centre by an iterated intensity centroid ---</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>iy, ix <span class="op">=</span> np.unravel_index(np.argmax(I), I.shape)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>cx, cy <span class="op">=</span> <span class="bu">float</span>(ix), <span class="bu">float</span>(iy)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>ys, xs <span class="op">=</span> np.indices(I.shape)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>):</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    rr <span class="op">=</span> np.sqrt((xs <span class="op">-</span> cx)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (ys <span class="op">-</span> cy)<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    w  <span class="op">=</span> np.where(rr <span class="op">&lt;</span> <span class="dv">250</span>, I, <span class="fl">0.0</span>)</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    cx, cy <span class="op">=</span> (xs <span class="op">*</span> w).<span class="bu">sum</span>() <span class="op">/</span> w.<span class="bu">sum</span>(), (ys <span class="op">*</span> w).<span class="bu">sum</span>() <span class="op">/</span> w.<span class="bu">sum</span>()</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> np.sqrt((xs <span class="op">-</span> cx)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (ys <span class="op">-</span> cy)<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># --- azimuthal average -&gt; measured radial profile I(r) ---</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>nb, rmax <span class="op">=</span> <span class="dv">750</span>, <span class="dv">1500</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> np.linspace(<span class="dv">0</span>, rmax, nb <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>idx  <span class="op">=</span> np.digitize(r.ravel(), bins) <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>prof <span class="op">=</span> np.array([np.median(I.ravel()[idx <span class="op">==</span> b]) <span class="cf">if</span> (idx <span class="op">==</span> b).<span class="bu">sum</span>() <span class="op">&gt;</span> <span class="dv">30</span> <span class="cf">else</span> np.nan</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>                 <span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(nb)])</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>rc <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (bins[:<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> bins[<span class="dv">1</span>:])</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>pn <span class="op">=</span> prof <span class="op">/</span> np.nanmax(prof)</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># --- fit the single scale r_Airy to the first five dark rings ---</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>sm   <span class="op">=</span> np.convolve(np.log(pn <span class="op">+</span> <span class="fl">1e-5</span>), np.ones(<span class="dv">7</span>) <span class="op">/</span> <span class="dv">7</span>, mode<span class="op">=</span><span class="st">'same'</span>)</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>mins <span class="op">=</span> argrelmin(sm, order<span class="op">=</span><span class="dv">12</span>)[<span class="dv">0</span>]</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>rmin <span class="op">=</span> rc[mins[(rc[mins] <span class="op">&gt;</span> <span class="dv">80</span>) <span class="op">&amp;</span> (rc[mins] <span class="op">&lt;</span> <span class="dv">760</span>)]][:<span class="dv">5</span>]</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>ratio <span class="op">=</span> jn_zeros(<span class="dv">1</span>, <span class="bu">len</span>(rmin)) <span class="op">/</span> jn_zeros(<span class="dv">1</span>, <span class="dv">1</span>)          <span class="co"># 1, 1.83, 2.66, ...</span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>rA   <span class="op">=</span> np.<span class="bu">sum</span>(rmin <span class="op">*</span> ratio) <span class="op">/</span> np.<span class="bu">sum</span>(ratio<span class="op">**</span><span class="dv">2</span>)           <span class="co"># least-squares through origin</span></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co"># --- the parameter-free Airy prediction, in units of r_Airy ---</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> airy(q):</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> <span class="fl">1.22</span> <span class="op">*</span> np.pi <span class="op">*</span> q</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.where(u <span class="op">==</span> <span class="dv">0</span>, <span class="fl">1.0</span>, (<span class="dv">2</span> <span class="op">*</span> j1(u) <span class="op">/</span> u)<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>zeros_q <span class="op">=</span> jn_zeros(<span class="dv">1</span>, <span class="dv">6</span>) <span class="op">/</span> jn_zeros(<span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>sat <span class="op">=</span> im[:, :, <span class="dv">0</span>] <span class="op">&gt;=</span> <span class="dv">252</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>r_sat <span class="op">=</span> r[sat].<span class="bu">max</span>()                                     <span class="co"># extent of the clipped core</span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>figsize_short)</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="co"># (a) the photograph with theoretical dark-ring circles overlaid</span></span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>half <span class="op">=</span> <span class="bu">int</span>(<span class="fl">5.0</span> <span class="op">*</span> rA)</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>crop <span class="op">=</span> I[<span class="bu">int</span>(cy <span class="op">-</span> half):<span class="bu">int</span>(cy <span class="op">+</span> half), <span class="bu">int</span>(cx <span class="op">-</span> half):<span class="bu">int</span>(cx <span class="op">+</span> half)]</span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].imshow(np.clip(crop, <span class="dv">0</span>, <span class="dv">1</span>)<span class="op">**</span><span class="fl">0.5</span>, origin<span class="op">=</span><span class="st">'lower'</span>, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="fl">0.62</span>,</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>             extent<span class="op">=</span>[<span class="op">-</span>half <span class="op">/</span> rA, half <span class="op">/</span> rA, <span class="op">-</span>half <span class="op">/</span> rA, half <span class="op">/</span> rA])</span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>th <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">256</span>)</span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, zq <span class="kw">in</span> <span class="bu">enumerate</span>(zeros_q):</span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].plot(zq <span class="op">*</span> np.cos(th), zq <span class="op">*</span> np.sin(th), <span class="st">'--'</span>, color<span class="op">=</span><span class="st">'#FF3B3B'</span>, lw<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>               label<span class="op">=</span><span class="st">'Airy zeros (theory)'</span> <span class="cf">if</span> k <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span>)</span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlim(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>)<span class="op">;</span> ax[<span class="dv">0</span>].set_ylim(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>)</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">x</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)<span class="op">;</span> ax[<span class="dv">0</span>].set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">y</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)</span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">'(a) experiment: 0.09 mm pinhole, red laser'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].legend(loc<span class="op">=</span><span class="st">'upper right'</span>, fontsize<span class="op">=</span><span class="fl">6.5</span>, framealpha<span class="op">=</span><span class="fl">0.7</span>, labelcolor<span class="op">=</span><span class="st">'#FF3B3B'</span>)</span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="co"># (b) measured radial profile vs the Airy prediction</span></span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>q  <span class="op">=</span> rc <span class="op">/</span> rA</span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>qq <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="fl">5.2</span>, <span class="dv">2000</span>)</span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>m  <span class="op">=</span> q <span class="op">&lt;=</span> <span class="fl">5.2</span></span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].semilogy(qq, airy(qq), <span class="st">'C0-'</span>, lw<span class="op">=</span><span class="fl">1.4</span>, label<span class="op">=</span><span class="vs">r'theory </span><span class="dv">$</span><span class="pp">[2J_1(u)/u]</span><span class="dv">^</span><span class="vs">2</span><span class="dv">$</span><span class="vs">'</span>)</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].semilogy(q[m], pn[m], <span class="st">'.'</span>, color<span class="op">=</span><span class="st">'C3'</span>, ms<span class="op">=</span><span class="fl">3.5</span>, label<span class="op">=</span><span class="st">'measured (azimuthal avg)'</span>)</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(rmin <span class="op">/</span> rA, np.full_like(rmin, <span class="fl">1.3e-3</span>), <span class="st">'v'</span>, color<span class="op">=</span><span class="st">'k'</span>, ms<span class="op">=</span><span class="dv">5</span>, clip_on<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="st">'measured dark rings'</span>)</span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axvspan(<span class="dv">0</span>, r_sat <span class="op">/</span> rA, color<span class="op">=</span><span class="st">'0.85'</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].text(r_sat <span class="op">/</span> rA <span class="op">/</span> <span class="dv">2</span>, <span class="fl">3e-3</span>, <span class="st">'saturated</span><span class="ch">\n</span><span class="st">core'</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>           fontsize<span class="op">=</span><span class="fl">6.5</span>, color<span class="op">=</span><span class="st">'0.4'</span>)</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> zq <span class="kw">in</span> zeros_q:</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].axvline(zq, color<span class="op">=</span><span class="st">'k'</span>, lw<span class="op">=</span><span class="fl">0.6</span>, ls<span class="op">=</span><span class="st">':'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlim(<span class="dv">0</span>, <span class="fl">5.2</span>)<span class="op">;</span> ax[<span class="dv">1</span>].set_ylim(<span class="fl">1e-3</span>, <span class="fl">1.6</span>)</span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">r</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)<span class="op">;</span> ax[<span class="dv">1</span>].set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">I/I_{</span><span class="dv">\m</span><span class="vs">ax}</span><span class="dv">$</span><span class="vs">'</span>)</span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">'(b) radial profile: ring positions match theory'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].legend(loc<span class="op">=</span><span class="st">'upper right'</span>, fontsize<span class="op">=</span><span class="fl">6.8</span>)</span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_airy_experiment.png'</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># --- load the photograph and linearise the red channel (undo sRGB gamma) ---</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> srgb_lin(c):</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c <span class="op">/</span> <span class="fl">255.0</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.where(c <span class="op">&lt;=</span> <span class="fl">0.04045</span>, c <span class="op">/</span> <span class="fl">12.92</span>, ((c <span class="op">+</span> <span class="fl">0.055</span>) <span class="op">/</span> <span class="fl">1.055</span>)<span class="op">**</span><span class="fl">2.4</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> np.asarray(Image.<span class="bu">open</span>(read_path <span class="op">+</span> <span class="st">'airy_experiment_pinhole.jpg'</span>).convert(<span class="st">'RGB'</span>)).astype(<span class="bu">float</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>I  <span class="op">=</span> srgb_lin(im[:, :, <span class="dv">0</span>])                       <span class="co"># red laser -&gt; use the red channel</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># --- centre: a centroid is biased by the saturated core, so refine it by</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     minimising the azimuthal variance (rings are concentric only at the</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#     true centre).  The search runs on a 4x-downsampled copy for speed. ---</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>f  <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>Id <span class="op">=</span> I[::f, ::f]</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>ys, xs <span class="op">=</span> np.indices(Id.shape)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>iy, ix <span class="op">=</span> np.unravel_index(np.argmax(Id), Id.shape)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>cx, cy <span class="op">=</span> <span class="bu">float</span>(ix), <span class="bu">float</span>(iy)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">6</span>):                               <span class="co"># intensity-centroid initial guess</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    rr <span class="op">=</span> np.sqrt((xs <span class="op">-</span> cx)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (ys <span class="op">-</span> cy)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    w  <span class="op">=</span> np.where(rr <span class="op">&lt;</span> <span class="dv">250</span> <span class="op">/</span> f, Id, <span class="fl">0.0</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    cx, cy <span class="op">=</span> (xs <span class="op">*</span> w).<span class="bu">sum</span>() <span class="op">/</span> w.<span class="bu">sum</span>(), (ys <span class="op">*</span> w).<span class="bu">sum</span>() <span class="op">/</span> w.<span class="bu">sum</span>()</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>rmax_o, nb_o <span class="op">=</span> <span class="dv">1400</span> <span class="op">/</span> f, <span class="dv">180</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> azim_var(p):                                 <span class="co"># total within-ring variance</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> np.sqrt((xs <span class="op">-</span> p[<span class="dv">0</span>])<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (ys <span class="op">-</span> p[<span class="dv">1</span>])<span class="op">**</span><span class="dv">2</span>).ravel()</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> r <span class="op">&lt;</span> rmax_o</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> (r[m] <span class="op">/</span> rmax_o <span class="op">*</span> nb_o).astype(<span class="bu">int</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> Id.ravel()[m]</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    s, sq <span class="op">=</span> np.bincount(b, v, nb_o), np.bincount(b, v <span class="op">*</span> v, nb_o)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.maximum(np.bincount(b, <span class="va">None</span>, nb_o), <span class="dv">1</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (sq <span class="op">/</span> c <span class="op">-</span> (s <span class="op">/</span> c)<span class="op">**</span><span class="dv">2</span>).<span class="bu">sum</span>()</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> minimize(azim_var, [cx, cy], method<span class="op">=</span><span class="st">'Nelder-Mead'</span>,</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>               options<span class="op">=</span>{<span class="st">'xatol'</span>: <span class="fl">0.02</span>, <span class="st">'fatol'</span>: <span class="fl">1e-9</span>, <span class="st">'maxiter'</span>: <span class="dv">400</span>})</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>cx, cy <span class="op">=</span> opt.x[<span class="dv">0</span>] <span class="op">*</span> f <span class="op">+</span> (f <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>, opt.x[<span class="dv">1</span>] <span class="op">*</span> f <span class="op">+</span> (f <span class="op">-</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>   <span class="co"># back to full res</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>ys, xs <span class="op">=</span> np.indices(I.shape)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> np.sqrt((xs <span class="op">-</span> cx)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (ys <span class="op">-</span> cy)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co"># --- azimuthal average -&gt; measured radial profile I(r) ---</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>nb, rmax <span class="op">=</span> <span class="dv">750</span>, <span class="dv">1500</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> np.linspace(<span class="dv">0</span>, rmax, nb <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>idx  <span class="op">=</span> np.digitize(r.ravel(), bins) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>prof <span class="op">=</span> np.array([np.median(I.ravel()[idx <span class="op">==</span> b]) <span class="cf">if</span> (idx <span class="op">==</span> b).<span class="bu">sum</span>() <span class="op">&gt;</span> <span class="dv">30</span> <span class="cf">else</span> np.nan</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>                 <span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(nb)])</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>rc <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (bins[:<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> bins[<span class="dv">1</span>:])</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>pn <span class="op">=</span> prof <span class="op">/</span> np.nanmax(prof)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="co"># --- fit the single scale r_Airy to the first three dark rings ---</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co"># (the first dark ring IS r_Airy by definition; three rings make the fit robust)</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>sm   <span class="op">=</span> np.convolve(np.log(pn <span class="op">+</span> <span class="fl">1e-5</span>), np.ones(<span class="dv">7</span>) <span class="op">/</span> <span class="dv">7</span>, mode<span class="op">=</span><span class="st">'same'</span>)</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>mins <span class="op">=</span> argrelmin(sm, order<span class="op">=</span><span class="dv">12</span>)[<span class="dv">0</span>]</span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>rmin <span class="op">=</span> rc[mins[(rc[mins] <span class="op">&gt;</span> <span class="dv">80</span>) <span class="op">&amp;</span> (rc[mins] <span class="op">&lt;</span> <span class="dv">480</span>)]]      <span class="co"># first three clean minima</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>ratio <span class="op">=</span> jn_zeros(<span class="dv">1</span>, <span class="bu">len</span>(rmin)) <span class="op">/</span> jn_zeros(<span class="dv">1</span>, <span class="dv">1</span>)          <span class="co"># 1, 1.83, 2.66</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>rA   <span class="op">=</span> np.<span class="bu">sum</span>(rmin <span class="op">*</span> ratio) <span class="op">/</span> np.<span class="bu">sum</span>(ratio<span class="op">**</span><span class="dv">2</span>)           <span class="co"># least-squares through origin</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="co"># --- the parameter-free Airy prediction, in units of r_Airy ---</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> airy(q):</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>    u <span class="op">=</span> <span class="fl">1.22</span> <span class="op">*</span> np.pi <span class="op">*</span> q</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.where(u <span class="op">==</span> <span class="dv">0</span>, <span class="fl">1.0</span>, (<span class="dv">2</span> <span class="op">*</span> j1(u) <span class="op">/</span> u)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>zeros_q <span class="op">=</span> jn_zeros(<span class="dv">1</span>, <span class="dv">6</span>) <span class="op">/</span> jn_zeros(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>r_core  <span class="op">=</span> rmin[<span class="dv">0</span>]                                        <span class="co"># saturated core = first dark ring</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>figsize_short)</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="co"># (a) the photograph with theoretical dark-ring circles overlaid</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>half <span class="op">=</span> <span class="bu">int</span>(<span class="fl">5.0</span> <span class="op">*</span> rA)</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>crop <span class="op">=</span> I[<span class="bu">int</span>(cy <span class="op">-</span> half):<span class="bu">int</span>(cy <span class="op">+</span> half), <span class="bu">int</span>(cx <span class="op">-</span> half):<span class="bu">int</span>(cx <span class="op">+</span> half)]</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].imshow(np.clip(crop, <span class="dv">0</span>, <span class="dv">1</span>)<span class="op">**</span><span class="fl">0.5</span>, origin<span class="op">=</span><span class="st">'lower'</span>, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="fl">0.62</span>,</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>             extent<span class="op">=</span>[<span class="op">-</span>half <span class="op">/</span> rA, half <span class="op">/</span> rA, <span class="op">-</span>half <span class="op">/</span> rA, half <span class="op">/</span> rA])</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>th <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span> <span class="op">*</span> np.pi, <span class="dv">256</span>)</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, zq <span class="kw">in</span> <span class="bu">enumerate</span>(zeros_q):</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].plot(zq <span class="op">*</span> np.cos(th), zq <span class="op">*</span> np.sin(th), <span class="st">'--'</span>, color<span class="op">=</span><span class="st">'#FF3B3B'</span>, lw<span class="op">=</span><span class="fl">1.0</span>,</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>               label<span class="op">=</span><span class="st">'Airy zeros (theory)'</span> <span class="cf">if</span> k <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(<span class="dv">0</span>, <span class="dv">0</span>, <span class="st">'+'</span>, color<span class="op">=</span><span class="st">'#FF3B3B'</span>, ms<span class="op">=</span><span class="dv">7</span>, mew<span class="op">=</span><span class="fl">1.2</span>)    <span class="co"># fitted pattern centre</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlim(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>)<span class="op">;</span> ax[<span class="dv">0</span>].set_ylim(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">x</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)<span class="op">;</span> ax[<span class="dv">0</span>].set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">y</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">'(a) experiment: 0.09 mm pinhole, red laser'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].legend(loc<span class="op">=</span><span class="st">'upper right'</span>, fontsize<span class="op">=</span><span class="fl">6.5</span>, framealpha<span class="op">=</span><span class="fl">0.7</span>, labelcolor<span class="op">=</span><span class="st">'#FF3B3B'</span>)</span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="co"># (b) measured radial profile vs the Airy prediction</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>q  <span class="op">=</span> rc <span class="op">/</span> rA</span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>qq <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="fl">5.2</span>, <span class="dv">2000</span>)</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>m  <span class="op">=</span> q <span class="op">&lt;=</span> <span class="fl">5.2</span></span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].semilogy(qq, airy(qq), <span class="st">'C0-'</span>, lw<span class="op">=</span><span class="fl">1.4</span>, label<span class="op">=</span><span class="vs">r'theory </span><span class="dv">$</span><span class="pp">[2J_1(u)/u]</span><span class="dv">^</span><span class="vs">2</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].semilogy(q[m], pn[m], <span class="st">'.'</span>, color<span class="op">=</span><span class="st">'C3'</span>, ms<span class="op">=</span><span class="fl">3.5</span>, label<span class="op">=</span><span class="st">'measured (azimuthal avg)'</span>)</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(rmin <span class="op">/</span> rA, np.full_like(rmin, <span class="fl">1.3e-3</span>), <span class="st">'v'</span>, color<span class="op">=</span><span class="st">'k'</span>, ms<span class="op">=</span><span class="dv">5</span>, clip_on<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="st">'measured dark rings'</span>)</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axvspan(<span class="dv">0</span>, r_core <span class="op">/</span> rA, color<span class="op">=</span><span class="st">'0.85'</span>, zorder<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].text(r_core <span class="op">/</span> rA <span class="op">/</span> <span class="dv">2</span>, <span class="fl">3e-3</span>, <span class="st">'saturated</span><span class="ch">\n</span><span class="st">core'</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'center'</span>,</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>           fontsize<span class="op">=</span><span class="fl">6.5</span>, color<span class="op">=</span><span class="st">'0.4'</span>)</span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> zq <span class="kw">in</span> zeros_q:</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].axvline(zq, color<span class="op">=</span><span class="st">'k'</span>, lw<span class="op">=</span><span class="fl">0.6</span>, ls<span class="op">=</span><span class="st">':'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlim(<span class="dv">0</span>, <span class="fl">5.2</span>)<span class="op">;</span> ax[<span class="dv">1</span>].set_ylim(<span class="fl">1e-3</span>, <span class="fl">1.6</span>)</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">r</span><span class="ch">\,</span><span class="vs">/</span><span class="ch">\,</span><span class="vs">r_</span><span class="dv">\m</span><span class="vs">athrm{Airy}</span><span class="dv">$</span><span class="vs">'</span>)<span class="op">;</span> ax[<span class="dv">1</span>].set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">I/I_{</span><span class="dv">\m</span><span class="vs">ax}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">'(b) radial profile: ring positions match theory'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].legend(loc<span class="op">=</span><span class="st">'upper right'</span>, fontsize<span class="op">=</span><span class="fl">6.8</span>)</span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_airy_experiment.png'</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -1600,615 +1604,6 @@ Y(f) &amp;= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\
 <hr>
 
 
-</section>
-</section>
-</section>
-<section id="data-initialization" class="level1">
-<h1>Data Initialization</h1>
-<section id="sampling" class="level2">
-<h2 class="anchored" data-anchor-id="sampling">Sampling</h2>
-<blockquote class="blockquote">
-<p><strong><a href="https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem">Nyquist-Shannon Sampling Theorem</a>:</strong></p>
-<p>If a continuous, band-limited signal <span class="math inline">x(t)</span> contains no frequencies higher than <span class="math inline">f_{max}</span>, then it can be perfectly reconstructed from its samples—provided the sampling rate <span class="math inline">f_s</span> is greater than twice that maximum frequency: <span class="math display">
-f_s &gt; 2f_{max}
-</span> The value <span class="math inline">f_s/2</span> is known as the <strong><u><em>Nyquist Frequency</em></u></strong>, and it represents the highest frequency that can be captured without aliasing.</p>
-</blockquote>
-<section id="aliasing" class="level3">
-<h3 class="anchored" data-anchor-id="aliasing">Aliasing</h3>
-<p>All the data that await analysis are yield from <strong><em><u>sampling</u></em></strong>, no matter it originates from the real-world observation or a simulation program. When one measure a high frequency signal with a low cadence instrument, one will not only miss the high frequency component, <strong><u>but also measure a signal that may lead misunderstanding</u></strong>, so called <strong><em><u><a href="https://en.wikipedia.org/wiki/Aliasing">Aliasing</a></u></em></strong>.</p>
-<!-- fig-tabset:figure_aliasing.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
-<p><img src="Figure/figure_aliasing.png" width="100%"></p>
-</div>
-<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">10.0</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>N_DOWNSAMPLE <span class="op">=</span> <span class="dv">111</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k-'</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs)</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%.1f</span><span class="st"> Hz'</span> <span class="op">%</span> (fs <span class="op">/</span> N_DOWNSAMPLE), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], scipy.signal.decimate(sig, N_DOWNSAMPLE, ftype<span class="op">=</span><span class="st">'fir'</span>, zero_phase<span class="op">=</span><span class="va">True</span>), <span class="st">'C0-'</span>, label<span class="op">=</span><span class="st">'Anti-aliased'</span>)</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], scipy.signal.decimate(sig, N_DOWNSAMPLE, ftype<span class="op">=</span><span class="st">'fir'</span>, zero_phase<span class="op">=</span><span class="va">True</span>), <span class="st">'C0s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>)</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='upper center', frameon=False, ncol = 3, bbox_to_anchor=(0.5, 1.18))</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Aliasing', y = 1.13, **title_font)</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc<span class="op">=</span><span class="st">'lower right'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.</span>, <span class="fl">0.95</span>), labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>, )</span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Aliasing Effect</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Wave</span><span class="ch">\ </span><span class="vs">Frequency: %</span><span class="dv">.</span><span class="vs">1f</span><span class="ch">\ </span><span class="vs">Hz}</span><span class="dv">$</span><span class="vs">'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi),  <span class="op">**</span>title_font)</span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.savefig(save_path + 'figure_aliasing' + '.png',bbox_inches='tight',dpi=300)</span></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<p align="center">
-<i>Aliasing effcet in a virtual signal sampling.</i>
-</p>
-<p><strong>With an insufficient sampling rate, the measurement cannot faithfully capture the signal’s waveform.</strong> In the example above, sampling a 10 Hz sine wave at 9 Hz produces an apparent 1 Hz oscillation (aliasing): because the sampling frequency is 1 Hz lower than the true signal frequency, successive samples advance through the wave’s phase by only a small amount each time, so it takes about one second for the samples to span an entire cycle from trough to peak and back.</p>
-<p align="center">
-<img src="Figure/figure_moire_pattern.png" width="100%">
-</p>
-<p>Such a phenomenon is essentially unrelated to the Fourier transform as its frequency range ends up to <span class="math inline">f_s/2</span> and can be directly observed by naked eye. In real life, aliasing can be visualized by compressing the image with grid structure or recording the running helicopter propeller/car wheel. Particularly, the aliasing effect in image downsampling is called <strong><em><u><a href="https://en.wikipedia.org/wiki/Moir%C3%A9_pattern">Moiré Pattern</a></u></em></strong>.</p>
-<p align="center">
-<img src="Figure/figure_helicopter.gif" width="100%">
-</p>
-<p align="center">
-<i>Aliasing effect in daily life. You can also zoom-in the left-most panel to see the difference before/after compression.</i>
-</p>
-</section>
-<section id="reconstruction" class="level3">
-<h3 class="anchored" data-anchor-id="reconstruction">Reconstruction</h3>
-<p><u><strong>Even a sampling frequency of two times of the wave frequency can not guarantee fully “capturing” the waveform by naked eye.</strong></u> This fact is even true for pure sine waves. Like when you sample a 50 Hz sinusoidal waves with a 101 Hz sampling frequency, you will still see something like a wave packet, which shows the amplitude modulation.</p>
-<p>This fact actually signify the <strong><u>difference between “visualization” and “reconstruction”</u></strong>. When visualizing the signal, one may not only plot the sampled points, but also connect them with lines. However, such connections can only be made assuming that the signal between two sampled points is linear, which is not true for sinusoidal waves. Therefore, the visualization can be misleading. Human senses actually automatically make such assumptions and interpretations, which is why aliasing can be so deceptive.</p>
-<p>However, when reconstructing <a href="./chap6.html#reconstruction-and-interpolation">see Chapter 6/Reconstruction and Interpolation</a> the signal, one can use the <strong><u><a href="https://en.wikipedia.org/wiki/Whittaker%E2%80%93Shannon_interpolation_formula">Whittaker–Shannon interpolation formula (a.k.a sinc interpolation)</a></u></strong> to perfectly reconstruct the original signal from its samples, provided that the sampling frequency is greater than twice the maximum frequency of the signal. This reconstruction is mathematically guaranteed and does not rely on any assumptions about the signal between sampled points.</p>
-<!-- fig-tabset:figure_nyquist_reconstruction.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
-<p><img src="Figure/figure_nyquist_reconstruction.png" width="100%"></p>
-</div>
-<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> figsize_normal)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="fl">2.5</span> <span class="op">+</span> sig, <span class="st">'k-'</span>, label<span class="op">=</span><span class="vs">r'   </span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs, zorder <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">101</span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> fs <span class="op">/</span> <span class="fl">2.02</span></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'C1-'</span>, label<span class="op">=</span><span class="vs">r'     </span><span class="dv">$\m</span><span class="vs">athit{f_s}=</span><span class="dv">$</span><span class="vs">'</span> <span class="op">+</span> <span class="st">' </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> fs, zorder <span class="op">=</span> <span class="dv">1</span>, alpha <span class="op">=</span> <span class="fl">1.0</span>)</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'C1s'</span>, zorder <span class="op">=</span> <span class="dv">1</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>t_interp <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sinc_interp(t_interp):</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>    weight <span class="op">=</span> np.sinc((t_interp[:, <span class="va">None</span>] <span class="op">-</span> t[<span class="va">None</span>, :]) <span class="op">/</span> dt)</span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">@</span> sig</span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>ax1.plot(t_interp, <span class="op">-</span><span class="fl">2.5</span> <span class="op">+</span> sinc_interp(t_interp), <span class="st">'C0-'</span>, label<span class="op">=</span><span class="st">'Reconstruction'</span>, zorder <span class="op">=</span> <span class="dv">2</span>)</span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
-<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_ylim(-1.2, 1.2)</span></span>
-<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>ax1.legend(loc<span class="op">=</span><span class="st">'lower right'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">1.03</span>, <span class="fl">.95</span>), labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>)</span>
-<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Reconstruction or Visulization</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Wave</span><span class="ch">\ </span><span class="vs">Frequency: %</span><span class="dv">.</span><span class="vs">1f</span><span class="ch">\ </span><span class="vs">Hz}</span><span class="dv">$</span><span class="vs">'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi),  <span class="op">**</span>title_font)</span>
-<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_nyquist_reconstruction'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<p align="center">
-<i>A sampling frequency (128 Hz) that slightly higher than the Nyquist frequency (2 × 62.4=124.8 Hz). The sampled signal is shown as a wave packet.</i>
-</p>
-<p>Ideally, you can perfectly reconstruct the complete signal when you got a <strong><u>long enough samples</u></strong> when the sampling frequency is slightly higher than the Nyquist frequency. However, <strong><u>every realistic sample has a finite length</u></strong>. Thus, reconstruction is still imperfect especially when the sample length is not far longer than the wave period, as shown by the above cases near the edges. The principle behind this (i.e., finite-length rectangular window) will be introduced in <a href="./chap2.html#windowing-effect">Chapter 2/Windowing Effect</a> of this document.</p>
-<p>In terms of experience, the higher sampling frequency you have, the shorter sample length is required.</p>
-</section>
-<section id="application-anti-aliasing-filter" class="level3">
-<h3 class="anchored" data-anchor-id="application-anti-aliasing-filter">Application: Anti-Aliasing Filter</h3>
-<p>Aliasing effect always happens when you (down-)sampling the signal, a common way to avoid it is to apply a low pass filter (so called, <strong><em><u>anti-aliasing filter</u></em></strong>) so that the high frequency component doesn’t contribute to the unreal signal. This technique and its python implementation, <code>scipy.signal.decimate</code>, will be introduced in <a href="./chap5.html">Chapter 5</a>. In the instrumental implementation, that filter typically consists of a set of resistor, inductor, and capacity and is putted before the analog-digital converter.</p>
-<p align="center">
-<img src="Figure/figure_anti_aliasing_filter_design.jpg" width="100%">
-</p>
-<p align="center">
-<i>An example circuit diagram of anti-aliasing filter.</i>
-</p>
-</section>
-<section id="application-nyquist-folding-receiver" class="level3">
-<h3 class="anchored" data-anchor-id="application-nyquist-folding-receiver">Application: Nyquist Folding Receiver</h3>
-<!-- fig-tabset:figure_aliasing_folding.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
-<p><img src="Figure/figure_aliasing_folding.png" width="100%"></p>
-</div>
-<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>ax3 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>ax4 <span class="op">=</span> plt.subplot(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">4</span>, sharex <span class="op">=</span> ax1, sharey <span class="op">=</span> ax1)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>N_DOWNSAMPLE <span class="op">=</span> <span class="dv">50</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">3.0</span></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">17.0</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>ax3.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>ax3.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>ax3.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ax3.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>ax2.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>ax2.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>ax2.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a><span class="co"># ax2.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi),  **title_font)</span></span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">26.0</span></span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(time, signal, 'k-', label = 'Signal')</span></span>
-<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>ax4.plot(t, sig, <span class="st">'k-'</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>)</span>
-<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>ax4.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1-'</span>, label<span class="op">=</span><span class="st">'$f_s=$ </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi), markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>, alpha <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>ax4.plot(t[::N_DOWNSAMPLE], sig[::N_DOWNSAMPLE], <span class="st">'C1s'</span>, markersize<span class="op">=</span><span class="dv">6</span>, fillstyle <span class="op">=</span> <span class="st">'full'</span>)</span>
-<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a><span class="co"># ax4.set_title(r'$\mathrm{Central\ Frequency: %.1f\ Hz}$' % (omega0 / 2 / np.pi), **title_font)</span></span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Signal')</span></span>
-<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.2</span>)</span>
-<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='upper center', frameon=False, ncol = 3, bbox_to_anchor=(0.5, 1.18))</span></span>
-<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Aliasing', y = 1.13, **title_font)</span></span>
-<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(loc='lower right', frameon=False, ncol = 1, bbox_to_anchor=(1., 0.95), labelcolor="linecolor", handlelength = 0, handletextpad = 0, )</span></span>
-<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> [ax1, ax2, ax3, ax4]:</span>
-<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>    ax.legend(loc<span class="op">=</span><span class="st">'upper left'</span>, frameon<span class="op">=</span><span class="va">False</span>, ncol <span class="op">=</span> <span class="dv">1</span>, labelcolor<span class="op">=</span><span class="st">"linecolor"</span>, bbox_to_anchor <span class="op">=</span> (<span class="fl">0.0</span>, <span class="fl">1.08</span>), handlelength <span class="op">=</span> <span class="dv">0</span>, handletextpad <span class="op">=</span> <span class="dv">0</span>, )</span>
-<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="op">-</span><span class="fl">1.2</span>, <span class="fl">1.6</span>)</span>
-<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a>    ax.xaxis.set_major_locator(ticker.MultipleLocator(<span class="fl">0.2</span>))</span>
-<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a>    ax.label_outer()</span>
-<span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">'Aliased Signal with Sampling Frequency of </span><span class="sc">%d</span><span class="st"> Hz'</span> <span class="op">%</span> (fs <span class="op">/</span> N_DOWNSAMPLE), <span class="op">**</span>title_font)</span>
-<span id="cb21-66"><a href="#cb21-66" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb21-67"><a href="#cb21-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-68"><a href="#cb21-68" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_aliasing_folding'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb21-69"><a href="#cb21-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-70"><a href="#cb21-70" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<!-- fig-tabset:figure_nyquist_zone.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-13-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-2" role="tab" aria-controls="tabset-13-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
-<p><img src="Figure/figure_nyquist_zone.png" width="100%"></p>
-</div>
-<div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> turtle <span class="im">import</span> color</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot()</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>slope <span class="op">=</span> <span class="fl">0.03</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1000</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> slope <span class="op">*</span> x</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">'none'</span>, <span class="st">'k'</span>]</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>freqs <span class="op">=</span> [<span class="dv">3</span>, <span class="dv">6</span>]</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>amps <span class="op">=</span> [<span class="fl">0.6</span>, <span class="fl">0.4</span>]</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>zones <span class="op">=</span> [<span class="st">'I'</span>, <span class="st">'II'</span>, <span class="st">'III'</span>, <span class="st">'IV'</span>]</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">4</span>):</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    ax1.fill_between(x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], <span class="dv">1</span> <span class="op">+</span> y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], color <span class="op">=</span> colors[i<span class="op">%</span><span class="dv">2</span>], alpha <span class="op">=</span> <span class="fl">0.5</span>, edgecolor <span class="op">=</span> <span class="st">'k'</span>, linewidth <span class="op">=</span> <span class="fl">2.5</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>        ax1.text((i <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">1.0</span> <span class="op">+</span> fs <span class="op">*</span> slope <span class="op">/</span> <span class="dv">2</span>, <span class="st">'$f_s/2=$</span><span class="ch">\n</span><span class="st">'</span> <span class="op">+</span> <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(fs <span class="op">*</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>) <span class="sc">:d}</span><span class="ss"> Hz'</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>)</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ax1.text((i + 0.5) * fs / 2, 0.85, f"Nyquist\nZone {zones[i]}", fontsize = 16, ha = 'center', va = 'bottom', rotation = 20 * (-1) ** i, weight = 'bold')</span></span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        ax1.text((i <span class="op">+</span> <span class="dv">1</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">1.0</span> <span class="op">+</span> <span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> (i <span class="op">%</span> <span class="dv">2</span>) <span class="op">+</span> fs <span class="op">*</span> slope <span class="op">/</span> <span class="dv">2</span>, <span class="ss">f'</span><span class="sc">{</span><span class="bu">int</span>(fs <span class="op">*</span> (i <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> <span class="dv">2</span>) <span class="sc">:d}</span><span class="ss"> Hz'</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>)</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>    ax1.text((i <span class="op">+</span> <span class="fl">0.5</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, <span class="fl">0.85</span>, <span class="ss">f"Nyquist</span><span class="ch">\n</span><span class="ss">Zone </span><span class="sc">{</span>zones[i]<span class="sc">}</span><span class="ss">"</span>, fontsize <span class="op">=</span> <span class="dv">16</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>, rotation <span class="op">=</span> <span class="dv">23</span> <span class="op">*</span> (<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i, weight <span class="op">=</span> <span class="st">'bold'</span>)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>):</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">=</span> freqs[j] <span class="cf">if</span> i <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> fs <span class="op">-</span> freqs[j]</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        freq <span class="op">+=</span> (i <span class="op">-</span> i <span class="op">%</span> <span class="dv">2</span>) <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span></span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(freq)</span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>        ax1.fill_between(x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span>, y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i], y[::(<span class="op">-</span><span class="dv">1</span>) <span class="op">**</span> i] <span class="op">+</span> amps[j] <span class="op">*</span> np.exp(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> ((x <span class="op">+</span> i <span class="op">*</span> fs <span class="op">/</span> <span class="dv">2</span> <span class="op">-</span> freq) <span class="op">/</span> <span class="fl">0.1</span>) <span class="op">**</span> <span class="dv">2</span>), color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>, alpha<span class="op">=</span><span class="dv">1</span>, edgecolor<span class="op">=</span><span class="st">'none'</span>)</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>        ax1.text(freq, amps[j] <span class="op">+</span> <span class="fl">0.1</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> j <span class="op">%</span> <span class="dv">2</span>), <span class="ss">f'</span><span class="sc">{</span>freq<span class="sc">:.0f}</span><span class="ss"> Hz'</span>, fontsize<span class="op">=</span><span class="dv">16</span>, ha<span class="op">=</span><span class="st">'center'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>ax1.axis(<span class="st">'off'</span>)</span>
-<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.autoscale(enable=True, axis='y', tight=True)</span></span>
-<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_nyquist_zone'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-</section>
-<section id="sampling-method" class="level3">
-<h3 class="anchored" data-anchor-id="sampling-method">Sampling Method</h3>
-<p>After get your data, you should know that <strong>what does each timestamps represent?</strong> Is it accurately the time you get the <strong>instantaneous sample</strong> or the <strong>middle point</strong> of the whole <strong>sampling period</strong>?</p>
-<!-- fig-tabset:figure_sampling_methods.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-14-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-2" role="tab" aria-controls="tabset-14-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
-<p><img src="Figure/figure_sampling_methods.png" width="100%"></p>
-</div>
-<div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot()</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">4000</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'k'</span>, label <span class="op">=</span> <span class="st">'Signal'</span>)</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>n_downsample <span class="op">=</span> <span class="dv">125</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, N <span class="op">//</span> n_downsample <span class="op">-</span> <span class="dv">1</span>, <span class="dv">2</span>):</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    ax1.axvspan(t[::n_downsample][i], t[::n_downsample][i<span class="op">+</span><span class="dv">1</span>], <span class="dv">0</span>, <span class="dv">1</span>, color <span class="op">=</span> <span class="st">'C1'</span>, alpha <span class="op">=</span> <span class="fl">0.1</span>)</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>ax1.step(t.reshape(<span class="op">-</span><span class="dv">1</span>, n_downsample).mean(axis <span class="op">=</span> <span class="dv">1</span>), sig.reshape(<span class="op">-</span><span class="dv">1</span>, n_downsample).mean(axis <span class="op">=</span> <span class="dv">1</span>) <span class="op">+</span> <span class="op">-</span><span class="fl">.0</span>, <span class="st">'C1-'</span>, where <span class="op">=</span> <span class="st">'mid'</span>, label <span class="op">=</span> <span class="st">'Average'</span>)</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>ax1.plot(t[n_downsample <span class="op">//</span> <span class="dv">2</span>::n_downsample], sig[n_downsample <span class="op">//</span> <span class="dv">2</span>::n_downsample] <span class="op">+</span> <span class="fl">.0</span>, <span class="st">'C0o'</span>, label <span class="op">=</span> <span class="st">'Instantaneous'</span>, markersize <span class="op">=</span> <span class="dv">8</span>)</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis <span class="op">=</span> <span class="st">'x'</span>, tight <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>ax1.legend()</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Sampling Methods'</span>, <span class="op">**</span>title_font)</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_sampling_methods'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<p>Real instruments always integrate over a finite dwell time, so truly instantaneous samples do not exist. If that dwell time is much shorter than the sampling interval—or shorter than the timescales of interest—the measurement can be <strong>approximated as instantaneous</strong>. Otherwise, the averaging acts like a low-pass filter, providing some built-in anti-aliasing.</p>
-<p>For artificial signals you can choose either approach, <strong>but be mindful of which one you are using when comparing simulations with real observations</strong>.</p>
-</section>
-</section>
-<section id="read-signals-from-data" class="level2">
-<h2 class="anchored" data-anchor-id="read-signals-from-data">Read Signals From Data</h2>
-<p><a href="https://numpy.org/doc/stable/reference/routines.io.html">Numpy</a>, <a href="https://docs.scipy.org/doc/scipy/tutorial/io.html">Scipy.io</a>, and <a href="https://pandas.pydata.org/docs/reference/io.html">Pandas</a> provide several input/output interfaces for reading the commonly used data format.</p>
-<ul>
-<li>MATLAB <code>.mat</code> (v7.2 and below): <strong><code>scipy.io.loadmat('*.mat')</code></strong>—handles structs, nested arrays; HDF5 v7.3 requires HDF5 libraries.</li>
-<li>IDL <code>.sav</code>: <strong><code>scipy.io.readsav('*.sav')</code></strong> gives you a dict-like structure.</li>
-<li>NetCDF3 (<code>.nc</code>): <strong><code>scipy.io.netcdf.NetCDFFile('*.nc','r')</code></strong>, though it’s deprecated—prefer <strong><code>netCDF4</code>/<code>xarray</code></strong>.</li>
-<li>NASA CDF (<code>.cdf</code>): <strong><code>spacepy.pycdf.CDF('*.cdf');</code></strong>—dict-like API with lazy loading, but needs the NASA CDF C library</li>
-<li>Raw Binary, e.g., <code>.dat</code>: <strong><code>numpy.fromfile('*.dat', dtype = [np.int8, np.float64, ...])</code></strong></li>
-<li>Text, e.g., <code>.txt, .csv, .TAB</code>: <strong><code>pandas.read_csv('*.txt', sep = '\s+')</code></strong></li>
-</ul>
-<p>If you feel your data processing speed is limited by the data I/O, you should consider using the most efficient python package. This is always task-specific, and you should profile your code to find the bottleneck.</p>
-</section>
-<section id="generate-signals-artificially" class="level2">
-<h2 class="anchored" data-anchor-id="generate-signals-artificially">Generate Signals Artificially</h2>
-<ul>
-<li><p><strong>Generate the </strong> <strong><em>Relative Timestamps</em></strong> <strong>given two of signal length (<code>N</code>), total duration (<code>T</code>), and sampling frequency (<code>fs</code>).</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>N, T <span class="op">=</span> <span class="dv">100</span>, <span class="dv">1</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, T, N, endpoint <span class="op">=</span> <span class="va">False</span>)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># [0.0, 0.01, 0.02, ..., 0.99]</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure parameter endpoint is set to False, or use</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># t = np.linspace(0, T, N + 1, endpoint = True)</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># to get a series with dt = T / N</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># [0.0, 0.01, 0.02, ..., 1.00]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Correspondingly, the ungiven parameter can be derived uniquely.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> T <span class="op">/</span> N</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><strong>Generate the signal</strong></p>
-<ul>
-<li>Real sine wave</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega0 <span class="op">*</span> t)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<ul>
-<li>Complex sine wave according to Euler’s formula <span class="math inline">e^{i\theta}=\mathrm{cos}\theta+i\mathrm{sin}\theta</span>:</li>
-</ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.exp(<span class="ot">1j</span> <span class="op">*</span> omega <span class="op">*</span> t) <span class="co">#where 1j is the imaginary unit</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The usage of complex signal bring convenience for phase operation (e.g., <span class="math inline">e^{i\theta_1}\cdot e^{i\theta_2}=\mathrm{cos}[\theta_1+\theta_2]+i\mathrm{sin}[\theta_1+\theta_2]</span>). In addition, it aids in shortening the code sometime, but also reduce the readability.</p></li>
-</ul>
-<!-- fig-tabset:figure_typical_signals.png -->
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-15-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-1" role="tab" aria-controls="tabset-15-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-15-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-2" role="tab" aria-controls="tabset-15-2" aria-selected="false" href="">Code</a></li></ul>
-<div class="tab-content">
-<div id="tabset-15-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-15-1-tab">
-<p><img src="Figure/figure_typical_signals.png" width="100%"></p>
-</div>
-<div id="tabset-15-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>plt.cla()</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_normal)</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">6.0</span></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">10</span></span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt  <span class="co"># Sampling frequency</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>gap <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">0</span> <span class="op">*</span> gap <span class="op">+</span> np.sin(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Sine'</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">0</span> <span class="op">*</span> gap <span class="op">+</span> np.cos(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Cosine'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">1</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.chirp(t, omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, <span class="dv">1</span>, omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi <span class="op">*</span> <span class="dv">3</span>), label <span class="op">=</span> <span class="st">'Chirp'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>), label <span class="op">=</span> <span class="st">'Guassian Packet'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>, retenv <span class="op">=</span> <span class="va">True</span>)[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">'#888888'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
-<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">2</span> <span class="op">*</span> gap <span class="op">-</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>, retenv <span class="op">=</span> <span class="va">True</span>)[<span class="dv">1</span>], color <span class="op">=</span> <span class="st">'#888888'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>)</span>
-<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">3</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.square(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Square'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">4</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.sawtooth(omega0 <span class="op">*</span> t), label <span class="op">=</span> <span class="st">'Sawtooth'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="dv">5</span> <span class="op">*</span> gap <span class="op">+</span> scipy.signal.unit_impulse(t.size, <span class="st">'mid'</span>), label <span class="op">=</span> <span class="st">'Dirac Delta'</span>, linestyle <span class="op">=</span> <span class="st">'-'</span>)</span>
-<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.plot(t, 6 * gap + np.random.randn(t.size), label = 'White Noise', linestyle = '-')</span></span>
-<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>ax1.legend(ncol <span class="op">=</span> <span class="dv">3</span>)</span>
-<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.legend(frameon=True, ncol=3, loc='upper center', edgecolor = 'none', framealpha = 0.8)</span></span>
-<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>ax1.set_ylim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">38</span>)</span>
-<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ax1.set_title('Signal\n' + r'$x(t) =\mathrm{sin}(2\pi \cdot 5 t)$', **title_font)</span></span>
-<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Typical Signals'</span> , <span class="op">**</span>title_font)</span>
-<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>ax1.autoscale(axis<span class="op">=</span><span class="st">'x'</span>, tight<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_typical_signals'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<ul>
-<li><p><strong><u>Using these <code>scipy.signal</code> built-in functions</u></strong> helps to <strong><u>improve your code readability and reduce your chances of creating bugs: </u></strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sig_cos <span class="op">=</span> np.cos(omega0 <span class="op">*</span> t)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>sig_chrip <span class="op">=</span> scipy.signal.chirp(t, f0 <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi, t1 <span class="op">=</span> <span class="dv">1</span>, f1 <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi <span class="op">*</span> <span class="dv">3</span>)</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># f0: Frequency at t = 0</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># f1: Frequency at t = t1</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>sig_gauss_pulse <span class="op">=</span> scipy.signal.gausspulse((t <span class="op">-</span> np.mean(t)), fc <span class="op">=</span> omega0 <span class="op">/</span> <span class="dv">1</span> <span class="op">/</span> np.pi, bw <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co"># fc: central frequency</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># bw: bandwidth</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>sig_square <span class="op">=</span> scipy.signal.square(omega0 <span class="op">*</span> t)</span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>sig_sawtooth <span class="op">=</span> scipy.signal.sawtooth(omega0 <span class="op">*</span> t)</span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>sig_unit_impulse <span class="op">=</span> scipy.signal.unit_impulse(t.size, idx <span class="op">=</span> <span class="st">'mid'</span>)</span>
-<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="co"># idx : None or int or tuple of int or 'mid', optional</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-</ul>
-</section>
-<section id="management-of-timestamps" class="level2">
-<h2 class="anchored" data-anchor-id="management-of-timestamps">Management of Timestamps</h2>
-<p>There are several packages in Python for managing timestamps, and the choice depends on your project’s specific requirements—such as high precision, time zone support, or compatibility with other libraries. Each package has its own advantages and disadvantages. In general, selecting a well-maintained package with a large user community can simplify finding help and resources when needed.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: center;">Library</th>
-<th style="text-align: center;">Advantages</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><a href="https://pandas.pydata.org/docs/user_guide/timeseries.html">Pandas</a></td>
-<td style="text-align: center;">Rich time series functionality, easy integration with DataFrames <strong>[Use in Reading Table Files]</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><a href="https://numpy.org/doc/stable/reference/arrays.datetime.html">NumPy</a></td>
-<td style="text-align: center;">Efficient for large arrays and vectorized time operations <strong>[Use in Data Analysis]</strong></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><a href="https://docs.python.org/3/library/datetime.html">datetime</a></td>
-<td style="text-align: center;">Part of Python standard library for basic date/time operations <strong>[Use in Timestamps Format Conversion]</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><a href="https://docs.astropy.org/en/stable/time/">Astropy</a></td>
-<td style="text-align: center;">High precision handling of special time formats and leap seconds <strong>[Use in Time System Conversion]</strong></td>
-</tr>
-</tbody>
-</table>
-<p><code>datetime</code> as a built-in package, is always supported by different third-party package, therefore is suitable to be used during <strong>format conversion</strong>. While, <code>numpy.datetime64</code> is more efficient in <strong>data processing</strong> and <strong>scientific computing</strong>. <code>pandas.Timestamp</code> and <code>astropy.time.Time</code> are more powerful in <strong>reading table files</strong> and <strong>time system conversion</strong>, respectively.</p>
-<ul>
-<li><p><strong>Use <code>numpy.datetime64</code> to represent the timestamps</strong>. It is a fixed-size data type that represents dates and times in a variety of formats, including year-month-day, hour-minute-second, and nanoseconds since the Unix epoch. It is also compatible with many NumPy’s array operations, making it easy to perform calculations and manipulations on large datasets.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> astropy.time</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Using pandas</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>t_pd <span class="op">=</span> pd.Timestamp(<span class="st">'2000-01-01T00:00:00'</span>)</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Using astropy</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>t_astropy <span class="op">=</span> astropy.time.Time(<span class="st">'2000-01-01T00:00:00'</span>)</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Using datetime</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>t_datetime <span class="op">=</span> datetime.datetime(<span class="dv">2000</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to numpy.datetime64</span></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_pd)</span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_astropy.to_datetime())</span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(t_datetime)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><strong>convert</strong> the precision to milliseconds or nanoseconds.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>t_np <span class="op">=</span> np.datetime64(<span class="st">'2000-01-01T00:00:00'</span>)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>t_np_ms <span class="op">=</span> t_np.astype(<span class="st">'datetime64[ms]'</span>) <span class="co"># np.datetime64('2000-01-01T00:00:00.000')</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>t_np_ns <span class="op">=</span> t_np.astype(<span class="st">'datetime64[ns]'</span>) <span class="co"># np.datetime64('2000-01-01T00:00:00.000000000')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p>A <strong><u><em>Unix timestamp</em></u></strong> is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT), not counting leap seconds. Use <code>*.astype(float)</code> to convert <code>numpy.datetime64[s]</code> to Unix timestamp. When the unit is not seconds, the result is the number of time units since the epoch.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># np.datetime64 to Unix timestamp</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>t_np.astype(<span class="bu">float</span>) <span class="co"># np.float64(946684800.0)</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>t_np.astype(<span class="st">'datetime64[ns]'</span>).astype(<span class="bu">float</span>) <span class="co"># np.float64(9.466848e+17)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p>If you need to consider <strong><u><em>leap seconds</em></u></strong> in your investigation, use <code>astropy</code>.</p>
-<pre class="mermaid"><code>---
-config:
-  theme: 'base'
----
-
-flowchart LR
-A[*pandas.Timestamp*] --*.to_datetime64()--&gt; B[*datetime.datetime*] --np.datetime64(*)--&gt; C[*numpy.datetime64*] --astropy.time.Time(*)--&gt; D[astropy.time.Time]
-B --pd.Timestamp(*)--&gt; A
-C --.astype(object)--&gt; B
-A --astropy.time.Time(*)--&gt; D
-B --astropy.time.Time(*)--&gt; D
-D --.to_datetime(*)--&gt; B
-A --np.datetime64(*)--&gt; C
-C --pd.Timestamp(*)--&gt; A</code></pre></li>
-<li><p><code>np.timedelta64(timedelta, unit)</code> is a fixed-size data type that represents a duration, the difference between two dates or times. It can be used to perform arithmetic operations on dates and times, such as adding or subtracting a certain number of days or hours. The input <code>timedelta</code> can only be integer. You can also use <code>*.astype('timedelta64[s]')</code> to convert integer seconds to <code>np.timedelta64</code>.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year_array, month_array, and day_array</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> np.array([<span class="dv">2023</span>, <span class="dv">2023</span>, <span class="dv">2023</span>])</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>month <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>day <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.array([np.datetime64(<span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:04d}</span><span class="ss">-</span><span class="sc">{</span>m<span class="sc">:02d}</span><span class="ss">-</span><span class="sc">{</span>d<span class="sc">:02d}</span><span class="ss">"</span>) <span class="cf">for</span> y, m, d <span class="kw">in</span> <span class="bu">zip</span>(year, month, day)])</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year_array and doy_array (day of year)</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>doy <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">32</span>, <span class="dv">60</span>])  <span class="co"># Day of year for Jan 1, Feb 1, Mar 1 in a non-leap year</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.array([np.datetime64(<span class="ss">f"</span><span class="sc">{</span>y<span class="sc">:04d}</span><span class="ss">-01-01"</span>) <span class="op">+</span> np.timedelta64(d <span class="op">-</span> <span class="dv">1</span>, <span class="st">'D'</span>) <span class="cf">for</span> y, d <span class="kw">in</span> <span class="bu">zip</span>(year, doy)])</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate numpy.datetime64 array using year and doy (day of year)</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>year <span class="op">=</span> <span class="dv">2023</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>doy <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">32</span>, <span class="dv">60</span>])</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>t_array <span class="op">=</span> np.datetime64(<span class="ss">f"</span><span class="sc">{</span>year<span class="sc">:04d}</span><span class="ss">-01-01"</span>) <span class="op">+</span> (doy <span class="op">-</span> <span class="dv">1</span>).astype(<span class="st">'timedelta64[D]'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><code>pd.Timestamp()</code> and <code>np.datetime64()</code> can not take <strong>array</strong> as input. So <strong><em><u>list comprehension</u></em></strong> is required in the conversion</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert datetime_array to pandas.Timestamp array</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>datetime_array_to_pd <span class="op">=</span> [pd.Timestamp(dt) <span class="cf">for</span> dt <span class="kw">in</span> datetime_array]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-</ul>
-<section id="nasa-cdf-epoch-types" class="level3">
-<h3 class="anchored" data-anchor-id="nasa-cdf-epoch-types">NASA CDF Epoch Types</h3>
-<p><a href="https://cdf.gsfc.nasa.gov/">NASA CDF (Common Data Format)</a> is the standard container for space-physics and heliospheric data (e.g.&nbsp;MMS, Wind, ACE, Parker Solar Probe). It defines three dedicated epoch data types:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 15%">
-<col style="width: 20%">
-<col style="width: 29%">
-<col style="width: 24%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Type</th>
-<th>Storage</th>
-<th>Resolution</th>
-<th>Reference epoch</th>
-<th>Leap seconds</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>CDF_EPOCH</code></td>
-<td><code>float64</code> (8 B)</td>
-<td>1 ms</td>
-<td>0000-01-01 00:00:00 UTC</td>
-<td>✗</td>
-</tr>
-<tr class="even">
-<td><code>CDF_EPOCH16</code></td>
-<td>2 × <code>float64</code> (16 B)</td>
-<td>1 ps</td>
-<td>0000-01-01 00:00:00 UTC</td>
-<td>✗</td>
-</tr>
-<tr class="odd">
-<td><code>CDF_TIME_TT2000</code></td>
-<td><code>int64</code> (8 B)</td>
-<td>1 ns</td>
-<td>2000-01-01 12:00:00 TT (J2000)</td>
-<td>✓</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><p><strong><code>CDF_EPOCH</code></strong> — legacy format; stores milliseconds since year 0. Good enough for most pre-2000 datasets and still the most widely encountered type.</p></li>
-<li><p><strong><code>CDF_EPOCH16</code></strong> — highest resolution (picoseconds), but costs 16 bytes per sample and stores the value as a complex number (<code>np.complex128</code>) in Python. Rarely needed in practice.</p></li>
-<li><p><strong><code>CDF_TIME_TT2000</code></strong> — recommended for all new datasets. Uses <strong>Terrestrial Time (TT)</strong> rather than UTC, so the integer counter never has an ambiguous leap-second repeat. The offset between TT and UTC is <span class="math inline">\Delta AT + 32.184\ \text{s}</span> (where <span class="math inline">\Delta AT</span> is the accumulated leap-second count). Valid range: 1707 – 2292.</p></li>
-</ul>
-<p>In Python, <code>cdflib</code> handles all three:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cdflib</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Read a CDF file</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>cdf <span class="op">=</span> cdflib.CDF(<span class="st">"data.cdf"</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert any epoch type → numpy.datetime64[ns]</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> cdf.varget(<span class="st">"Epoch"</span>)                       <span class="co"># raw CDF epoch array</span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> cdflib.cdfepoch.to_datetime(epochs)        <span class="co"># list of datetime.datetime</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>t_np  <span class="op">=</span> np.array(times, dtype<span class="op">=</span><span class="st">"datetime64[ns]"</span>)   <span class="co"># → numpy array</span></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Or use cdflib's own converter directly</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>t_tt2000 <span class="op">=</span> cdflib.cdfepoch.compute_tt2000(         <span class="co"># scalar or array</span></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    [[<span class="dv">2000</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">12</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]])             <span class="co"># [y,mo,d,h,m,s,ms,µs,ns]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div style="page-break-after: always;">
-
-</div>
 </section>
 </section>
 </section>
