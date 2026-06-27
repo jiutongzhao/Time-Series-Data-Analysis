@@ -144,6 +144,8 @@ The Fourier transform is one member of a family. Every transform in this chapter
 | **Legendre** | $P_\ell(\cos\theta)$ | the sphere — polar angle | CMB angular power spectrum |
 | **Hermite** | $H_n(x)\,e^{-x^2/2}$ | the line with a harmonic well | velocity space, Vlasov moments |
 
+In the schematic below each basis function is drawn as a **sign pattern** — red where it is positive, blue where it is negative — on its natural domain: plane-wave stripes, Bessel rings, spherical-harmonic patches, and Gaussian-localised lobes. This makes *orthogonality* visual. A transform coefficient is the integral of the signal times one basis pattern; where their colours **match** the product is positive everywhere and the contributions **add up**, while any **mismatched** pair has red and blue overlapping in equal measure and **cancels** to zero. That is precisely why each transform isolates one mode and ignores all the others.
+
 <!-- fig-tabset:figure_spectral_transforms_overview.png -->
 ::: {.panel-tabset}
 
@@ -154,60 +156,66 @@ The Fourier transform is one member of a family. Every transform in this chapter
 ### Code
 
 ```python
-from scipy.special import jn, eval_legendre, eval_hermite, factorial
+from scipy.special import jn, jn_zeros, eval_hermite, factorial, sph_harm
 
-C = ['#1f77b4', '#d62728', '#2ca02c', '#9467bd']
+cmap = plt.cm.RdBu_r          # red = +, blue = -, white = 0
 
-def deco(ax, name, sub, loc='lower center', ncol=3):
-    ax.axhline(0, color='0.7', lw=0.6, zorder=0)
-    ax.set_title(name, fontsize=10.5, fontweight='bold', pad=16)
-    ax.text(0.5, 1.04, sub, transform=ax.transAxes, ha='center', va='bottom',
-            fontsize=8, color='0.30')
-    ax.tick_params(labelsize=7)
-    for s in ('top', 'right'):
-        ax.spines[s].set_visible(False)
-    leg = ax.legend(fontsize=6.8, ncol=ncol, loc=loc, handlelength=1.0,
-                    columnspacing=0.9, frameon=True, framealpha=0.85)
-    leg.get_frame().set_edgecolor('none')
+def frame_title(ax, name, sub):
+    ax.set_title(name, fontsize=11, fontweight='bold', pad=14)
+    t = ax.text2D if hasattr(ax, 'text2D') else ax.text   # 3-D axes use text2D
+    t(0.5, 1.015, sub, transform=ax.transAxes, ha='center', va='bottom',
+      fontsize=8.5, color='0.30')
 
 plt.close()
-fig, ax = plt.subplots(2, 2, figsize=(8.2, 5.6))
+fig = plt.figure(figsize=(8.6, 8.0))
 
-# (1) Fourier — complex exponentials on the line
-x = np.linspace(0, 2*np.pi, 400)
-for k in (1, 2, 3):
-    ax[0, 0].plot(x, np.cos(k*x), color=C[k-1], lw=1.6, label=f'$k={k}$')
-ax[0, 0].set_xlim(0, 2*np.pi); ax[0, 0].set_xticks([0, np.pi, 2*np.pi])
-ax[0, 0].set_xticklabels(['0', r'$\pi$', r'$2\pi$']); ax[0, 0].set_xlabel('$x$', fontsize=8)
-deco(ax[0, 0], 'Fourier', r'$e^{\,ikx}$  ·  line, translation-invariant')
+# (1) Fourier — a plane wave: diagonal sign stripes on the plane
+ax1 = fig.add_subplot(2, 2, 1)
+g = np.linspace(-1, 1, 500); X, Y = np.meshgrid(g, g)
+a = np.deg2rad(32); F = np.cos(10*(X*np.cos(a) + Y*np.sin(a)))
+ax1.imshow(F, extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
+ax1.add_patch(plt.Rectangle((-1, -1), 2, 2, fill=False, ec='0.4', lw=1.2))
+ax1.annotate('', xy=(0.55*np.cos(a), 0.55*np.sin(a)), xytext=(0, 0),
+             arrowprops=dict(arrowstyle='-|>', color='k', lw=1.4))
+ax1.text(0.6*np.cos(a)+0.05, 0.6*np.sin(a), r'$\mathbf{k}$', fontsize=10, fontweight='bold')
+ax1.set_xlim(-1.05, 1.05); ax1.set_ylim(-1.05, 1.05); ax1.set_aspect('equal'); ax1.axis('off')
+frame_title(ax1, 'Fourier', r'$e^{\,i\mathbf{k}\cdot\mathbf{x}}$  ·  plane, translation')
 
-# (2) Hankel — Bessel functions on the disk (radial part)
-r = np.linspace(0, 16, 500)
-for m in (0, 1, 2):
-    ax[0, 1].plot(r, jn(m, r), color=C[m], lw=1.6, label=f'$J_{m}$')
-ax[0, 1].set_xlim(0, 16); ax[0, 1].set_xlabel('$kr$', fontsize=8)
-deco(ax[0, 1], 'Hankel', r'$J_m(kr)$  ·  disk, rotation-invariant')
+# (2) Hankel — a radial mode: concentric Bessel sign rings on the disk
+ax2 = fig.add_subplot(2, 2, 2)
+R = np.sqrt(X**2 + Y**2); k0 = jn_zeros(0, 4)[-1]
+Fh = jn(0, k0*R); Fh[R > 1] = np.nan
+ax2.imshow(Fh, extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
+ax2.add_patch(plt.Circle((0, 0), 1, fill=False, ec='0.4', lw=1.2))
+ax2.set_xlim(-1.05, 1.05); ax2.set_ylim(-1.05, 1.05); ax2.set_aspect('equal'); ax2.axis('off')
+frame_title(ax2, 'Hankel', r'$J_m(kr)$  ·  disk, rotation')
 
-# (3) Legendre — Legendre polynomials on the sphere (polar angle)
-mu = np.linspace(-1, 1, 400)
-for l in (1, 2, 3, 4):
-    ax[1, 0].plot(mu, eval_legendre(l, mu), color=C[l-1], lw=1.6, label=fr'$P_{l}$')
-ax[1, 0].set_xlim(-1, 1); ax[1, 0].set_ylim(-1.15, 1.15)
-ax[1, 0].set_xlabel(r'$\cos\theta$', fontsize=8)
-deco(ax[1, 0], 'Legendre', r'$P_\ell(\cos\theta)$  ·  sphere, polar angle', ncol=4)
+# (3) Legendre / spherical harmonics — sign patches on the sphere
+ax3 = fig.add_subplot(2, 2, 3, projection='3d')
+th = np.linspace(0, np.pi, 160); ph = np.linspace(0, 2*np.pi, 320)
+TH, PH = np.meshgrid(th, ph)
+Yn = sph_harm(3, 6, PH, TH).real          # Y_l^m; Legendre P_l is the m = 0 part
+Yn = Yn/np.max(np.abs(Yn))
+xs, ys, zs = np.sin(TH)*np.cos(PH), np.sin(TH)*np.sin(PH), np.cos(TH)
+ax3.plot_surface(xs, ys, zs, facecolors=cmap(0.5*(Yn+1)), rstride=1, cstride=1,
+                 linewidth=0, antialiased=False, shade=False)
+ax3.set_box_aspect((1, 1, 1)); ax3.set_axis_off(); ax3.view_init(elev=20, azim=30)
+frame_title(ax3, 'Legendre / spherical', r'$P_\ell(\cos\theta),\ Y_{\ell m}$  ·  sphere')
 
-# (4) Hermite — Hermite-Gauss functions (quantum harmonic oscillator)
-xx = np.linspace(-5, 5, 500)
+# (4) Hermite — a 2-D oscillator eigenmode: Gaussian-localised sign blobs
+ax4 = fig.add_subplot(2, 2, 4)
 def psi(n, x):
-    return (2.0**n * factorial(n) * np.sqrt(np.pi))**-0.5 * eval_hermite(n, x) * np.exp(-x**2/2)
-for n in (0, 1, 2, 3):
-    ax[1, 1].plot(xx, psi(n, xx), color=C[n], lw=1.6, label=fr'$\psi_{n}$')
-ax[1, 1].set_xlim(-5, 5); ax[1, 1].set_xlabel('$x$', fontsize=8)
-deco(ax[1, 1], 'Hermite', r'$H_n(x)\,e^{-x^2/2}$  ·  line, harmonic well', ncol=4)
+    return (2.0**n*factorial(n)*np.sqrt(np.pi))**-0.5*eval_hermite(n, x)*np.exp(-x**2/2)
+xg = np.linspace(-4, 4, 500); Xh, Yh = np.meshgrid(xg, xg)
+Fherm = psi(3, Xh)*psi(3, Yh); Fherm /= np.max(np.abs(Fherm))
+ax4.imshow(Fherm, extent=[-4, 4, -4, 4], origin='lower', cmap=cmap, vmin=-1, vmax=1)
+ax4.add_patch(plt.Rectangle((-4, -4), 8, 8, fill=False, ec='0.4', lw=1.2))
+ax4.set_xlim(-4.1, 4.1); ax4.set_ylim(-4.1, 4.1); ax4.set_aspect('equal'); ax4.axis('off')
+frame_title(ax4, 'Hermite', r'$H_n(x)\,e^{-x^2/2}$  ·  line, harmonic well')
 
-fig.suptitle('Each spectral transform projects a signal onto the eigenfunctions natural to its geometry',
-             fontsize=10.5, y=1.02)
-plt.tight_layout(rect=[0, 0, 1, 0.98])
+fig.suptitle('Each transform = a basis of sign patterns; matching modes reinforce, mismatched ones cancel',
+             fontsize=10.5, y=0.97)
+plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.savefig(save_path + 'figure_spectral_transforms_overview.png', bbox_inches='tight', dpi=150)
 ```
 
