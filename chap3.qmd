@@ -160,10 +160,10 @@ A fourth member — the **Hermite** transform $H_n(v)\,e^{-v^2/2}$ — is the na
 from matplotlib.colors import LinearSegmentedColormap
 from scipy.special import jn, jn_zeros, sph_harm
 
-# editorial diverging palette: slate-blue -> warm cream -> terracotta
+# diverging map from the bright cycle: blue (0d49fb) <-> white <-> red (e6091c)
 cmap = LinearSegmentedColormap.from_list(
-    'editorial', ['#2c5d86', '#7da7c4', '#f3efe7', '#dca27f', '#b34b34'])
-INK, FRAME = '#33312e', '#cdc7bb'
+    'bwr2', ['#0d49fb', '#8aa9fc', '#ffffff', '#f28a91', '#e6091c'])
+INK, FRAME = '#222222', '#c9c9c9'
 
 def caption(ax, name, kern):
     ax.text(0.5, -0.10, name, transform=ax.transAxes, ha='center', va='top',
@@ -185,7 +185,7 @@ def shaded_sphere(l, m, tilt=-58, azim=18, npix=620, light=(-0.45, 0.6, 0.78)):
     rgb = cmap(0.5*(Yn + 1))[..., :3]
     L = np.array(light)/np.linalg.norm(light)
     diff = np.clip(X*L[0] + Y*L[1] + Z*L[2], 0, 1)           # Lambert + soft specular
-    rgb = rgb*(0.34 + 0.66*diff)[..., None] + (diff**22*0.22)[..., None]
+    rgb = rgb*(0.40 + 0.60*diff)[..., None] + (diff**22*0.18)[..., None]
     return np.dstack([np.clip(rgb, 0, 1), inside.astype(float)])
 
 plt.close()
@@ -215,8 +215,8 @@ for a_ in ax:
 
 fig.text(0.5, 0.95, 'One idea, three geometries — each transform is a basis of orthogonal sign patterns',
          ha='center', va='top', fontsize=12, color=INK)
-fig.text(0.5, 0.865, 'blue $-$   cream $0$   red $+$    ·    matching modes reinforce, mismatched ones cancel',
-         ha='center', va='top', fontsize=8.8, color='#8a8377')
+fig.text(0.5, 0.865, 'blue $-$   white $0$   red $+$    ·    matching modes reinforce, mismatched ones cancel',
+         ha='center', va='top', fontsize=8.8, color='#888888')
 fig.savefig(save_path + 'figure_spectral_transforms_overview.png',
             bbox_inches='tight', dpi=150, facecolor='white')
 ```
@@ -406,92 +406,21 @@ $$
 
 The first zero — the **Airy disk edge** — is at $r = r_\mathrm{Airy}$ by construction, enclosing 83.8 % of the total diffracted energy. Successive dark rings lie at $1.83$, $2.65$, and $3.48\,r_\mathrm{Airy}$.
 
-This is the 2-D radial power spectrum of a top-hat aperture, computed via the zeroth-order Hankel transform. The figure below shows the predicted 2-D intensity distribution on the focal plane (left) alongside the radial cross-section (right).
+This is the 2-D radial power spectrum of a top-hat aperture, computed via the zeroth-order Hankel transform — but a formula is only a *prediction*. The figure below puts that prediction next to reality: **(a)** the ideal Airy pattern simulated from $[2J_1(u)/u]^2$; **(b)** a public-domain photograph ([CC0](https://commons.wikimedia.org/wiki/File:Beugungsscheibchen.k.720.jpg), B. Bautsch) of monochromatic **red laser light** through a **0.09 mm circular pinhole**, recorded 65 mm downstream; and **(c)** their radial profiles overlaid. For the photograph we undo the sRGB gamma, recover the pattern centre by **minimising the azimuthal variance** (a correct centre makes the rings concentric), **azimuthally average** it, and fit the *single* scale $r_\mathrm{Airy}$ to the first three dark rings.
 
-<!-- fig-tabset:figure_airy_disk_2d.png -->
-::: {.panel-tabset}
+What the theory fixes is the **geometry**, and that is what matches: in both (a) and (b) the *same* red circles — the scaled zeros of $J_1$ at $r/r_\mathrm{Airy}=1,\,1.83,\,2.66,\,3.48,\dots$ — fall squarely in the dark gaps, and panel (c) shows the experiment tracking the simulation to within a few percent. The fitted first null, $r_\mathrm{Airy}\approx 0.53$ mm, is consistent with $1.22\,\lambda f/D$ for the quoted pinhole and a red ($\sim$600 nm) laser; the Airy disk inside the first ring encloses 83.8 % of the diffracted energy.
 
-### Figure
-
-<img src="Figure/figure_airy_disk_2d.png" width="100%"/>
-
-### Code
-
-```python
-from scipy.special import j1, jn_zeros
-
-leg_kw = dict(labelcolor='linecolor', handlelength=0, markerscale=0,
-              handletextpad=0, frameon=False)
-
-def airy_intensity(q):
-    u = 1.22 * np.pi * q
-    with np.errstate(invalid='ignore', divide='ignore'):
-        return np.where(u == 0, 1.0, (2 * j1(u) / u)**2)
-
-N, lim = 600, 3.5
-xy = np.linspace(-lim, lim, N)
-X, Y = np.meshgrid(xy, xy)
-I2D = airy_intensity(np.sqrt(X**2 + Y**2))
-q1d = np.linspace(0, lim, 1000)
-I1d = airy_intensity(q1d)
-dark_rings_q = jn_zeros(1, 3) / (1.22 * np.pi)
-
-plt.close()
-plt.figure(figsize=(8, 4))
-ax2d = plt.subplot(1, 2, 1)
-ax1d = plt.subplot(1, 2, 2)
-
-eps = 3e-4
-im = ax2d.imshow(np.log10(I2D + eps), origin='lower',
-                 extent=[-lim, lim, -lim, lim], cmap='hot',
-                 vmin=np.log10(eps), vmax=0, interpolation='bilinear')
-cb = plt.colorbar(im, ax=ax2d, fraction=0.046, pad=0.04)
-cb.set_label(r'$\log_{10}(I/I_0)$')
-cb.set_ticks([-3, -2, -1, 0])
-for q_r in dark_rings_q:
-    ax2d.add_patch(plt.Circle((0, 0), q_r, color='cyan', fill=False,
-                               lw=0.8, ls='--', alpha=0.8))
-ax2d.set_xlabel(r'$x\,/\,r_\mathrm{Airy}$')
-ax2d.set_ylabel(r'$y\,/\,r_\mathrm{Airy}$')
-ax2d.set_aspect('equal')
-ax2d.grid(False)
-
-ax1d.semilogy(q1d, I1d, 'C0-', lw=1.5, label=r'$[2J_1(u)/u]^2$')
-ax1d.fill_between(q1d[q1d < dark_rings_q[0]], I1d[q1d < dark_rings_q[0]],
-                  1e-4, alpha=0.2, color='C0', label='Airy disk  (83.8 %)')
-for i, q_r in enumerate(dark_rings_q, 1):
-    ax1d.axvline(q_r, color='k', lw=0.8, ls='--',
-                 label='Dark rings' if i == 1 else '_nolegend_')
-ax1d.set_xlim(0, lim)
-ax1d.set_ylim(5e-4, 1.5)
-ax1d.set_xlabel(r'$r\,/\,r_\mathrm{Airy}$')
-ax1d.set_ylabel(r'Intensity $I/I_0$')
-ax1d.legend(loc='upper right', ncol=1, **leg_kw)
-
-plt.suptitle('Airy Disk', **title_font)
-plt.tight_layout()
-plt.savefig(save_path + 'figure_airy_disk_2d.png', bbox_inches='tight', dpi=300)
-```
-
-:::
-
-#### Numerical prediction vs. a real diffraction photograph
-
-The curve above is a *prediction*. Does a physical aperture obey it? The image below is a public-domain photograph ([CC0](https://commons.wikimedia.org/wiki/File:Beugungsscheibchen.k.720.jpg), B. Bautsch) of monochromatic **red laser light** diffracted by a **0.09 mm circular pinhole**, recorded 65 mm downstream — a textbook Fraunhofer setup that resolves diffraction orders out to the 27th ring. We linearise the photograph (undo the sRGB gamma), recover the pattern centre by **minimising the azimuthal variance** (a correct centre makes the rings concentric), **azimuthally average** it into a measured radial profile, fit the *single* scale $r_\mathrm{Airy}$ to the first three dark rings, and overlay the parameter-free Airy prediction.
-
-What the theory actually fixes is the **geometry**, and that is what matches: the dark rings fall at $r/r_\mathrm{Airy} = 1,\,1.83,\,2.66,\,3.48,\dots$ — the scaled zeros of $J_1$ — to within a few percent (panel **a**, the red circles land squarely in the dark gaps). The fitted first null, $r_\mathrm{Airy}\approx 0.53$ mm, is consistent with $1.22\,\lambda f/D$ for the quoted pinhole and a red ($\sim$600 nm) laser.
-
-A real measurement also forces two honesties that a synthetic plot hides:
+A real measurement also forces two honesties a synthetic plot hides:
 
 - **The core is saturated.** To expose the faint high-order rings, the central disk is deliberately over-exposed (clipped at the sensor maximum), so measured *amplitudes* inside $r\lesssim r_\mathrm{Airy}$ are **not** photometric — only ring *positions* are. The secondary maxima also sit above the ideal envelope because of stray light and the camera's finite contrast.
 - **Only ratios are parameter-free.** Absolute ring radii require $\lambda$, $f$, and $D$; the *ratios* $1:1.83:2.66$ require nothing — they are the fingerprint that this really is the $J_1$ diffraction pattern of a circular aperture and not, say, a Gaussian blur.
 
-<!-- fig-tabset:figure_airy_experiment.png -->
+<!-- fig-tabset:figure_airy_combined.png -->
 ::: {.panel-tabset}
 
 ### Figure
 
-<img src="Figure/figure_airy_experiment.png" width="100%"/>
+<img src="Figure/figure_airy_combined.png" width="100%"/>
 
 ### Code
 
@@ -501,105 +430,83 @@ from scipy.special import j1, jn_zeros
 from scipy.signal import argrelmin
 from scipy.optimize import minimize
 
-# --- load the photograph and linearise the red channel (undo sRGB gamma) ---
+BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'
+
+def airy(q):                                  # ideal Airy intensity, q = r / r_Airy
+    u = 1.22 * np.pi * q
+    return np.where(u == 0, 1.0, (2 * j1(u) / u)**2)
+zeros_q = jn_zeros(1, 6) / jn_zeros(1, 1)      # dark-ring radii (units of r_Airy)
+
+# (1) SIMULATION — the ideal Airy pattern on a grid
+gg = np.linspace(-5, 5, 700); XX, YY = np.meshgrid(gg, gg)
+I2D = airy(np.hypot(XX, YY))
+
+# (2) EXPERIMENT — linearise the photo, find the centre, azimuthally average, fit r_Airy
 def srgb_lin(c):
     c = c / 255.0
     return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055)**2.4)
-
 im = np.asarray(Image.open(read_path + 'airy_experiment_pinhole.jpg').convert('RGB')).astype(float)
-I  = srgb_lin(im[:, :, 0])                       # red laser -> use the red channel
-
-# --- centre: a centroid is biased by the saturated core, so refine it by
-#     minimising the azimuthal variance (rings are concentric only at the
-#     true centre).  The search runs on a 4x-downsampled copy for speed. ---
-f  = 4
-Id = I[::f, ::f]
-ys, xs = np.indices(Id.shape)
-iy, ix = np.unravel_index(np.argmax(Id), Id.shape)
-cx, cy = float(ix), float(iy)
-for _ in range(6):                               # intensity-centroid initial guess
-    rr = np.sqrt((xs - cx)**2 + (ys - cy)**2)
-    w  = np.where(rr < 250 / f, Id, 0.0)
+I  = srgb_lin(im[:, :, 0])
+f  = 4; Id = I[::f, ::f]; ys, xs = np.indices(Id.shape)
+iy, ix = np.unravel_index(np.argmax(Id), Id.shape); cx, cy = float(ix), float(iy)
+for _ in range(6):                            # intensity-centroid initial guess
+    rr = np.hypot(xs - cx, ys - cy); w = np.where(rr < 250 / f, Id, 0.0)
     cx, cy = (xs * w).sum() / w.sum(), (ys * w).sum() / w.sum()
-
 rmax_o, nb_o = 1400 / f, 180
-def azim_var(p):                                 # total within-ring variance
-    r = np.sqrt((xs - p[0])**2 + (ys - p[1])**2).ravel()
-    m = r < rmax_o
-    b = (r[m] / rmax_o * nb_o).astype(int)
-    v = Id.ravel()[m]
+def azim_var(p):                              # true centre minimises azimuthal variance
+    r = np.hypot(xs - p[0], ys - p[1]).ravel(); m = r < rmax_o
+    b = (r[m] / rmax_o * nb_o).astype(int); v = Id.ravel()[m]
     s, sq = np.bincount(b, v, nb_o), np.bincount(b, v * v, nb_o)
     c = np.maximum(np.bincount(b, None, nb_o), 1)
     return (sq / c - (s / c)**2).sum()
 opt = minimize(azim_var, [cx, cy], method='Nelder-Mead',
                options={'xatol': 0.02, 'fatol': 1e-9, 'maxiter': 400})
-cx, cy = opt.x[0] * f + (f - 1) / 2, opt.x[1] * f + (f - 1) / 2   # back to full res
-
-ys, xs = np.indices(I.shape)
-r = np.sqrt((xs - cx)**2 + (ys - cy)**2)
-
-# --- azimuthal average -> measured radial profile I(r) ---
-nb, rmax = 750, 1500
-bins = np.linspace(0, rmax, nb + 1)
-idx  = np.digitize(r.ravel(), bins) - 1
+cx, cy = opt.x[0] * f + (f - 1) / 2, opt.x[1] * f + (f - 1) / 2
+ys, xs = np.indices(I.shape); r = np.hypot(xs - cx, ys - cy)
+nb, rmax = 750, 1500; bins = np.linspace(0, rmax, nb + 1)
+idx = np.digitize(r.ravel(), bins) - 1
 prof = np.array([np.median(I.ravel()[idx == b]) if (idx == b).sum() > 30 else np.nan
                  for b in range(nb)])
-rc = 0.5 * (bins[:-1] + bins[1:])
-pn = prof / np.nanmax(prof)
+rc = 0.5 * (bins[:-1] + bins[1:]); pn = prof / np.nanmax(prof)
+sm = np.convolve(np.log(pn + 1e-5), np.ones(7) / 7, mode='same')
+rmin = rc[argrelmin(sm, order=12)[0]]; rmin = rmin[(rmin > 80) & (rmin < 480)]
+ratio = jn_zeros(1, len(rmin)) / jn_zeros(1, 1); rA = np.sum(rmin * ratio) / np.sum(ratio**2)
+r_core = rmin[0]
 
-# --- fit the single scale r_Airy to the first three dark rings ---
-# (the first dark ring IS r_Airy by definition; three rings make the fit robust)
-sm   = np.convolve(np.log(pn + 1e-5), np.ones(7) / 7, mode='same')
-mins = argrelmin(sm, order=12)[0]
-rmin = rc[mins[(rc[mins] > 80) & (rc[mins] < 480)]]      # first three clean minima
-ratio = jn_zeros(1, len(rmin)) / jn_zeros(1, 1)          # 1, 1.83, 2.66
-rA   = np.sum(rmin * ratio) / np.sum(ratio**2)           # least-squares through origin
-
-# --- the parameter-free Airy prediction, in units of r_Airy ---
-def airy(q):
-    u = 1.22 * np.pi * q
-    return np.where(u == 0, 1.0, (2 * j1(u) / u)**2)
-zeros_q = jn_zeros(1, 6) / jn_zeros(1, 1)
-r_core  = rmin[0]                                        # saturated core = first dark ring
-
+# (3) FIGURE — simulation | experiment | radial profile
 plt.close()
-fig, ax = plt.subplots(1, 2, figsize=figsize_short)
-
-# (a) the photograph with theoretical dark-ring circles overlaid
-half = int(5.0 * rA)
-crop = I[int(cy - half):int(cy + half), int(cx - half):int(cx + half)]
-ax[0].imshow(np.clip(crop, 0, 1)**0.5, origin='lower', cmap='gray', vmin=0, vmax=0.62,
-             extent=[-half / rA, half / rA, -half / rA, half / rA])
+fig = plt.figure(figsize=(10, 3.3), layout='constrained')
+gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1.3])
+axs, axe, axp = (fig.add_subplot(gs[i]) for i in range(3))
 th = np.linspace(0, 2 * np.pi, 256)
-for k, zq in enumerate(zeros_q):
-    ax[0].plot(zq * np.cos(th), zq * np.sin(th), '--', color='#FF3B3B', lw=1.0,
-               label='Airy zeros (theory)' if k == 0 else None)
-ax[0].plot(0, 0, '+', color='#FF3B3B', ms=7, mew=1.2)    # fitted pattern centre
-ax[0].set_xlim(-5, 5); ax[0].set_ylim(-5, 5)
-ax[0].set_xlabel(r'$x\,/\,r_\mathrm{Airy}$'); ax[0].set_ylabel(r'$y\,/\,r_\mathrm{Airy}$')
-ax[0].set_title('(a) experiment: 0.09 mm pinhole, red laser', fontsize=9)
-ax[0].legend(loc='upper right', fontsize=6.5, framealpha=0.7, labelcolor='#FF3B3B')
+def rings(ax):
+    for k, zq in enumerate(zeros_q):
+        ax.plot(zq * np.cos(th), zq * np.sin(th), '--', color=RED, lw=1.0,
+                label='Airy zeros (theory)' if k == 0 else None)
 
-# (b) measured radial profile vs the Airy prediction
-q  = rc / rA
-qq = np.linspace(0, 5.2, 2000)
-m  = q <= 5.2
-ax[1].semilogy(qq, airy(qq), 'C0-', lw=1.4, label=r'theory $[2J_1(u)/u]^2$')
-ax[1].semilogy(q[m], pn[m], '.', color='C3', ms=3.5, label='measured (azimuthal avg)')
-ax[1].plot(rmin / rA, np.full_like(rmin, 1.3e-3), 'v', color='k', ms=5, clip_on=False,
-           label='measured dark rings')
-ax[1].axvspan(0, r_core / rA, color='0.85', zorder=0)
-ax[1].text(r_core / rA / 2, 3e-3, 'saturated\ncore', ha='center', va='center',
-           fontsize=6.5, color='0.4')
-for zq in zeros_q:
-    ax[1].axvline(zq, color='k', lw=0.6, ls=':', alpha=0.5)
-ax[1].set_xlim(0, 5.2); ax[1].set_ylim(1e-3, 1.6)
-ax[1].set_xlabel(r'$r\,/\,r_\mathrm{Airy}$'); ax[1].set_ylabel(r'$I/I_{\max}$')
-ax[1].set_title('(b) radial profile: ring positions match theory', fontsize=9)
-ax[1].legend(loc='upper right', fontsize=6.8)
+axs.imshow(I2D**0.5, origin='lower', cmap='gray', vmin=0, vmax=0.62, extent=[-5, 5, -5, 5])
+rings(axs); axs.set_xlim(-5, 5); axs.set_ylim(-5, 5)
+axs.set_xlabel(r'$x\,/\,r_\mathrm{Airy}$'); axs.set_ylabel(r'$y\,/\,r_\mathrm{Airy}$')
+axs.set_title('(a) simulation: ideal Airy pattern'); axs.legend(loc='upper right', labelcolor=RED)
 
-plt.tight_layout()
-plt.savefig(save_path + 'figure_airy_experiment.png', bbox_inches='tight', dpi=150)
+half = int(5.0 * rA); crop = I[int(cy - half):int(cy + half), int(cx - half):int(cx + half)]
+axe.imshow(np.clip(crop, 0, 1)**0.5, origin='lower', cmap='gray', vmin=0, vmax=0.62, extent=[-5, 5, -5, 5])
+rings(axe); axe.plot(0, 0, '+', color=RED, ms=7, mew=1.4)
+axe.set_xlim(-5, 5); axe.set_ylim(-5, 5)
+axe.set_xlabel(r'$x\,/\,r_\mathrm{Airy}$'); axe.set_ylabel(r'$y\,/\,r_\mathrm{Airy}$')
+axe.set_title('(b) experiment: 0.09 mm pinhole')
+
+q = rc / rA; qq = np.linspace(0, 5.2, 2000); m = q <= 5.2
+axp.semilogy(qq, airy(qq), color=BLUE, lw=1.4, label='theory / simulation')
+axp.semilogy(q[m], pn[m], '.', color=RED, label='experiment (azim. avg)')
+axp.plot(rmin / rA, np.full_like(rmin, 1.3e-3), 'v', color=INK, ms=5, clip_on=False, label='measured dark rings')
+axp.axvspan(0, r_core / rA, color='0.9', zorder=0)
+axp.text(r_core / rA / 2, 3e-3, 'saturated\ncore', ha='center', va='center', fontsize=7, color=GREY)
+for zq in zeros_q: axp.axvline(zq, color=GREY, lw=0.5, ls=':', alpha=0.6)
+axp.set_xlim(0, 5.2); axp.set_ylim(1e-3, 1.6)
+axp.set_xlabel(r'$r\,/\,r_\mathrm{Airy}$'); axp.set_ylabel(r'$I/I_{\max}$')
+axp.set_title('(c) radial profile: experiment vs simulation'); axp.legend(loc='upper right')
+fig.savefig(save_path + 'figure_airy_combined.png', dpi=200)
 ```
 
 :::
@@ -717,50 +624,49 @@ This is the **spherical analogue of the Wiener–Khinchin theorem**: just as the
 
 ```python
 from scipy.special import eval_legendre
+from cycler import cycler
+
+# paper.mplstyle conventions (web-sized) + bright colour cycle
+plt.rcParams.update({
+    'axes.prop_cycle': cycler('color', ['0d49fb','e6091c','26eb47','8936df','fec32d','25d7fd'])
+                     + cycler('ls', ['-','--','-.',':','-','--']),
+    'axes.linewidth':0.6, 'lines.linewidth':1.2, 'lines.markersize':3.5,
+    'xtick.direction':'in','ytick.direction':'in','xtick.top':True,'ytick.right':True,
+    'xtick.minor.visible':True,'ytick.minor.visible':True,
+    'legend.frameon':False,'legend.labelcolor':'linecolor','savefig.bbox':'standard',
+})
+BLUE, INK, GREY = '#0d49fb', '#222222', '#888888'
 
 N = 256
 x, w = np.polynomial.legendre.leggauss(N)                # nodes/weights on [-1, 1]
 ell  = np.arange(N)
 P_mat = eval_legendre(ell[:, None], x[None, :])          # P_l(x_j),  shape (N, N)
 
-# a test signal along the polar axis, x = cos(theta)
-f_vals = np.exp(-5 * x**2) * np.cos(3 * np.pi * x)
+f_vals = np.exp(-5 * x**2) * np.cos(3 * np.pi * x)       # test signal, x = cos(theta)
+a = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))           # forward transform -> a_l
+f_full = a @ P_mat                                       # inverse synthesis
+recon  = lambda L: a[:L] @ P_mat[:L]                     # truncated to L modes
 
-# forward Legendre transform -> coefficients a_l
-a = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))
-
-# inverse synthesis: full, and truncated to L modes
-f_full = a @ P_mat
-recon  = lambda L: a[:L] @ P_mat[:L]
-
-BLUE, CORAL, INK, GREY = '#2c5d86', '#b34b34', '#33312e', '#8a8377'
 plt.close()
-fig, (axf, axs) = plt.subplots(1, 2, figsize=(8.4, 3.4))
-
-axf.plot(x, f_vals, color=INK, lw=2.2, label=r'signal $f(\cos\theta)$')
-axf.plot(x, recon(6),  color=BLUE,  lw=1.5, ls='--', label=r'$\ell\leq 5$')
-axf.plot(x, recon(14), color=CORAL, lw=1.5, ls='-.', label=r'$\ell\leq 13$')
+fig, (axf, axs) = plt.subplots(1, 2, figsize=(8.4, 3.4), layout='constrained')
+axf.plot(x, f_vals, color=INK, lw=1.8, label=r'signal $f(\cos\theta)$')
+axf.plot(x, recon(6),  label=r'$\ell\leq 5$')            # auto-cycle: blue solid
+axf.plot(x, recon(14), label=r'$\ell\leq 13$')           # auto-cycle: red dashed
 axf.set_xlim(-1, 1); axf.set_xlabel(r'$\cos\theta$'); axf.set_ylabel(r'$f$')
-axf.set_title('Legendre synthesis converges', fontsize=10.5, color=INK)
-axf.legend(fontsize=8, frameon=False, loc='lower center', ncol=3,
-           columnspacing=1.0, handlelength=1.6)
-for s in ('top', 'right'): axf.spines[s].set_visible(False)
+axf.set_title('Legendre synthesis converges')
+axf.legend(loc='lower center', ncol=3, columnspacing=1.0, handlelength=1.6)
 
 L = 30
 axs.axhline(0, color=GREY, lw=0.6)
-axs.vlines(ell[:L], 0, a[:L], color=BLUE, lw=1.5)
-axs.plot(ell[:L], a[:L], 'o', color=BLUE, ms=3.5)
-axs.set_xlim(-0.6, L - 0.5); axs.set_xlabel(r'degree  $\ell$')
-axs.set_ylabel(r'coefficient  $a_\ell$')
-axs.set_title(r'Legendre spectrum  $a_\ell$', fontsize=10.5, color=INK)
+axs.vlines(ell[:L], 0, a[:L], color=BLUE, lw=1.4)
+axs.plot(ell[:L], a[:L], 'o', color=BLUE)
+axs.set_xlim(-0.6, L - 0.5); axs.set_xlabel(r'degree  $\ell$'); axs.set_ylabel(r'coefficient  $a_\ell$')
+axs.set_title(r'Legendre spectrum  $a_\ell$')
 axs.text(0.97, 0.93, rf'$\max|f-f_{{\rm rec}}|\sim{np.max(np.abs(f_vals-f_full)):.0e}$',
-         transform=axs.transAxes, ha='right', va='top', fontsize=8.2, color=GREY)
-for s in ('top', 'right'): axs.spines[s].set_visible(False)
+         transform=axs.transAxes, ha='right', va='top', fontsize=8, color=GREY)
 
-fig.suptitle(r'Legendre transform: a band-limited spectral decomposition on $[-1,1]$',
-             fontsize=11, color=INK, y=1.0)
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig(save_path + 'figure_legendre.png', bbox_inches='tight', dpi=150)
+fig.suptitle(r'Legendre transform: a band-limited spectral decomposition on $[-1,1]$', fontsize=11)
+fig.savefig(save_path + 'figure_legendre.png', dpi=200)
 ```
 
 The same Legendre machinery, applied to the two-point correlation function $C(\theta)$ of an actual sky map, yields the CMB angular power spectrum $C_\ell$ — worked out end-to-end in the [application below](#application-angular-power-spectrum-of-the-cosmic-microwave-background-cmb).
@@ -879,7 +785,12 @@ Velocity-space filamentation and the Hermite cascade are the *same* event seen i
 from matplotlib.animation import FuncAnimation, PillowWriter
 from scipy.special import gammaln
 
-BLUE, CORAL, INK, GREY = '#2c5d86', '#b34b34', '#33312e', '#8a8377'
+# paper.mplstyle conventions: inward minor ticks on all four sides
+plt.rcParams.update({
+    'axes.linewidth':0.6,'xtick.direction':'in','ytick.direction':'in',
+    'xtick.top':True,'ytick.right':True,'xtick.minor.visible':True,'ytick.minor.visible':True,
+})
+BLUE, CORAL, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'   # bright cycle blue/red
 k = 1.0
 nmax = 46; ns = np.arange(nmax + 1)
 v = np.linspace(-5, 5, 700)
@@ -1101,28 +1012,32 @@ C_theta_exact = ((2*ell + 1)[:, None] * Cl_th[:, None] * P_mat).sum(axis=0) / (4
 Cl_C = 2*np.pi * (P_mat * (wmu * C_theta_exact)).sum(axis=1)   # == Cl_th to ~1e-12
 
 # plot: LCDM model band, Method C (fast Legendre), anafast, Method B
-INK, BLUE, CORAL, GREEN, GREY = '#33312e', '#2c5d86', '#b34b34', '#2a8f6b', '#8a8377'
+from cycler import cycler
+plt.rcParams.update({
+    'axes.linewidth':0.6,'lines.linewidth':1.2,'lines.markersize':3.5,
+    'xtick.direction':'in','ytick.direction':'in','xtick.top':True,'ytick.right':True,
+    'xtick.minor.visible':True,'ytick.minor.visible':True,
+    'legend.frameon':False,'legend.labelcolor':'linecolor','savefig.bbox':'standard',
+})
+BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'   # bright cycle blue/red
 plt.close()
-fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.8))
+fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.8), layout='constrained')
 o = np.argsort(theta); thd = np.rad2deg(theta[o])
-ax[0].plot(thd, C_theta_exact[o], color=INK, lw=1.8, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
-ax[0].plot(thd, C_theta[o], '.', color=CORAL, ms=2.4, alpha=0.55, label='Monte-Carlo pairs')
+ax[0].plot(thd, C_theta_exact[o], color=INK, lw=1.6, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
+ax[0].plot(thd, C_theta[o], '.', color=RED, ms=2.6, alpha=0.6, label='Monte-Carlo pairs')
 ax[0].axhline(0, color=GREY, lw=0.6); ax[0].set_xlim(0, 180)
 ax[0].set_xlabel(r'separation  $\theta$  [deg]'); ax[0].set_ylabel(r'$C(\theta)$  [$\mu$K$^2$]')
-ax[0].set_title('(a) two-point correlation', fontsize=10); ax[0].legend(fontsize=7.5, frameon=False)
-for s in ('top', 'right'): ax[0].spines[s].set_visible(False)
+ax[0].set_title('(a) two-point correlation'); ax[0].legend(loc='upper right')
 
 ax[1].plot(ell[2:], Dl(Cl_th)[2:], color=GREY, lw=4, alpha=0.35, label=r'$\Lambda$CDM model')
-ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=GREEN, lw=1.5, ls='--', label='fast Legendre transform')
-ax[1].plot(cA, DA, 'o', color=BLUE, ms=3.2, label='anafast (Method A)')
-ax[1].plot(cB, DB, 's', color=CORAL, ms=3.8, label='Wiener–Khinchin (Method B)')
+ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=INK, lw=1.2, ls='--', label='fast Legendre transform')
+ax[1].plot(cA, DA, 'o', color=BLUE, label='anafast (Method A)')
+ax[1].plot(cB, DB, 's', color=RED, label='Wiener–Khinchin (Method B)')
 ax[1].axvspan(280, lmax, color='0.93', zorder=0)
 ax[1].set_xlim(0, lmax); ax[1].set_ylim(0, 6500)
-ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell$  [$\mu$K$^2$]')
-ax[1].set_title('(b) angular power spectrum', fontsize=10); ax[1].legend(fontsize=7.2, frameon=False)
-for s in ('top', 'right'): ax[1].spines[s].set_visible(False)
-plt.tight_layout()
-plt.savefig(save_path + 'figure_wk_cmb_sphere.png', bbox_inches='tight', dpi=150)
+ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell=\ell(\ell+1)C_\ell/2\pi$  [$\mu$K$^2$]')
+ax[1].set_title('(b) angular power spectrum'); ax[1].legend(loc='upper right')
+fig.savefig(save_path + 'figure_wk_cmb_sphere.png', dpi=200)
 ```
 
 :::
