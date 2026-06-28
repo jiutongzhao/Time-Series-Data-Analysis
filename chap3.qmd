@@ -142,9 +142,10 @@ The Fourier transform is one member of a family. Every transform in this chapter
 | **Fourier** | $e^{ikx}$ | the line — translation symmetry | PSD, Wiener–Khinchin |
 | **Hankel** | $J_m(kr)$ | the disk — rotational symmetry | circular apertures, Airy pattern |
 | **Legendre** | $P_\ell(\cos\theta)$ | the sphere — polar angle | CMB angular power spectrum |
-| **Hermite** | $H_n(x)\,e^{-x^2/2}$ | the line with a harmonic well | velocity space, Vlasov moments |
 
-In the schematic below each basis function is drawn as a **sign pattern** — red where it is positive, blue where it is negative — on its natural domain: plane-wave stripes, Bessel rings, spherical-harmonic patches, and Gaussian-localised lobes. This makes *orthogonality* visual. A transform coefficient is the integral of the signal times one basis pattern; where their colours **match** the product is positive everywhere and the contributions **add up**, while any **mismatched** pair has red and blue overlapping in equal measure and **cancels** to zero. That is precisely why each transform isolates one mode and ignores all the others.
+In the schematic below each basis function is drawn as a **sign pattern** — red where it is positive, blue where it is negative — on its natural domain: plane-wave stripes, Bessel rings, and spherical-harmonic patches. This makes *orthogonality* visual. A transform coefficient is the integral of the signal times one basis pattern; where their colours **match** the product is positive everywhere and the contributions **add up**, while any **mismatched** pair has red and blue overlapping in equal measure and **cancels** to zero. That is precisely why each transform isolates one mode and ignores all the others.
+
+A fourth member — the **Hermite** transform $H_n(v)\,e^{-v^2/2}$ — is the natural basis not of a *spatial* domain but of **velocity space**. Because its job is dynamical (it tracks how a distribution function stirs in velocity over time), we meet it later, [as an animation](#phase-space-mixing-and-landau-damping) rather than a static sign pattern.
 
 <!-- fig-tabset:figure_spectral_transforms_overview.png -->
 ::: {.panel-tabset}
@@ -157,7 +158,7 @@ In the schematic below each basis function is drawn as a **sign pattern** — re
 
 ```python
 from matplotlib.colors import LinearSegmentedColormap
-from scipy.special import jn, jn_zeros, eval_hermite, factorial, sph_harm
+from scipy.special import jn, jn_zeros, sph_harm
 
 # editorial diverging palette: slate-blue -> warm cream -> terracotta
 cmap = LinearSegmentedColormap.from_list(
@@ -166,9 +167,9 @@ INK, FRAME = '#33312e', '#cdc7bb'
 
 def caption(ax, name, kern):
     ax.text(0.5, -0.10, name, transform=ax.transAxes, ha='center', va='top',
-            fontsize=11.5, color=INK, fontweight='medium')
-    ax.text(0.5, -0.245, kern, transform=ax.transAxes, ha='center', va='top',
-            fontsize=8.8, color='#8a8377')
+            fontsize=12, color=INK, fontweight='medium')
+    ax.text(0.5, -0.235, kern, transform=ax.transAxes, ha='center', va='top',
+            fontsize=9, color='#8a8377')
 
 # an orthographic, Lambert-shaded sphere coloured by a real spherical harmonic
 def shaded_sphere(l, m, tilt=-58, azim=18, npix=620, light=(-0.45, 0.6, 0.78)):
@@ -188,9 +189,9 @@ def shaded_sphere(l, m, tilt=-58, azim=18, npix=620, light=(-0.45, 0.6, 0.78)):
     return np.dstack([np.clip(rgb, 0, 1), inside.astype(float)])
 
 plt.close()
-fig = plt.figure(figsize=(11, 3.5), dpi=150)
-gs = fig.add_gridspec(1, 4, wspace=0.16, left=0.012, right=0.988, top=0.80, bottom=0.30)
-ax = [fig.add_subplot(gs[0, i]) for i in range(4)]
+fig = plt.figure(figsize=(8.6, 3.6), dpi=150)
+gs = fig.add_gridspec(1, 3, wspace=0.14, left=0.015, right=0.985, top=0.78, bottom=0.28)
+ax = [fig.add_subplot(gs[0, i]) for i in range(3)]
 g = np.linspace(-1, 1, 600); X, Y = np.meshgrid(g, g); R = np.hypot(X, Y)
 imkw = dict(extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
 sq = lambda a: a.add_patch(plt.Rectangle((-1, -1), 2, 2, fill=False, ec=FRAME, lw=1.3))
@@ -209,21 +210,13 @@ ax[1].imshow(Fh, **imkw); ci(ax[1]); caption(ax[1], 'Hankel', r'$J_m(kr)$   ·  
 ax[2].imshow(shaded_sphere(5, 3), extent=[-1, 1, -1, 1], origin='lower')
 ci(ax[2], 1.0); caption(ax[2], 'Legendre', r'$P_\ell(\cos\theta)$   ·   sphere')
 
-# (4) Hermite — Gaussian-localised oscillator blobs on a square
-def psi(n, x):
-    return (2.0**n*factorial(n)*np.sqrt(np.pi))**-0.5*eval_hermite(n, x)*np.exp(-x**2/2)
-xg = np.linspace(-2.9, 2.9, 600); Xh, Yh = np.meshgrid(xg, xg)
-Fherm = psi(2, Xh)*psi(2, Yh); Fherm /= np.max(np.abs(Fherm))
-ax[3].imshow(Fherm, **imkw); sq(ax[3])
-caption(ax[3], 'Hermite', r'$H_n(x)\,e^{-x^2/2}$   ·   line')
-
 for a_ in ax:
     a_.set_xlim(-1.04, 1.04); a_.set_ylim(-1.04, 1.04); a_.set_aspect('equal'); a_.axis('off')
 
-fig.text(0.5, 0.95, 'One idea, four geometries — each transform is a basis of orthogonal sign patterns',
+fig.text(0.5, 0.95, 'One idea, three geometries — each transform is a basis of orthogonal sign patterns',
          ha='center', va='top', fontsize=12, color=INK)
-fig.text(0.5, 0.875, 'blue $-$   cream $0$   red $+$    ·    matching modes reinforce, mismatched ones cancel',
-         ha='center', va='top', fontsize=8.6, color='#8a8377')
+fig.text(0.5, 0.865, 'blue $-$   cream $0$   red $+$    ·    matching modes reinforce, mismatched ones cancel',
+         ha='center', va='top', fontsize=8.8, color='#8a8377')
 fig.savefig(save_path + 'figure_spectral_transforms_overview.png',
             bbox_inches='tight', dpi=150, facecolor='white')
 ```
@@ -726,16 +719,48 @@ This is the **spherical analogue of the Wiener–Khinchin theorem**: just as the
 from scipy.special import eval_legendre
 
 N = 256
-x, w = np.polynomial.legendre.leggauss(N)
+x, w = np.polynomial.legendre.leggauss(N)                # nodes/weights on [-1, 1]
 ell  = np.arange(N)
-P_mat = eval_legendre(ell[:, None], x[None, :])          # (N, N)
+P_mat = eval_legendre(ell[:, None], x[None, :])          # P_l(x_j),  shape (N, N)
 
-# Forward transform
+# a test signal along the polar axis, x = cos(theta)
 f_vals = np.exp(-5 * x**2) * np.cos(3 * np.pi * x)
-a      = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))
 
-# Inverse (synthesis)
-f_rec  = a @ P_mat
+# forward Legendre transform -> coefficients a_l
+a = (2 * ell + 1) / 2 * (P_mat @ (w * f_vals))
+
+# inverse synthesis: full, and truncated to L modes
+f_full = a @ P_mat
+recon  = lambda L: a[:L] @ P_mat[:L]
+
+BLUE, CORAL, INK, GREY = '#2c5d86', '#b34b34', '#33312e', '#8a8377'
+plt.close()
+fig, (axf, axs) = plt.subplots(1, 2, figsize=(8.4, 3.4))
+
+axf.plot(x, f_vals, color=INK, lw=2.2, label=r'signal $f(\cos\theta)$')
+axf.plot(x, recon(6),  color=BLUE,  lw=1.5, ls='--', label=r'$\ell\leq 5$')
+axf.plot(x, recon(14), color=CORAL, lw=1.5, ls='-.', label=r'$\ell\leq 13$')
+axf.set_xlim(-1, 1); axf.set_xlabel(r'$\cos\theta$'); axf.set_ylabel(r'$f$')
+axf.set_title('Legendre synthesis converges', fontsize=10.5, color=INK)
+axf.legend(fontsize=8, frameon=False, loc='lower center', ncol=3,
+           columnspacing=1.0, handlelength=1.6)
+for s in ('top', 'right'): axf.spines[s].set_visible(False)
+
+L = 30
+axs.axhline(0, color=GREY, lw=0.6)
+axs.vlines(ell[:L], 0, a[:L], color=BLUE, lw=1.5)
+axs.plot(ell[:L], a[:L], 'o', color=BLUE, ms=3.5)
+axs.set_xlim(-0.6, L - 0.5); axs.set_xlabel(r'degree  $\ell$')
+axs.set_ylabel(r'coefficient  $a_\ell$')
+axs.set_title(r'Legendre spectrum  $a_\ell$', fontsize=10.5, color=INK)
+axs.text(0.97, 0.93, rf'$\max|f-f_{{\rm rec}}|\sim{np.max(np.abs(f_vals-f_full)):.0e}$',
+         transform=axs.transAxes, ha='right', va='top', fontsize=8.2, color=GREY)
+for s in ('top', 'right'): axs.spines[s].set_visible(False)
+
+fig.suptitle(r'Legendre transform: a band-limited spectral decomposition on $[-1,1]$',
+             fontsize=11, color=INK, y=1.0)
+plt.tight_layout(rect=[0, 0, 1, 0.96])
+plt.savefig(save_path + 'figure_legendre.png', bbox_inches='tight', dpi=150)
 ```
 
 The same Legendre machinery, applied to the two-point correlation function $C(\theta)$ of an actual sky map, yields the CMB angular power spectrum $C_\ell$ — worked out end-to-end in the [application below](#application-angular-power-spectrum-of-the-cosmic-microwave-background-cmb).
@@ -838,6 +863,70 @@ The cascade peak advances as $n_\text{peak}(t) = \tau^2 = k^2t^2/2$, while total
 2. **Collisionless reversibility** — because $\sum_n|\hat{f}_n|^2$ is conserved, the phase mixing is reversible in principle; no entropy is produced.
 
 3. **Collisional entropy production** — a collision operator (e.g., Lenard–Bernstein: $\nu\,\hat{a}^\dagger\hat{a}$ damps mode $n$ at rate $\nu n$) absorbs the cascade at high $n$, breaking Parseval and producing real thermodynamic entropy.
+
+Velocity-space filamentation and the Hermite cascade are the *same* event seen in two bases. The animation below integrates the free-streaming equation forward in time: as the perturbation $\delta f(v,t)=\psi_0(v)\cos(kvt)$ folds into ever-finer filaments in velocity (left), its Hermite spectrum $|\hat f_n|^2$ spreads as a Poisson packet whose peak climbs as $n_\text{peak}=k^2t^2/2$ (right). The density mode $n=0$ bleeds away — that decay *is* Landau damping — yet no power is destroyed; it has merely migrated to high $n$, where an arbitrarily small collisionality can finally thermalise it. This is why a Hermite basis is the right tool for kinetic plasmas: it turns a PDE in velocity into an ODE ladder, and the physics is the traffic up that ladder.
+
+<!-- fig-tabset:figure_hermite_phase_mixing.gif -->
+::: {.panel-tabset}
+
+### Animation
+
+<img src="Figure/figure_hermite_phase_mixing.gif" width="100%"/>
+
+### Code
+
+```python
+from matplotlib.animation import FuncAnimation, PillowWriter
+from scipy.special import gammaln
+
+BLUE, CORAL, INK, GREY = '#2c5d86', '#b34b34', '#33312e', '#8a8377'
+k = 1.0
+nmax = 46; ns = np.arange(nmax + 1)
+v = np.linspace(-5, 5, 700)
+psi0 = np.pi**-0.25 * np.exp(-v**2 / 2)          # n = 0 Hermite-Gauss mode
+T = np.linspace(0.0, 8.0, 64)                    # time frames
+
+def spectrum(tau):                               # |f_n|^2 = tau^{2n}/n! e^{-tau^2}
+    if tau == 0:
+        p = np.zeros_like(ns, dtype=float); p[0] = 1.0; return p
+    return np.exp(2*ns*np.log(tau) - gammaln(ns + 1) - tau**2)
+
+plt.close()
+fig, (axL, axR) = plt.subplots(1, 2, figsize=(8.4, 3.7), dpi=100)
+fig.subplots_adjust(left=0.085, right=0.975, top=0.80, bottom=0.15, wspace=0.28)
+
+def draw(i):
+    t = T[i]; tau = k*t/np.sqrt(2)
+    df = psi0 * np.cos(k*v*t)                     # free-streaming: f1 = psi0 e^{-ikvt}
+    axL.clear(); axR.clear()
+    # left: velocity-space distribution folding into filaments
+    axL.fill_between(v, 0, df, where=df >= 0, color=CORAL, alpha=0.9, lw=0)
+    axL.fill_between(v, 0, df, where=df < 0,  color=BLUE,  alpha=0.9, lw=0)
+    axL.plot(v, psi0, color=GREY, lw=0.8, ls='--'); axL.plot(v, -psi0, color=GREY, lw=0.8, ls='--')
+    axL.axhline(0, color=INK, lw=0.5); axL.set_xlim(-5, 5); axL.set_ylim(-0.85, 0.85)
+    axL.set_xlabel(r'velocity  $v$', fontsize=9); axL.set_ylabel(r'$\delta f(v,t)$', fontsize=9)
+    axL.set_title('velocity space: phase mixing', fontsize=10, color=INK)
+    axL.text(0.03, 0.04, r'$\delta f=\psi_0(v)\cos(kvt)$', transform=axL.transAxes,
+             fontsize=8.5, color=GREY, va='bottom')
+    for s in ('top', 'right'): axL.spines[s].set_visible(False)
+    # right: Hermite spectrum cascading up the ladder
+    axR.bar(ns, spectrum(tau), width=0.9, color=BLUE, alpha=0.85)
+    axR.axvline(tau**2, color=CORAL, lw=1.6)
+    axR.text(tau**2 + 1, 0.93, r'$n_{\rm peak}=\dfrac{k^2t^2}{2}$', color=CORAL, fontsize=8.5, va='top')
+    axR.set_xlim(-0.5, nmax); axR.set_ylim(0, 1.0)
+    axR.set_xlabel(r'Hermite mode  $n$', fontsize=9); axR.set_ylabel(r'$|\hat f_n|^2$', fontsize=9)
+    axR.set_title('Hermite spectrum: the cascade', fontsize=10, color=INK)
+    axR.text(0.97, 0.93, r'$|\hat f_0|\propto e^{-k^2t^2/4}$' + '\n(Landau damping)',
+             transform=axR.transAxes, ha='right', va='top', fontsize=8.2, color=GREY)
+    for s in ('top', 'right'): axR.spines[s].set_visible(False)
+    fig.suptitle(r'Free-streaming Vlasov:   $\partial_t f + v\,\partial_x f = 0$' + f'        $t = {t:0.1f}$',
+                 fontsize=11.5, color=INK, y=0.95)
+
+anim = FuncAnimation(fig, draw, frames=len(T), interval=110)
+anim.save(save_path + 'figure_hermite_phase_mixing.gif', writer=PillowWriter(fps=12))
+```
+
+:::
 
 <!-- fig-tabset:figure_hermite_cascade.png -->
 ::: {.panel-tabset}
