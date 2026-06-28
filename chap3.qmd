@@ -525,6 +525,8 @@ $$
 
 The **angular power spectrum** $C_\ell$ is the **Legendre transform of the angular correlation function** $C(\theta)$, in direct analogy with $S(k)=\mathcal{F}[R(\tau)]$ on the line and $S(k)=2\pi\mathcal{H}_0[R(r)]$ in the plane.
 
+Read this way it is a *definition*, not an algorithm. Estimating $C(\theta)$ directly means averaging over pixel **pairs**, and a two-dimensional field with $N$ pixels has $\sim N^2$ of them — for a real sky map ($N\!\sim\!10^7$) that is $\sim 10^{14}$ pairs, hopelessly expensive. So in practice we use the correlation function only to **define** $C_\ell$ and give it its Wiener–Khinchin meaning; the **actual computation never touches $C(\theta)$** — it is done in harmonic space with `healpy.anafast`, which returns the same $C_\ell$ in $O(N\,\ell_{\max})$. (We make this definition-versus-computation trade-off explicit in the [CMB application](#application-angular-power-spectrum-of-the-cosmic-microwave-background-cmb).)
+
 The **Legendre spectral transform** provides the natural decomposition for functions on a **sphere** — or for any function on $[-1, 1]$. While the Fourier series decomposes functions on a circle and the Hankel transform handles radial structure in the plane, the Legendre basis is adapted to the geometry of the sphere.
 
 ### Legendre Polynomials and Orthogonality
