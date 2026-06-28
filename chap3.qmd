@@ -156,67 +156,76 @@ In the schematic below each basis function is drawn as a **sign pattern** — re
 ### Code
 
 ```python
+from matplotlib.colors import LinearSegmentedColormap
 from scipy.special import jn, jn_zeros, eval_hermite, factorial, sph_harm
 
-cmap = plt.cm.RdBu_r          # red = +, blue = -, white = 0
+# editorial diverging palette: slate-blue -> warm cream -> terracotta
+cmap = LinearSegmentedColormap.from_list(
+    'editorial', ['#2c5d86', '#7da7c4', '#f3efe7', '#dca27f', '#b34b34'])
+INK, FRAME = '#33312e', '#cdc7bb'
 
-def frame_title(ax, name, sub):
-    ax.set_title(name, fontsize=11, fontweight='bold', pad=14)
-    t = ax.text2D if hasattr(ax, 'text2D') else ax.text   # 3-D axes use text2D
-    t(0.5, 1.015, sub, transform=ax.transAxes, ha='center', va='bottom',
-      fontsize=8.5, color='0.30')
+def caption(ax, name, kern):
+    ax.text(0.5, -0.10, name, transform=ax.transAxes, ha='center', va='top',
+            fontsize=11.5, color=INK, fontweight='medium')
+    ax.text(0.5, -0.245, kern, transform=ax.transAxes, ha='center', va='top',
+            fontsize=8.8, color='#8a8377')
+
+# an orthographic, Lambert-shaded sphere coloured by a real spherical harmonic
+def shaded_sphere(l, m, tilt=-58, azim=18, npix=620, light=(-0.45, 0.6, 0.78)):
+    g = np.linspace(-1, 1, npix); X, Y = np.meshgrid(g, g)
+    inside = X**2 + Y**2 <= 1.0
+    Z = np.sqrt(np.clip(1 - X**2 - Y**2, 0, 1))
+    t, az = np.deg2rad(tilt), np.deg2rad(azim)
+    cx, sx, cz, sz = np.cos(t), np.sin(t), np.cos(az), np.sin(az)
+    y1, z1 = cx*Y - sx*Z, sx*Y + cx*Z                       # Rx(tilt)
+    sX, sY, sZ = cz*X - sz*y1, sz*X + cz*y1, z1             # Rz(azim)
+    Yv = sph_harm(m, l, np.arctan2(sY, sX), np.arccos(np.clip(sZ, -1, 1))).real
+    Yn = Yv/np.nanmax(np.abs(np.where(inside, Yv, np.nan)))
+    rgb = cmap(0.5*(Yn + 1))[..., :3]
+    L = np.array(light)/np.linalg.norm(light)
+    diff = np.clip(X*L[0] + Y*L[1] + Z*L[2], 0, 1)           # Lambert + soft specular
+    rgb = rgb*(0.34 + 0.66*diff)[..., None] + (diff**22*0.22)[..., None]
+    return np.dstack([np.clip(rgb, 0, 1), inside.astype(float)])
 
 plt.close()
-fig = plt.figure(figsize=(8.6, 8.0))
+fig = plt.figure(figsize=(11, 3.5), dpi=150)
+gs = fig.add_gridspec(1, 4, wspace=0.16, left=0.012, right=0.988, top=0.80, bottom=0.30)
+ax = [fig.add_subplot(gs[0, i]) for i in range(4)]
+g = np.linspace(-1, 1, 600); X, Y = np.meshgrid(g, g); R = np.hypot(X, Y)
+imkw = dict(extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
+sq = lambda a: a.add_patch(plt.Rectangle((-1, -1), 2, 2, fill=False, ec=FRAME, lw=1.3))
+ci = lambda a, lw=1.3: a.add_patch(plt.Circle((0, 0), 1, fill=False, ec=FRAME, lw=lw))
 
-# (1) Fourier — a plane wave: diagonal sign stripes on the plane
-ax1 = fig.add_subplot(2, 2, 1)
-g = np.linspace(-1, 1, 500); X, Y = np.meshgrid(g, g)
-a = np.deg2rad(32); F = np.cos(10*(X*np.cos(a) + Y*np.sin(a)))
-ax1.imshow(F, extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
-ax1.add_patch(plt.Rectangle((-1, -1), 2, 2, fill=False, ec='0.4', lw=1.2))
-ax1.annotate('', xy=(0.55*np.cos(a), 0.55*np.sin(a)), xytext=(0, 0),
-             arrowprops=dict(arrowstyle='-|>', color='k', lw=1.4))
-ax1.text(0.6*np.cos(a)+0.05, 0.6*np.sin(a), r'$\mathbf{k}$', fontsize=10, fontweight='bold')
-ax1.set_xlim(-1.05, 1.05); ax1.set_ylim(-1.05, 1.05); ax1.set_aspect('equal'); ax1.axis('off')
-frame_title(ax1, 'Fourier', r'$e^{\,i\mathbf{k}\cdot\mathbf{x}}$  ·  plane, translation')
+# (1) Fourier — plane wave on a square (the plane)
+a = np.deg2rad(30)
+ax[0].imshow(np.cos(7.5*(X*np.cos(a) + Y*np.sin(a))), **imkw)
+sq(ax[0]); caption(ax[0], 'Fourier', r'$e^{\,i\mathbf{k}\cdot\mathbf{x}}$   ·   plane')
 
-# (2) Hankel — a radial mode: concentric Bessel sign rings on the disk
-ax2 = fig.add_subplot(2, 2, 2)
-R = np.sqrt(X**2 + Y**2); k0 = jn_zeros(0, 4)[-1]
-Fh = jn(0, k0*R); Fh[R > 1] = np.nan
-ax2.imshow(Fh, extent=[-1, 1, -1, 1], origin='lower', cmap=cmap, vmin=-1, vmax=1)
-ax2.add_patch(plt.Circle((0, 0), 1, fill=False, ec='0.4', lw=1.2))
-ax2.set_xlim(-1.05, 1.05); ax2.set_ylim(-1.05, 1.05); ax2.set_aspect('equal'); ax2.axis('off')
-frame_title(ax2, 'Hankel', r'$J_m(kr)$  ·  disk, rotation')
+# (2) Hankel — concentric Bessel rings on the disk
+Fh = jn(0, jn_zeros(0, 3)[-1]*R); Fh[R > 1] = np.nan
+ax[1].imshow(Fh, **imkw); ci(ax[1]); caption(ax[1], 'Hankel', r'$J_m(kr)$   ·   disk')
 
-# (3) Legendre / spherical harmonics — sign patches on the sphere
-ax3 = fig.add_subplot(2, 2, 3, projection='3d')
-th = np.linspace(0, np.pi, 160); ph = np.linspace(0, 2*np.pi, 320)
-TH, PH = np.meshgrid(th, ph)
-Yn = sph_harm(3, 6, PH, TH).real          # Y_l^m; Legendre P_l is the m = 0 part
-Yn = Yn/np.max(np.abs(Yn))
-xs, ys, zs = np.sin(TH)*np.cos(PH), np.sin(TH)*np.sin(PH), np.cos(TH)
-ax3.plot_surface(xs, ys, zs, facecolors=cmap(0.5*(Yn+1)), rstride=1, cstride=1,
-                 linewidth=0, antialiased=False, shade=False)
-ax3.set_box_aspect((1, 1, 1)); ax3.set_axis_off(); ax3.view_init(elev=20, azim=30)
-frame_title(ax3, 'Legendre / spherical', r'$P_\ell(\cos\theta),\ Y_{\ell m}$  ·  sphere')
+# (3) Legendre / spherical harmonics — shaded sphere
+ax[2].imshow(shaded_sphere(5, 3), extent=[-1, 1, -1, 1], origin='lower')
+ci(ax[2], 1.0); caption(ax[2], 'Legendre', r'$P_\ell(\cos\theta)$   ·   sphere')
 
-# (4) Hermite — a 2-D oscillator eigenmode: Gaussian-localised sign blobs
-ax4 = fig.add_subplot(2, 2, 4)
+# (4) Hermite — Gaussian-localised oscillator blobs on a square
 def psi(n, x):
     return (2.0**n*factorial(n)*np.sqrt(np.pi))**-0.5*eval_hermite(n, x)*np.exp(-x**2/2)
-xg = np.linspace(-4, 4, 500); Xh, Yh = np.meshgrid(xg, xg)
-Fherm = psi(3, Xh)*psi(3, Yh); Fherm /= np.max(np.abs(Fherm))
-ax4.imshow(Fherm, extent=[-4, 4, -4, 4], origin='lower', cmap=cmap, vmin=-1, vmax=1)
-ax4.add_patch(plt.Rectangle((-4, -4), 8, 8, fill=False, ec='0.4', lw=1.2))
-ax4.set_xlim(-4.1, 4.1); ax4.set_ylim(-4.1, 4.1); ax4.set_aspect('equal'); ax4.axis('off')
-frame_title(ax4, 'Hermite', r'$H_n(x)\,e^{-x^2/2}$  ·  line, harmonic well')
+xg = np.linspace(-2.9, 2.9, 600); Xh, Yh = np.meshgrid(xg, xg)
+Fherm = psi(2, Xh)*psi(2, Yh); Fherm /= np.max(np.abs(Fherm))
+ax[3].imshow(Fherm, **imkw); sq(ax[3])
+caption(ax[3], 'Hermite', r'$H_n(x)\,e^{-x^2/2}$   ·   line')
 
-fig.suptitle('Each transform = a basis of sign patterns; matching modes reinforce, mismatched ones cancel',
-             fontsize=10.5, y=0.97)
-plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.savefig(save_path + 'figure_spectral_transforms_overview.png', bbox_inches='tight', dpi=150)
+for a_ in ax:
+    a_.set_xlim(-1.04, 1.04); a_.set_ylim(-1.04, 1.04); a_.set_aspect('equal'); a_.axis('off')
+
+fig.text(0.5, 0.95, 'One idea, four geometries — each transform is a basis of orthogonal sign patterns',
+         ha='center', va='top', fontsize=12, color=INK)
+fig.text(0.5, 0.875, 'blue $-$   cream $0$   red $+$    ·    matching modes reinforce, mismatched ones cancel',
+         ha='center', va='top', fontsize=8.6, color='#8a8377')
+fig.savefig(save_path + 'figure_spectral_transforms_overview.png',
+            bbox_inches='tight', dpi=150, facecolor='white')
 ```
 
 :::
