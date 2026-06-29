@@ -321,7 +321,7 @@ def qdht(f, R):
     r     = jn / k_max               # radial samples in (0, R)
     k     = jn / R                   # wavenumber samples in (0, k_max)
     J0mat = j0(np.outer(jn, jn) / z_p)
-    F     = (2.0 / k_max**2) * (J0mat / j1(jn)[:, None]**2) @ f
+    F     = (2.0 / k_max**2) * (J0mat / j1(jn)[None, :]**2) @ f   # normalise over input axis m
     return k, F, r
 
 def qdht_grid(R, N):
@@ -341,9 +341,18 @@ def qdht_grid(R, N):
 
 ```python
 from scipy.special import jn_zeros, j0, j1
+from cycler import cycler
 
-leg_kw = dict(labelcolor='linecolor', handlelength=0, markerscale=0,
-              handletextpad=0, frameon=False)
+# paper.mplstyle conventions + bright colour cycle
+plt.rcParams.update({
+    'axes.prop_cycle': cycler('color', ['#0d49fb','#e6091c','#26eb47','#8936df','#fec32d','#25d7fd'])
+                     + cycler('ls', ['-','--','-.',':','-','--']),
+    'axes.linewidth':0.6,'lines.linewidth':1.2,'lines.markersize':3.5,
+    'xtick.direction':'in','ytick.direction':'in','xtick.top':True,'ytick.right':True,
+    'xtick.minor.visible':True,'ytick.minor.visible':True,
+    'legend.frameon':False,'legend.labelcolor':'linecolor','savefig.bbox':'standard',
+})
+BLUE, RED, INK = '#0d49fb', '#e6091c', '#222222'
 
 def qdht(f, R):
     N = len(f)
@@ -352,7 +361,7 @@ def qdht(f, R):
     k_max = z_p / R
     r = jn_z / k_max
     k = jn_z / R
-    T = j0(np.outer(jn_z, jn_z) / z_p) / j1(jn_z)[:, None]**2
+    T = j0(np.outer(jn_z, jn_z) / z_p) / j1(jn_z)[None, :]**2   # normalise over input axis m
     return k, (2.0 / k_max**2) * T @ f, r
 
 # (a) Gaussian self-dual
@@ -363,7 +372,7 @@ f_gauss = np.exp(-r_a**2 / 2)
 k_a, F_gauss, _ = qdht(f_gauss, R_a)
 F_exact_gauss = np.exp(-k_a**2 / 2)
 
-# (b) Unit circular aperture → Airy pattern
+# (b) Unit circular aperture -> Airy pattern
 N_b, R_b = 512, 6.0
 z_b = jn_zeros(0, N_b + 1)
 r_b = z_b[:N_b] * R_b / z_b[N_b]
@@ -373,30 +382,22 @@ F_exact_airy = np.where(k_b > 1e-8, j1(k_b) / k_b, 0.5)
 j11 = jn_zeros(1, 1)[0]
 
 plt.close()
-plt.figure(figsize=(8, 4))
-ax1 = plt.subplot(1, 2, 1)
-ax2 = plt.subplot(1, 2, 2)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8.4, 3.6), layout='constrained')
 
-ax1.plot(r_a, f_gauss,       'C0-',  lw=1.5, label=r'$f(r)=e^{-r^2/2}$')
-ax1.plot(k_a, F_exact_gauss, 'C1--', lw=1.5, label=r'Exact $e^{-k^2/2}$')
-ax1.plot(k_a, F_gauss,       'k.',   ms=2,   label='QDHT')
-ax1.set_xlim(0, 6)
-ax1.set_xlabel(r'$r$ or $k$')
-ax1.set_ylabel('Amplitude [Arb]')
-ax1.legend(loc='upper right', ncol=1, **leg_kw)
+ax1.plot(r_a, f_gauss,       color=INK,  lw=1.6,         label=r'$f(r)=e^{-r^2/2}$')
+ax1.plot(k_a, F_exact_gauss, color=BLUE, lw=1.4, ls='--', label=r'exact  $e^{-k^2/2}$')
+ax1.plot(k_a, F_gauss, 'o', color=RED, ms=3,             label='QDHT')
+ax1.set_xlim(0, 6); ax1.set_xlabel(r'$r$  or  $k$'); ax1.set_ylabel('amplitude')
+ax1.set_title('(a) Gaussian — self-dual'); ax1.legend(loc='upper right')
 
-ax2.plot(k_b, F_exact_airy**2, 'C0-', lw=1.5, label=r'Exact $[J_1(k)/k]^2$')
-ax2.plot(k_b, F_airy**2,       'C1.', ms=2,   label=r'QDHT$^2$')
-ax2.axvline(j11, color='k', lw=1.0, ls='--', label=rf'Airy edge  $k={j11:.3f}$')
-ax2.set_xlim(0, 15)
-ax2.set_ylim(-0.01, 0.28)
-ax2.set_xlabel(r'$k$  [rad / aperture radius]')
-ax2.set_ylabel(r'Intensity $|F(k)|^2$ [Arb]')
-ax2.legend(loc='upper right', ncol=1, **leg_kw)
+ax2.plot(k_b, F_exact_airy**2, color=BLUE, lw=1.4, label=r'exact  $[J_1(k)/k]^2$')
+ax2.plot(k_b, F_airy**2, '.', color=RED, ms=3,    label=r'QDHT$^2$')
+ax2.axvline(j11, color=INK, lw=0.8, ls=':', label=rf'Airy edge  $k={j11:.3f}$')
+ax2.set_xlim(0, 15); ax2.set_ylim(-0.01, 0.28)
+ax2.set_xlabel(r'$k$  [rad / aperture radius]'); ax2.set_ylabel(r'intensity  $|F(k)|^2$')
+ax2.set_title('(b) top-hat aperture → Airy'); ax2.legend(loc='upper right')
 
-plt.suptitle('Quasi-Discrete Hankel Transform', **title_font)
-plt.tight_layout()
-plt.savefig(save_path + 'figure_hankel.png', bbox_inches='tight', dpi=300)
+fig.savefig(save_path + 'figure_hankel.png', dpi=200)
 ```
 
 :::
@@ -635,7 +636,7 @@ from cycler import cycler
 
 # paper.mplstyle conventions (web-sized) + bright colour cycle
 plt.rcParams.update({
-    'axes.prop_cycle': cycler('color', ['0d49fb','e6091c','26eb47','8936df','fec32d','25d7fd'])
+    'axes.prop_cycle': cycler('color', ['#0d49fb','#e6091c','#26eb47','#8936df','#fec32d','#25d7fd'])
                      + cycler('ls', ['-','--','-.',':','-','--']),
     'axes.linewidth':0.6, 'lines.linewidth':1.2, 'lines.markersize':3.5,
     'xtick.direction':'in','ytick.direction':'in','xtick.top':True,'ytick.right':True,
