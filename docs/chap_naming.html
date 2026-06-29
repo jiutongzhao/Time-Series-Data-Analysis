@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>chap10_appendix – Practical Spectral Analysis</title>
+<title>chap_naming – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -407,7 +407,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap10_appendix.html">Appendix</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./chap_naming.html">Naming Convention</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -484,13 +484,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link active">
+  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_naming.html" class="sidebar-item-text sidebar-link">
+  <a href="./chap_naming.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Naming Convention</span></a>
   </div>
 </li>
@@ -510,21 +510,16 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#appendix" id="toc-appendix" class="nav-link active" data-scroll-target="#appendix">Appendix</a></li>
-  <li><a href="#weighted-summation" id="toc-weighted-summation" class="nav-link" data-scroll-target="#weighted-summation">Weighted Summation</a>
+  <li><a href="#naming-convention" id="toc-naming-convention" class="nav-link active" data-scroll-target="#naming-convention">Naming Convention</a>
   <ul class="collapse">
-  <li><a href="#unifying-essence-weighted-inner-product" id="toc-unifying-essence-weighted-inner-product" class="nav-link" data-scroll-target="#unifying-essence-weighted-inner-product">Unifying Essence: Weighted Inner Product</a></li>
-  <li><a href="#view-1-convolution-time-domain-localization" id="toc-view-1-convolution-time-domain-localization" class="nav-link" data-scroll-target="#view-1-convolution-time-domain-localization">View 1: Convolution (Time-Domain Localization)</a></li>
-  <li><a href="#view-2-frequency-domain-multiplication-spectral-sculpting" id="toc-view-2-frequency-domain-multiplication-spectral-sculpting" class="nav-link" data-scroll-target="#view-2-frequency-domain-multiplication-spectral-sculpting">View 2: Frequency-Domain Multiplication (Spectral Sculpting)</a></li>
-  <li><a href="#view-3-linear-projection-geometry-statistics" id="toc-view-3-linear-projection-geometry-statistics" class="nav-link" data-scroll-target="#view-3-linear-projection-geometry-statistics">View 3: Linear Projection (Geometry &amp; Statistics)</a></li>
-  <li><a href="#three-chisels-for-designing-weights" id="toc-three-chisels-for-designing-weights" class="nav-link" data-scroll-target="#three-chisels-for-designing-weights">Three “Chisels” for Designing Weights</a></li>
-  <li><a href="#common-pitfalls-remedies" id="toc-common-pitfalls-remedies" class="nav-link" data-scroll-target="#common-pitfalls-remedies">Common Pitfalls &amp; Remedies</a></li>
-  <li><a href="#things-to-remember" id="toc-things-to-remember" class="nav-link" data-scroll-target="#things-to-remember">Things to Remember</a></li>
-  </ul></li>
-  <li><a href="#ndarray-shaping" id="toc-ndarray-shaping" class="nav-link" data-scroll-target="#ndarray-shaping">NDArray Shaping</a>
-  <ul class="collapse">
-  <li><a href="#sliding-window" id="toc-sliding-window" class="nav-link" data-scroll-target="#sliding-window">Sliding Window</a></li>
-  <li><a href="#table-of-common-distributions" id="toc-table-of-common-distributions" class="nav-link" data-scroll-target="#table-of-common-distributions">Table of Common Distributions</a></li>
+  <li><a href="#names-to-avoid" id="toc-names-to-avoid" class="nav-link" data-scroll-target="#names-to-avoid">Names to avoid</a></li>
+  <li><a href="#approved-abbreviations-allowlist" id="toc-approved-abbreviations-allowlist" class="nav-link" data-scroll-target="#approved-abbreviations-allowlist">Approved abbreviations (allowlist)</a></li>
+  <li><a href="#conventions-visibility" id="toc-conventions-visibility" class="nav-link" data-scroll-target="#conventions-visibility">Conventions &amp; visibility</a></li>
+  <li><a href="#file-naming" id="toc-file-naming" class="nav-link" data-scroll-target="#file-naming">File naming</a></li>
+  <li><a href="#quick-reference-public-vs.-internal" id="toc-quick-reference-public-vs.-internal" class="nav-link" data-scroll-target="#quick-reference-public-vs.-internal">Quick reference (public vs.&nbsp;internal)</a></li>
+  <li><a href="#mathematical-notation-when-it-truly-helps" id="toc-mathematical-notation-when-it-truly-helps" class="nav-link" data-scroll-target="#mathematical-notation-when-it-truly-helps">Mathematical notation (when it truly helps)</a></li>
+  <li><a href="#minimal-docstring-template" id="toc-minimal-docstring-template" class="nav-link" data-scroll-target="#minimal-docstring-template">Minimal docstring template</a></li>
+  <li><a href="#jargon-sheet" id="toc-jargon-sheet" class="nav-link" data-scroll-target="#jargon-sheet">Jargon Sheet</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -536,148 +531,361 @@ window.Quarto = {
 
 
 
-<section id="appendix" class="level2">
-<h2 class="anchored" data-anchor-id="appendix">Appendix</h2>
-</section>
-<section id="weighted-summation" class="level1">
-<h1>Weighted Summation</h1>
-<p>Whether it’s a <u>Fourier transform</u>, digital <u>filter</u>, interpolator, or wavelet transform, they all do the same thing: a <strong>weighted summation</strong> of the signal. Properly chosen weights (kernel / window / basis function) amplify the components we care about and suppress the rest, distilling an <span class="math inline">N</span>-point sequence <span class="math inline">x\in\mathbb{R}^N</span> into <strong>compact, generalizable</strong> features.</p>
-<section id="unifying-essence-weighted-inner-product" class="level3">
-<h3 class="anchored" data-anchor-id="unifying-essence-weighted-inner-product">Unifying Essence: Weighted Inner Product</h3>
-<p>Write any local/global operation as <span class="math display">
-y[t] \;=\; \sum_{k} w_t[k]\; x[k] \;=\; \langle x,\; w_t\rangle,
-</span> where <span class="math inline">w_t</span> varies with position/scale/frequency (a moving window, a scaled wavelet, a band filter, etc.). Under this definition, most spectral-analysis outcomes are <strong>additive</strong>: linear superposition in the input maps to linear superposition in the feature domain. For Gaussian white noise, many power estimators (e.g., the raw periodogram) follow a <span class="math inline">\chi^2</span> law (degrees of freedom depend on averaging/smoothing), providing the statistical basis for uncertainty and variance control.</p>
-</section>
-<section id="view-1-convolution-time-domain-localization" class="level3">
-<h3 class="anchored" data-anchor-id="view-1-convolution-time-domain-localization">View 1: Convolution (Time-Domain Localization)</h3>
-<p>If <span class="math inline">w_t[k]=h[t-k]</span> depends on <span class="math inline">t</span> only by shift, we obtain <strong>discrete convolution</strong> <span class="math display">
-y[t]=(h*x)[t]=\sum_k h[k]\,x[t-k].
-</span></p>
+<section id="naming-convention" class="level1">
+<h1>Naming Convention</h1>
+<p>The naming conventions used throughout this book — for variables, functions, files, and the domain abbreviations that appear in the code and figures.</p>
+<p><strong>Local conventions</strong></p>
 <ul>
-<li>Examples
+<li><strong>Variables:</strong> <code>noun_adjective</code>, e.g., <code>spec_complex</code> (complex spectrogram), <code>trace_clean</code>. The noun comes <strong>first</strong> (<code>spec_complex</code>, not <code>complex_spec</code>) so related names group together when sorted or tab-completed.</li>
+<li><strong>Functions:</strong> <code>verb_noun[_adverb|_adjective]</code>, e.g., <code>smooth_spec_boxcar</code>, <code>estimate_bandpower_fast</code>.</li>
+<li><strong>Booleans / flags:</strong> prefix with <code>is_</code>, <code>has_</code>, or <code>use_</code>, e.g., <code>is_complex</code>, <code>has_nan</code>, <code>use_detrend</code>.</li>
+<li><strong>Units:</strong> when a quantity’s unit is not obvious from context, carry it as a suffix — <code>_hz</code>, <code>_khz</code>, <code>_s</code>, <code>_ms</code>, <code>_db</code>, <code>_rad</code>, <code>_deg</code> (e.g., <code>shaft_hz</code>, <code>dur_ms</code>) — or state the unit in the docstring. This is the cheapest defense against unit-mismatch bugs.</li>
+<li><strong>Abbreviations:</strong> spell names out, <em>except</em> the short forms on the <a href="#approved-abbreviations-allowlist">approved allowlist</a> below.</li>
+<li><strong>Docstrings:</strong> always include one. Generate a first draft with an LLM (e.g., Copilot) and revise for accuracy.</li>
+</ul>
+<p><strong>Follow Google Python Style Guide (brief)</strong></p>
 <ul>
-<li>FIR/IIR filtering: <span class="math inline">h</span> is the impulse response; FIR via direct convolution, IIR via recursion (an equivalent weighted accumulation).</li>
-<li>STFT: at each center <span class="math inline">t</span>, weight by window <span class="math inline">g</span> and take inner products with complex exponentials.</li>
-<li>Interpolation: kernel interpolation (e.g., Lanczos, B-splines) is convolution/sample-and-hold with an interpolation kernel.</li>
-</ul></li>
+<li>Use: <code>module_name</code>, <code>package_name</code>, <code>ClassName</code>, <code>method_name</code>, <code>ExceptionName</code>, <code>function_name</code>, <code>GLOBAL_CONSTANT_NAME</code>, <code>global_var_name</code>, <code>instance_var_name</code>, <code>function_parameter_name</code>, <code>local_var_name</code>, <code>query_proper_noun_for_thing</code>, <code>send_acronym_via_https</code>.</li>
+<li>Names must be <strong>descriptive</strong>. Avoid ambiguous abbreviations and dropped-letter shortenings — <em>except</em> the approved abbreviations on the <a href="#approved-abbreviations-allowlist">allowlist</a> below.</li>
+<li>Python files must end with <code>.py</code>; never use dashes in filenames.</li>
+</ul>
+<section id="names-to-avoid" class="level3">
+<h3 class="anchored" data-anchor-id="names-to-avoid">Names to avoid</h3>
+<ul>
+<li>Single letters (except standard cases: <code>i/j/k</code> loop counters, <code>e</code> in <code>except</code>, <code>f</code> file handle, private type vars like <code>_T</code>, or symbols matching a referenced paper’s notation).</li>
+<li><code>__double_leading_and_trailing__</code> (reserved).</li>
+<li>Offensive terms.</li>
+<li>Redundant type suffixes (e.g., <code>id_to_name_dict</code> → <code>id_to_name</code>).</li>
 </ul>
 </section>
-<section id="view-2-frequency-domain-multiplication-spectral-sculpting" class="level3">
-<h3 class="anchored" data-anchor-id="view-2-frequency-domain-multiplication-spectral-sculpting">View 2: Frequency-Domain Multiplication (Spectral Sculpting)</h3>
-<p>By the convolution theorem, time-domain convolution equals frequency-domain pointwise multiplication: <span class="math display">
-\mathcal{F}\{h*x\}(\omega)=H(\omega)\,X(\omega).
-</span></p>
+<section id="approved-abbreviations-allowlist" class="level3">
+<h3 class="anchored" data-anchor-id="approved-abbreviations-allowlist">Approved abbreviations (allowlist)</h3>
+<p>An <strong>allowlist</strong> (also called a <em>whitelist</em>) is an explicit, <em>closed</em> set of permitted items: only what appears on the list is allowed, and anything not on it is rejected by default. Its opposite is a <em>denylist</em> (blocklist), which names what is forbidden and permits everything else. The rule above bans abbreviations <em>in general</em>; the table below is the <strong>only</strong> exception — use these short forms freely and spell out everything else.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Abbreviation</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>sig</code></td>
+<td style="text-align: left;">signal <span class="math inline">x[n]</span> (preferred over <code>signal</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>freq</code>, <code>f</code></td>
+<td style="text-align: left;">frequency</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>fs</code></td>
+<td style="text-align: left;">sampling frequency (preferred over <code>f_s</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>dt</code></td>
+<td style="text-align: left;">sampling period</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>omega</code></td>
+<td style="text-align: left;">angular frequency <span class="math inline">\omega = 2\pi f</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>coef</code></td>
+<td style="text-align: left;">complex transform coefficient(s)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mag</code>, <code>phase</code></td>
+<td style="text-align: left;">magnitude and phase of <code>coef</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>spec</code></td>
+<td style="text-align: left;">spectrum / spectral matrix</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>psd</code>, <code>asd</code></td>
+<td style="text-align: left;">power / amplitude spectral density</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>amp</code></td>
+<td style="text-align: left;">amplitude</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>window</code></td>
+<td style="text-align: left;">window function <span class="math inline">w[n]</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>N</code>, <code>M</code>, <code>K</code></td>
+<td style="text-align: left;">array lengths / dimensions</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>wf</code>, <code>ma</code>, <code>lh</code>, <code>rh</code></td>
+<td style="text-align: left;">wave frame, moving average, left- / right-handed</td>
+</tr>
+</tbody>
+</table>
+<p><code>N</code>/<code>M</code>/<code>K</code> (sizes), <code>i</code>/<code>j</code>/<code>k</code> (loop counters), and symbols matching a cited paper are acceptable single letters; everything else should be spelled out. Avoid a bare <code>w</code> — it collides with both <code>omega</code> and weight arrays; write <code>window</code> or <code>weight</code>.</p>
+<p><strong>Good vs.&nbsp;bad:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Good</th>
+<th style="text-align: left;">Bad</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>spec_complex</code></td>
+<td style="text-align: left;"><code>sc</code>, <code>complexSpectrogram</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fs</code></td>
+<td style="text-align: left;"><code>samplingFrequency</code>, <code>f_s</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>n_freq</code></td>
+<td style="text-align: left;"><code>nf</code>, <code>numF</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>is_complex</code></td>
+<td style="text-align: left;"><code>complex_flag</code>, <code>cplx</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>shaft_hz</code></td>
+<td style="text-align: left;"><code>shaft</code> (unit unclear)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conventions-visibility" class="level3">
+<h3 class="anchored" data-anchor-id="conventions-visibility">Conventions &amp; visibility</h3>
 <ul>
-<li>Examples
-<ul>
-<li>Frequency-domain filter design: specify <span class="math inline">H(\omega)</span> (pass/stop/transition bands), then invert to obtain <span class="math inline">h</span>.</li>
-<li>CWT with FBSP (Fourier B-spline) kernels: construct smooth/compact <span class="math inline">H(\omega)</span> directly, then transform back.</li>
-</ul></li>
+<li>“Internal” = module-internal or protected/private in a class.</li>
+<li>Prefer single underscore <code>_name</code> for protected members; avoid <code>__dunder</code> privacy (name-mangling hurts readability/testing).</li>
+<li>Group related classes and top-level functions in the same module.</li>
+<li>Class names use <code>CapWords</code>; module files use <code>lower_with_under.py</code>.</li>
+<li><strong>Unit tests:</strong> PEP 8 names, e.g., <code>test_&lt;method_under_test&gt;_&lt;state&gt;</code> (underscore segments allowed after <code>test</code>).</li>
 </ul>
 </section>
-<section id="view-3-linear-projection-geometry-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="view-3-linear-projection-geometry-statistics">View 3: Linear Projection (Geometry &amp; Statistics)</h3>
-<p>Matrix form: <span class="math display">
-y = W x,\qquad
-W=
-\begin{bmatrix}
--\\ w_1^\top \\ -\\ \vdots \\ -\\ w_m^\top \\ -
-\end{bmatrix}.
-</span> Each row <span class="math inline">w_i</span> is an <strong>inner-product projection</strong>. This links directly to <strong>PCA</strong>: PCA chooses eigenvectors of the data covariance as weights to maximize projected variance and minimize reconstruction error.</p>
+<section id="file-naming" class="level3">
+<h3 class="anchored" data-anchor-id="file-naming">File naming</h3>
 <ul>
-<li>Examples
-<ul>
-<li>Orthogonal bases (DFT/DCT/orthogonal wavelets): <span class="math inline">W</span> is orthogonal/unitary, conserving energy (Parseval).</li>
-<li>Overcomplete dictionaries &amp; sparse coding (STFT, redundant wavelets, curvelets): select a few “active” weights via regularization.</li>
-<li>Least squares/Ridge: penalization controls variance/bias of weights in noise.</li>
-</ul></li>
+<li><code>.py</code> extension, no dashes. If you need an executable without the extension, use a symlink or tiny shell wrapper.</li>
 </ul>
 </section>
-<section id="three-chisels-for-designing-weights" class="level3">
-<h3 class="anchored" data-anchor-id="three-chisels-for-designing-weights">Three “Chisels” for Designing Weights</h3>
-<ol type="1">
-<li><strong>Target selectivity</strong>: emphasize desired time–frequency/scale/direction regions; suppress others.</li>
-<li><strong>Constraints &amp; regularization</strong>: smoothness, compact support, zero mean, minimum phase, MMSE, sparsity, etc.</li>
-<li><strong>Statistical robustness</strong>: control variance (averaging/multitaper/multiscale aggregation) and correct bias (window compensation, gain calibration).</li>
-</ol>
+<section id="quick-reference-public-vs.-internal" class="level3">
+<h3 class="anchored" data-anchor-id="quick-reference-public-vs.-internal">Quick reference (public vs.&nbsp;internal)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 31%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Public</th>
+<th>Internal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Packages/Modules</td>
+<td><code>lower_with_under</code></td>
+<td><code>_lower_with_under</code></td>
+</tr>
+<tr class="even">
+<td>Classes/Exceptions</td>
+<td><code>CapWords</code></td>
+<td><code>_CapWords</code></td>
+</tr>
+<tr class="odd">
+<td>Functions/Methods</td>
+<td><code>lower_with_under()</code></td>
+<td><code>_lower_with_under()</code></td>
+</tr>
+<tr class="even">
+<td>Constants (global/cls)</td>
+<td><code>CAPS_WITH_UNDER</code></td>
+<td><code>_CAPS_WITH_UNDER</code></td>
+</tr>
+<tr class="odd">
+<td>Variables</td>
+<td><code>lower_with_under</code></td>
+<td><code>_lower_with_under</code></td>
+</tr>
+<tr class="even">
+<td>Params/Locals</td>
+<td><code>lower_with_under</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="common-pitfalls-remedies" class="level3">
-<h3 class="anchored" data-anchor-id="common-pitfalls-remedies">Common Pitfalls &amp; Remedies</h3>
+<section id="mathematical-notation-when-it-truly-helps" class="level3">
+<h3 class="anchored" data-anchor-id="mathematical-notation-when-it-truly-helps">Mathematical notation (when it truly helps)</h3>
 <ul>
-<li><strong>Spectral leakage/side-lobe artifacts</strong> → choose appropriate windows; redesign <span class="math inline">H(\omega)</span> in frequency domain if needed.</li>
-<li><strong>Boundary effects</strong> → make extension strategy explicit and flag “valid region” in plots.</li>
-<li><strong>Phase distortion</strong> → for linear phase use symmetric FIR; for zero-phase use <code>filtfilt</code> (mind edge handling/stability).</li>
-<li><strong>DOF mismatch</strong> → when reporting noise spectra and confidence intervals, state how smoothing/averaging changed the DOF.</li>
+<li>Short symbols are fine if they match a cited paper/algorithm.</li>
+<li>Document the source of the notation (link in comment/docstring).</li>
+<li>For public APIs, prefer descriptive <code>pep8_names</code>.</li>
+<li>Silence lints narrowly: <code># pylint: disable=invalid-name</code> (end-line for a few vars, or at block start for many).</li>
 </ul>
 </section>
-<section id="things-to-remember" class="level3">
-<h3 class="anchored" data-anchor-id="things-to-remember">Things to Remember</h3>
-<ul>
-<li>Everything is <span class="math inline">\langle x, w\rangle</span>: locally it’s <strong>convolution</strong>; in frequency it’s <strong>multiplication</strong>; in linear algebra it’s <strong>projection</strong>.</li>
-<li>Efficiency follows structure: shift-invariance ⇒ convolution; FFT ⇒ <span class="math inline">O(N\log N)</span>; orthogonal bases ⇒ fast transforms (FFT/DWT/DCT).</li>
-<li>Statistics are baked in: weights set the bias–variance trade-off; <span class="math inline">\chi^2</span> approximations give uncertainty; aggregation (averaging/multitaper) boosts robustness.</li>
-</ul>
-<p>Here’s a tighter, no-fluff version you can drop in.</p>
+<section id="minimal-docstring-template" class="level3">
+<h3 class="anchored" data-anchor-id="minimal-docstring-template">Minimal docstring template</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> smooth_spec_boxcar(spec_complex: np.ndarray, width: <span class="bu">int</span>) <span class="op">-&gt;</span> np.ndarray:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Smooth a complex spectrogram with a centered boxcar along the frequency axis.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">        spec_complex: Array shaped (..., F, T, C, ...) or (F, T, ...); complex-valued.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">        width: Positive odd window length in frequency bins.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">        Smoothed spectrogram with the same shape and dtype as input.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Raises:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">        ValueError: If width &lt; 1 or even.</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    ...</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>TL;DR:</strong> Be descriptive, use <code>lower_with_under</code> for functions/vars, <code>CapWords</code> for classes, constants in <code>CAPS_WITH_UNDER</code>, keep internals prefixed with <code>_</code>, and always include a docstring.</p>
 </section>
-</section>
-<section id="ndarray-shaping" class="level1">
-<h1>NDArray Shaping</h1>
-<p>shape spectral data as <span class="math display">
-(Frequency,, Time,, Dimension,, Channel,, \dots) ;=; (F, T, D, C, \dots)
-</span> Rationale: matches many STFT/CWT APIs <code>(F, T)</code>, simplifies plotting and reductions, keeps channels/metadata at the tail.</p>
-<p><strong>Combine channels</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.stack([ch1, ch2], axis<span class="op">=-</span><span class="dv">1</span>)  <span class="co"># (..., C=2)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Common ops</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>avg_over_time <span class="op">=</span> S.mean(axis<span class="op">=</span><span class="dv">1</span>)           <span class="co"># (F, D, C, ...)  average over time</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>band_mean     <span class="op">=</span> S[f0:f1].mean(axis<span class="op">=</span><span class="dv">0</span>)    <span class="co"># (T, D, C, ...)  bandded mean</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mag_over_D    <span class="op">=</span> np.linalg.norm(S, axis<span class="op">=</span><span class="dv">2</span>)<span class="co"># (F, T, C, ...), magnetude over dimension</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>S_cal <span class="op">=</span> S <span class="op">*</span> g[np.newaxis,np.newaxis,np.newaxis,:]  <span class="co"># g: (C,)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Convert layouts</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># libs expecting time-last</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>x_tlast <span class="op">=</span> np.moveaxis(x, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)      <span class="co"># (F,T,...) -&gt; (F,...,T)</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x_back  <span class="op">=</span> np.moveaxis(x_tlast, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>x_nchw <span class="op">=</span> np.expand_dims(np.moveaxis(x, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>), <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>Performance &amp; hygiene</strong></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>S <span class="op">=</span> np.ascontiguousarray(S)   <span class="co"># after transpose/moveaxis</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>S_F <span class="op">=</span> np.asfortranarray(S)    <span class="co"># if a Fortran-ordered lib needs it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Here’s a crisper, better-organized version you can drop in.</p>
-<section id="sliding-window" class="level2">
-<h2 class="anchored" data-anchor-id="sliding-window">Sliding Window</h2>
-<p><code>numpy.lib.stride_tricks.sliding_window_view(x, window_shape, axis=None, *, subok=False, writeable=False)</code> provides the function for re-organizing the signal into several sub-chunk. This function can only give a stride of one. For a customized stride, you need to use <code>numpy.lib.stride_tricks.as_strided(x, shape=None, strides=None, subok=False, writeable=True)</code>. This function can be unsafe and crash your program.</p>
-<p>The <code>bottleneck</code> package, which is safer and more efficient, is more suggested for common usage of moving windows, like moving-average and moving-maximum. The following code shows how to use the <code>bottleneck</code> functions and their expected results.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: sliding_window_view (fixed stride = 1)</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>window_size <span class="op">=</span> <span class="dv">4</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>windows_stride1 <span class="op">=</span> sliding_window_view(sig, window_shape<span class="op">=</span>window_size)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 2: as_strided (custom stride, use with caution!)</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>custom_stride <span class="op">=</span> <span class="dv">2</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>n_windows <span class="op">=</span> (<span class="bu">len</span>(sig) <span class="op">-</span> window_size) <span class="op">//</span> custom_stride <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>shape <span class="op">=</span> (n_windows, window_size)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>strides <span class="op">=</span> (sig.strides[<span class="dv">0</span>] <span class="op">*</span> custom_stride, sig.strides[<span class="dv">0</span>])</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>windows_custom <span class="op">=</span> as_strided(sig, shape<span class="op">=</span>shape, strides<span class="op">=</span>strides)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 3: bottleneck (safe, NaN-aware window functions)</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># -------------------------------</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>ma <span class="op">=</span> bn.move_mean(sig, window<span class="op">=</span><span class="dv">3</span>, min_count<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>mm <span class="op">=</span> bn.move_max(sig, window<span class="op">=</span><span class="dv">3</span>, min_count<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>std <span class="op">=</span> bn.move_std(sig, window<span class="op">=</span><span class="dv">3</span>, min_count<span class="op">=</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="table-of-common-distributions" class="level2">
-<h2 class="anchored" data-anchor-id="table-of-common-distributions">Table of Common Distributions</h2>
-<p>Please keep in mind that all signals contain uncertainty. If you want to start a theoretical derivation on some signal properties, consider it from the perspective of probability.</p>
-<p align="center">
-<img src="Figure/figure_table_of_distributions.png" width="60%">
-</p>
-<p align="center">
-<i>Table of Common Distributions</i>
-</p>
+<section id="jargon-sheet" class="level3">
+<h3 class="anchored" data-anchor-id="jargon-sheet">Jargon Sheet</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 36%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Notation</th>
+<th style="text-align: center;">Variable</th>
+<th style="text-align: left;">Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">(t),(f)</span></td>
+<td style="text-align: center;"><code>t, f</code></td>
+<td style="text-align: left;">Continuous input — time (<span class="math inline">t</span>) or frequency (<span class="math inline">f</span>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">[t],[f]</span></td>
+<td style="text-align: center;"><code>t, f</code></td>
+<td style="text-align: left;">Discrete input</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\omega</span></td>
+<td style="text-align: center;"><code>omega</code></td>
+<td style="text-align: left;">Angular frequency, <span class="math inline">\omega = 2\pi f</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><code>freq</code></td>
+<td style="text-align: left;">Frequency axis / array (same quantity as <code>f</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">x(t)</span></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">Continuous signal <span class="math inline">x</span> as a function of time</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">x[n]=x(nf_s)</span></td>
+<td style="text-align: center;"><code>sig</code></td>
+<td style="text-align: left;">An even sample of <span class="math inline">x(t)</span>; its intensity is the <strong><em>Amplitude</em></strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">X[k]=X(kT^{-1})</span></td>
+<td style="text-align: center;"><code>coef</code></td>
+<td style="text-align: left;">Complex Fourier coefficient(s) of <span class="math inline">x(t)</span>; its modulus is the <strong><em>Magnitude</em></strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\lvert X[k]\rvert</span></td>
+<td style="text-align: center;"><code>mag</code></td>
+<td style="text-align: left;">Magnitude — modulus of <code>coef</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\arg X[k]</span></td>
+<td style="text-align: center;"><code>phase</code></td>
+<td style="text-align: left;">Phase — argument of <code>coef</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\hat{B}_i</span></td>
+<td style="text-align: center;"><code>coef</code></td>
+<td style="text-align: left;">Fourier coefficient (same <code>coef</code> convention)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\mathcal{F}</span></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">Fourier Transform operator</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">S_{xx}(f)</span></td>
+<td style="text-align: center;"><code>psd</code></td>
+<td style="text-align: left;">Power spectral density (<code>asd</code> = amplitude spectral density)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">S_{ij}</span></td>
+<td style="text-align: center;"><code>spec</code></td>
+<td style="text-align: left;">Spectral matrix</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">w[n]</span></td>
+<td style="text-align: center;"><code>window</code></td>
+<td style="text-align: left;">Window function</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">N</span></td>
+<td style="text-align: center;"><code>N</code></td>
+<td style="text-align: left;">Signal length</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">F,\,T,\,C</span></td>
+<td style="text-align: center;"><code>n_freq, n_time, n_chan</code></td>
+<td style="text-align: left;">Array axis sizes (frequency, time, channel)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\Delta t</span></td>
+<td style="text-align: center;"><code>dt</code></td>
+<td style="text-align: left;">Sampling period</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">f_s</span></td>
+<td style="text-align: center;"><code>fs</code></td>
+<td style="text-align: left;">Sampling frequency</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\mathrm{Amp}</span></td>
+<td style="text-align: center;"><code>amp</code></td>
+<td style="text-align: left;">Amplitude</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Arb</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">Arbitrary unit</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><code>*_wf</code></td>
+<td style="text-align: left;">Wave frame (WF)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><code>*_ma</code></td>
+<td style="text-align: left;">Moving average (MA)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><code>*_lh</code>, <code>*_rh</code></td>
+<td style="text-align: left;">Left- / right-handed (LH / RH)</td>
+</tr>
+</tbody>
+</table>
 
 
 </section>

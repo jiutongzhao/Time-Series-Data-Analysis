@@ -17,6 +17,7 @@ project:
     - chap7.qmd
     - chap8.qmd
     - chap10_appendix.qmd
+    - chap_naming.qmd
     - chap_todo.qmd
     - gallery.qmd
     - gallery/cuckoo.qmd
@@ -74,6 +75,8 @@ website:
       - text: "Reference"
       - text: "Appendix"
         file: chap10_appendix.qmd
+      - text: "Naming Convention"
+        file: chap_naming.qmd
       - text: "Changelog"
         file: chap_todo.qmd
   page-footer:
