@@ -217,7 +217,7 @@ ci(ax[2]); caption(ax[2], 'Legendre', r'spherical harmonics  $P_\ell(\cos\theta)
 for a_ in ax:
     a_.set_xlim(-1.04, 1.04); a_.set_ylim(-1.04, 1.04); a_.set_aspect('equal'); a_.axis('off')
 
-fig.text(0.5, 0.965, 'One idea, three geometries', ha='center', va='top', fontsize=17, color=INK)
+fig.text(0.5, 0.965, 'One idea, three geometries', ha='center', va='top', fontsize=18, color=INK, fontweight='bold', fontstyle='italic')
 fig.text(0.5, 0.875, 'expand a signal in the orthogonal modes natural to its domain',
          ha='center', va='top', fontsize=11.5, color=GREY, style='italic')
 fig.text(0.5, 0.085,
@@ -397,6 +397,7 @@ ax2.set_xlim(0, 15); ax2.set_ylim(-0.01, 0.28)
 ax2.set_xlabel(r'$k$  [rad / aperture radius]'); ax2.set_ylabel(r'intensity  $|F(k)|^2$')
 ax2.set_title('(b) top-hat aperture → Airy'); ax2.legend(loc='upper right')
 
+fig.suptitle('Quasi-Discrete Hankel Transform', fontsize=14, fontweight='bold', fontstyle='italic', color='#222222')
 fig.savefig(save_path + 'figure_hankel.png', dpi=200)
 ```
 
@@ -512,6 +513,7 @@ for zq in zeros_q: axp.axvline(zq, color=GREY, lw=0.5, ls=':', alpha=0.6)
 axp.set_xlim(0, 5.2); axp.set_ylim(1e-3, 1.6)
 axp.set_xlabel(r'$r\,/\,r_\mathrm{Airy}$'); axp.set_ylabel(r'$I/I_{\max}$')
 axp.set_title('(c) radial profile: experiment vs simulation'); axp.legend(loc='upper right')
+fig.suptitle('Airy Pattern — Simulation vs. Experiment', fontsize=14, fontweight='bold', fontstyle='italic', color='#222222')
 fig.savefig(save_path + 'figure_airy_combined.png', dpi=200)
 ```
 
@@ -661,7 +663,7 @@ axf.plot(x, f_vals, color=INK, lw=1.8, label=r'signal $f(\cos\theta)$')
 axf.plot(x, recon(6),  label=r'$\ell\leq 5$')            # auto-cycle: blue solid
 axf.plot(x, recon(14), label=r'$\ell\leq 13$')           # auto-cycle: red dashed
 axf.set_xlim(-1, 1); axf.set_xlabel(r'$\cos\theta$'); axf.set_ylabel(r'$f$')
-axf.set_title('Legendre synthesis converges')
+axf.set_title('synthesis converges')
 axf.legend(loc='lower center', ncol=3, columnspacing=1.0, handlelength=1.6)
 
 L = 30
@@ -669,11 +671,11 @@ axs.axhline(0, color=GREY, lw=0.6)
 axs.vlines(ell[:L], 0, a[:L], color=BLUE, lw=1.4)
 axs.plot(ell[:L], a[:L], 'o', color=BLUE)
 axs.set_xlim(-0.6, L - 0.5); axs.set_xlabel(r'degree  $\ell$'); axs.set_ylabel(r'coefficient  $a_\ell$')
-axs.set_title(r'Legendre spectrum  $a_\ell$')
+axs.set_title(r'spectrum  $a_\ell$')
 axs.text(0.97, 0.93, rf'$\max|f-f_{{\rm rec}}|\sim{np.max(np.abs(f_vals-f_full)):.0e}$',
          transform=axs.transAxes, ha='right', va='top', fontsize=8, color=GREY)
 
-fig.suptitle(r'Legendre transform: a band-limited spectral decomposition on $[-1,1]$', fontsize=11)
+fig.suptitle('Legendre Spectral Transform', fontsize=14, fontweight='bold', fontstyle='italic', color='#222222')
 fig.savefig(save_path + 'figure_legendre.png', dpi=200)
 ```
 
@@ -838,8 +840,8 @@ def draw(i):
     axR.text(0.97, 0.93, r'$|\hat f_0|\propto e^{-k^2t^2/4}$' + '\n(Landau damping)',
              transform=axR.transAxes, ha='right', va='top', fontsize=8.2, color=GREY)
     for s in ('top', 'right'): axR.spines[s].set_visible(False)
-    fig.suptitle(r'Free-streaming Vlasov:   $\partial_t f + v\,\partial_x f = 0$' + f'        $t = {t:0.1f}$',
-                 fontsize=11.5, color=INK, y=0.95)
+    fig.suptitle(r'Free-streaming Vlasov:  $\partial_t f + v\,\partial_x f = 0$' + f'    $t = {t:0.1f}$',
+                 fontsize=13, color=INK, fontweight='bold', fontstyle='italic', y=0.98)
 
 anim = FuncAnimation(fig, draw, frames=len(T), interval=110)
 anim.save(save_path + 'figure_hermite_phase_mixing.gif', writer=PillowWriter(fps=12))
@@ -1045,6 +1047,7 @@ ax[1].axvspan(280, lmax, color='0.93', zorder=0)
 ax[1].set_xlim(0, lmax); ax[1].set_ylim(0, 6500)
 ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell=\ell(\ell+1)C_\ell/2\pi$  [$\mu$K$^2$]')
 ax[1].set_title('(b) angular power spectrum'); ax[1].legend(loc='upper right')
+fig.suptitle('CMB Angular Power Spectrum', fontsize=14, fontweight='bold', fontstyle='italic', color='#222222')
 fig.savefig(save_path + 'figure_wk_cmb_sphere.png', dpi=200)
 ```
 
