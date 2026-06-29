@@ -153,6 +153,86 @@ plt.show()
 
 The red hashed region indicates the ***<u>cone of influence (COI)</u>***, which represents the area where edge effects may distort the *STFT* results due to the finite length of the signal and windowing. The *COI* is typically defined as half the window length on either side of the time axis, beyond which the *STFT* results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.
 
+## Application: The First Detection of Gravitational Waves (GW150914)
+
+On 14 September 2015 the two LIGO interferometers recorded **GW150914** — the first direct detection of gravitational waves, radiated by two black holes (~36 and ~29 $M_\odot$) spiralling together ~1.3 billion light-years away. The signal is the textbook example of a **chirp**: as the black holes inspiral, both the amplitude *and* the frequency of the strain sweep upward, until the merger. A single Fourier transform would smear this entirely — it is exactly the non-stationary signal that time–frequency analysis exists to expose.
+
+The raw strain is dominated by the detector's coloured noise (seismic at low frequency, thermal and shot noise elsewhere), so a real GW pipeline first **whitens** it — dividing every Fourier bin by the local noise amplitude so that all frequencies carry equal weight — and then band-passes to the sensitive band. With that done, the buried chirp emerges in both detectors at once:
+
+::: {.callout-note}
+## Reading the figure
+
+- **Panel (a)** overlays the whitened, band-passed strain from **H1** (Hanford) and **L1** (Livingston). Livingston is shifted by the **6.9 ms** gravitational-wave travel time between the sites and sign-flipped (the interferometers are oriented differently); the two independent instruments then trace the *same* ~8-cycle waveform — the core of the detection's credibility.
+- **Panel (b)** is the STFT spectrogram of H1: the signal frequency climbs from ~35 Hz past ~150 Hz in the final ~0.2 s before merger — the inspiral chirp, made visible only because the time–frequency plane localises it in both axes at once.
+:::
+
+The public strain comes from the [Gravitational Wave Open Science Center](https://gwosc.org) (GWOSC), 4096 Hz, 32 s around the event.
+
+<!-- fig-tabset:figure_ligo_gw150914.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_ligo_gw150914.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np, urllib.request
+import scipy.signal as sig, scipy.interpolate
+import matplotlib.pyplot as plt
+
+fs = 4096; dt = 1 / fs
+tm = 16.422                                   # merger, seconds into the 32 s file
+
+# --- LIGO Open Science Center strain (4096 Hz, 32 s around GW150914) ---
+base = 'https://gwosc.org/s/events/GW150914/'
+def fetch(tag):
+    fn = f'{tag}_LOSC_4_V2-1126259446-32.txt.gz'
+    urllib.request.urlretrieve(base + fn, fn)
+    return np.loadtxt(fn)                      # 3 header lines auto-skipped (comments='#')
+H1, L1 = fetch('H-H1'), fetch('L-L1')
+t = np.arange(len(H1)) * dt
+
+# --- whiten: flatten the coloured detector noise in the frequency domain ---
+def whiten(x):
+    f, Pxx = sig.welch(x, fs=fs, nperseg=4 * fs)
+    psd = scipy.interpolate.interp1d(f, Pxx, bounds_error=False, fill_value=np.inf)
+    freqs = np.fft.rfftfreq(len(x), dt)
+    return np.fft.irfft(np.fft.rfft(x) / np.sqrt(psd(freqs) / dt / 2.), n=len(x))
+
+bb, ab = sig.butter(4, [35, 300], btype='band', fs=fs)
+Hwb = sig.filtfilt(bb, ab, whiten(H1))
+Lwb = sig.filtfilt(bb, ab, whiten(L1))
+Lov = -np.roll(Lwb, round(0.0069 * fs))       # L1: +6.9 ms travel time, inverted
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6.2))
+
+# (a) whitened strain — the two detectors agree
+x = t - tm; m = (x > -0.11) & (x < 0.03)
+ax1.plot(x[m], Hwb[m], 'C0', lw=1.5, label='H1 (Hanford)')
+ax1.plot(x[m], Lov[m], 'C3', lw=1.5, alpha=0.8, label='L1 (+6.9 ms, inverted)')
+ax1.set_xlim(-0.11, 0.03); ax1.set_ylim(-5, 5); ax1.legend(loc='upper left')
+ax1.set_xlabel('Time from merger [s]'); ax1.set_ylabel(r'whitened strain [$\sigma$]')
+
+# (b) STFT spectrogram — the upward chirp
+f, tt, Sxx = sig.spectrogram(whiten(H1), fs=fs, nperseg=512, noverlap=505,
+                             window=('tukey', 0.25))
+S_db = 10 * np.log10(Sxx + 1e-12)
+reg = S_db[(f > 20) & (f < 400)][:, np.abs(tt - tm) < 0.25]
+ax2.pcolormesh(tt - tm, f, S_db, shading='gouraud', cmap='viridis',
+               vmin=np.percentile(reg, 40), vmax=np.percentile(reg, 99.7))
+ax2.set_ylim(20, 400); ax2.set_xlim(-0.16, 0.06)
+ax2.set_xlabel('Time from merger [s]'); ax2.set_ylabel('Frequency [Hz]')
+
+fig.suptitle('GW150914 — the first direct detection of gravitational waves',
+             fontsize=14, fontweight='bold', fontstyle='italic')
+plt.tight_layout(rect=[0, 0, 1, 0.97])
+plt.savefig(save_path + 'figure_ligo_gw150914.png', bbox_inches='tight', dpi=200)
+```
+
+:::
+
 ## Continuous Wavelet Transform `ssqueezepy.cwt` and `pywt.cwt`
 
 Although the STFT can represent a signal on the time–frequency plane, it does so with a **fixed window**: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously. 
