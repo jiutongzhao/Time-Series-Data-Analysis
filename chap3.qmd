@@ -926,7 +926,7 @@ We verify this by **simulating a realistic CMB sky**: draw one full-sky realisat
 
 - **Method A — spherical harmonics (`healpy.anafast`).** Expand the map in $a_{\ell m}$ and average $|a_{\ell m}|^2$ over $m$: $\;C_\ell=\langle|a_{\ell m}|^2\rangle_m$. Efficient and accurate to high $\ell$ — the standard estimator.
 - **Method B — Wiener–Khinchin.** Estimate the two-point correlation function $C(\theta)$ by averaging $T(\hat n_1)T(\hat n_2)$ over pixel **pairs** separated by $\theta$, then Legendre-transform it: $\;C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d\cos\theta$.
-- **Method C — fast Legendre transform (deterministic).** Skip the Monte-Carlo entirely. Build the *exact* correlation function at Gauss–Legendre nodes from the model spectrum via the addition theorem, $C(\theta)=\frac{1}{4\pi}\sum_\ell(2\ell+1)C_\ell P_\ell(\cos\theta)$, then apply the **same** quadrature $C_\ell = 2\pi\sum_i w_i\,C(\theta_i)\,P_\ell(\mu_i)$. This is the *noise-free limit* of Method B; it recovers the input spectrum to $\sim\!10^{-12}$ all the way to $\ell=600$, proving the Legendre transform itself is exact — Method B's high-$\ell$ failure is purely the Monte-Carlo sampling noise in $C(\theta)$.
+- **Method C — fast Legendre transform (deterministic).** Skip the Monte-Carlo entirely. Build the *exact* correlation function at Gauss–Legendre nodes from the model spectrum via the addition theorem, $C(\theta)=\frac{1}{4\pi}\sum_\ell(2\ell+1)C_\ell P_\ell(\cos\theta)$, then apply the **same** quadrature $C_\ell = 2\pi\sum_i w_i\,C(\theta_i)\,P_\ell(\mu_i)$. This is the *noise-free limit* of Method B; it recovers the input spectrum to $\sim\!10^{-12}$ all the way to $\ell=1500$, proving the Legendre transform itself is exact — Method B's high-$\ell$ failure is purely the Monte-Carlo sampling noise in $C(\theta)$.
 
 Method B is exact *in expectation*, but a naïve implementation is wildly inaccurate. Three choices matter:
 
@@ -938,7 +938,7 @@ Method B is exact *in expectation*, but a naïve implementation is wildly inaccu
 3. **Average enough pixel pairs per node.** `anafast` implicitly uses *all* pairs. Method B's variance on $C_\ell$ is roughly white, so its $D_\ell=\ell(\ell+1)C_\ell/2\pi$ noise grows as $\ell^2$: it is fundamentally a **large-angle tool**. It tracks the first acoustic peak ($\ell\!\lesssim\!250$), but `anafast` is the right estimator for the high-$\ell$ tail no matter how many pairs you draw.
 :::
 
-The figure below confirms the picture. The grey band is the **$\Lambda$CDM model**; the **fast Legendre transform** (Method C, green dashed) sits on it exactly to $\ell=600$; `anafast` (Method A) traces it with only cosmic-variance scatter — first acoustic peak at $\ell\!\approx\!220$ ($\sim\!5700\ \mu K^2$), the trough near $\ell\!\approx\!410$, the second peak near $\ell\!\approx\!540$ — while the pair-counting Wiener–Khinchin estimator (Method B) agrees through the first peak and is then dropped where its $\ell^2$ noise takes over (shaded). Panel (a) shows where that noise enters: the Monte-Carlo pairs scatter about the exact $C(\theta)$, and the Legendre transform faithfully propagates that scatter into $C_\ell$. The pair-counting route also has one practical virtue on real data: it uses only the pixels you actually have, so on a masked sky it estimates the *true* $C(\theta)$ directly and needs **no $1/f_{\text{sky}}$ correction**.
+The figure below confirms the picture. The grey band is the **$\Lambda$CDM model**; the **fast Legendre transform** (Method C, black dashed) sits on it exactly to $\ell=1500$; `anafast` (Method A) traces it with only cosmic-variance scatter — the first acoustic peak at $\ell\!\approx\!220$ ($\sim\!5700\ \mu K^2$), the trough near $\ell\!\approx\!410$, and the full series of higher peaks marching out to $\ell\approx1500$ where Silk damping has all but erased them — while the pair-counting Wiener–Khinchin estimator (Method B) agrees through the first peak and is then dropped where its $\ell^2$ noise takes over (shaded). Panel (a) shows where that noise enters: the Monte-Carlo pairs scatter about the exact $C(\theta)$, and the Legendre transform faithfully propagates that scatter into $C_\ell$. The pair-counting route also has one practical virtue on real data: it uses only the pixels you actually have, so on a masked sky it estimates the *true* $C(\theta)$ directly and needs **no $1/f_{\text{sky}}$ correction**.
 
 ::: {.callout-note}
 ## From a simulation to a real map
@@ -961,14 +961,14 @@ import healpy as hp
 
 # --- A realistic LCDM angular power spectrum (healpy ships the theory curve) ---
 totcls  = os.path.join(os.path.dirname(hp.__file__), 'data', 'totcls.dat')
-lmax    = 600
+lmax    = 1500
 ell     = np.arange(lmax + 1)
 Dl_th   = np.loadtxt(totcls)[:lmax + 1, 1]                  # LCDM D_l^TT  [uK^2]
 Cl_th   = np.zeros(lmax + 1)
 Cl_th[2:] = Dl_th[2:] * 2*np.pi / (ell[2:] * (ell[2:] + 1)) # D_l -> C_l
 
 # --- simulate one full-sky CMB realisation drawn from this spectrum ---
-nside   = 512
+nside   = 1024                                              # supports l up to ~2*nside
 cmb_map = hp.synfast(Cl_th, nside, lmax=lmax, pixwin=False)
 
 # Method A: anafast expands T(n) in a_lm and averages |a_lm|^2 over m
@@ -1005,7 +1005,7 @@ Cl_B  = 2*np.pi * (P_mat * (wmu * C_theta)).sum(axis=1)
 
 # bin in ell; show Method B only where its l^2 noise stays small
 Dl = lambda Cl: ell*(ell+1)*Cl/(2*np.pi)
-def bin_Dl(Cl, dl=20, l_hi=lmax):
+def bin_Dl(Cl, dl=25, l_hi=lmax):
     e = np.arange(2, l_hi + 1, dl); cen = 0.5*(e[:-1] + e[1:])
     return cen, np.array([np.mean(Dl(Cl)[a:b]) for a, b in zip(e[:-1], e[1:])])
 cA, DA = bin_Dl(Cl_A)
@@ -1031,7 +1031,7 @@ plt.rcParams.update({
 })
 BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'   # bright cycle blue/red
 plt.close()
-fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.8), layout='constrained')
+fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.9), layout='constrained')
 o = np.argsort(theta); thd = np.rad2deg(theta[o])
 ax[0].plot(thd, C_theta_exact[o], color=INK, lw=1.6, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
 ax[0].plot(thd, C_theta[o], '.', color=RED, ms=2.6, alpha=0.6, label='Monte-Carlo pairs')
@@ -1040,10 +1040,12 @@ ax[0].set_xlabel(r'separation  $\theta$  [deg]'); ax[0].set_ylabel(r'$C(\theta)$
 ax[0].set_title('(a) two-point correlation'); ax[0].legend(loc='upper right')
 
 ax[1].plot(ell[2:], Dl(Cl_th)[2:], color=GREY, lw=4, alpha=0.35, label=r'$\Lambda$CDM model')
-ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=INK, lw=1.2, ls='--', label='fast Legendre transform')
-ax[1].plot(cA, DA, 'o', color=BLUE, label='anafast (Method A)')
-ax[1].plot(cB, DB, 's', color=RED, label='Wiener–Khinchin (Method B)')
+ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=INK, lw=1.0, ls='--', label='fast Legendre transform')
+ax[1].plot(cA, DA, 'o', color=BLUE, ms=2.6, label='anafast (Method A)')
+ax[1].plot(cB, DB, 's', color=RED, ms=3.4, label='Wiener–Khinchin (Method B)')
 ax[1].axvspan(280, lmax, color='0.93', zorder=0)
+ax[1].text(0.66, 0.62, 'pair estimator:\nnoise $\\propto\\ell^2$', transform=ax[1].transAxes,
+           ha='center', va='center', fontsize=7, color=GREY)
 ax[1].set_xlim(0, lmax); ax[1].set_ylim(0, 6500)
 ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell=\ell(\ell+1)C_\ell/2\pi$  [$\mu$K$^2$]')
 ax[1].set_title('(b) angular power spectrum'); ax[1].legend(loc='upper right')
@@ -1053,7 +1055,7 @@ fig.savefig(save_path + 'figure_wk_cmb_sphere.png', dpi=200)
 
 :::
 
-Panel (a) shows the Wiener–Khinchin intermediate — the two-point correlation $C(\theta)$ — with the **Monte-Carlo pairs scattering about the exact $\Lambda$CDM curve**. Panel (b) confirms that **all three deterministic views agree**: the $\Lambda$CDM model, the fast Legendre transform that reproduces it to $\ell=600$, and `anafast`; the pair-counting estimator joins them where its $\ell^2$ noise is still small — the spherical-geometry analogue of "Welch and the FT of the ACF agree".
+Panel (a) shows the Wiener–Khinchin intermediate — the two-point correlation $C(\theta)$ — with the **Monte-Carlo pairs scattering about the exact $\Lambda$CDM curve**. Panel (b) confirms that **all three deterministic views agree**: the $\Lambda$CDM model, the fast Legendre transform that reproduces it to $\ell=1500$, and `anafast`; the pair-counting estimator joins them where its $\ell^2$ noise is still small — the spherical-geometry analogue of "Welch and the FT of the ACF agree".
 
 ### Why `anafast` and Wiener–Khinchin are the *same sum*
 

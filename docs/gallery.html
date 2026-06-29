@@ -455,17 +455,30 @@ document.addEventListener('DOMContentLoaded', function () {
 <p>Each card below links to a self-contained example: real data, working Python code, and the resulting figure. Click through for the full derivation and implementation.</p>
 <div class="gallery-grid">
 <div class="gallery-card">
-<a href="./gallery/cuckoo.html"> <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
+<a href="./gallery/exoplanet.html"> <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">
 <div class="gallery-card-title">
-Indian Cuckoo Song
+Exoplanet 51 Peg b
 </div>
 <p class="gallery-card-desc">
-STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.
+Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.
 </p>
-<p><span class="gallery-card-tag">STFT · Audio</span></p>
+<p><span class="gallery-card-tag">Ch.2 · Lomb–Scargle</span></p>
 </div>
-</a><p><a href="./gallery/cuckoo.html"></a></p>
+</a><p><a href="./gallery/exoplanet.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/piano.html"> <img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Piano String Inharmonicity
+</div>
+<p class="gallery-card-desc">
+Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.
+</p>
+<p><span class="gallery-card-tag">Ch.2 · Peak Detection</span></p>
+</div>
+</a><p><a href="./gallery/piano.html"></a></p>
 </div>
 <div class="gallery-card">
 <a href="./gallery/sunspot.html"> <img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
@@ -476,9 +489,61 @@ Sunspot Cycle
 <p class="gallery-card-desc">
 Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.
 </p>
-<p><span class="gallery-card-tag">PSD · Welch</span></p>
+<p><span class="gallery-card-tag">Ch.3 · Welch PSD</span></p>
 </div>
 </a><p><a href="./gallery/sunspot.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/gearbox.html"> <img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Gear-Box Fault Detection
+</div>
+<p class="gallery-card-desc">
+Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.
+</p>
+<p><span class="gallery-card-tag">Ch.3 · Cepstrum</span></p>
+</div>
+</a><p><a href="./gallery/gearbox.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/windowing.html"> <img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Spectral Leakage &amp; Windowing
+</div>
+<p class="gallery-card-desc">
+Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.
+</p>
+<p><span class="gallery-card-tag">Ch.4 · Windowing</span></p>
+</div>
+</a><p><a href="./gallery/windowing.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/aliasing.html"> <img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Aliasing
+</div>
+<p class="gallery-card-desc">
+A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.
+</p>
+<p><span class="gallery-card-tag">Ch.4 · Nyquist</span></p>
+</div>
+</a><p><a href="./gallery/aliasing.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/cuckoo.html"> <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Indian Cuckoo Song
+</div>
+<p class="gallery-card-desc">
+STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.
+</p>
+<p><span class="gallery-card-tag">Ch.7 · STFT</span></p>
+</div>
+</a><p><a href="./gallery/cuckoo.html"></a></p>
 </div>
 <div class="gallery-card">
 <a href="./gallery/seismometer.html"> <img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
@@ -489,7 +554,7 @@ Earthquake Seismogram
 <p class="gallery-card-desc">
 Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.
 </p>
-<p><span class="gallery-card-tag">DWT · Seismology</span></p>
+<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
 </div>
 </a><p><a href="./gallery/seismometer.html"></a></p>
 </div>
@@ -502,61 +567,9 @@ Gravitational Waves (GW150914)
 <p class="gallery-card-desc">
 Morlet-wavelet Q-scan of LIGO’s first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.
 </p>
-<p><span class="gallery-card-tag">CWT · Astrophysics</span></p>
+<p><span class="gallery-card-tag">Ch.7 · CWT</span></p>
 </div>
 </a><p><a href="./gallery/gravitational_waves.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/exoplanet.html"> <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Exoplanet 51 Peg b
-</div>
-<p class="gallery-card-desc">
-Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.
-</p>
-<p><span class="gallery-card-tag">Lomb–Scargle · Astronomy</span></p>
-</div>
-</a><p><a href="./gallery/exoplanet.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gearbox.html"> <img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gear-Box Fault Detection
-</div>
-<p class="gallery-card-desc">
-Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.
-</p>
-<p><span class="gallery-card-tag">Cepstrum · Machinery</span></p>
-</div>
-</a><p><a href="./gallery/gearbox.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/coherence.html"> <img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AO–Baltic Coherence
-</div>
-<p class="gallery-card-desc">
-Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.
-</p>
-<p><span class="gallery-card-tag">Coherence · Climate</span></p>
-</div>
-</a><p><a href="./gallery/coherence.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/windowing.html"> <img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Spectral Leakage &amp; Windowing
-</div>
-<p class="gallery-card-desc">
-Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.
-</p>
-<p><span class="gallery-card-tag">DFT · Windowing</span></p>
-</div>
-</a><p><a href="./gallery/windowing.html"></a></p>
 </div>
 <div class="gallery-card">
 <a href="./gallery/dwt_image.html"> <img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
@@ -567,22 +580,9 @@ DWT Image Compression
 <p class="gallery-card-desc">
 Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.
 </p>
-<p><span class="gallery-card-tag">DWT · Image</span></p>
+<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
 </div>
 </a><p><a href="./gallery/dwt_image.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/aliasing.html"> <img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Aliasing
-</div>
-<p class="gallery-card-desc">
-A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.
-</p>
-<p><span class="gallery-card-tag">Aliasing · Nyquist</span></p>
-</div>
-</a><p><a href="./gallery/aliasing.html"></a></p>
 </div>
 <div class="gallery-card">
 <a href="./gallery/stft_cwt.html"> <img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
@@ -593,22 +593,22 @@ STFT vs.&nbsp;CWT
 <p class="gallery-card-desc">
 Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.
 </p>
-<p><span class="gallery-card-tag">STFT · CWT · Wavelet</span></p>
+<p><span class="gallery-card-tag">Ch.7 · STFT vs CWT</span></p>
 </div>
 </a><p><a href="./gallery/stft_cwt.html"></a></p>
 </div>
 <div class="gallery-card">
-<a href="./gallery/piano.html"> <img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
+<a href="./gallery/coherence.html"> <img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
 <div class="gallery-card-body">
 <div class="gallery-card-title">
-Piano String Inharmonicity
+AO–Baltic Coherence
 </div>
 <p class="gallery-card-desc">
-Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.
+Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.
 </p>
-<p><span class="gallery-card-tag">PSD · Curve Fitting · Physics</span></p>
+<p><span class="gallery-card-tag">Ch.8 · Coherence</span></p>
 </div>
-</a><p><a href="./gallery/piano.html"></a></p>
+</a><p><a href="./gallery/coherence.html"></a></p>
 </div>
 </div>
 

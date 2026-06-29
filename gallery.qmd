@@ -12,122 +12,12 @@ Each card below links to a self-contained example: real data, working Python cod
 ::: {.gallery-grid}
 
 <div class="gallery-card">
-<a href="gallery/cuckoo.qmd">
-<img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Indian Cuckoo Song</div>
-<p class="gallery-card-desc">STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.</p>
-<span class="gallery-card-tag">STFT · Audio</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/sunspot.qmd">
-<img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Sunspot Cycle</div>
-<p class="gallery-card-desc">Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.</p>
-<span class="gallery-card-tag">PSD · Welch</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/seismometer.qmd">
-<img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Earthquake Seismogram</div>
-<p class="gallery-card-desc">Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.</p>
-<span class="gallery-card-tag">DWT · Seismology</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/gravitational_waves.qmd">
-<img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Gravitational Waves (GW150914)</div>
-<p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.</p>
-<span class="gallery-card-tag">CWT · Astrophysics</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
 <a href="gallery/exoplanet.qmd">
 <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Exoplanet 51 Peg b</div>
 <p class="gallery-card-desc">Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.</p>
-<span class="gallery-card-tag">Lomb–Scargle · Astronomy</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/gearbox.qmd">
-<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Gear-Box Fault Detection</div>
-<p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
-<span class="gallery-card-tag">Cepstrum · Machinery</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/coherence.qmd">
-<img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
-<div class="gallery-card-body">
-<div class="gallery-card-title">AO–Baltic Coherence</div>
-<p class="gallery-card-desc">Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.</p>
-<span class="gallery-card-tag">Coherence · Climate</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/windowing.qmd">
-<img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Spectral Leakage &amp; Windowing</div>
-<p class="gallery-card-desc">Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.</p>
-<span class="gallery-card-tag">DFT · Windowing</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/dwt_image.qmd">
-<img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
-<div class="gallery-card-body">
-<div class="gallery-card-title">DWT Image Compression</div>
-<p class="gallery-card-desc">Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.</p>
-<span class="gallery-card-tag">DWT · Image</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Aliasing</div>
-<p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
-<span class="gallery-card-tag">Aliasing · Nyquist</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/stft_cwt.qmd">
-<img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
-<div class="gallery-card-body">
-<div class="gallery-card-title">STFT vs. CWT</div>
-<p class="gallery-card-desc">Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.</p>
-<span class="gallery-card-tag">STFT · CWT · Wavelet</span>
+<span class="gallery-card-tag">Ch.2 · Lomb–Scargle</span>
 </div>
 </a>
 </div>
@@ -138,7 +28,117 @@ Each card below links to a self-contained example: real data, working Python cod
 <div class="gallery-card-body">
 <div class="gallery-card-title">Piano String Inharmonicity</div>
 <p class="gallery-card-desc">Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.</p>
-<span class="gallery-card-tag">PSD · Curve Fitting · Physics</span>
+<span class="gallery-card-tag">Ch.2 · Peak Detection</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/sunspot.qmd">
+<img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Sunspot Cycle</div>
+<p class="gallery-card-desc">Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.</p>
+<span class="gallery-card-tag">Ch.3 · Welch PSD</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/gearbox.qmd">
+<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Gear-Box Fault Detection</div>
+<p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
+<span class="gallery-card-tag">Ch.3 · Cepstrum</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/windowing.qmd">
+<img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Spectral Leakage &amp; Windowing</div>
+<p class="gallery-card-desc">Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.</p>
+<span class="gallery-card-tag">Ch.4 · Windowing</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/aliasing.qmd">
+<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Aliasing</div>
+<p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
+<span class="gallery-card-tag">Ch.4 · Nyquist</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/cuckoo.qmd">
+<img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Indian Cuckoo Song</div>
+<p class="gallery-card-desc">STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.</p>
+<span class="gallery-card-tag">Ch.7 · STFT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/seismometer.qmd">
+<img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Earthquake Seismogram</div>
+<p class="gallery-card-desc">Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.</p>
+<span class="gallery-card-tag">Ch.7 · DWT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/gravitational_waves.qmd">
+<img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Gravitational Waves (GW150914)</div>
+<p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.</p>
+<span class="gallery-card-tag">Ch.7 · CWT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/dwt_image.qmd">
+<img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
+<div class="gallery-card-body">
+<div class="gallery-card-title">DWT Image Compression</div>
+<p class="gallery-card-desc">Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.</p>
+<span class="gallery-card-tag">Ch.7 · DWT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/stft_cwt.qmd">
+<img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
+<div class="gallery-card-body">
+<div class="gallery-card-title">STFT vs. CWT</div>
+<p class="gallery-card-desc">Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.</p>
+<span class="gallery-card-tag">Ch.7 · STFT vs CWT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/coherence.qmd">
+<img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
+<div class="gallery-card-body">
+<div class="gallery-card-title">AO–Baltic Coherence</div>
+<p class="gallery-card-desc">Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.</p>
+<span class="gallery-card-tag">Ch.8 · Coherence</span>
 </div>
 </a>
 </div>
