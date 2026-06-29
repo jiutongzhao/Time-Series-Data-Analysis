@@ -23,6 +23,7 @@ project:
     - gallery/cuckoo.qmd
     - gallery/sunspot.qmd
     - gallery/seismometer.qmd
+    - gallery/gravitational_waves.qmd
     - gallery/exoplanet.qmd
     - gallery/gearbox.qmd
     - gallery/coherence.qmd

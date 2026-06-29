@@ -153,119 +153,6 @@ plt.show()
 
 The red hashed region indicates the ***<u>cone of influence (COI)</u>***, which represents the area where edge effects may distort the *STFT* results due to the finite length of the signal and windowing. The *COI* is typically defined as half the window length on either side of the time axis, beyond which the *STFT* results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.
 
-## Application: The First Detection of Gravitational Waves (GW150914)
-
-On 14 September 2015 the two LIGO interferometers recorded **GW150914** — the first direct detection of gravitational waves, radiated by two black holes (~36 and ~29 $M_\odot$) spiralling together ~1.3 billion light-years away. The signal is the textbook example of a **chirp**: as the black holes inspiral, both the amplitude *and* the frequency of the strain sweep upward, until the merger. A single Fourier transform would smear this entirely — it is exactly the non-stationary signal that time–frequency analysis exists to expose.
-
-Physically, the waveform is the binary's life in three acts:
-
-<img src="Figure/figure_bbh_phases.png" width="100%"/>
-
-*The two black holes **inspiral** — the strain's frequency and amplitude rising together (the chirp) — then **merge** at peak strain, and the single remnant **rings down** through damped oscillations to a quiescent Kerr black hole. The upward sweep you read off the wavelet scalogram below* is *this inspiral; the brief damped tail after the peak is the ringdown.*
-
-The raw strain is dominated by the detector's coloured noise (seismic at low frequency, thermal and shot noise elsewhere), so a real GW pipeline first **whitens** it — dividing every Fourier bin by the local noise amplitude so that all frequencies carry equal weight — and then band-passes to the sensitive band. With that done, the buried chirp emerges in both detectors at once:
-
-::: {.callout-note}
-## Reading the figure
-
-- One panel per detector — **LIGO Hanford** (top) and **LIGO Livingston** (bottom). Each shows the **Morlet-wavelet (CWT) scalogram** of that detector's whitened strain; the band-passed strain itself is drawn as the wiggling line over the **time of interest** (the last ~0.15 s), and the vertical **I-beam** at the left gives its amplitude — about $5\sigma$ of the whitened-noise level.
-- In **both** detectors the same bright track sweeps up — from ~35 Hz to past ~250 Hz in the final ~0.2 s — the inspiral **chirp**, ending at the merger. Two independent instruments, 3000 km apart, recording the identical sweep is the core of the detection's credibility.
-- The white outline is the **99.7 % ($3\sigma$) significance contour**: the wavelet power exceeding the $\chi^2_2$ confidence level of an **AR(1) red-noise** background (Torrence & Compo). The chirp clears it comfortably in both detectors; essentially nothing in the surrounding noise does.
-- Because the wavelet's window *narrows in time as the frequency rises* (constant-$Q$), it tracks the rapidly accelerating chirp far more cleanly than a fixed-window STFT could — a preview of the continuous wavelet transform introduced next.
-:::
-
-The public strain comes from the [Gravitational Wave Open Science Center](https://gwosc.org) (GWOSC), 4096 Hz, 32 s around the event.
-
-<!-- fig-tabset:figure_ligo_gw150914.png -->
-::: {.panel-tabset}
-
-### Figure
-
-<img src="Figure/figure_ligo_gw150914.png" width="100%"/>
-
-### Code
-
-```python
-import numpy as np, urllib.request
-import scipy.signal as sig, scipy.interpolate, scipy.stats, ssqueezepy
-import matplotlib.pyplot as plt, matplotlib.colors as mcolors
-from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.collections import LineCollection
-from scipy.ndimage import gaussian_filter
-from ssqueezepy.experimental import scale_to_freq
-
-fs = 4096; dt = 1 / fs
-tm = 16.422; t0 = tm - 0.45                        # window start -> x runs 0..0.5 s
-
-# --- LIGO Open Science Center strain (4096 Hz, 32 s around GW150914) ---
-base = 'https://gwosc.org/s/events/GW150914/'
-def fetch(tag):
-    fn = f'{tag}_LOSC_4_V2-1126259446-32.txt.gz'
-    urllib.request.urlretrieve(base + fn, fn)
-    return np.loadtxt(fn)                          # 3 header lines auto-skipped (comments='#')
-H1, L1 = fetch('H-H1'), fetch('L-L1')
-t = np.arange(len(H1)) * dt
-
-def whiten(x):                                     # flatten the coloured detector noise
-    f, Pxx = sig.welch(x, fs=fs, nperseg=4 * fs)
-    psd = scipy.interpolate.interp1d(f, Pxx, bounds_error=False, fill_value=np.inf)
-    freqs = np.fft.rfftfreq(len(x), dt)
-    return np.fft.irfft(np.fft.rfft(x) / np.sqrt(psd(freqs) / dt / 2.), n=len(x))
-bb, ab = sig.butter(4, [30, 350], btype='band', fs=fs)
-
-cmap_H = LinearSegmentedColormap.from_list('H', ['#000000','#2a0f00','#7a2e00','#e0700a','#ffb84d','#fff3d6'])
-cmap_L = LinearSegmentedColormap.from_list('L', ['#000000','#04132e','#0a3b7a','#1f7fe0','#8fc8ff','#eaf6ff'])
-
-yc, kk, Sbar = 12.5, 0.038, 5.0                    # trace baseline (Hz), log-gain, scale bar (sigma)
-def gradient_line(ax, x, y, color, lw):            # line whose truncated ends fade out in alpha
-    a = np.clip((x - x[0]) / 0.05, 0, 1) * np.clip((x[-1] - x) / 0.025, 0, 1)
-    pts = np.array([x, y]).T.reshape(-1, 1, 2)
-    seg = np.concatenate([pts[:-1], pts[1:]], axis=1)
-    rgba = np.tile([*mcolors.to_rgb(color), 1.0], (len(seg), 1)); rgba[:, 3] = 0.5*(a[:-1] + a[1:])
-    ax.add_collection(LineCollection(seg, colors=rgba, linewidths=lw))
-
-fig, (axH, axL) = plt.subplots(2, 1, figsize=(9, 6.2), sharex=True)
-fig.subplots_adjust(hspace=0.06, left=0.115, right=0.985, top=0.985, bottom=0.115)
-for ax, raw, cmap, wcol, label in [(axH, H1, cmap_H, '#ff9a2e', 'LIGO Hanford'),
-                                   (axL, L1, cmap_L, '#46a6ff', 'LIGO Livingston')]:
-    Xw = whiten(raw)
-    mw = (t > t0) & (t < tm + 0.05); xw = t[mw] - t0        # 0 .. 0.5 s
-    Wx, scales = ssqueezepy.cwt(Xw[mw], ('morlet', {'mu': 6}), fs=fs, l1_norm=False)
-    freqs = scale_to_freq(scales, ('morlet', {'mu': 6}), mw.sum(), fs=fs)
-    sel = (freqs >= 22) & (freqs <= 512); fr = freqs[sel]; Pw = np.abs(Wx[sel])**2
-    ax.pcolormesh(xw, fr, np.sqrt(Pw), shading='gouraud', cmap=cmap,
-                  vmax=np.percentile(np.sqrt(Pw)[:, xw > 0.30], 99.6))
-
-    # --- AR(1) red-noise 99% significance contour (Torrence & Compo) ---
-    x  = Xw[mw] - Xw[mw].mean()
-    a1 = max(np.corrcoef(x[:-1], x[1:])[0, 1], 0.0)              # lag-1 autocorrelation
-    Pbg = (1 - a1**2) / (1 + a1**2 - 2*a1*np.cos(2*np.pi*fr/fs)) # red-noise background spectrum
-    noise = xw < 0.25
-    cal = np.median(Pw[:, noise].mean(1) / Pbg)                 # calibrate amplitude to the noise
-    sig = cal * Pbg * scipy.stats.chi2(2).ppf(0.997) / 2        # 99.7% (3 sigma): chi2_2/2 = 5.81
-    R = gaussian_filter(Pw, sigma=(1.6, 22.0)) / sig[:, None]
-    ax.contour(xw, fr, R, levels=[1.0], colors='w', linewidths=1.0, alpha=0.85)
-
-    # --- whitened strain (sigma units), gradient-faded, over the time of interest ---
-    ws = sig.filtfilt(bb, ab, Xw)[mw]; ws = ws / ws[noise].std()
-    keep = xw > 0.33
-    gradient_line(ax, xw[keep], yc*10**(kk*np.clip(ws[keep], -6, 6)), wcol, 1.9)
-    xb = 0.055                                                  # vertical I-beam: amplitude in sigma
-    ax.errorbar([xb], [yc], yerr=[[yc - yc*10**(-kk*Sbar)], [yc*10**(kk*Sbar) - yc]],
-                fmt='none', ecolor=wcol, elinewidth=2.3, capsize=7, capthick=2.3)
-    ax.text(xb + 0.018, yc, f'{Sbar:.0f}$\\sigma$', color=wcol, fontsize=12, va='center', ha='left', fontweight='bold')
-
-    ax.set_yscale('log'); ax.set_ylim(8, 512); ax.set_xlim(0, 0.5)
-    ax.set_yticks([8, 16, 32, 64, 128, 256, 512]); ax.set_yticklabels([8, 16, 32, 64, 128, 256, 512])
-    ax.tick_params(labelsize=12)
-    ax.text(0.02, 0.92, label, transform=ax.transAxes, color=wcol, fontsize=13, fontweight='bold', va='center')
-    ax.set_facecolor('black')
-axL.set_xlabel('Time (s)', fontsize=15); fig.supylabel('Frequency (Hz)', fontsize=15, x=0.03)
-plt.savefig(save_path + 'figure_ligo_gw150914.png', bbox_inches='tight', dpi=200, facecolor='white')
-```
-
-:::
-
 ## Continuous Wavelet Transform `ssqueezepy.cwt` and `pywt.cwt`
 
 Although the STFT can represent a signal on the time–frequency plane, it does so with a **fixed window**: a short window yields good resolution at high frequencies but blurs low-frequency components, while a long window does the opposite—there is no way to optimize both simultaneously. 
@@ -531,6 +418,119 @@ A --B=fracomega_0^22π^2-->C[*pywavelets*<br>*'cmorB-1.0'*]
 A --σ=omega_0--> D[*Wikipedia*]
 
 ```
+
+## Application: The First Detection of Gravitational Waves (GW150914)
+
+On 14 September 2015 the two LIGO interferometers recorded **GW150914** — the first direct detection of gravitational waves, radiated by two black holes (~36 and ~29 $M_\odot$) spiralling together ~1.3 billion light-years away. The signal is the textbook example of a **chirp**: as the black holes inspiral, both the amplitude *and* the frequency of the strain sweep upward, until the merger. A single Fourier transform would smear this entirely — it is exactly the non-stationary signal that time–frequency analysis exists to expose.
+
+Physically, the waveform is the binary's life in three acts:
+
+<img src="Figure/figure_bbh_phases.png" width="100%"/>
+
+*The two black holes **inspiral** — the strain's frequency and amplitude rising together (the chirp) — then **merge** at peak strain, and the single remnant **rings down** through damped oscillations to a quiescent Kerr black hole. The upward sweep you read off the wavelet scalogram below* is *this inspiral; the brief damped tail after the peak is the ringdown.*
+
+The raw strain is dominated by the detector's coloured noise (seismic at low frequency, thermal and shot noise elsewhere), so a real GW pipeline first **whitens** it — dividing every Fourier bin by the local noise amplitude so that all frequencies carry equal weight — and then band-passes to the sensitive band. With that done, the buried chirp emerges in both detectors at once:
+
+::: {.callout-note}
+## Reading the figure
+
+- One panel per detector — **LIGO Hanford** (top) and **LIGO Livingston** (bottom). Each shows the **Morlet-wavelet (CWT) scalogram** of that detector's whitened strain; the band-passed strain itself is drawn as the wiggling line over the **time of interest** (the last ~0.15 s), and the vertical **I-beam** at the left gives its amplitude — about $5\sigma$ of the whitened-noise level.
+- In **both** detectors the same bright track sweeps up — from ~35 Hz to past ~250 Hz in the final ~0.2 s — the inspiral **chirp**, ending at the merger. Two independent instruments, 3000 km apart, recording the identical sweep is the core of the detection's credibility.
+- The white outline is the **99.7 % ($3\sigma$) significance contour**: the wavelet power exceeding the $\chi^2_2$ confidence level of an **AR(1) red-noise** background (Torrence & Compo). The chirp clears it comfortably in both detectors; essentially nothing in the surrounding noise does.
+- Because the wavelet's window *narrows in time as the frequency rises* (constant-$Q$), it tracks the rapidly accelerating chirp far more cleanly than a fixed-window STFT could — exactly what the continuous wavelet transform built above is for.
+:::
+
+The public strain comes from the [Gravitational Wave Open Science Center](https://gwosc.org) (GWOSC), 4096 Hz, 32 s around the event.
+
+<!-- fig-tabset:figure_ligo_gw150914.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_ligo_gw150914.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np, urllib.request
+import scipy.signal as sig, scipy.interpolate, scipy.stats, ssqueezepy
+import matplotlib.pyplot as plt, matplotlib.colors as mcolors
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.collections import LineCollection
+from scipy.ndimage import gaussian_filter
+from ssqueezepy.experimental import scale_to_freq
+
+fs = 4096; dt = 1 / fs
+tm = 16.422; t0 = tm - 0.45                        # window start -> x runs 0..0.5 s
+
+# --- LIGO Open Science Center strain (4096 Hz, 32 s around GW150914) ---
+base = 'https://gwosc.org/s/events/GW150914/'
+def fetch(tag):
+    fn = f'{tag}_LOSC_4_V2-1126259446-32.txt.gz'
+    urllib.request.urlretrieve(base + fn, fn)
+    return np.loadtxt(fn)                          # 3 header lines auto-skipped (comments='#')
+H1, L1 = fetch('H-H1'), fetch('L-L1')
+t = np.arange(len(H1)) * dt
+
+def whiten(x):                                     # flatten the coloured detector noise
+    f, Pxx = sig.welch(x, fs=fs, nperseg=4 * fs)
+    psd = scipy.interpolate.interp1d(f, Pxx, bounds_error=False, fill_value=np.inf)
+    freqs = np.fft.rfftfreq(len(x), dt)
+    return np.fft.irfft(np.fft.rfft(x) / np.sqrt(psd(freqs) / dt / 2.), n=len(x))
+bb, ab = sig.butter(4, [30, 350], btype='band', fs=fs)
+
+cmap_H = LinearSegmentedColormap.from_list('H', ['#000000','#2a0f00','#7a2e00','#e0700a','#ffb84d','#fff3d6'])
+cmap_L = LinearSegmentedColormap.from_list('L', ['#000000','#04132e','#0a3b7a','#1f7fe0','#8fc8ff','#eaf6ff'])
+
+yc, kk, Sbar = 12.5, 0.038, 5.0                    # trace baseline (Hz), log-gain, scale bar (sigma)
+def gradient_line(ax, x, y, color, lw):            # line whose truncated ends fade out in alpha
+    a = np.clip((x - x[0]) / 0.05, 0, 1) * np.clip((x[-1] - x) / 0.025, 0, 1)
+    pts = np.array([x, y]).T.reshape(-1, 1, 2)
+    seg = np.concatenate([pts[:-1], pts[1:]], axis=1)
+    rgba = np.tile([*mcolors.to_rgb(color), 1.0], (len(seg), 1)); rgba[:, 3] = 0.5*(a[:-1] + a[1:])
+    ax.add_collection(LineCollection(seg, colors=rgba, linewidths=lw))
+
+fig, (axH, axL) = plt.subplots(2, 1, figsize=(9, 6.2), sharex=True)
+fig.subplots_adjust(hspace=0.06, left=0.115, right=0.985, top=0.985, bottom=0.115)
+for ax, raw, cmap, wcol, label in [(axH, H1, cmap_H, '#ff9a2e', 'LIGO Hanford'),
+                                   (axL, L1, cmap_L, '#46a6ff', 'LIGO Livingston')]:
+    Xw = whiten(raw)
+    mw = (t > t0) & (t < tm + 0.05); xw = t[mw] - t0        # 0 .. 0.5 s
+    Wx, scales = ssqueezepy.cwt(Xw[mw], ('morlet', {'mu': 6}), fs=fs, l1_norm=False)
+    freqs = scale_to_freq(scales, ('morlet', {'mu': 6}), mw.sum(), fs=fs)
+    sel = (freqs >= 22) & (freqs <= 512); fr = freqs[sel]; Pw = np.abs(Wx[sel])**2
+    ax.pcolormesh(xw, fr, np.sqrt(Pw), shading='gouraud', cmap=cmap,
+                  vmax=np.percentile(np.sqrt(Pw)[:, xw > 0.30], 99.6))
+
+    # --- AR(1) red-noise 99% significance contour (Torrence & Compo) ---
+    x  = Xw[mw] - Xw[mw].mean()
+    a1 = max(np.corrcoef(x[:-1], x[1:])[0, 1], 0.0)              # lag-1 autocorrelation
+    Pbg = (1 - a1**2) / (1 + a1**2 - 2*a1*np.cos(2*np.pi*fr/fs)) # red-noise background spectrum
+    noise = xw < 0.25
+    cal = np.median(Pw[:, noise].mean(1) / Pbg)                 # calibrate amplitude to the noise
+    sig = cal * Pbg * scipy.stats.chi2(2).ppf(0.997) / 2        # 99.7% (3 sigma): chi2_2/2 = 5.81
+    R = gaussian_filter(Pw, sigma=(1.6, 22.0)) / sig[:, None]
+    ax.contour(xw, fr, R, levels=[1.0], colors='w', linewidths=1.0, alpha=0.85)
+
+    # --- whitened strain (sigma units), gradient-faded, over the time of interest ---
+    ws = sig.filtfilt(bb, ab, Xw)[mw]; ws = ws / ws[noise].std()
+    keep = xw > 0.33
+    gradient_line(ax, xw[keep], yc*10**(kk*np.clip(ws[keep], -6, 6)), wcol, 1.9)
+    xb = 0.055                                                  # vertical I-beam: amplitude in sigma
+    ax.errorbar([xb], [yc], yerr=[[yc - yc*10**(-kk*Sbar)], [yc*10**(kk*Sbar) - yc]],
+                fmt='none', ecolor=wcol, elinewidth=2.3, capsize=7, capthick=2.3)
+    ax.text(xb + 0.018, yc, f'{Sbar:.0f}$\\sigma$', color=wcol, fontsize=12, va='center', ha='left', fontweight='bold')
+
+    ax.set_yscale('log'); ax.set_ylim(8, 512); ax.set_xlim(0, 0.5)
+    ax.set_yticks([8, 16, 32, 64, 128, 256, 512]); ax.set_yticklabels([8, 16, 32, 64, 128, 256, 512])
+    ax.tick_params(labelsize=12)
+    ax.text(0.02, 0.92, label, transform=ax.transAxes, color=wcol, fontsize=13, fontweight='bold', va='center')
+    ax.set_facecolor('black')
+axL.set_xlabel('Time (s)', fontsize=15); fig.supylabel('Frequency (Hz)', fontsize=15, x=0.03)
+plt.savefig(save_path + 'figure_ligo_gw150914.png', bbox_inches='tight', dpi=200, facecolor='white')
+```
+
+:::
 
 ## Discrete Wavelet Transform
 

@@ -587,9 +587,13 @@ main pre { white-space: pre; }   /* keep code intact, just scroll inside */
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);   /* gallery has no right TOC → fixed 3 columns */
   gap: 1.4rem;
   margin: 2em 0;
+}
+
+@media (max-width: 900px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .gallery-card {

@@ -45,6 +45,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/gravitational_waves.qmd">
+<img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Gravitational Waves (GW150914)</div>
+<p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.</p>
+<span class="gallery-card-tag">CWT · Astrophysics</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/exoplanet.qmd">
 <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">
