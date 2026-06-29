@@ -170,7 +170,7 @@ The raw strain is dominated by the detector's coloured noise (seismic at low fre
 
 - One panel per detector — **LIGO Hanford** (top) and **LIGO Livingston** (bottom). Each shows the **Morlet-wavelet (CWT) scalogram** of that detector's whitened strain; the band-passed strain itself is drawn as the wiggling line over the **time of interest** (the last ~0.15 s), and the vertical **I-beam** at the left gives its amplitude — about $5\sigma$ of the whitened-noise level.
 - In **both** detectors the same bright track sweeps up — from ~35 Hz to past ~250 Hz in the final ~0.2 s — the inspiral **chirp**, ending at the merger. Two independent instruments, 3000 km apart, recording the identical sweep is the core of the detection's credibility.
-- The white outline is the **99 % significance contour**: the wavelet power exceeding the $\chi^2_2$ confidence level of an **AR(1) red-noise** background (Torrence & Compo). The chirp clears it comfortably in both detectors; almost nothing in the surrounding noise does.
+- The white outline is the **99.7 % ($3\sigma$) significance contour**: the wavelet power exceeding the $\chi^2_2$ confidence level of an **AR(1) red-noise** background (Torrence & Compo). The chirp clears it comfortably in both detectors; essentially nothing in the surrounding noise does.
 - Because the wavelet's window *narrows in time as the frequency rises* (constant-$Q$), it tracks the rapidly accelerating chirp far more cleanly than a fixed-window STFT could — a preview of the continuous wavelet transform introduced next.
 :::
 
@@ -242,8 +242,8 @@ for ax, raw, cmap, wcol, label in [(axH, H1, cmap_H, '#ff9a2e', 'LIGO Hanford'),
     Pbg = (1 - a1**2) / (1 + a1**2 - 2*a1*np.cos(2*np.pi*fr/fs)) # red-noise background spectrum
     noise = xw < 0.25
     cal = np.median(Pw[:, noise].mean(1) / Pbg)                 # calibrate amplitude to the noise
-    sig99 = cal * Pbg * scipy.stats.chi2(2).ppf(0.99) / 2       # 99 % level: chi2_2(0.99)/2 = 4.605
-    R = gaussian_filter(Pw, sigma=(1.6, 22.0)) / sig99[:, None]
+    sig = cal * Pbg * scipy.stats.chi2(2).ppf(0.997) / 2        # 99.7% (3 sigma): chi2_2/2 = 5.81
+    R = gaussian_filter(Pw, sigma=(1.6, 22.0)) / sig[:, None]
     ax.contour(xw, fr, R, levels=[1.0], colors='w', linewidths=1.0, alpha=0.85)
 
     # --- whitened strain (sigma units), gradient-faded, over the time of interest ---
