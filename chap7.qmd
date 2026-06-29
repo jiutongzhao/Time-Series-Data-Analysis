@@ -163,7 +163,7 @@ The raw strain is dominated by the detector's coloured noise (seismic at low fre
 ## Reading the figure
 
 - **Panel (a)** overlays the whitened, band-passed strain from **H1** (Hanford) and **L1** (Livingston). Livingston is shifted by the **6.9 ms** gravitational-wave travel time between the sites and sign-flipped (the interferometers are oriented differently); the two independent instruments then trace the *same* ~8-cycle waveform — the core of the detection's credibility.
-- **Panel (b)** is the STFT spectrogram of H1: the signal frequency climbs from ~35 Hz past ~150 Hz in the final ~0.2 s before merger — the inspiral chirp, made visible only because the time–frequency plane localises it in both axes at once.
+- **Panel (b)** is the **Morlet wavelet (CWT) scalogram** of H1: the signal frequency climbs from ~35 Hz past ~200 Hz in the final ~0.2 s before merger — the inspiral chirp. Because the wavelet's window *narrows in time as the frequency rises* (constant-$Q$), it follows the rapidly accelerating sweep far more cleanly than a fixed-window STFT could — a preview of the continuous wavelet transform introduced next.
 :::
 
 The public strain comes from the [Gravitational Wave Open Science Center](https://gwosc.org) (GWOSC), 4096 Hz, 32 s around the event.
@@ -215,14 +215,19 @@ ax1.plot(x[m], Lov[m], 'C3', lw=1.5, alpha=0.8, label='L1 (+6.9 ms, inverted)')
 ax1.set_xlim(-0.11, 0.03); ax1.set_ylim(-5, 5); ax1.legend(loc='upper left')
 ax1.set_xlabel('Time from merger [s]'); ax1.set_ylabel(r'whitened strain [$\sigma$]')
 
-# (b) STFT spectrogram — the upward chirp
-f, tt, Sxx = sig.spectrogram(whiten(H1), fs=fs, nperseg=512, noverlap=505,
-                             window=('tukey', 0.25))
-S_db = 10 * np.log10(Sxx + 1e-12)
-reg = S_db[(f > 20) & (f < 400)][:, np.abs(tt - tm) < 0.25]
-ax2.pcolormesh(tt - tm, f, S_db, shading='gouraud', cmap='viridis',
-               vmin=np.percentile(reg, 40), vmax=np.percentile(reg, 99.7))
-ax2.set_ylim(20, 400); ax2.set_xlim(-0.16, 0.06)
+# (b) Morlet wavelet (CWT) scalogram — the upward chirp
+import ssqueezepy
+from ssqueezepy.experimental import scale_to_freq
+mw = (t > tm - 1.0) & (t < tm + 0.5)              # a short window around the event
+xw, tw = whiten(H1)[mw], t[mw] - tm
+Wx, scales = ssqueezepy.cwt(xw, ('morlet', {'mu': 6}), fs=fs, l1_norm=False)
+freqs = scale_to_freq(scales, ('morlet', {'mu': 6}), len(xw), fs=fs)
+sel = (freqs >= 20) & (freqs <= 400)
+A = np.abs(Wx[sel])
+ax2.pcolormesh(tw, freqs[sel], A, shading='gouraud', cmap='viridis',
+               vmax=np.percentile(A[:, np.abs(tw) < 0.2], 99.6))
+ax2.set_yscale('log'); ax2.set_ylim(20, 400); ax2.set_xlim(-0.16, 0.06)
+ax2.set_yticks([20, 50, 100, 200, 400]); ax2.set_yticklabels([20, 50, 100, 200, 400])
 ax2.set_xlabel('Time from merger [s]'); ax2.set_ylabel('Frequency [Hz]')
 
 fig.suptitle('GW150914 — the first direct detection of gravitational waves',
