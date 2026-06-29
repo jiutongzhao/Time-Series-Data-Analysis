@@ -168,7 +168,7 @@ The raw strain is dominated by the detector's coloured noise (seismic at low fre
 ::: {.callout-note}
 ## Reading the figure
 
-- One panel per detector — **LIGO Hanford** (top) and **LIGO Livingston** (bottom). Each shows the **Morlet-wavelet (CWT) scalogram** of that detector's whitened strain, with the band-passed strain itself drawn as the wiggling line near the bottom.
+- One panel per detector — **LIGO Hanford** (top) and **LIGO Livingston** (bottom). Each shows the **Morlet-wavelet (CWT) scalogram** of that detector's whitened strain; the band-passed strain itself is drawn as the wiggling line over the **time of interest** (the last ~0.15 s), and the vertical **I-beam** at the left gives its amplitude — about $5\sigma$ of the whitened-noise level.
 - In **both** detectors the same bright track sweeps up — from ~35 Hz to past ~250 Hz in the final ~0.2 s — the inspiral **chirp**, ending at the merger. Two independent instruments, 3000 km apart, recording the identical sweep is the core of the detection's credibility.
 - Because the wavelet's window *narrows in time as the frequency rises* (constant-$Q$), it tracks the rapidly accelerating chirp far more cleanly than a fixed-window STFT could — a preview of the continuous wavelet transform introduced next.
 :::
@@ -210,31 +210,40 @@ def whiten(x):
     freqs = np.fft.rfftfreq(len(x), dt)
     return np.fft.irfft(np.fft.rfft(x) / np.sqrt(psd(freqs) / dt / 2.), n=len(x))
 bb, ab = sig.butter(4, [30, 350], btype='band', fs=fs)
+t0 = tm - 0.45                                              # window start -> x runs 0..0.5 s
 
 cmap_H = LinearSegmentedColormap.from_list('H', ['#000000','#2a0f00','#7a2e00','#e0700a','#ffb84d','#fff3d6'])
 cmap_L = LinearSegmentedColormap.from_list('L', ['#000000','#04132e','#0a3b7a','#1f7fe0','#8fc8ff','#eaf6ff'])
 
-# one panel per detector: CWT scalogram + the whitened strain overlaid at the bottom
-fig, (axH, axL) = plt.subplots(2, 1, figsize=(9, 6), sharex=True)
-fig.subplots_adjust(hspace=0.06)
+yc, kk, Sbar = 30.0, 0.042, 5.0                             # trace baseline (Hz), log-gain, scale bar (sigma)
+fig, (axH, axL) = plt.subplots(2, 1, figsize=(9, 6.2), sharex=True)
+fig.subplots_adjust(hspace=0.06, left=0.115, right=0.985, top=0.985, bottom=0.115)
 for ax, raw, cmap, wcol, label in [(axH, H1, cmap_H, '#ff9a2e', 'LIGO Hanford'),
                                    (axL, L1, cmap_L, '#46a6ff', 'LIGO Livingston')]:
     Xw = whiten(raw)
-    mw = (t > tm - 0.60) & (t < tm + 0.12)
-    xw, tw = Xw[mw], t[mw] - tm
-    Wx, scales = ssqueezepy.cwt(xw, ('morlet', {'mu': 6}), fs=fs, l1_norm=False)
-    freqs = scale_to_freq(scales, ('morlet', {'mu': 6}), len(xw), fs=fs)
+    mw = (t > t0) & (t < tm + 0.05); xw = t[mw] - t0        # 0 .. 0.5 s
+    Wx, scales = ssqueezepy.cwt(Xw[mw], ('morlet', {'mu': 6}), fs=fs, l1_norm=False)
+    freqs = scale_to_freq(scales, ('morlet', {'mu': 6}), mw.sum(), fs=fs)
     sel = (freqs >= 18) & (freqs <= 512); A = np.abs(Wx[sel])
-    ax.pcolormesh(tw, freqs[sel], A, shading='gouraud', cmap=cmap,
-                  vmax=np.percentile(A[:, np.abs(tw) < 0.18], 99.6))
-    w = sig.filtfilt(bb, ab, Xw)[mw]; w = np.clip(w / (4 * w.std()), -3.2, 3.2)
-    ax.plot(tw, 22 * 10**(0.115 * w), color=wcol, lw=0.9)     # strain overlaid near 22 Hz
-    ax.set_yscale('log'); ax.set_ylim(18, 512); ax.set_xlim(-0.42, 0.05)
+    ax.pcolormesh(xw, freqs[sel], A, shading='gouraud', cmap=cmap,
+                  vmax=np.percentile(A[:, xw > 0.30], 99.6))
+    # whitened strain in units of sigma, shown only over the time of interest
+    ws = sig.filtfilt(bb, ab, Xw)[mw]; ws = ws / ws[xw < 0.25].std()
+    keep = xw > 0.33
+    ax.plot(xw[keep], yc * 10**(kk * np.clip(ws[keep], -6, 6)), color=wcol, lw=1.9)
+    # vertical I-beam scale bar: absolute amplitude with its unit (sigma)
+    xb = 0.055
+    ax.errorbar([xb], [yc], yerr=[[yc - yc*10**(-kk*Sbar)], [yc*10**(kk*Sbar) - yc]],
+                fmt='none', ecolor=wcol, elinewidth=2.3, capsize=7, capthick=2.3)
+    ax.text(xb + 0.018, yc, f'{Sbar:.0f}$\\sigma$', color=wcol, fontsize=12,
+            va='center', ha='left', fontweight='bold')
+    ax.set_yscale('log'); ax.set_ylim(18, 512); ax.set_xlim(0, 0.5)
     ax.set_yticks([32, 64, 128, 256, 512]); ax.set_yticklabels([32, 64, 128, 256, 512])
-    ax.text(0.015, 0.12, label, transform=ax.transAxes, color=wcol, fontsize=13,
+    ax.tick_params(labelsize=12)
+    ax.text(0.02, 0.90, label, transform=ax.transAxes, color=wcol, fontsize=13,
             fontweight='bold', va='center')
     ax.set_facecolor('black')
-axL.set_xlabel('Time from merger [s]'); fig.supylabel('Frequency [Hz]')
+axL.set_xlabel('Time (s)', fontsize=15); fig.supylabel('Frequency (Hz)', fontsize=15, x=0.03)
 plt.savefig(save_path + 'figure_ligo_gw150914.png', bbox_inches='tight', dpi=200, facecolor='white')
 ```
 
