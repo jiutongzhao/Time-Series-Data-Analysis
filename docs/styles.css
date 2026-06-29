@@ -43,6 +43,7 @@ body {
 
 main {
   max-width: var(--measure);
+  margin-inline: auto;        /* centre the reading column inside its (wider) grid cell */
 }
 
 main p, main li, main blockquote {
@@ -358,6 +359,17 @@ li { margin-bottom: 0.35em; }
   h1, h1.title { font-size: 1.7rem; }
   h2 { font-size: 1.35rem; }
   main { max-width: 100%; padding-inline: 0.75em; }
+}
+
+/* Phones: tighter type/padding, and keep wide content inside the viewport */
+@media (max-width: 576px) {
+  body { font-size: 15px; }
+  h1, h1.title { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+  main { padding-inline: 0.55em; }
+  main img, .panel-tabset, .cell-output-display img { max-width: 100%; height: auto; }
+  pre, .sourceCode { font-size: 0.8rem; }
+  table { font-size: 0.85rem; }
 }
 
 /* ---- 15. Print ------------------------------------------------------ */

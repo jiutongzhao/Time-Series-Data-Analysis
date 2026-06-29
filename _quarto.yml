@@ -88,6 +88,11 @@ format:
       light: cosmo
       dark: darkly
     css: styles.css
+    grid:
+      sidebar-width: 300px
+      body-width: 900px
+      margin-width: 280px
+      gutter-width: 1.5rem
     include-in-header:
       - file: _includes/fonts.html
       - file: _includes/navbar-python.html
