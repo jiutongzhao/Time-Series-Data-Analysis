@@ -22,6 +22,7 @@ project:
     - gallery.qmd
     - gallery/cuckoo.qmd
     - gallery/sunspot.qmd
+    - gallery/seismometer.qmd
     - gallery/exoplanet.qmd
     - gallery/gearbox.qmd
     - gallery/coherence.qmd

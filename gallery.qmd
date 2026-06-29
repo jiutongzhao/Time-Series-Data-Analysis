@@ -34,6 +34,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/seismometer.qmd">
+<img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Earthquake Seismogram</div>
+<p class="gallery-card-desc">Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.</p>
+<span class="gallery-card-tag">DWT · Seismology</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/exoplanet.qmd">
 <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">

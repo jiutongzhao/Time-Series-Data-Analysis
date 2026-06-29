@@ -1,0 +1,93 @@
+# Earthquake Seismogram
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Time–frequency analysis — multi-resolution decomposition with the Discrete Wavelet Transform (DWT).
+**Chapter:** [7 — Time-Frequency Analysis](../chap7.qmd)
+
+---
+
+## Background
+
+When a large earthquake ruptures, the seismometer records a superposition of wave types that arrive in sequence: fast **P waves** (compressional body waves) first, then slower **S waves** (shear body waves), and finally the slow, large-amplitude **surface waves** that travel along the crust. Crucially, these phases differ not only in *arrival time* but in *frequency content* — body waves are higher-frequency, surface waves are low-frequency and dispersive.
+
+The trace below is the vertical, broadband, high-gain channel of station **IC.WMQ** (Ürümqi, China) for the 2008 $M_w$ 7.9 Wenchuan earthquake, instrument-response-corrected to ground velocity.
+
+## Key idea
+
+The **Discrete Wavelet Transform** performs a *dyadic* (octave-by-octave) multi-resolution decomposition: at sampling rate $f_s$, the level-$\ell$ detail $D_\ell$ isolates the frequency octave
+
+$$
+\left[\,\frac{f_s}{2^{\ell+1}},\; \frac{f_s}{2^{\ell}}\,\right].
+$$
+
+Running `pywt.wavedec` on the seismogram therefore sorts the wave types into their natural bands: the low-frequency **surface waves** dominate the higher levels (longer-period octaves), while the higher-frequency **body waves** appear in the lower levels. Keeping or zeroing individual levels before reconstruction is exactly **wavelet filtering** — the way to isolate, or remove, a chosen wave packet.
+
+## Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
+import pywt
+from obspy import UTCDateTime
+from obspy.clients.fdsn import Client
+
+# --- fetch the 2008 Wenchuan earthquake from IRIS (vertical BHZ, station IC.WMQ) ---
+client = Client("IRIS")
+t0, t1 = UTCDateTime("2008-05-12T06:30:01"), UTCDateTime("2008-05-12T06:45:00")
+st  = client.get_waveforms("IC", "WMQ", "00", "BHZ", t0, t1)
+inv = client.get_stations(network="IC", station="WMQ", level="response",
+                          starttime=t0, endtime=t1)
+st.remove_response(inventory=inv, output="VEL")          # counts -> ground velocity
+
+dt  = 1 / st[0].stats.sampling_rate
+t   = np.datetime64(t0) + (np.arange(len(st[0].data)) * dt * 1e3).astype('timedelta64[ms]')
+sig = np.asarray(st[0].data, float) * 1e3                # m/s -> mm/s
+
+# --- DWT multi-resolution decomposition (Daubechies-4) ---
+wavelet, level = 'db4', 20
+cA, *cDs = pywt.wavedec(sig, wavelet, mode='periodization', level=level)
+N        = len(sig)
+details  = np.array([pywt.upcoef('d', cD, wavelet, level=lev, take=N)     # rebuild each octave
+                     for lev, cD in zip(range(level, 0, -1), cDs)])
+stds     = details.std(axis=1)
+
+# --- plot the trace and stack the energetic levels beneath it ---
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.plot(t, sig, 'k-')
+offset, idx = 0.0, 0
+for i, d in enumerate(details):
+    if stds[i] > 0.05:                                   # skip near-empty octaves
+        offset -= 5
+        ax.plot(t, offset + d, color=f'C{idx}')
+        ax.text(t[-1] - np.timedelta64(30, 's'), offset + 1 + d[-1],
+                f'Level {level - i}\n' + r'[$\mathbf{\sigma^2}=$' + f'{stds[i]:.2f}]',
+                color=f'C{idx}', fontsize=12, ha='right', va='bottom', weight='bold')
+        idx += 1
+
+ax.set_ylim(-28, 8); ax.set_xlabel('UTC [HH:MM]'); ax.set_ylabel('Velocity [mm/s]')
+ax.set_title(f'Broadband High-Gain Vertical Seismometer\n[{st[0].id}]',
+             fontsize=16, weight='bold', style='italic')
+ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=2))
+ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+for lbl, x in [('P Waves', '2008-05-12T06:33'), ('S Waves', '2008-05-12T06:36'),
+               ('Surface Waves', '2008-05-12T06:40')]:
+    ax.text(np.datetime64(x), 6.8 if 'Surface' in lbl else 2.1, lbl, color='w',
+            fontsize=14, ha='center', weight='bold',
+            path_effects=[__import__('matplotlib').patheffects.withStroke(linewidth=2, foreground='k')])
+plt.tight_layout()
+```
+
+## Result
+
+<div class="gallery-result">
+![Wenchuan-2008 seismogram (top) and its Daubechies-4 wavelet decomposition (below), sorting body and surface waves into octave frequency bands](../Figure/figure_seismic_waves.png)
+</div>
+
+The top trace shows the textbook P → S → surface-wave sequence. The stacked detail levels below reveal *where each phase lives in frequency*: the large **surface-wave** packet concentrates in **Levels 7–8** (the longest-period octaves, $\sigma^2\!\approx\!0.5$), while the earlier, higher-frequency **body waves** spread into the lower levels. To **filter** the record — say, to keep only the surface waves — you would zero every level except 7–8 and reconstruct with `pywt.waverec`; the same machinery underlies wavelet **denoising**, where the small-coefficient levels (here Levels 9–10, $\sigma^2\!\lesssim\!0.16$) are thresholded away.
+
+---
+
+*See [Chapter 7](../chap7.qmd) for the continuous and discrete wavelet transforms, mother wavelets, and DWT denoising.*

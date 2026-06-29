@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Gallery – Practical Spectral Analysis</title>
+<title>seismometer – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,30 +23,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -137,8 +172,51 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -310,11 +388,11 @@ document.addEventListener('DOMContentLoaded', function () {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Practical Spectral Analysis</span>
     </a>
   </div>
@@ -329,75 +407,75 @@ document.addEventListener('DOMContentLoaded', function () {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gallery.html">Gallery</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./gallery.html" class="sidebar-item-text sidebar-link active">
+  <a href="../gallery.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Gallery</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap1.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap4.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap6.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
@@ -406,19 +484,19 @@ document.addEventListener('DOMContentLoaded', function () {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_naming.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_naming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Naming Convention</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -427,179 +505,118 @@ document.addEventListener('DOMContentLoaded', function () {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#earthquake-seismogram" id="toc-earthquake-seismogram" class="nav-link active" data-scroll-target="#earthquake-seismogram">Earthquake Seismogram</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
+  <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result">Result</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Gallery</h1>
-<p class="subtitle lead">Applied spectral analysis — end-to-end examples</p>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta column-page-right">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
+<section id="earthquake-seismogram" class="level1">
+<h1>Earthquake Seismogram</h1>
+<p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
+<p><strong>Topic:</strong> Time–frequency analysis — multi-resolution decomposition with the Discrete Wavelet Transform (DWT). <strong>Chapter:</strong> <a href="../chap7.html">7 — Time-Frequency Analysis</a></p>
+<hr>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>When a large earthquake ruptures, the seismometer records a superposition of wave types that arrive in sequence: fast <strong>P waves</strong> (compressional body waves) first, then slower <strong>S waves</strong> (shear body waves), and finally the slow, large-amplitude <strong>surface waves</strong> that travel along the crust. Crucially, these phases differ not only in <em>arrival time</em> but in <em>frequency content</em> — body waves are higher-frequency, surface waves are low-frequency and dispersive.</p>
+<p>The trace below is the vertical, broadband, high-gain channel of station <strong>IC.WMQ</strong> (Ürümqi, China) for the 2008 <span class="math inline">M_w</span> 7.9 Wenchuan earthquake, instrument-response-corrected to ground velocity.</p>
+</section>
+<section id="key-idea" class="level2">
+<h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
+<p>The <strong>Discrete Wavelet Transform</strong> performs a <em>dyadic</em> (octave-by-octave) multi-resolution decomposition: at sampling rate <span class="math inline">f_s</span>, the level-<span class="math inline">\ell</span> detail <span class="math inline">D_\ell</span> isolates the frequency octave</p>
+<p><span class="math display">
+\left[\,\frac{f_s}{2^{\ell+1}},\; \frac{f_s}{2^{\ell}}\,\right].
+</span></p>
+<p>Running <code>pywt.wavedec</code> on the seismogram therefore sorts the wave types into their natural bands: the low-frequency <strong>surface waves</strong> dominate the higher levels (longer-period octaves), while the higher-frequency <strong>body waves</strong> appear in the lower levels. Keeping or zeroing individual levels before reconstruction is exactly <strong>wavelet filtering</strong> — the way to isolate, or remove, a chosen wave packet.</p>
+</section>
+<section id="code" class="level2">
+<h2 class="anchored" data-anchor-id="code">Code</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.dates <span class="im">as</span> mdates</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> ticker</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> obspy <span class="im">import</span> UTCDateTime</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> obspy.clients.fdsn <span class="im">import</span> Client</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># --- fetch the 2008 Wenchuan earthquake from IRIS (vertical BHZ, station IC.WMQ) ---</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> Client(<span class="st">"IRIS"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>t0, t1 <span class="op">=</span> UTCDateTime(<span class="st">"2008-05-12T06:30:01"</span>), UTCDateTime(<span class="st">"2008-05-12T06:45:00"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>st  <span class="op">=</span> client.get_waveforms(<span class="st">"IC"</span>, <span class="st">"WMQ"</span>, <span class="st">"00"</span>, <span class="st">"BHZ"</span>, t0, t1)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>inv <span class="op">=</span> client.get_stations(network<span class="op">=</span><span class="st">"IC"</span>, station<span class="op">=</span><span class="st">"WMQ"</span>, level<span class="op">=</span><span class="st">"response"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                          starttime<span class="op">=</span>t0, endtime<span class="op">=</span>t1)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>st.remove_response(inventory<span class="op">=</span>inv, output<span class="op">=</span><span class="st">"VEL"</span>)          <span class="co"># counts -&gt; ground velocity</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>dt  <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> st[<span class="dv">0</span>].stats.sampling_rate</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>t   <span class="op">=</span> np.datetime64(t0) <span class="op">+</span> (np.arange(<span class="bu">len</span>(st[<span class="dv">0</span>].data)) <span class="op">*</span> dt <span class="op">*</span> <span class="fl">1e3</span>).astype(<span class="st">'timedelta64[ms]'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.asarray(st[<span class="dv">0</span>].data, <span class="bu">float</span>) <span class="op">*</span> <span class="fl">1e3</span>                <span class="co"># m/s -&gt; mm/s</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># --- DWT multi-resolution decomposition (Daubechies-4) ---</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>wavelet, level <span class="op">=</span> <span class="st">'db4'</span>, <span class="dv">20</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>cA, <span class="op">*</span>cDs <span class="op">=</span> pywt.wavedec(sig, wavelet, mode<span class="op">=</span><span class="st">'periodization'</span>, level<span class="op">=</span>level)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>N        <span class="op">=</span> <span class="bu">len</span>(sig)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>details  <span class="op">=</span> np.array([pywt.upcoef(<span class="st">'d'</span>, cD, wavelet, level<span class="op">=</span>lev, take<span class="op">=</span>N)     <span class="co"># rebuild each octave</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                     <span class="cf">for</span> lev, cD <span class="kw">in</span> <span class="bu">zip</span>(<span class="bu">range</span>(level, <span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>), cDs)])</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>stds     <span class="op">=</span> details.std(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># --- plot the trace and stack the energetic levels beneath it ---</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>ax.plot(t, sig, <span class="st">'k-'</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>offset, idx <span class="op">=</span> <span class="fl">0.0</span>, <span class="dv">0</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, d <span class="kw">in</span> <span class="bu">enumerate</span>(details):</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> stds[i] <span class="op">&gt;</span> <span class="fl">0.05</span>:                                   <span class="co"># skip near-empty octaves</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        offset <span class="op">-=</span> <span class="dv">5</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        ax.plot(t, offset <span class="op">+</span> d, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        ax.text(t[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> np.timedelta64(<span class="dv">30</span>, <span class="st">'s'</span>), offset <span class="op">+</span> <span class="dv">1</span> <span class="op">+</span> d[<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f'Level </span><span class="sc">{</span>level <span class="op">-</span> i<span class="sc">}</span><span class="ch">\n</span><span class="ss">'</span> <span class="op">+</span> <span class="vs">r'</span><span class="pp">[$</span><span class="dv">\m</span><span class="pp">athbf{</span><span class="dv">\s</span><span class="pp">igma^2}=$</span><span class="vs">'</span> <span class="op">+</span> <span class="ss">f'</span><span class="sc">{</span>stds[i]<span class="sc">:.2f}</span><span class="ss">]'</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>                color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">'</span>, fontsize<span class="op">=</span><span class="dv">12</span>, ha<span class="op">=</span><span class="st">'right'</span>, va<span class="op">=</span><span class="st">'bottom'</span>, weight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="dv">28</span>, <span class="dv">8</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">'UTC [HH:MM]'</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">'Velocity [mm/s]'</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f'Broadband High-Gain Vertical Seismometer</span><span class="ch">\n</span><span class="ss">[</span><span class="sc">{</span>st[<span class="dv">0</span>]<span class="sc">.</span><span class="bu">id</span><span class="sc">}</span><span class="ss">]'</span>,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">16</span>, weight<span class="op">=</span><span class="st">'bold'</span>, style<span class="op">=</span><span class="st">'italic'</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>ax.xaxis.set_major_locator(mdates.MinuteLocator(interval<span class="op">=</span><span class="dv">2</span>))</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>ax.xaxis.set_major_formatter(mdates.ConciseDateFormatter(ax.xaxis.get_major_locator()))</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lbl, x <span class="kw">in</span> [(<span class="st">'P Waves'</span>, <span class="st">'2008-05-12T06:33'</span>), (<span class="st">'S Waves'</span>, <span class="st">'2008-05-12T06:36'</span>),</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>               (<span class="st">'Surface Waves'</span>, <span class="st">'2008-05-12T06:40'</span>)]:</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    ax.text(np.datetime64(x), <span class="fl">6.8</span> <span class="cf">if</span> <span class="st">'Surface'</span> <span class="kw">in</span> lbl <span class="cf">else</span> <span class="fl">2.1</span>, lbl, color<span class="op">=</span><span class="st">'w'</span>,</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>            fontsize<span class="op">=</span><span class="dv">14</span>, ha<span class="op">=</span><span class="st">'center'</span>, weight<span class="op">=</span><span class="st">'bold'</span>,</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            path_effects<span class="op">=</span>[<span class="bu">__import__</span>(<span class="st">'matplotlib'</span>).patheffects.withStroke(linewidth<span class="op">=</span><span class="dv">2</span>, foreground<span class="op">=</span><span class="st">'k'</span>)])</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="result" class="level2">
+<h2 class="anchored" data-anchor-id="result">Result</h2>
+<div class="gallery-result">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Figure/figure_seismic_waves.png" class="img-fluid figure-img"></p>
+<figcaption>Wenchuan-2008 seismogram (top) and its Daubechies-4 wavelet decomposition (below), sorting body and surface waves into octave frequency bands</figcaption>
+</figure>
+</div>
+</div>
+<p>The top trace shows the textbook P → S → surface-wave sequence. The stacked detail levels below reveal <em>where each phase lives in frequency</em>: the large <strong>surface-wave</strong> packet concentrates in <strong>Levels 7–8</strong> (the longest-period octaves, <span class="math inline">\sigma^2\!\approx\!0.5</span>), while the earlier, higher-frequency <strong>body waves</strong> spread into the lower levels. To <strong>filter</strong> the record — say, to keep only the surface waves — you would zero every level except 7–8 and reconstruct with <code>pywt.waverec</code>; the same machinery underlies wavelet <strong>denoising</strong>, where the small-coefficient levels (here Levels 9–10, <span class="math inline">\sigma^2\!\lesssim\!0.16</span>) are thresholded away.</p>
+<hr>
+<p><em>See <a href="../chap7.html">Chapter 7</a> for the continuous and discrete wavelet transforms, mother wavelets, and DWT denoising.</em></p>
 
 
-<p>Each card below links to a self-contained example: real data, working Python code, and the resulting figure. Click through for the full derivation and implementation.</p>
-<div class="gallery-grid">
-<div class="gallery-card">
-<a href="./gallery/cuckoo.html"> <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Indian Cuckoo Song
-</div>
-<p class="gallery-card-desc">
-STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.
-</p>
-<p><span class="gallery-card-tag">STFT · Audio</span></p>
-</div>
-</a><p><a href="./gallery/cuckoo.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/sunspot.html"> <img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Sunspot Cycle
-</div>
-<p class="gallery-card-desc">
-Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.
-</p>
-<p><span class="gallery-card-tag">PSD · Welch</span></p>
-</div>
-</a><p><a href="./gallery/sunspot.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/seismometer.html"> <img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Earthquake Seismogram
-</div>
-<p class="gallery-card-desc">
-Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.
-</p>
-<p><span class="gallery-card-tag">DWT · Seismology</span></p>
-</div>
-</a><p><a href="./gallery/seismometer.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/exoplanet.html"> <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Exoplanet 51 Peg b
-</div>
-<p class="gallery-card-desc">
-Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.
-</p>
-<p><span class="gallery-card-tag">Lomb–Scargle · Astronomy</span></p>
-</div>
-</a><p><a href="./gallery/exoplanet.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gearbox.html"> <img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gear-Box Fault Detection
-</div>
-<p class="gallery-card-desc">
-Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.
-</p>
-<p><span class="gallery-card-tag">Cepstrum · Machinery</span></p>
-</div>
-</a><p><a href="./gallery/gearbox.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/coherence.html"> <img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AO–Baltic Coherence
-</div>
-<p class="gallery-card-desc">
-Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.
-</p>
-<p><span class="gallery-card-tag">Coherence · Climate</span></p>
-</div>
-</a><p><a href="./gallery/coherence.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/windowing.html"> <img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Spectral Leakage &amp; Windowing
-</div>
-<p class="gallery-card-desc">
-Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.
-</p>
-<p><span class="gallery-card-tag">DFT · Windowing</span></p>
-</div>
-</a><p><a href="./gallery/windowing.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/dwt_image.html"> <img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-DWT Image Compression
-</div>
-<p class="gallery-card-desc">
-Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.
-</p>
-<p><span class="gallery-card-tag">DWT · Image</span></p>
-</div>
-</a><p><a href="./gallery/dwt_image.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/aliasing.html"> <img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Aliasing
-</div>
-<p class="gallery-card-desc">
-A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.
-</p>
-<p><span class="gallery-card-tag">Aliasing · Nyquist</span></p>
-</div>
-</a><p><a href="./gallery/aliasing.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/stft_cwt.html"> <img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-STFT vs.&nbsp;CWT
-</div>
-<p class="gallery-card-desc">
-Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.
-</p>
-<p><span class="gallery-card-tag">STFT · CWT · Wavelet</span></p>
-</div>
-</a><p><a href="./gallery/stft_cwt.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/piano.html"> <img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Piano String Inharmonicity
-</div>
-<p class="gallery-card-desc">
-Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.
-</p>
-<p><span class="gallery-card-tag">PSD · Curve Fitting · Physics</span></p>
-</div>
-</a><p><a href="./gallery/piano.html"></a></p>
-</div>
-</div>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1192,5 +1209,5 @@ document.addEventListener("dblclick", function (e) {
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
