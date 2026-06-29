@@ -925,7 +925,7 @@ Wiener–Khinchin guarantees that this $C_\ell$ is the same object as $\langle |
 We verify this by **simulating a realistic CMB sky**: draw one full-sky realisation from a theoretical $\Lambda$CDM angular power spectrum (the standard curve `totcls.dat` bundled with `healpy`), then recover $C_\ell$ two independent ways and check both against the input theory:
 
 - **Method A — spherical harmonics (`healpy.anafast`).** Expand the map in $a_{\ell m}$ and average $|a_{\ell m}|^2$ over $m$: $\;C_\ell=\langle|a_{\ell m}|^2\rangle_m$. Efficient and accurate to high $\ell$ — the standard estimator.
-- **Method B — Wiener–Khinchin.** Estimate the two-point correlation function $C(\theta)$ by averaging $T(\hat n_1)T(\hat n_2)$ over pixel **pairs** separated by $\theta$, then Legendre-transform it: $\;C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d\cos\theta$.
+- **Method B — Wiener–Khinchin.** Estimate the two-point correlation function $C(\theta)$ by averaging $T(\hat n_1)T(\hat n_2)$ over pixel **pairs** separated by $\theta$, then Legendre-transform it: $\;C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d\cos\theta$. This is a Monte-Carlo estimator, and the variance of $C(\theta)$ propagates into $C_\ell$ as noise that grows like $\ell^2$: resolving a high-$\ell$ peak would need impossibly many pairs at small separations. So we run it only on a small low-$\ell$ Gauss–Legendre grid — through the first acoustic peak — and let Methods A and C carry the high-$\ell$ tail.
 - **Method C — fast Legendre transform (deterministic).** Skip the Monte-Carlo entirely. Build the *exact* correlation function at Gauss–Legendre nodes from the model spectrum via the addition theorem, $C(\theta)=\frac{1}{4\pi}\sum_\ell(2\ell+1)C_\ell P_\ell(\cos\theta)$, then apply the **same** quadrature $C_\ell = 2\pi\sum_i w_i\,C(\theta_i)\,P_\ell(\mu_i)$. This is the *noise-free limit* of Method B; it recovers the input spectrum to $\sim\!10^{-12}$ all the way to $\ell=1500$, proving the Legendre transform itself is exact — Method B's high-$\ell$ failure is purely the Monte-Carlo sampling noise in $C(\theta)$.
 
 Method B is exact *in expectation*, but a naïve implementation is wildly inaccurate. Three choices matter:
@@ -980,15 +980,20 @@ Cl_A = hp.anafast(cmb_map, lmax=lmax)
 ```python
 from scipy.special import eval_legendre
 
-N_nodes = lmax + 1
-mu, wmu = np.polynomial.legendre.leggauss(N_nodes)   # full-range GL nodes/weights
+# Method B Monte-Carlo-samples C(theta); its l^2 sampling noise blows up at high l
+# (resolving small angular scales would need impossibly many pairs), so it is only
+# trustworthy at low l. Run it on a SMALL Gauss-Legendre grid reaching just past the
+# first acoustic peak -- this also keeps the ring-sampling loop cheap.
+lmax_B  = 300
+ell_B   = np.arange(lmax_B + 1)
+mu, wmu = np.polynomial.legendre.leggauss(lmax_B + 1)   # low-l GL nodes/weights
 theta   = np.arccos(mu)
-n_pairs = 500_000                                    # pixel pairs per node (SNR knob)
+n_pairs = 200_000                                       # pixel pairs per node (SNR knob)
 rng     = np.random.default_rng(1)
 
 # (B1) ring sampling: for each node draw random centres and a partner at
 #      EXACTLY angular distance theta_i (random azimuth phi).
-C_theta = np.zeros(N_nodes)
+C_theta = np.zeros(lmax_B + 1)
 for k, th in enumerate(theta):
     cp  = rng.integers(0, cmb_map.size, n_pairs)
     vi  = np.array(hp.pix2vec(nside, cp))                      # (3, n_pairs) centres
@@ -999,27 +1004,31 @@ for k, th in enumerate(theta):
     vj  = np.cos(th)*vi + np.sin(th)*(np.cos(phi)*e1 + np.sin(phi)*e2)
     C_theta[k] = np.mean(cmb_map[cp] * cmb_map[hp.vec2pix(nside, *vj)])
 
-# (B2) exact Legendre transform on the GL grid: C_l = 2*pi * sum_i w_i C(theta_i) P_l(mu_i)
-P_mat = eval_legendre(ell[:, None], mu[None, :])              # (lmax+1, N_nodes)
-Cl_B  = 2*np.pi * (P_mat * (wmu * C_theta)).sum(axis=1)
-
-# bin in ell; show Method B only where its l^2 noise stays small
-Dl = lambda Cl: ell*(ell+1)*Cl/(2*np.pi)
-def bin_Dl(Cl, dl=25, l_hi=lmax):
-    e = np.arange(2, l_hi + 1, dl); cen = 0.5*(e[:-1] + e[1:])
-    return cen, np.array([np.mean(Dl(Cl)[a:b]) for a, b in zip(e[:-1], e[1:])])
-cA, DA = bin_Dl(Cl_A)
-cB, DB = bin_Dl(Cl_B, l_hi=280)
+# (B2) exact Legendre transform on the low-l GL grid: C_l = 2*pi * sum_i w_i C(theta_i) P_l(mu_i)
+P_B  = eval_legendre(ell_B[:, None], mu[None, :])            # (lmax_B+1, lmax_B+1)
+Cl_B = 2*np.pi * (P_B * (wmu * C_theta)).sum(axis=1)
 ```
 
 ### Code — Method C (fast Legendre transform)
 
 ```python
 # Deterministic, noise-free alternative to Method B: build the EXACT correlation
-# function of the model at the GL nodes via the addition theorem, then run the
-# same Gauss-Legendre quadrature. Reuses P_mat, mu, wmu from Method B.
-C_theta_exact = ((2*ell + 1)[:, None] * Cl_th[:, None] * P_mat).sum(axis=0) / (4*np.pi)
-Cl_C = 2*np.pi * (P_mat * (wmu * C_theta_exact)).sum(axis=1)   # == Cl_th to ~1e-12
+# function of the model at FULL-RESOLUTION GL nodes (enough to resolve l=lmax) via
+# the addition theorem, then run the same Gauss-Legendre quadrature. No Monte-Carlo,
+# so it stays exact all the way to l=1500 -- the noise-free limit of Method B.
+mu_f, wmu_f   = np.polynomial.legendre.leggauss(lmax + 1)
+P_f           = eval_legendre(ell[:, None], mu_f[None, :])
+C_theta_exact = ((2*ell + 1)[:, None] * Cl_th[:, None] * P_f).sum(axis=0) / (4*np.pi)
+Cl_C = 2*np.pi * (P_f * (wmu_f * C_theta_exact)).sum(axis=1)   # == Cl_th to ~1e-12
+
+# bin each spectrum in ell (Method B only spans its low-l grid, l <= lmax_B)
+Dl   = lambda Cl: ell  * (ell   + 1) * Cl / (2*np.pi)
+Dl_B = lambda Cl: ell_B* (ell_B + 1) * Cl / (2*np.pi)
+def bin_Dl(x, Dl_vals, dl=25):
+    e = np.arange(2, x[-1] + 1, dl); cen = 0.5*(e[:-1] + e[1:])
+    return cen, np.array([Dl_vals[a:b].mean() for a, b in zip(e[:-1], e[1:])])
+cA, DA = bin_Dl(ell,   Dl(Cl_A))
+cB, DB = bin_Dl(ell_B, Dl_B(Cl_B))
 
 # plot: LCDM model band, Method C (fast Legendre), anafast, Method B
 from cycler import cycler
@@ -1032,9 +1041,10 @@ plt.rcParams.update({
 BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'   # bright cycle blue/red
 plt.close()
 fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.9), layout='constrained')
-o = np.argsort(theta); thd = np.rad2deg(theta[o])
-ax[0].plot(thd, C_theta_exact[o], color=INK, lw=1.6, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
-ax[0].plot(thd, C_theta[o], '.', color=RED, ms=2.6, alpha=0.6, label='Monte-Carlo pairs')
+of = np.argsort(np.arccos(mu_f)); thf = np.rad2deg(np.arccos(mu_f))[of]
+ax[0].plot(thf, C_theta_exact[of], color=INK, lw=1.6, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
+ob = np.argsort(theta)
+ax[0].plot(np.rad2deg(theta[ob]), C_theta[ob], '.', color=RED, ms=3.5, alpha=0.6, label='Monte-Carlo pairs')
 ax[0].axhline(0, color=GREY, lw=0.6); ax[0].set_xlim(0, 180)
 ax[0].set_xlabel(r'separation  $\theta$  [deg]'); ax[0].set_ylabel(r'$C(\theta)$  [$\mu$K$^2$]')
 ax[0].set_title('(a) two-point correlation'); ax[0].legend(loc='upper right')
@@ -1043,8 +1053,8 @@ ax[1].plot(ell[2:], Dl(Cl_th)[2:], color=GREY, lw=4, alpha=0.35, label=r'$\Lambd
 ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=INK, lw=1.0, ls='--', label='fast Legendre transform')
 ax[1].plot(cA, DA, 'o', color=BLUE, ms=2.6, label='anafast (Method A)')
 ax[1].plot(cB, DB, 's', color=RED, ms=3.4, label='Wiener–Khinchin (Method B)')
-ax[1].axvspan(280, lmax, color='0.93', zorder=0)
-ax[1].text(0.66, 0.62, 'pair estimator:\nnoise $\\propto\\ell^2$', transform=ax[1].transAxes,
+ax[1].axvspan(lmax_B, lmax, color='0.93', zorder=0)
+ax[1].text(0.66, 0.55, 'pair estimator\nlimited to low $\\ell$\n(noise $\\propto\\ell^2$)', transform=ax[1].transAxes,
            ha='center', va='center', fontsize=7, color=GREY)
 ax[1].set_xlim(0, lmax); ax[1].set_ylim(0, 6500)
 ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell=\ell(\ell+1)C_\ell/2\pi$  [$\mu$K$^2$]')
