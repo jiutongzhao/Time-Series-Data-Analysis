@@ -853,6 +853,154 @@ plt.show()
 :::
 
 
+## Application: Solar-Wind Turbulence Spectrum
+
+Power-law noise has a spectacular real-world counterpart. The **solar wind** — the magnetized plasma streaming out of the Sun — is in a state of fully developed **turbulence**. Magnetometers carried by spacecraft such as *Wind*, *Cluster*, and *Parker Solar Probe* measure a magnetic-field power spectrum that spans roughly six decades in frequency and breaks naturally into a sequence of power-law ranges. The classic broadband picture is reviewed by [Verscharen, Klein & Maruca (2019)](https://doi.org/10.1007/s41116-019-0021-0), *The Multi-Scale Nature of the Solar Wind* (Living Rev. Sol. Phys. **16**, 5), whose canonical trace spectrum we reproduce here.
+
+The **trace spectrum** — the sum of the PSDs of the three field components $B_x,B_y,B_z$ — shows four regimes separated by two breaks:
+
+- an **energy-injection ("$1/f$") range** at the lowest frequencies (below $\sim 10^{-3}\,\mathrm{Hz}$ at 1 AU), with slope near $f^{-1}$, where large-scale energy is fed into the system;
+- an **inertial range** with the celebrated Kolmogorov slope $f^{-5/3}$, where energy cascades scale-by-scale without being dissipated. (Whether the magnetic inertial range follows the Kolmogorov $-5/3$ or the Iroshnikov–Kraichnan $-3/2$ exponent is a long-standing debate; *in situ* magnetic spectra cluster close to $-5/3$, while the velocity spectrum often sits nearer $-3/2$.)
+- an **ion-kinetic (dissipation) range** beyond the **ion-scale spectral break** (near $\sim 0.1$–$0.4\,\mathrm{Hz}$ at 1 AU, set by the proton gyroradius / inertial length), where the spectrum steepens to the near-universal slope $f^{-2.8}$ (Alexandrova et al. 2009);
+- a steep **electron-scale range** beyond a second break near a few $\times 10\,\mathrm{Hz}$, where the cascade reaches electron scales and the spectrum drops off steeply (here $\sim f^{-4}$).
+
+We can reproduce this whole structure with exactly the Fourier-shaping trick used above for colored noise: draw a complex Gaussian spectrum, multiply it by the square root of the target piecewise power law, and inverse-transform. Synthesising three independent components and estimating the trace PSD with **Welch's method** recovers the imposed slopes — a clean numerical model of the measured solar-wind spectrum.
+
+<!-- fig-tabset:figure_solar_wind_turbulence.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_solar_wind_turbulence.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np, scipy.signal
+import matplotlib.pyplot as plt
+import scienceplots, matplotlib.ticker as ticker
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+
+rng = np.random.default_rng(20240630)
+
+# ---- sampling: search-coil + fluxgate cadence over ~9 h ----
+fs = 256.0                     # Hz  -> Nyquist 128 Hz (reaches electron scales)
+N  = 2 ** 23                   # ~8.39e6 samples -> ~9.1 h (reaches f ~ 3e-5 Hz)
+t  = np.arange(N) / fs
+freq = np.fft.rfftfreq(N, 1 / fs)
+
+# ---- target trace power spectrum: four ranges, two breaks ----
+# slopes after Verscharen, Klein & Maruca (2019), Living Rev. Sol. Phys. 16:5
+f1  = 1e-3        # injection -> inertial   (correlation scale)
+f_i = 0.3         # ion-scale break
+f_e = 40.0        # electron-scale break
+a_inj, a_in, a_kin, a_el = 1.0, 5 / 3, 2.8, 4.0
+
+def target_psd(f):
+    f_ = f.copy(); f_[0] = f_[1]
+    P = f_ ** (-a_inj)                                              # 1/f injection
+    A = 1.0
+    C1 = A * f1 ** (-a_inj + a_in)
+    m = f_ >= f1;  P[m] = C1 * f_[m] ** (-a_in)                     # -5/3 inertial
+    C2 = C1 * f_i ** (-a_in + a_kin)
+    m = f_ >= f_i; P[m] = C2 * f_[m] ** (-a_kin)                    # -2.8 ion kinetic
+    C3 = C2 * f_e ** (-a_kin + a_el)
+    m = f_ >= f_e; P[m] = C3 * f_[m] ** (-a_el)                     # -4 electron range
+    P[0] = 0.0
+    return P
+
+Ptar = target_psd(freq)
+
+def synth(P):
+    g = (rng.standard_normal(len(P)) + 1j * rng.standard_normal(len(P))) / np.sqrt(2)
+    spec = g * np.sqrt(P); spec[0] = 0.0
+    return np.fft.irfft(spec, n=N)
+
+b = np.stack([synth(Ptar) for _ in range(3)], axis=0)
+b *= 5.0 / b.std(axis=1, keepdims=True)            # ~5 nT fluctuation level
+b += np.array([4.0, -2.0, 1.0])[:, None]           # arbitrary mean field
+bx, by, bz = b
+
+# ---- Welch trace PSD ----
+nperseg = 2 ** 20              # lowest resolved f ~ 2.4e-4 Hz (shows the 1/f range)
+fw, Px = scipy.signal.welch(bx, fs, window='hann', nperseg=nperseg)
+_,  Py = scipy.signal.welch(by, fs, window='hann', nperseg=nperseg)
+_,  Pz = scipy.signal.welch(bz, fs, window='hann', nperseg=nperseg)
+Ptr = Px + Py + Pz
+
+def slope(fa, fb_):
+    m = (fw >= fa) & (fw <= fb_)
+    s, c = np.polyfit(np.log10(fw[m]), np.log10(Ptr[m]), 1)
+    return s, c
+s_in,  c_in  = slope(3e-3, 0.1)
+s_kin, c_kin = slope(0.6, 10.0)
+s_el,  c_el  = slope(50.0, 110.0)
+
+# ---- figure ----
+plt.close()
+plt.figure(figsize=(8.8, 3.9))
+ax1 = plt.subplot(1, 2, 1)
+ax2 = plt.subplot(1, 2, 2)
+
+w = (t >= 5000) & (t < 5000 + 1800)
+ax1.plot(t[w] - 5000, bx[w], lw=0.5, color='#0d49fb', label='$B_x$')
+ax1.plot(t[w] - 5000, by[w], lw=0.5, color='#e6091c', label='$B_y$')
+ax1.plot(t[w] - 5000, bz[w], lw=0.5, color='#222222', label='$B_z$')
+ax1.set_xlabel('Time [s]'); ax1.set_ylabel('B [nT]'); ax1.set_xlim(0, 1800)
+ax1.legend(frameon=False, ncol=1, loc='upper right',
+           labelcolor=['#0d49fb', '#e6091c', '#222222'], handlelength=1.1, fontsize=9)
+ax1.set_title('Turbulent field (30 min)', pad=8, **title_font)
+
+def logbin(f, P, n=80):
+    e = np.logspace(np.log10(f[1]), np.log10(f[-1]), n + 1)
+    idx = np.digitize(f, e)
+    fc = np.array([f[idx == k].mean() for k in range(1, n + 1)])
+    Pc = np.array([P[idx == k].mean() for k in range(1, n + 1)])
+    ok = np.isfinite(fc) & np.isfinite(Pc)
+    return fc[ok], Pc[ok]
+
+ax2.loglog(fw[1:], Ptr[1:], color='#cccccc', lw=0.5, alpha=0.7, zorder=1)
+fb_, Pb_ = logbin(fw[1:], Ptr[1:])
+ax2.loglog(fb_, Pb_, color='#0d49fb', lw=1.5, ls='-', zorder=3, label='trace PSD (Welch)')
+
+# fit guides for the two headline ranges (legend)
+ff = np.logspace(np.log10(2e-3), np.log10(0.18), 50)
+ax2.loglog(ff, 10 ** c_in * ff ** s_in, '--', color='#e6091c', lw=1.3, zorder=4,
+           label=r'$f^{-5/3}$  Kolmogorov')
+fk = np.logspace(np.log10(0.5), np.log10(20), 50)
+ax2.loglog(fk, 10 ** c_kin * fk ** s_kin, '--', color='#222222', lw=1.3, zorder=4,
+           label=fr'$f^{{{s_kin:.1f}}}$  ion kinetic')
+
+ax2.set_xlim(1.5e-4, 1.6e2)
+ymin, ymax = ax2.get_ylim()
+
+# break markers (dotted verticals) with labels along the top
+for fb0, lbl in [(f_i, 'ion break'), (f_e, 'electron break')]:
+    ax2.axvline(fb0, color='#888888', ls=':', lw=0.9, zorder=2)
+    ax2.text(fb0 * 0.82, ymax * 0.4, lbl, fontsize=7.5, color='#555555',
+             rotation=90, va='top', ha='center')
+
+# on-curve labels for the secondary ranges
+ax2.text(2.4e-4, ymax * 0.35, r'$f^{-1}$', fontsize=9, color='#555555')
+ax2.text(78, 10 ** c_el * 78 ** s_el * 5.0, r'$f^{-4}$', fontsize=9, color='#555555', ha='center')
+
+ax2.set_xlabel('Frequency [Hz]'); ax2.set_ylabel(r'Trace PSD [$\mathrm{nT^2/Hz}$]')
+ax2.legend(frameon=False, loc='lower left', fontsize=7.5)
+ax2.set_title('Solar-wind turbulence spectrum', **title_font)
+
+plt.tight_layout()
+plt.savefig(save_path + 'figure_solar_wind_turbulence' + '.png', bbox_inches='tight', dpi=300)
+plt.show()
+```
+
+:::
+<p align = 'center'>
+<i>A synthetic model of the solar-wind magnetic turbulence spectrum (after Verscharen, Klein &amp; Maruca 2019): a $1/f$ injection range, a Kolmogorov $f^{-5/3}$ inertial range, a steeper $f^{-2.8}$ ion-kinetic range beyond the ion break, and a steep electron range beyond the electron break.</i>
+</p>
+
+A least-squares fit on the log–log spectrum returns $-1.68$ in the inertial range, $-2.80$ in the ion-kinetic range, and $-4.0$ beyond the electron break, matching the imposed exponents. On real data the same Welch-plus-slope-fit pipeline is the standard tool for measuring the **spectral index** and locating the spectral **breaks** — the only change is that `bx, by, bz` are read from a magnetometer file instead of being synthesised.
+
+
 
 
 
