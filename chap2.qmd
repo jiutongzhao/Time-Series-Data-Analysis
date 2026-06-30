@@ -880,3 +880,189 @@ plt.savefig(save_path + 'figure_piano_harmonic.png', bbox_inches='tight', dpi=30
 ```
 
 :::
+
+## [Cepstrum](https://en.wikipedia.org/wiki/Cepstrum)
+
+A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency $f_0$ but also its **harmonic** $f_n=nf_0$. Like, a sawtooth waves have a Fourier coefficient decreases with $1/n$ where $n$ is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of $f_0$ in the Fourier domain. 
+
+<!-- fig-tabset:figure_cepstrum.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_cepstrum.png" width="100%"/>
+
+### Code
+
+```python
+plt.close()
+plt.figure(figsize=(16, 4))
+
+N = 2 ** 8
+omega0 = 2 * np.pi * 4.0
+t = np.linspace(0, 1, N, endpoint=False)
+dt = t[1] - t[0]
+fs = 1 / dt
+
+sig = 2 * ((omega0 / 2 / np.pi * t) % 1.0 - 0.5)
+# Add white noise for preventing getting a log(abs(0))
+sig += np.random.randn(t.size) * 1e-2
+freq = np.fft.rfftfreq(N, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_X = np.log(np.abs(coef))
+log_abs_X -= np.mean(log_abs_X)  # Remove DC component for cepstrum calculation
+cepstrum = np.fft.rfft(log_abs_X)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_X.size, df)
+
+
+ax1 = plt.subplot(1, 3, 1)
+ax2 = plt.subplot(1, 3, 2)
+ax3 = plt.subplot(1, 3, 3)
+
+ax1.plot(t, sig, 'ko-', label='Signal')
+ax2.stem(freq, np.abs(coef), linefmt='k', markerfmt='k', basefmt='k')
+ax2.plot(freq, 4 / freq * np.abs(coef)[4], 'r--', label='1/f', zorder = 0)
+
+ax3.stem(quefrency, np.abs(cepstrum), linefmt='k', markerfmt='k', basefmt='k')
+
+ax2.text(30, 30, 'Harmonics', color = 'k', ha = 'center', va = 'bottom', **title_font)
+ax2.text(12, 30, '$X[k]\propto 1/k $', color = 'C1', ha = 'center', va = 'bottom', **title_font, rotation = -70)
+ax3.text(1 / (omega0 / (2 * np.pi)), 135, '4 Hz', color = 'k', ha = 'center', va = 'center', **title_font)
+ax3.set_ylim(-0.5, 150)
+# ax3.set_yscale('log')
+
+ax1.set_title('Signal', **title_font)
+ax2.set_title('FFT Magnitude', **title_font)
+ax3.set_title('Cepstrum', **title_font)
+
+ax1.set_xlabel('Time [s]')
+ax2.set_xlabel('Frequency [Hz]')
+ax3.set_xlabel('Quefrency [s]')
+ax1.set_ylabel('Intensity [Arb]')
+ax2.set_ylabel('Magnitude [Arb]')
+ax3.set_ylabel('Intensity [Arb]')
+
+ax2.set_ylim(-5, 90)
+ax2.set_xlim(-2, 60)
+
+plt.tight_layout()
+
+plt.savefig(save_path + 'figure_cepstrum' + '.png',bbox_inches='tight',dpi=300)
+
+plt.show()
+```
+
+:::
+<p align = 'center'>
+<i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
+</p>
+
+
+Inspiri ng by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the ***Cepstral Analysis*** in 1963. The norm of the Fourier coefficients is taken logarithm and then inverse Fourier transformed for detecting the harmonic signature of the signal. 
+
+```mermaid
+flowchart LR
+    A["x[n]"] -->|"Fourier Transform"| B["X[k]"]
+    B -->|"abs + log"| C["log|X[k]|"]
+    C -->|"Inverse Fourier Transform"| D["Cepstrum"]
+```
+
+This resulting "spectrum" is named as its variant ($\mathrm{spec \rightarrow ceps}$) —Cepstrum. Correspondingly, "frequency" is converted to "quefrency", which has the unit same as time's.
+
+The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as:
+$$
+y(t) = x(t) +\alpha x(t-\tau)
+$$
+It has a Fourier transform of
+$$
+\begin{align*}
+Y(f) &= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
+|Y(f)|^2 &= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
+\end{align*}
+$$
+
+$$
+\begin{align*}
+\mathrm{log}(|Y(f)|^2) &= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
+& \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
+\end{align*}
+$$
+Therefore, the echoes introduce the periodic structure in $\mathrm{log}(|Y(f)|^2)$. When parameter $\alpha$ is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That's the reason cepstral analysis works. 
+
+However, it doesn't mean that the cepstral analysis only work for the signals composited with echoes. Another common application of cepstral analysis is the [voice recognition](https://ieeexplore.ieee.org/document/859069). The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.
+
+```python
+''' Python Implication of Cepstrum '''
+
+freq = np.fft.rfftfreq(sig.size, dt)
+coef = np.fft.rfft(sig)
+
+log_abs_coef = np.log(np.abs(coef))
+
+# Optional, Remove DC component for cepstrum calculation
+log_abs_coef -= np.mean(log_abs_coef)
+
+cepstrum = np.fft.rfft(log_abs_coef)
+df = freq[1] - freq[0]
+quefrency = np.fft.rfftfreq(log_abs_coef.size, df)
+```
+
+### Worked Example: Gear-Box Fault Detection
+
+A textbook industrial application of cepstral analysis is **gear-mesh diagnostics**. A healthy gear-box vibration spectrum is dominated by the *gear-mesh frequency* $f_m = N_t f_r$ (number of teeth $\times$ shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the *shaft-rotation frequency* $f_r$, introducing a family of side-bands $f_m \pm k f_r$ around every mesh harmonic.
+
+In the spectrum these side-bands form a **comb** with spacing $f_r$. The cepstrum collapses each such comb into a single peak (a *rahmonic*) at quefrency $\tau_r = 1/f_r$ — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.
+
+Why does this work? The key is that **convolution in time becomes multiplication in the frequency domain, and multiplication becomes addition after taking the logarithm**. A fault that fires once per revolution convolves the clean gear-mesh signal with a periodic impulse train. Following the log-spectrum through to the cepstrum, the two contributions simply add — so the fault's rahmonic appears at a fixed quefrency regardless of the machine's load or speed:
+
+```mermaid
+flowchart LR
+    A["<b>Time domain</b><br/>y = x ∗ h<br/><i>mesh ✱ fault impulse</i>"]
+    -->|"DFT"| B["<b>Frequency domain</b><br/>Y = X · H<br/><i>convolution → ×</i>"]
+    -->|"log|·|"| C["<b>Log spectrum</b><br/>log|Y| = log|X| + log|H|<br/><i>multiply → +</i>"]
+    -->|"IDFT"| D["<b>Cepstral domain</b><br/>c_y = c_x + c_h<br/><i>fault peak at τ = 1/f_r</i>"]
+```
+
+The example below uses real vibration data from the **SpectraQuest Machinery Fault Simulator** [@NREL_gearbox_2018], recorded at $f_s = 66\,667\,\mathrm{Hz}$ with the shaft running at $f_r = 30\,\mathrm{Hz}$ and 50 % load. Two conditions are compared: a healthy gear and a gear with a broken tooth. The gear-mesh frequency is $f_m = 30 \times 30 = 900\,\mathrm{Hz}$.
+
+Panel (b) shows the Welch PSD around $f_m$: the broken-tooth spectrum has a higher sideband floor at $f_m \pm f_r = 870/930\,\mathrm{Hz}$, but the difference is subtle. Panel (c) shows the **envelope cepstrum** — band-pass filtered around $f_m$, Hilbert envelope, then real cepstrum — which collapses all sidebands into a single rahmonic peak near $\tau_r = 33.3\,\mathrm{ms}$, roughly $10\times$ stronger in the broken-tooth case.
+
+<!-- fig-tabset:figure_cepstrum_gearbox.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_cepstrum_gearbox.png" width="100%"/>
+
+### Code
+
+```python
+# SpectraQuest Machinery Fault Simulator – 50 % load, 30 Hz shaft speed
+# Data: NREL / OpenEI  https://data.openei.org/files/623/gearboxdata.zip
+_data_path = save_path.replace('Figure/', 'Data/')
+data     = np.load(_data_path + 'gearbox_spectraquest.npz')
+xh, xb   = data['healthy'].astype(float), data['broken'].astype(float)
+fs_gear  = float(data['fs'])   # 66 667 Hz
+
+shaft_hz = 30.0                 # shaft rotation frequency
+gmf_hz   = 900.0                # gear-mesh freq = 30 teeth × 30 Hz
+
+# Band-pass around GMF, then Hilbert envelope, then real cepstrum
+from scipy.signal import butter, filtfilt, hilbert, welch as sp_welch
+b_bp, a_bp = butter(4, [(gmf_hz - 200) / (fs_gear / 2),
+                         (gmf_hz + 200) / (fs_gear / 2)], btype='band')
+env_h = np.abs(hilbert(filtfilt(b_bp, a_bp, xh)))
+env_b = np.abs(hilbert(filtfilt(b_bp, a_bp, xb)))
+
+def _rceps(x):
+    lX = np.log(np.abs(np.fft.rfft(x)) + 1e-12)
+    lX -= lX.mean()
+    return np.fft.irfft(lX, n=len(x))
+
+ch, cb = _rceps(env_h), _rceps(env_b)
+q_ms   = np.arange(len(ch)) / fs_gear * 1000   # quefrency in ms
+```
+
+:::

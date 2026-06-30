@@ -3,7 +3,7 @@
 <a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
 
 **Topic:** Cepstrum analysis — separating source and transmission-path contributions in machinery vibration.
-**Chapter:** [3 — Power Spectral Density](../chap3.qmd)
+**Chapter:** [2 — Frequency Domain](../chap2.qmd)
 
 ---
 
@@ -72,4 +72,4 @@ The cepstrum peak at a quefrency corresponding to the ball-pass outer-race frequ
 
 ---
 
-*See [Chapter 3](../chap3.qmd) for the cepstrum definition, liftering, and connection to homomorphic signal processing.*
+*See [Chapter 2](../chap2.qmd) for the cepstrum definition, liftering, and connection to homomorphic signal processing.*

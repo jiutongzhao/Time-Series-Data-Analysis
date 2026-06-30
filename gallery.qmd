@@ -34,23 +34,23 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/gearbox.qmd">
+<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Gear-Box Fault Detection</div>
+<p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
+<span class="gallery-card-tag">Ch.2 · Cepstrum</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/sunspot.qmd">
 <img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Sunspot Cycle</div>
 <p class="gallery-card-desc">Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.</p>
 <span class="gallery-card-tag">Ch.3 · Welch PSD</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/gearbox.qmd">
-<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Gear-Box Fault Detection</div>
-<p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
-<span class="gallery-card-tag">Ch.3 · Cepstrum</span>
 </div>
 </a>
 </div>

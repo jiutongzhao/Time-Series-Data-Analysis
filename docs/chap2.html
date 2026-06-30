@@ -526,6 +526,10 @@ window.Quarto = {
   <li><a href="#fence-effect-and-padding" id="toc-fence-effect-and-padding" class="nav-link" data-scroll-target="#fence-effect-and-padding">Fence Effect and Padding</a></li>
   <li><a href="#other-padding-type" id="toc-other-padding-type" class="nav-link" data-scroll-target="#other-padding-type">Other Padding Type</a></li>
   <li><a href="#application-stiffness-of-a-piano-string" id="toc-application-stiffness-of-a-piano-string" class="nav-link" data-scroll-target="#application-stiffness-of-a-piano-string">Application: Stiffness of a Piano String</a></li>
+  <li><a href="#cepstrum" id="toc-cepstrum" class="nav-link" data-scroll-target="#cepstrum">Cepstrum</a>
+  <ul class="collapse">
+  <li><a href="#worked-example-gear-box-fault-detection" id="toc-worked-example-gear-box-fault-detection" class="nav-link" data-scroll-target="#worked-example-gear-box-fault-detection">Worked Example: Gear-Box Fault Detection</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -1333,8 +1337,165 @@ f_n = n f_1 \sqrt{1 + B n^2}, \qquad B = \frac{\pi^2 E I}{T L^2}
 </div>
 </div>
 </div>
+</section>
+<section id="cepstrum" class="level2">
+<h2 class="anchored" data-anchor-id="cepstrum"><a href="https://en.wikipedia.org/wiki/Cepstrum">Cepstrum</a></h2>
+<p>A non-sinuous, periodic signal usually has a broad Fourier spectrum concentrating at not only the fundamental frequency <span class="math inline">f_0</span> but also its <strong>harmonic</strong> <span class="math inline">f_n=nf_0</span>. Like, a sawtooth waves have a Fourier coefficient decreases with <span class="math inline">1/n</span> where <span class="math inline">n</span> is the harmonic order while the coefficients at the rest frequencies remain zero. Therefore, there exists a periodic structure with period of <span class="math inline">f_0</span> in the Fourier domain.</p>
+<!-- fig-tabset:figure_cepstrum.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<p><img src="Figure/figure_cepstrum.png" width="100%"></p>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">4</span>))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">2</span> <span class="op">**</span> <span class="dv">8</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>omega0 <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">4.0</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, N, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> ((omega0 <span class="op">/</span> <span class="dv">2</span> <span class="op">/</span> np.pi <span class="op">*</span> t) <span class="op">%</span> <span class="fl">1.0</span> <span class="op">-</span> <span class="fl">0.5</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add white noise for preventing getting a log(abs(0))</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>sig <span class="op">+=</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">1e-2</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.rfftfreq(N, dt)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.rfft(sig)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>log_abs_X <span class="op">=</span> np.log(np.<span class="bu">abs</span>(coef))</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>log_abs_X <span class="op">-=</span> np.mean(log_abs_X)  <span class="co"># Remove DC component for cepstrum calculation</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>cepstrum <span class="op">=</span> np.fft.rfft(log_abs_X)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> freq[<span class="dv">1</span>] <span class="op">-</span> freq[<span class="dv">0</span>]</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>quefrency <span class="op">=</span> np.fft.rfftfreq(log_abs_X.size, df)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>ax3 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>)</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko-'</span>, label<span class="op">=</span><span class="st">'Signal'</span>)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>ax2.stem(freq, np.<span class="bu">abs</span>(coef), linefmt<span class="op">=</span><span class="st">'k'</span>, markerfmt<span class="op">=</span><span class="st">'k'</span>, basefmt<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>ax2.plot(freq, <span class="dv">4</span> <span class="op">/</span> freq <span class="op">*</span> np.<span class="bu">abs</span>(coef)[<span class="dv">4</span>], <span class="st">'r--'</span>, label<span class="op">=</span><span class="st">'1/f'</span>, zorder <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>ax3.stem(quefrency, np.<span class="bu">abs</span>(cepstrum), linefmt<span class="op">=</span><span class="st">'k'</span>, markerfmt<span class="op">=</span><span class="st">'k'</span>, basefmt<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>ax2.text(<span class="dv">30</span>, <span class="dv">30</span>, <span class="st">'Harmonics'</span>, color <span class="op">=</span> <span class="st">'k'</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>ax2.text(<span class="dv">12</span>, <span class="dv">30</span>, <span class="st">'$X[k]</span><span class="er">\</span><span class="st">propto 1/k $'</span>, color <span class="op">=</span> <span class="st">'C1'</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'bottom'</span>, <span class="op">**</span>title_font, rotation <span class="op">=</span> <span class="op">-</span><span class="dv">70</span>)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>ax3.text(<span class="dv">1</span> <span class="op">/</span> (omega0 <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> np.pi)), <span class="dv">135</span>, <span class="st">'4 Hz'</span>, color <span class="op">=</span> <span class="st">'k'</span>, ha <span class="op">=</span> <span class="st">'center'</span>, va <span class="op">=</span> <span class="st">'center'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>ax3.set_ylim(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">150</span>)</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a><span class="co"># ax3.set_yscale('log')</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Signal'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>ax2.set_title(<span class="st">'FFT Magnitude'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>ax3.set_title(<span class="st">'Cepstrum'</span>, <span class="op">**</span>title_font)</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>ax2.set_xlabel(<span class="st">'Frequency [Hz]'</span>)</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>ax3.set_xlabel(<span class="st">'Quefrency [s]'</span>)</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>ax2.set_ylabel(<span class="st">'Magnitude [Arb]'</span>)</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>ax3.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>ax2.set_ylim(<span class="op">-</span><span class="dv">5</span>, <span class="dv">90</span>)</span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>ax2.set_xlim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">60</span>)</span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_cepstrum'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p align="center">
+<i>An example of cepstrum for a sawtooth wave with the fundamental frequency of 4 Hz</i>
+</p>
+<p>Inspiri ng by this fact, B. P. Bogert, M. J. Healy, and J. W. Tukey introduce the <strong><em>Cepstral Analysis</em></strong> in 1963. The norm of the Fourier coefficients is taken logarithm and then inverse Fourier transformed for detecting the harmonic signature of the signal.</p>
+<pre class="mermaid"><code>flowchart LR
+    A["x[n]"] --&gt;|"Fourier Transform"| B["X[k]"]
+    B --&gt;|"abs + log"| C["log|X[k]|"]
+    C --&gt;|"Inverse Fourier Transform"| D["Cepstrum"]</code></pre>
+<p>This resulting “spectrum” is named as its variant (<span class="math inline">\mathrm{spec \rightarrow ceps}</span>) —Cepstrum. Correspondingly, “frequency” is converted to “quefrency”, which has the unit same as time’s.</p>
+<p>The initial aim of cepstrum is to analysis the seismic echoes, which can be modeled as: <span class="math display">
+y(t) = x(t) +\alpha x(t-\tau)
+</span> It has a Fourier transform of <span class="math display">
+\begin{align*}
+Y(f) &amp;= X(f) + \alpha X(f) e^{j2\pi f \tau}=X(f)(1+\alpha e^{j2\pi f \tau})\\
+|Y(f)|^2 &amp;= |X(f)|^2 [1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]
+\end{align*}
+</span></p>
+<p><span class="math display">
+\begin{align*}
+\mathrm{log}(|Y(f)|^2) &amp;= \mathrm{log}(|X(f)|^2) + \mathrm{log}[1+2\alpha \mathrm{cos}({j2\pi f \tau})+\alpha^2]\\
+&amp; \approx \mathrm{log}(|X(f)|^2) + 2\alpha \mathrm{cos}({j2\pi f \tau})
+\end{align*}
+</span> Therefore, the echoes introduce the periodic structure in <span class="math inline">\mathrm{log}(|Y(f)|^2)</span>. When parameter <span class="math inline">\alpha</span> is small enough, the periodic structure has a perfect sinuous waveform. Interestingly, the periodic sawtooth waves we introduced first can actually be interpreted as an initial signal accompanied with its three non-decayed echoes. That’s the reason cepstral analysis works.</p>
+<p>However, it doesn’t mean that the cepstral analysis only work for the signals composited with echoes. Another common application of cepstral analysis is the <a href="https://ieeexplore.ieee.org/document/859069">voice recognition</a>. The principle behind is that the both the musical instrument and vocal fold has an eigen frequency thus the power of the voice naturally concentrate near the fundamental and harmonics.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">''' Python Implication of Cepstrum '''</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>freq <span class="op">=</span> np.fft.rfftfreq(sig.size, dt)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>coef <span class="op">=</span> np.fft.rfft(sig)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>log_abs_coef <span class="op">=</span> np.log(np.<span class="bu">abs</span>(coef))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional, Remove DC component for cepstrum calculation</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>log_abs_coef <span class="op">-=</span> np.mean(log_abs_coef)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>cepstrum <span class="op">=</span> np.fft.rfft(log_abs_coef)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> freq[<span class="dv">1</span>] <span class="op">-</span> freq[<span class="dv">0</span>]</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>quefrency <span class="op">=</span> np.fft.rfftfreq(log_abs_coef.size, df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="worked-example-gear-box-fault-detection" class="level3">
+<h3 class="anchored" data-anchor-id="worked-example-gear-box-fault-detection">Worked Example: Gear-Box Fault Detection</h3>
+<p>A textbook industrial application of cepstral analysis is <strong>gear-mesh diagnostics</strong>. A healthy gear-box vibration spectrum is dominated by the <em>gear-mesh frequency</em> <span class="math inline">f_m = N_t f_r</span> (number of teeth <span class="math inline">\times</span> shaft rotation frequency) and its harmonics. A localized fault — a chipped tooth, say — modulates the mesh signal at the <em>shaft-rotation frequency</em> <span class="math inline">f_r</span>, introducing a family of side-bands <span class="math inline">f_m \pm k f_r</span> around every mesh harmonic.</p>
+<p>In the spectrum these side-bands form a <strong>comb</strong> with spacing <span class="math inline">f_r</span>. The cepstrum collapses each such comb into a single peak (a <em>rahmonic</em>) at quefrency <span class="math inline">\tau_r = 1/f_r</span> — the period of one shaft revolution — making the fault signature far easier to read than scanning individual side-bands in the log-spectrum.</p>
+<p>Why does this work? The key is that <strong>convolution in time becomes multiplication in the frequency domain, and multiplication becomes addition after taking the logarithm</strong>. A fault that fires once per revolution convolves the clean gear-mesh signal with a periodic impulse train. Following the log-spectrum through to the cepstrum, the two contributions simply add — so the fault’s rahmonic appears at a fixed quefrency regardless of the machine’s load or speed:</p>
+<pre class="mermaid"><code>flowchart LR
+    A["&lt;b&gt;Time domain&lt;/b&gt;&lt;br/&gt;y = x ∗ h&lt;br/&gt;&lt;i&gt;mesh ✱ fault impulse&lt;/i&gt;"]
+    --&gt;|"DFT"| B["&lt;b&gt;Frequency domain&lt;/b&gt;&lt;br/&gt;Y = X · H&lt;br/&gt;&lt;i&gt;convolution → ×&lt;/i&gt;"]
+    --&gt;|"log|·|"| C["&lt;b&gt;Log spectrum&lt;/b&gt;&lt;br/&gt;log|Y| = log|X| + log|H|&lt;br/&gt;&lt;i&gt;multiply → +&lt;/i&gt;"]
+    --&gt;|"IDFT"| D["&lt;b&gt;Cepstral domain&lt;/b&gt;&lt;br/&gt;c_y = c_x + c_h&lt;br/&gt;&lt;i&gt;fault peak at τ = 1/f_r&lt;/i&gt;"]</code></pre>
+<p>The example below uses real vibration data from the <strong>SpectraQuest Machinery Fault Simulator</strong> <span class="citation" data-cites="NREL_gearbox_2018">[@NREL_gearbox_2018]</span>, recorded at <span class="math inline">f_s = 66\,667\,\mathrm{Hz}</span> with the shaft running at <span class="math inline">f_r = 30\,\mathrm{Hz}</span> and 50 % load. Two conditions are compared: a healthy gear and a gear with a broken tooth. The gear-mesh frequency is <span class="math inline">f_m = 30 \times 30 = 900\,\mathrm{Hz}</span>.</p>
+<p>Panel (b) shows the Welch PSD around <span class="math inline">f_m</span>: the broken-tooth spectrum has a higher sideband floor at <span class="math inline">f_m \pm f_r = 870/930\,\mathrm{Hz}</span>, but the difference is subtle. Panel (c) shows the <strong>envelope cepstrum</strong> — band-pass filtered around <span class="math inline">f_m</span>, Hilbert envelope, then real cepstrum — which collapses all sidebands into a single rahmonic peak near <span class="math inline">\tau_r = 33.3\,\mathrm{ms}</span>, roughly <span class="math inline">10\times</span> stronger in the broken-tooth case.</p>
+<!-- fig-tabset:figure_cepstrum_gearbox.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<p><img src="Figure/figure_cepstrum_gearbox.png" width="100%"></p>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SpectraQuest Machinery Fault Simulator – 50 % load, 30 Hz shaft speed</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Data: NREL / OpenEI  https://data.openei.org/files/623/gearboxdata.zip</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>_data_path <span class="op">=</span> save_path.replace(<span class="st">'Figure/'</span>, <span class="st">'Data/'</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>data     <span class="op">=</span> np.load(_data_path <span class="op">+</span> <span class="st">'gearbox_spectraquest.npz'</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>xh, xb   <span class="op">=</span> data[<span class="st">'healthy'</span>].astype(<span class="bu">float</span>), data[<span class="st">'broken'</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>fs_gear  <span class="op">=</span> <span class="bu">float</span>(data[<span class="st">'fs'</span>])   <span class="co"># 66 667 Hz</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>shaft_hz <span class="op">=</span> <span class="fl">30.0</span>                 <span class="co"># shaft rotation frequency</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>gmf_hz   <span class="op">=</span> <span class="fl">900.0</span>                <span class="co"># gear-mesh freq = 30 teeth × 30 Hz</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Band-pass around GMF, then Hilbert envelope, then real cepstrum</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> butter, filtfilt, hilbert, welch <span class="im">as</span> sp_welch</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>b_bp, a_bp <span class="op">=</span> butter(<span class="dv">4</span>, [(gmf_hz <span class="op">-</span> <span class="dv">200</span>) <span class="op">/</span> (fs_gear <span class="op">/</span> <span class="dv">2</span>),</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>                         (gmf_hz <span class="op">+</span> <span class="dv">200</span>) <span class="op">/</span> (fs_gear <span class="op">/</span> <span class="dv">2</span>)], btype<span class="op">=</span><span class="st">'band'</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>env_h <span class="op">=</span> np.<span class="bu">abs</span>(hilbert(filtfilt(b_bp, a_bp, xh)))</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>env_b <span class="op">=</span> np.<span class="bu">abs</span>(hilbert(filtfilt(b_bp, a_bp, xb)))</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _rceps(x):</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    lX <span class="op">=</span> np.log(np.<span class="bu">abs</span>(np.fft.rfft(x)) <span class="op">+</span> <span class="fl">1e-12</span>)</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    lX <span class="op">-=</span> lX.mean()</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.fft.irfft(lX, n<span class="op">=</span><span class="bu">len</span>(x))</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>ch, cb <span class="op">=</span> _rceps(env_h), _rceps(env_b)</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>q_ms   <span class="op">=</span> np.arange(<span class="bu">len</span>(ch)) <span class="op">/</span> fs_gear <span class="op">*</span> <span class="dv">1000</span>   <span class="co"># quefrency in ms</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
 
 
+</section>
 </section>
 </section>
 
