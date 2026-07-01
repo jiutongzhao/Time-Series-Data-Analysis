@@ -863,9 +863,9 @@ No single instrument can cover the whole range, so the canonical picture (Fig. 1
 - an **inertial range** with the celebrated Kolmogorov slope $f^{-5/3}$, where energy cascades scale-by-scale without being dissipated. (Whether the magnetic inertial range follows the Kolmogorov $-5/3$ or the Iroshnikov–Kraichnan $-3/2$ exponent is a long-standing debate; *in situ* magnetic spectra cluster close to $-5/3$, while the velocity spectrum often sits nearer $-3/2$.)
 - a **dissipation (kinetic) range** beyond the **ion-scale break**, where the spectrum steepens to the near-universal slope $f^{-2.8}$ (Alexandrova et al. 2009).
 
-The transitions line up with characteristic plasma scales (shown as vertical lines): the correlation-scale frequency $f_{\tau_\mathrm{c}}$ ends the injection range, the proton inertial length $f_{d_\mathrm{p}}$ and gyroradius $f_{\rho_\mathrm{p}}$ mark the ion break, and the electron scales $f_{d_\mathrm{e}}$, $f_{\rho_\mathrm{e}}$ sit at the high-frequency end.
+The transitions line up with characteristic plasma scales: the correlation-scale frequency ends the injection range, and the proton inertial length and gyroradius mark the ion-scale break.
 
-We reproduce the figure with a single **model spectrum** — the piecewise power law $f^{-1}\!\to\!f^{-5/3}\!\to\!f^{-2.8}$, continuous across the breaks — sampled the way each instrument would see it. A single-realization **periodogram** scatters about the true PSD as $S(f)\cdot\mathrm{Exp}(1)$ (the exponential law from the [previous section](#noiseuncertainty-of-noise)), which is exactly what gives each segment its characteristic noisy band.
+We build the figure from a single **model spectrum** — the piecewise power law $f^{-1}\!\to\!f^{-5/3}\!\to\!f^{-2.8}$, continuous across the breaks — and synthesise a realistic time series for each instrument over the band it can resolve. The figure then overlays the **same measurements** estimated two ways — a raw periodogram and a Welch average.
 
 <!-- fig-tabset:figure_solar_wind_turbulence.png -->
 ::: {.panel-tabset}
@@ -877,21 +877,29 @@ We reproduce the figure with a single **model spectrum** — the piecewise power
 ### Code
 
 ```python
-import numpy as np
+import numpy as np, scipy.signal
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import scienceplots
 import matplotlib.ticker as ticker
-plt.style.use(['science', 'nature'])          # serif, no grid (match the reference)
+plt.style.use(['science', 'nature', 'notebook', 'grid', 'high-vis'])
+plt.rcParams['axes.labelpad'] = 6.0
+# short-legend.mplstyle (~/Code/plot_convention): frameless, text-only, label = line colour
+plt.rcParams['legend.frameon'] = False
+plt.rcParams['legend.labelcolor'] = 'linecolor'
+plt.rcParams['legend.markerscale'] = 0
+plt.rcParams['legend.handlelength'] = 0
+plt.rcParams['legend.handletextpad'] = 0
 
-rng = np.random.default_rng(7)
+title_font = {'fontsize': 16, 'weight': 'bold', 'style': 'italic'}
 
 # ---- one underlying model spectrum: -1 / -5/3 / -2.8, continuous at the breaks ----
-f_tau = 1.5e-4     # correlation-scale frequency  (injection -> inertial)
-f_ion = 0.4        # ion-scale break              (inertial -> dissipation)
-A1 = 3.0           # sets the -1 range:  P = A1 / f   (P(1e-6) = 3e6)
+f_tau = 1.5e-4      # correlation-scale frequency  (injection -> inertial)
+f_ion = 0.4         # ion-scale break              (inertial -> dissipation)
+A1 = 3.0
 
 def target_psd(f):
-    f = np.asarray(f, float)
+    f = np.asarray(f, float).copy(); f[f == 0] = 1e-30
     P = A1 / f
     C1 = A1 * f_tau ** (5/3 - 1)
     m = f >= f_tau; P[m] = C1 * f[m] ** (-5/3)
@@ -899,77 +907,95 @@ def target_psd(f):
     m = f >= f_ion; P[m] = C2 * f[m] ** (-2.8)
     return P
 
-# ---- four "instruments": each samples the same spectrum over its own band ----
-# a single-realization periodogram scatters about the true PSD as S(f)*Exp(1)
-def periodogram(fs, T, band, color, label):
-    N = int(round(T * fs))
-    f = np.fft.rfftfreq(N, 1 / fs)[1:]
-    S = target_psd(f) * rng.exponential(1.0, f.size)
-    m = (f >= band[0]) & (f <= band[1])
-    return f[m], S[m], color, label
-
+# ---- four "instruments": synthesise a real time series, then estimate its spectrum ----
 DAY = 86400.0
-segs = [
-    periodogram(1/240, 58*DAY, (1e-6, 2.5e-4), '#2b3fd0', 'ACE MFI (58 days)'),
-    periodogram(0.5,   51*3600, (1.2e-4, 1.2e-1), '#e8000b', 'ACE MFI (51 hours)'),
-    periodogram(22.0,  3600,    (7e-2, 1.3),       '#1a9a1a', 'Cluster FGM (1 hour)'),
-    periodogram(100.0, 3600,    (0.8, 50.0),       '#b06fd8', 'Cluster STAFF-SC (1 hour)'),
+# exact intervals of the published composite (Kiyani, Osman & Chapman 2015)
+INSTR = [
+    dict(fs=1/60, T=58*DAY, band=(1e-6, 2.5e-4), K=8,   c='#2b3fd0', seed=1,
+         label='ACE MFI  (2007-01-01 – 02-28)  58 days'),
+    dict(fs=1.0,  T=51*3600, band=(1.2e-4, 1.2e-1), K=16,  c='#e8000b', seed=2,
+         label='ACE MFI  (2007-01-29 21:00 – 02-01 00:00)  51 hours'),
+    dict(fs=22.0, T=3600,    band=(7e-2, 1.3),       K=64,  c='#1a9a1a', seed=3,
+         label='Cluster FGM  (2007-01-30 00:10 – 01:10)  1 hour'),
+    dict(fs=100.0, T=3600,   band=(0.8, 50.0),       K=128, c='#b06fd8', seed=4,
+         label='Cluster STAFF-SC  (2007-01-30 00:10 – 01:10)  1 hour'),
 ]
 
-# ---- figure ----
+for ins in INSTR:
+    fs, N = ins['fs'], int(round(ins['fs'] * ins['T']))
+    freq = np.fft.rfftfreq(N, 1 / fs)
+    r = np.random.default_rng(ins['seed'])
+    g = (r.standard_normal(freq.size) + 1j * r.standard_normal(freq.size)) / np.sqrt(2)
+    spec = g * np.sqrt(target_psd(freq) * fs * N / 2)   # scale so PSD estimates ~ target
+    spec[0] = 0.0
+    x = np.fft.irfft(spec, n=N)
+    ins['raw'] = scipy.signal.periodogram(x, fs, window='hann')          # original spectrum
+    ins['wel'] = scipy.signal.welch(x, fs, window='hann', nperseg=N // ins['K'])  # denoised
+
+# ---- figure: raw (faint) and Welch (bold) overlaid on one panel ----
 plt.close()
-fig, ax = plt.subplots(figsize=(7.2, 5.0))
+fig, ax = plt.subplots(figsize=(8, 6))
+fg = np.logspace(-6, np.log10(55), 700)
 
-for f, S, color, label in segs:
-    ax.loglog(f, S, color=color, lw=0.5, alpha=0.9, label=label)
+for ins in INSTR:
+    for key, a, lw in [('raw', 0.18, 0.4), ('wel', 0.95, 1.4)]:
+        f, P = ins[key]
+        m = (f >= ins['band'][0]) & (f <= ins['band'][1])
+        ax.loglog(f[m], P[m], color=ins['c'], ls='-', lw=lw, alpha=a,
+                  zorder=(3 if key == 'wel' else 2))
+# slope guides: broken into one segment per range, lifted above the data
+# (parallel references, not fits)
+off = 20.0
+for lo, hi in [(1.5e-6, 8e-5), (3e-4, 0.2), (0.6, 40.0)]:
+    fseg = np.logspace(np.log10(lo), np.log10(hi), 80)
+    ax.loglog(fseg, off * target_psd(fseg), color='k', ls='-', lw=1.1, zorder=6)
 
-# black power-law guide lines (the three ranges)
-gg = np.array([1e-6, f_tau, f_ion, 60.0])
-fg = np.logspace(-6, np.log10(55), 600)
-ax.loglog(fg, target_psd(fg), color='k', lw=1.1, zorder=6)
-
-ax.set_xlim(1e-6, 6e1)
-ax.set_ylim(1e-10, 1e8)
-ax.set_xlabel('Frequency (Hz)')
-ax.set_ylabel(r'Power Spectral Density (nT$^2$ Hz$^{-1}$)')
+ax.set_xlim(1e-6, 6e1); ax.set_ylim(1e-10, 1e8)
+ax.set_xlabel('Freq [Hz]'); ax.set_ylabel(r'PSD [$\mathrm{nT^2/Hz}$]')
 ax.xaxis.set_major_locator(ticker.LogLocator(base=10, numticks=20))
-ax.yaxis.set_major_locator(ticker.LogLocator(base=10, numticks=20))
+# y-axis: a major tick on every decade, but label only every 2nd decade
+ax.yaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=100))
+ax.yaxis.set_minor_locator(ticker.LogLocator(base=10.0, subs=np.arange(2, 10), numticks=300))
+ax.yaxis.set_minor_formatter(ticker.NullFormatter())
+def _ymaj(y, _):
+    e = int(round(np.log10(y)))
+    return rf'$10^{{{e}}}$' if e % 2 == 0 else ''   # hide odd-decade labels
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(_ymaj))
 
-# slope labels along the guide line
-ax.text(8e-6, 4e3, r'$f^{-1}$', fontsize=12)
-ax.text(8e-3, 2e0, r'$f^{-5/3}$', fontsize=12)
-ax.text(6.0,  6e-8, r'$f^{-2.8}$', fontsize=12)
+def slope_label(fx, txt):
+    ax.text(fx, off * target_psd(np.array([fx]))[0] * 1.9, txt, fontsize=13)
+slope_label(5e-5, r'$f^{-1}$')
+slope_label(5e-3, r'$f^{-5/3}$')
+slope_label(2.0, r'$f^{-2.8}$')
 
-# characteristic-scale vertical lines
-tr = ax.get_xaxis_transform()   # x in data coords, y in axes coords
-def vline(fx, color, ls, name, ytxt):
-    ax.axvline(fx, color=color, ls=ls, lw=1.0, zorder=2)
-    ax.text(fx, ytxt, name, color=color, fontsize=9, ha='center', va='bottom',
-            transform=tr)
-vline(f_tau, '#2b3fd0', '-.', r'$f_{\tau_\mathrm{c}}$', 1.005)
-vline(0.40,  '#e8000b', '--', r'$f_{d_\mathrm{p}}$',    1.06)
-vline(0.50,  '#ff8c00', '--', r'$f_{\rho_\mathrm{p}}$', 1.005)
-vline(20.0,  '#999999', ':',  r'$f_{d_\mathrm{e}}$',    1.06)
-vline(45.0,  '#ff8c00', '-.', r'$f_{\rho_\mathrm{e}}$', 1.005)
+# short-legend: colour-coded text keys the instruments, with record durations
+h_instr = [Line2D([], [], color=ins['c']) for ins in INSTR]
+leg1 = ax.legend(h_instr, [ins['label'] for ins in INSTR], loc='lower left', fontsize=7.5)
+ax.add_artist(leg1)
+# Raw vs Welch PSD: keep handles so the transparency reads as a key
+h_rw = [Line2D([], [], color='#444444', lw=1.0, alpha=0.30),
+        Line2D([], [], color='#444444', lw=2.2)]
+ax.legend(h_rw, ['Raw PSD', 'Welch PSD'], loc='upper right',
+          handlelength=1.8, handletextpad=0.6, markerscale=1,
+          labelcolor='#333333', fontsize=11)
 
-# range labels across the top
-for xc, name in [(1.2e-5, 'Injection Range'), (4e-3, 'Inertial Range'),
-                 (6.0, 'Dissipation Range')]:
-    ax.text(xc, 1.13, name, ha='center', va='bottom', fontsize=11, transform=tr)
-
-ax.legend(frameon=False, loc='lower left', fontsize=9, handlelength=1.4)
-fig.subplots_adjust(top=0.88)
-
+ax.set_title('Solar Wind Magnetic Field Spectrum', **title_font)
+plt.tight_layout()
 plt.savefig(save_path + 'figure_solar_wind_turbulence' + '.png', bbox_inches='tight', dpi=300)
 plt.show()
 ```
 
 :::
 <p align = 'center'>
-<i>Reproduction of Fig. 19 of Verscharen, Klein &amp; Maruca (2019): the composite solar-wind magnetic power spectrum from <i>ACE</i> MFI (58 days, 51 hours) and <i>Cluster</i> FGM &amp; STAFF-SC (1 hour), showing the $f^{-1}$ injection, $f^{-5/3}$ inertial, and $f^{-2.8}$ dissipation ranges separated by the correlation-scale and ion-scale breaks.</i>
+<i>The composite solar-wind magnetic power spectrum, after Fig. 19 of Verscharen, Klein &amp; Maruca (2019) — originally Kiyani, Osman &amp; Chapman (2015), a $\beta_\mathrm{p}\!\sim\!1$ interval on 2007 Jan–Feb (exact UT ranges in the legend). The <b>faint</b> bands are the raw periodograms of the <i>synthesised</i> records; the <b>bold</b> lines are their Welch estimates — the noise collapses and the $f^{-1}$, $f^{-5/3}$, $f^{-2.8}$ power laws emerge.</i>
 </p>
 
-Each instrument occupies the frequency band it can actually resolve, and because every segment is drawn from the *same* model spectrum they stitch into one continuous curve — the multi-decade signature of a turbulent cascade. With real archived data the recipe is identical: compute a periodogram (or Welch estimate) per interval, overlay them, and read off the spectral index in each range. Measuring that index, and locating the breaks against the ion and electron scales, is one of the central diagnostics of space-plasma turbulence.
+The figure tells the story of this chapter. The **faint, wildly noisy bands** are **raw periodograms** — single-realization estimates. That noise is not a defect of the data: as shown in the [«Noise» (Uncertainty) of Noise](#noiseuncertainty-of-noise) section, a periodogram value at each frequency is **exponentially distributed** about the true PSD, so its standard deviation *equals* its mean — a 100 % error on every point, no matter how long the record.
+
+The **bold lines** are the *same* four time series re-estimated with this chapter's **Welch method**: split each record into $K$ segments, periodogram each, and average. The estimate then follows a $\chi^2_{2K}$ (Gamma) distribution whose relative spread shrinks like $1/\sqrt{K}$, so the noisy bands collapse onto clean lines and the three power laws snap into view. (More segments fit into the short, fast *Cluster* records than into the long *ACE* ones, so the high-frequency end is smoothed the hardest.)
+
+This is the central trade-off of spectral estimation, and the reason the Welch and Blackman–Tukey methods exist: averaging $K$ segments costs a factor $K$ in frequency resolution but tightens the power estimate by $\sqrt{K}$. A clean spectral index — like the solar wind's Kolmogorov $-5/3$ — is therefore never read off a raw periodogram, but always from an **averaged** estimate.
+
 
 
 
