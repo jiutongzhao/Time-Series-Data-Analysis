@@ -56,6 +56,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/cmb.qmd">
+<img class="gallery-card-img" src="Figure/figure_cmb_timeline.jpg" alt="Cosmic Microwave Background angular power spectrum">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Cosmic Microwave Background</div>
+<p class="gallery-card-desc">The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.</p>
+<span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/windowing.qmd">
 <img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
 <div class="gallery-card-body">

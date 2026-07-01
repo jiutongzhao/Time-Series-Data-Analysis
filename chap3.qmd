@@ -922,7 +922,46 @@ The Wiener–Khinchin theorem is the workhorse behind almost every estimator of 
 
 Wiener–Khinchin guarantees that this $C_\ell$ is the same object as $\langle |a_{\ell m}|^2\rangle$ obtained by a direct harmonic transform of $T$ — provided the field is statistically isotropic (the angular analogue of WSS).
 
-We verify this by **simulating a realistic CMB sky**: draw one full-sky realisation from a theoretical $\Lambda$CDM angular power spectrum (the standard curve `totcls.dat` bundled with `healpy`), then recover $C_\ell$ two independent ways and check both against the input theory:
+The field itself is the CMB **temperature map** $T(\hat n)$. Here is one simulated full-sky realisation, drawn from a theoretical $\Lambda$CDM spectrum — the same map we analyse below:
+
+<!-- fig-tabset:figure_cmb_map.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_cmb_map.png" width="100%"/>
+
+### Code
+
+```python
+import healpy as hp
+# one full-sky realisation drawn from the LCDM spectrum (Cl_th, lmax as in Method A below)
+cmb_map = hp.synfast(Cl_th, nside=1024, lmax=lmax, pixwin=False)
+
+# full sky (Mollweide) + Planck-style parchment colormap
+full  = hp.mollview(cmb_map, return_projected_map=True, xsize=2000)
+# a 12-degree gnomonic patch to resolve the ~1-degree hot/cold spots
+patch = hp.gnomview(cmb_map, rot=(60, 30), reso=2.0, xsize=360,
+                    return_projected_map=True)
+# composite the two with matplotlib, circling one acoustic wavelength on the
+# zoom (theta = 360/l ~ 1.6 deg for the first peak, l~220 = BAO sound horizon)
+```
+
+:::
+<p align = 'center'>
+<i>A simulated full-sky CMB temperature map (Mollweide projection): hot (red) and cold (blue) spots of $\sim\!100\ \mu$K about the 2.7 K mean. The zoom-in circles one acoustic wavelength — $\theta\approx360^\circ/\ell\approx1.6^\circ$ for the first peak ($\ell\!\approx\!220$), set by the baryon-acoustic sound horizon at recombination (a single hot or cold spot spans half that, $\sim\!0.8^\circ$).</i>
+</p>
+
+Step 2 — estimating $C(\theta)$ — is pure **pair-counting**: for each angular separation $\theta$, average the product $T(\hat n_1)\,T(\hat n_2)$ over every pair of points that far apart. The schematic below shows the idea (drawn for a 2-D point field, but the recipe is identical on the sphere):
+
+<p align = 'center'>
+<video src="Data/two_point_correlation_schematic.webm" width="80%" controls loop muted autoplay playsinline></video>
+</p>
+<p align = 'center'>
+<i>The two-point correlation function by pair-counting: sweep a separation, collect all pairs at that distance, and average their product. (Animation: <a href="https://commons.wikimedia.org/wiki/File:Two-point-correlation-function-astronomy.webm">Wikimedia Commons</a>, free use.)</i>
+</p>
+
+Using this simulated map, we recover $C_\ell$ two independent ways and check both against the input $\Lambda$CDM theory:
 
 - **Method A — spherical harmonics (`healpy.anafast`).** Expand the map in $a_{\ell m}$ and average $|a_{\ell m}|^2$ over $m$: $\;C_\ell=\langle|a_{\ell m}|^2\rangle_m$. Efficient and accurate to high $\ell$ — the standard estimator.
 - **Method B — Wiener–Khinchin.** Estimate the two-point correlation function $C(\theta)$ by averaging $T(\hat n_1)T(\hat n_2)$ over pixel **pairs** separated by $\theta$, then Legendre-transform it: $\;C_\ell = 2\pi\int_{-1}^{1} C(\theta)\,P_\ell(\cos\theta)\,d\cos\theta$. This is a Monte-Carlo estimator, and the variance of $C(\theta)$ propagates into $C_\ell$ as noise that grows like $\ell^2$: resolving a high-$\ell$ peak would need impossibly many pairs at small separations. So we run it only on a small low-$\ell$ Gauss–Legendre grid — through the first acoustic peak — and let Methods A and C carry the high-$\ell$ tail.
@@ -982,18 +1021,21 @@ from scipy.special import eval_legendre
 
 # Method B Monte-Carlo-samples C(theta); its l^2 sampling noise blows up at high l
 # (resolving small angular scales would need impossibly many pairs), so it is only
-# trustworthy at low l. Run it on a SMALL Gauss-Legendre grid reaching just past the
-# first acoustic peak -- this also keeps the ring-sampling loop cheap.
-lmax_B  = 300
+# trustworthy at low l. Two knobs keep the estimate clean through the first peak:
+#   * grid HEADROOM -- sample on n_nodes GL nodes but keep C_l only up to lmax_B,
+#     well below the grid's Nyquist, so the quadrature edge never contaminates it;
+#   * plenty of PAIRS per node to tame the 1/sqrt(n_pairs) Monte-Carlo scatter.
+n_nodes = 400                                           # GL nodes (grid Nyquist ~ n_nodes)
+lmax_B  = 250                                           # trust C_l only this far (< n_nodes)
 ell_B   = np.arange(lmax_B + 1)
-mu, wmu = np.polynomial.legendre.leggauss(lmax_B + 1)   # low-l GL nodes/weights
+mu, wmu = np.polynomial.legendre.leggauss(n_nodes + 1)  # GL nodes/weights (with headroom)
 theta   = np.arccos(mu)
-n_pairs = 200_000                                       # pixel pairs per node (SNR knob)
+n_pairs = 1_000_000                                     # pixel pairs per node (SNR knob)
 rng     = np.random.default_rng(1)
 
 # (B1) ring sampling: for each node draw random centres and a partner at
 #      EXACTLY angular distance theta_i (random azimuth phi).
-C_theta = np.zeros(lmax_B + 1)
+C_theta = np.zeros(n_nodes + 1)
 for k, th in enumerate(theta):
     cp  = rng.integers(0, cmb_map.size, n_pairs)
     vi  = np.array(hp.pix2vec(nside, cp))                      # (3, n_pairs) centres
@@ -1004,8 +1046,8 @@ for k, th in enumerate(theta):
     vj  = np.cos(th)*vi + np.sin(th)*(np.cos(phi)*e1 + np.sin(phi)*e2)
     C_theta[k] = np.mean(cmb_map[cp] * cmb_map[hp.vec2pix(nside, *vj)])
 
-# (B2) exact Legendre transform on the low-l GL grid: C_l = 2*pi * sum_i w_i C(theta_i) P_l(mu_i)
-P_B  = eval_legendre(ell_B[:, None], mu[None, :])            # (lmax_B+1, lmax_B+1)
+# (B2) exact Legendre transform, keeping only l <= lmax_B: C_l = 2*pi * sum_i w_i C(theta_i) P_l(mu_i)
+P_B  = eval_legendre(ell_B[:, None], mu[None, :])            # (lmax_B+1, n_nodes+1)
 Cl_B = 2*np.pi * (P_B * (wmu * C_theta)).sum(axis=1)
 ```
 
@@ -1030,37 +1072,39 @@ def bin_Dl(x, Dl_vals, dl=25):
 cA, DA = bin_Dl(ell,   Dl(Cl_A))
 cB, DB = bin_Dl(ell_B, Dl_B(Cl_B))
 
-# plot: LCDM model band, Method C (fast Legendre), anafast, Method B
-from cycler import cycler
+# plot: LCDM model band, Method C (fast Legendre), anafast, Method B -- dark theme
+BG, FG, FAINT, SHADE = '#0d1117', '#e6edf3', '#8b949e', '#1b212b'
+BLUE, RED, INK, GREY = '#4aa3ff', '#ff5470', '#e6edf3', '#8b949e'
 plt.rcParams.update({
     'axes.linewidth':0.6,'lines.linewidth':1.2,'lines.markersize':3.5,
     'xtick.direction':'in','ytick.direction':'in','xtick.top':True,'ytick.right':True,
     'xtick.minor.visible':True,'ytick.minor.visible':True,
-    'legend.frameon':False,'legend.labelcolor':'linecolor','savefig.bbox':'standard',
+    'legend.frameon':False,'legend.labelcolor':'linecolor',
+    'text.color':FG,'axes.labelcolor':FG,'xtick.color':FG,'ytick.color':FG,
+    'axes.edgecolor':FG,'axes.facecolor':BG,'figure.facecolor':BG,
 })
-BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'   # bright cycle blue/red
 plt.close()
-fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.9), layout='constrained')
+fig, ax = plt.subplots(1, 2, figsize=(8.8, 3.9), layout='constrained'); fig.patch.set_facecolor(BG)
 of = np.argsort(np.arccos(mu_f)); thf = np.rad2deg(np.arccos(mu_f))[of]
 ax[0].plot(thf, C_theta_exact[of], color=INK, lw=1.6, label=r'exact  $C(\theta)$  ($\Lambda$CDM)')
 ob = np.argsort(theta)
-ax[0].plot(np.rad2deg(theta[ob]), C_theta[ob], '.', color=RED, ms=3.5, alpha=0.6, label='Monte-Carlo pairs')
-ax[0].axhline(0, color=GREY, lw=0.6); ax[0].set_xlim(0, 180)
+ax[0].plot(np.rad2deg(theta[ob]), C_theta[ob], '.', color=RED, ms=3.5, alpha=0.7, label='Monte-Carlo pairs')
+ax[0].axhline(0, color=FAINT, lw=0.6); ax[0].set_xlim(0, 180)
 ax[0].set_xlabel(r'separation  $\theta$  [deg]'); ax[0].set_ylabel(r'$C(\theta)$  [$\mu$K$^2$]')
-ax[0].set_title('(a) two-point correlation'); ax[0].legend(loc='upper right')
+ax[0].set_title('(a) two-point correlation', color=FG); ax[0].legend(loc='upper right')
 
-ax[1].plot(ell[2:], Dl(Cl_th)[2:], color=GREY, lw=4, alpha=0.35, label=r'$\Lambda$CDM model')
+ax[1].plot(ell[2:], Dl(Cl_th)[2:], color=GREY, lw=4, alpha=0.4, label=r'$\Lambda$CDM model')
 ax[1].plot(ell[2:], Dl(Cl_C)[2:], color=INK, lw=1.0, ls='--', label='fast Legendre transform')
 ax[1].plot(cA, DA, 'o', color=BLUE, ms=2.6, label='anafast (Method A)')
 ax[1].plot(cB, DB, 's', color=RED, ms=3.4, label='Wiener–Khinchin (Method B)')
-ax[1].axvspan(lmax_B, lmax, color='0.93', zorder=0)
+ax[1].axvspan(lmax_B, lmax, color=SHADE, zorder=0)
 ax[1].text(0.66, 0.55, 'pair estimator\nlimited to low $\\ell$\n(noise $\\propto\\ell^2$)', transform=ax[1].transAxes,
-           ha='center', va='center', fontsize=7, color=GREY)
+           ha='center', va='center', fontsize=7, color=FAINT)
 ax[1].set_xlim(0, lmax); ax[1].set_ylim(0, 6500)
 ax[1].set_xlabel(r'multipole  $\ell$'); ax[1].set_ylabel(r'$D_\ell=\ell(\ell+1)C_\ell/2\pi$  [$\mu$K$^2$]')
-ax[1].set_title('(b) angular power spectrum'); ax[1].legend(loc='upper right')
-fig.suptitle('CMB Angular Power Spectrum', fontsize=14, fontweight='bold', fontstyle='italic', color='#222222')
-fig.savefig(save_path + 'figure_wk_cmb_sphere.png', dpi=200)
+ax[1].set_title('(b) angular power spectrum', color=FG); ax[1].legend(loc='upper right')
+fig.suptitle('CMB Angular Power Spectrum', fontsize=14, fontweight='bold', fontstyle='italic', color=FG)
+fig.savefig(save_path + 'figure_wk_cmb_sphere.png', dpi=200, facecolor=BG)
 ```
 
 :::

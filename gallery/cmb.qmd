@@ -1,0 +1,58 @@
+# Cosmic Microwave Background
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Angular power spectrum — the Wiener–Khinchin theorem on the 2-sphere, applied to the oldest light in the Universe.
+**Chapter:** [3 — Power Spectral Density](../chap3.qmd)
+
+---
+
+## Background
+
+The **Cosmic Microwave Background** is the afterglow of the Big Bang — light released 375,000 years after the beginning, when the Universe first cooled enough for neutral atoms to form. It reaches us as a nearly uniform 2.7 K glow, but imprinted on it are temperature fluctuations of $\sim\!100\ \mu$K: a frozen snapshot of the sound waves that rippled through the primordial plasma.
+
+<div class="gallery-result">
+![The Universe's timeline: quantum fluctuations imprinted at inflation become the CMB "afterglow light pattern" 375,000 years later, then grow into galaxies. *Credit: NASA/WMAP Science Team.*](../Figure/figure_cmb_timeline.jpg)
+</div>
+
+Because those fluctuations are a **statistically isotropic random field on a sphere**, there is no meaningful "value at a point" to predict — only a *power spectrum* to measure. The natural summary statistic is the **angular power spectrum** $C_\ell$: how much temperature variance lives at each angular scale, indexed by multipole $\ell$ (roughly, $\theta \approx 180^\circ/\ell$).
+
+## Key idea
+
+The two-point correlation function $C(\theta) = \langle T(\hat n_1)\,T(\hat n_2)\rangle$ depends only on the angular separation $\theta$. The spherical **Wiener–Khinchin theorem** says its Legendre transform *is* the power spectrum:
+
+$$
+C_\ell = 2\pi \int_{-1}^{1} C(\theta)\, P_\ell(\cos\theta)\, d\cos\theta
+$$
+
+the exact angular analogue of $S(f) = \mathcal{F}\{R(\tau)\}$ on the line. This is a **definition**, not an algorithm: pair-counting $C(\theta)$ over the $\sim\!10^{14}$ pixel pairs of a real sky map is hopeless, so production pipelines evaluate the *same* sum in harmonic space with `healpy.anafast` in $O(N\ell_{\max})$.
+
+## Result
+
+<div class="gallery-result">
+![**Top:** a simulated full-sky CMB temperature map (Mollweide projection); the zoom-in circles one acoustic wavelength — $\theta\approx360^\circ/\ell\approx1.6^\circ$ for the first peak ($\ell\approx220$), set by the baryon-acoustic sound horizon at recombination. **Bottom:** the same realisation analysed — (a) the two-point correlation $C(\theta)$, with Monte-Carlo pairs scattering about the exact $\Lambda$CDM curve, and (b) the angular power spectrum, where `anafast` and the pair-counting Wiener–Khinchin estimator both recover the same acoustic-peak structure of the $\Lambda$CDM model.](../Figure/figure_cmb_combined.png)
+</div>
+
+The first acoustic peak at $\ell\approx220$ sets the scale on which hot and cold patches repeat, $\theta\approx360^\circ/\ell\approx1.6^\circ$ (individual spots span half that) — fixed by the distance a sound wave could travel in the plasma before recombination froze it in. `anafast` (harmonic transform) and the pair-counting Wiener–Khinchin estimator agree through the first peak — the spherical-geometry version of "Welch and the FT of the autocorrelation give the same PSD". The pair estimator's noise grows as $\ell^2$, so it is a large-angle tool; the harmonic transform carries the high-$\ell$ tail out to the Silk-damping cutoff.
+
+## Code
+
+```python
+import numpy as np, healpy as hp
+
+# theory LCDM spectrum shipped with healpy -> one full-sky realisation
+lmax = 1500; ell = np.arange(lmax + 1)
+Dl = np.loadtxt(hp.data.get_data_path() + 'totcls.dat')[:lmax + 1, 1]
+Cl_th = np.zeros(lmax + 1); Cl_th[2:] = Dl[2:] * 2 * np.pi / (ell[2:] * (ell[2:] + 1))
+cmb_map = hp.synfast(Cl_th, nside=1024, lmax=lmax, pixwin=False)
+
+# Method A — spherical harmonics: the same C_l, computed in O(N l_max)
+Cl_A = hp.anafast(cmb_map, lmax=lmax)
+
+# Method B — Wiener-Khinchin: pair-count C(theta), then Legendre-transform
+#   C_l = 2*pi * integral C(theta) P_l(cos theta) d(cos theta)
+```
+
+---
+
+*See [Chapter 3](../chap3.qmd) for the full three-method derivation, the definition-versus-computation trade-off, and the proof that `anafast` and pair-counting Wiener–Khinchin evaluate the identical sum.*

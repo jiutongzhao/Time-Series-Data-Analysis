@@ -22,6 +22,7 @@ project:
     - gallery.qmd
     - gallery/cuckoo.qmd
     - gallery/sunspot.qmd
+    - gallery/cmb.qmd
     - gallery/seismometer.qmd
     - gallery/gravitational_waves.qmd
     - gallery/exoplanet.qmd
@@ -37,6 +38,7 @@ project:
     - Figure/
     - Data/indian_cuckoo_short.wav
     - Data/gearbox_spectraquest.npz
+    - Data/two_point_correlation_schematic.webm
     - styles.css
     # figure_code_map.js is lazy-loaded on first figure click (figure_modal.js is inlined).
     - js/figure_code_map.js
