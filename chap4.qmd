@@ -183,6 +183,112 @@ Despite increasing the number of harmonics, the overshoot becomes narrower but r
 $$
 \frac{1}{\pi}\int_0^\pi \frac{\mathrm{sin} u}{u} \mathrm{d}u \approx 0.08949\ldots
 $$
+
+### Application: Gibbs Ringing in MRI
+
+The Gibbs phenomenon is not just a textbook curiosity — it is a **routine artifact in clinical MRI**, where it goes by the names *Gibbs ringing*, *truncation artifact*, or *ringing artifact*. The reason is that an MRI scanner never measures the image directly: it samples the image's **spatial-frequency space** (**$k$-space**) line by line, and the picture the radiologist sees is the **inverse 2-D FFT** of that raw data.
+
+This flips the usual picture. In most of this book we sample a signal in **time or space** and then *compute* its spectrum, so any truncation happens in the domain we control. MRI is the opposite: the measurement is taken **directly in the frequency ($k$) domain** — each data point the scanner records *is* one spatial-frequency coefficient of the object. We never see the "full" signal to window; the raw acquisition is already a finite, band-limited set of frequency samples.
+
+And that is precisely where Gibbs bites. If the object contains a **discontinuity** — a sharp tissue boundary — its true spectrum has energy stretching out to arbitrarily high $k$. A finite set of $k$-space samples simply **cannot capture that infinite high-frequency tail**, so the sharp edge is rebuilt from an incomplete sum of sinusoids. The missing high frequencies re-emerge as **overshoot and ringing** at the edge: a set of **parallel bright-and-dark ripples running alongside every high-contrast boundary** (skull/brain, fat/muscle, CSF/spinal-cord), decaying with distance. Truncating the Fourier series of a discontinuous image is *exactly* the Gibbs setup — only now in two dimensions, and forced on us by the physics of the measurement rather than chosen.
+
+The figure below simulates it on a Shepp–Logan phantom: acquiring only the central $96\times96$ block of the full $512\times512$ $k$-space produces the characteristic ringing around the skull and the internal boundaries, and the line profile shows the familiar **$\sim\!9\%$ overshoot** followed by decaying oscillations at each jump.
+
+<!-- fig-tabset:figure_gibbs_mri.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_gibbs_mri.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+BLUE, RED, INK, GREY = '#0d49fb', '#e6091c', '#222222', '#888888'
+
+# --- modified Shepp-Logan phantom (the classic MRI test image) ---
+def shepp_logan(N):
+    # (intensity, a, b, x0, y0, phi_deg) for each ellipse
+    E = [( 1.0, .69,  .92,   0,     0,    0), (-.80, .6624,.874,  0,  -.0184, 0),
+         (-.20, .11,  .31,  .22,    0,  -18), (-.20, .16,  .41, -.22,   0,   18),
+         ( .10, .21,  .25,   0,    .35,   0), ( .10, .046, .046,  0,   .10,   0),
+         ( .10, .046, .046,  0,   -.10,   0), ( .10, .046, .023, -.08,-.605,  0),
+         ( .10, .023, .023,  0,   -.606,  0), ( .10, .023, .046, .06, -.605,  0)]
+    g = np.linspace(-1, 1, N); X, Y = np.meshgrid(g, -g)
+    img = np.zeros((N, N))
+    for I, a, b, x0, y0, phi in E:
+        t = np.radians(phi)
+        xc =  (X - x0)*np.cos(t) + (Y - y0)*np.sin(t)
+        yc = -(X - x0)*np.sin(t) + (Y - y0)*np.cos(t)
+        img[(xc/a)**2 + (yc/b)**2 <= 1] += I
+    return img
+
+N = 512
+truth = shepp_logan(N)
+
+# --- MRI acquisition: full k-space, then keep only a central MxM block ---
+K = np.fft.fftshift(np.fft.fft2(truth))          # image -> k-space
+M = 96                                            # sampled matrix (of N): finite k-space
+c, h = N // 2, M // 2
+mask = np.zeros((N, N), bool); mask[c-h:c+h, c-h:c+h] = True
+recon = np.fft.ifft2(np.fft.ifftshift(K * mask)).real   # zero-filled inverse FFT
+
+row = c; x = np.linspace(-1, 1, N)               # profile through the image centre
+
+# --- figure: truth | truncated recon | line profile ---
+plt.rcParams.update({'font.size': 11, 'axes.linewidth': 0.8,
+                     'xtick.direction': 'in', 'ytick.direction': 'in'})
+fig = plt.figure(figsize=(10, 3.4), layout='constrained')
+gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1.35])
+a0, a1, a2 = (fig.add_subplot(gs[i]) for i in range(3))
+VMAX = 1.05
+
+a0.imshow(truth, cmap='gray', vmin=0, vmax=VMAX, extent=[-1, 1, -1, 1])
+a0.axhline(x[row], color=RED, lw=0.8, ls='--')
+a0.set_title(f'(a) fully sampled\n({N}x{N} k-space)'); a0.set_xticks([]); a0.set_yticks([])
+
+a1.imshow(recon, cmap='gray', vmin=0, vmax=VMAX, extent=[-1, 1, -1, 1])
+a1.axhline(x[row], color=RED, lw=0.8, ls='--')
+a1.set_title(f'(b) truncated k-space\n(central {M}x{M}) -- Gibbs ringing')
+a1.set_xticks([]); a1.set_yticks([])
+
+a2.plot(x, truth[row], color=INK, lw=1.3, label='fully sampled')
+a2.plot(x, recon[row], color=RED, lw=1.1, label=f'{M}x{M} k-space')
+a2.set_title('(c) intensity profile across the dashed line')
+a2.set_xlabel('position'); a2.set_ylabel('signal [arb.]')
+a2.set_xlim(-1, 1); a2.legend(loc='upper right', fontsize=9); a2.grid(alpha=0.25)
+
+fig.suptitle('Gibbs Ringing in MRI -- the cost of finite k-space',
+             fontsize=13, fontweight='bold', fontstyle='italic', color=INK)
+fig.savefig(save_path + 'figure_gibbs_mri.png', dpi=200, bbox_inches='tight')
+plt.show()
+```
+
+:::
+
+Two things follow directly from the 1-D theory. First, **extending $k$-space** (a larger acquisition matrix, i.e. higher resolution) does *not* lower the overshoot — it only makes the ripples finer and pushes them closer to the edge, just as adding harmonics never beats the $8.95\%$ constant. Second, the practical fix is **apodization**: multiplying $k$-space by a smooth taper (a Hamming or Fermi window) before the inverse FFT suppresses the ringing at the price of a slightly blurrier edge — the same time–frequency trade-off that runs through this whole chapter.
+
+::: {.callout-note}
+## Aside: CT, the Radon transform, and the Fourier slice theorem
+
+MRI records $k$-space directly; **CT** reaches the frequency domain by a different door — the **Radon transform**. A CT scanner measures how much an X-ray is attenuated along each ray through the body, i.e. a set of **line integrals** of the image. Collecting all parallel rays at a viewing angle $\theta$ gives one *projection* $p_\theta(s)$, and the Radon transform is the map from the image $f(x,y)$ to all of its projections:
+
+$$
+p_\theta(s) = \mathcal{R}f(\theta, s) = \iint f(x, y)\,\delta(x\cos\theta + y\sin\theta - s)\, dx\, dy .
+$$
+
+The bridge to Fourier analysis is the **Fourier slice theorem**: the **1-D** Fourier transform of a single projection equals a **radial line through the origin** of the **2-D** Fourier transform of the image,
+
+$$
+\mathcal{F}_{1\mathrm D}\{p_\theta\}(k) = \hat f(k\cos\theta,\; k\sin\theta).
+$$
+
+So rotating the source and detector fills 2-D $k$-space one radial spoke at a time — CT samples the *same* spectrum as MRI, just on a polar grid instead of a Cartesian one. Inverting this (filtered back-projection) reconstructs the image, and the same lesson returns: a **finite** number of angles and radial samples cannot capture a discontinuity's high-frequency tail, so sharp edges again produce ringing (plus the streak artifacts characteristic of sparse-angle CT).
+:::
+
 ## More Practical Properties
 
 A super powerful property of Fourier transform is that:
