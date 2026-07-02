@@ -122,6 +122,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/solar_wind.qmd">
+<img class="gallery-card-img" src="Figure/figure_solar_wind_turbulence.png" alt="Solar wind turbulence spectrum">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Solar-Wind Turbulence Spectrum</div>
+<p class="gallery-card-desc">The Welch method tames six decades of raw periodogram scatter into the turbulent cascade — f⁻¹ injection, f⁻⁵ᐟ³ Kolmogorov, f⁻²·⁸ dissipation.</p>
+<span class="gallery-card-tag">Ch.5 · Welch PSD</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/cuckoo.qmd">
 <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
 <div class="gallery-card-body">

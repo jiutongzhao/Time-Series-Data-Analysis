@@ -1,0 +1,69 @@
+# Solar-Wind Turbulence Spectrum
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The Welch method on a multi-instrument composite — reconstructing the turbulent cascade of the solar wind across six decades of frequency.
+**Chapter:** [5 — Noise](../chap5.qmd)
+
+---
+
+## Background
+
+The **solar wind** — the magnetised plasma streaming out of the Sun — is in a state of fully developed **turbulence**. Magnetometers on spacecraft such as *ACE*, *Cluster*, *Wind*, and *Parker Solar Probe* measure a magnetic-field power spectrum that spans roughly **six decades in frequency** and breaks naturally into a sequence of power-law ranges, each governed by different physics. It is one of the cleanest natural examples of a turbulent energy cascade, and its shape is a direct read-out of how energy is injected, transported, and dissipated in a collisionless plasma. The canonical broadband picture is reviewed by [Verscharen, Klein & Maruca (2019)](https://doi.org/10.1007/s41116-019-0021-0); this example reproduces their composite trace spectrum.
+
+## Key idea
+
+Two spectral-analysis ideas do the work.
+
+**A multi-instrument composite.** No single instrument can span six decades — a slow, long survey resolves the lowest frequencies; a fast, short burst resolves the highest. So the spectrum is *stitched* together: here *ACE* MFI over 58 days and 51 hours for the lowest frequencies, and *Cluster* FGM and STAFF-SC over one hour for the highest. Overlapping bands must agree where they meet.
+
+**The Welch method.** A raw periodogram of a turbulent signal is enormously noisy — its variance does not shrink as you take more data. **Welch's method** splits the record into overlapping segments and *averages* their periodograms, trading a little frequency resolution for a dramatic reduction in scatter. On the plot the faint traces are the raw periodograms; the bold traces are their Welch averages, and only the latter reveal the power laws cleanly.
+
+The three ranges then stand out:
+
+- an **injection ("$1/f$") range** at the lowest frequencies, slope $\approx f^{-1}$, where large-scale energy is fed in;
+- an **inertial range** with the Kolmogorov slope $f^{-5/3}$, where energy cascades scale-by-scale without dissipating;
+- a **dissipation (kinetic) range** beyond the ion-scale break, steepening to $\approx f^{-2.8}$.
+
+## Code
+
+```python
+import numpy as np, scipy.signal
+
+# --- the canonical model spectrum: -1 -> -5/3 -> -2.8, continuous at the breaks ---
+f_tau, f_ion, A1 = 1.5e-4, 0.4, 3.0            # correlation-scale and ion-scale break
+def target_psd(f):
+    f = np.asarray(f, float).copy(); f[f == 0] = 1e-30
+    P = A1 / f
+    C1 = A1 * f_tau**(5/3 - 1);  m = f >= f_tau; P[m] = C1 * f[m]**(-5/3)
+    C2 = C1 * f_ion**(2.8 - 5/3); m = f >= f_ion; P[m] = C2 * f[m]**(-2.8)
+    return P
+
+# --- each "instrument": synthesise a realistic time series over its band, then estimate its PSD ---
+def instrument(fs, T, seed):
+    N = int(fs * T); freq = np.fft.rfftfreq(N, 1/fs)
+    r = np.random.default_rng(seed)
+    g = (r.standard_normal(freq.size) + 1j*r.standard_normal(freq.size)) / np.sqrt(2)
+    x = np.fft.irfft(g * np.sqrt(target_psd(freq) * fs * N / 2), n=N)
+    raw   = scipy.signal.periodogram(x, fs, window='hann')                    # noisy
+    welch = scipy.signal.welch(x, fs, window='hann', nperseg=N // 16)         # averaged -> clean
+    return raw, welch
+
+ace_hi = instrument(fs=1.0,   T=51*3600, seed=2)     # ACE MFI, 51 h
+cluster = instrument(fs=100.0, T=3600,    seed=4)    # Cluster STAFF-SC, 1 h
+# ...stitch ACE (58 d, 51 h) and Cluster (FGM, STAFF-SC) over their respective bands
+```
+
+## Result
+
+<div class="gallery-result">
+![The solar-wind magnetic-field power spectrum across six decades, composited from four instrument/interval bands (ACE MFI over 58 days and 51 hours; Cluster FGM and STAFF-SC over one hour). Faint traces are raw periodograms; bold traces are their Welch averages. Reference lines mark the f⁻¹ injection range, the f⁻⁵ᐟ³ Kolmogorov inertial range, and the f⁻²·⁸ dissipation range.](../Figure/figure_solar_wind_turbulence.png)
+</div>
+
+The four coloured bands tile the frequency axis from $10^{-6}$ Hz (slow variations over two months) to tens of hertz (sub-second kinetic fluctuations), and where they overlap they agree — a self-consistent composite. The value of the **Welch method** is visible directly: each band's faint raw periodogram scatters over orders of magnitude, and only after segment-averaging (the bold traces) do the three power laws emerge cleanly enough to read a slope. The result is the textbook turbulent cascade — injection at $f^{-1}$, a Kolmogorov $f^{-5/3}$ inertial range, and an $f^{-2.8}$ dissipation range past the ion-scale break — spanning six decades that no single measurement could ever cover.
+
+A note on the data: this is a faithful **reproduction** of the canonical composite (following the Verscharen review). Rather than re-download the archival ACE and Cluster intervals, each band's time series is *synthesised* from the canonical model spectrum and then estimated — which isolates exactly what the gallery is about, the spectral-estimation technique (raw periodogram vs. Welch, and how bands are stitched), on a signal whose true spectrum is known.
+
+---
+
+*See [Chapter 5](../chap5.qmd) for coloured-noise generation, the Welch method, and power-law-noise spectra.*
