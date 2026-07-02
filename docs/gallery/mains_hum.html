@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>spectral_pde – Practical Spectral Analysis</title>
+<title>mains_hum – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -510,7 +510,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#heat-conduction-solving-pdes-with-the-fft" id="toc-heat-conduction-solving-pdes-with-the-fft" class="nav-link active" data-scroll-target="#heat-conduction-solving-pdes-with-the-fft">Heat Conduction — Solving PDEs with the FFT</a>
+  <li><a href="#notching-out-60-hz-mains-hum" id="toc-notching-out-60-hz-mains-hum" class="nav-link active" data-scroll-target="#notching-out-60-hz-mains-hum">Notching Out 60 Hz Mains Hum</a>
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
@@ -527,67 +527,52 @@ window.Quarto = {
 
 
 
-<section id="heat-conduction-solving-pdes-with-the-fft" class="level1">
-<h1>Heat Conduction — Solving PDEs with the FFT</h1>
+<section id="notching-out-60-hz-mains-hum" class="level1">
+<h1>Notching Out 60 Hz Mains Hum</h1>
 <p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
-<p><strong>Topic:</strong> The pseudo-spectral method — turning a partial differential equation into one decoupled ODE per Fourier mode, and solving it exactly with the FFT. <strong>Chapter:</strong> <a href="../chap4.html">4 — More about FFT</a> <strong>Companion:</strong> <a href="../gallery/spectral_em.html">Electromagnetic Waves — Solved with the FFT</a></p>
+<p><strong>Topic:</strong> The notch (band-stop) filter — surgically removing power-line interference from a biomedical signal without touching the rest of the spectrum. <strong>Chapter:</strong> <a href="../chap6.html">6 — Signal Processing</a></p>
 <hr>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Most physical fields — temperature, pressure, the electromagnetic field — obey <strong>partial differential equations</strong> involving spatial derivatives. In real space a derivative couples every grid point to its neighbours, which is what makes PDEs hard. But a derivative is <em>diagonal</em> in Fourier space: differentiating <span class="math inline">e^{ikx}</span> just multiplies it by <span class="math inline">ik</span>. So the Fourier transform turns</p>
-<p><span class="math display">
-\frac{\partial}{\partial x} \;\longrightarrow\; ik, \qquad \nabla^2 \;\longrightarrow\; -k^2,
-</span></p>
-<p>and a linear, constant-coefficient PDE collapses into a family of <strong>independent ordinary</strong> differential equations — one for each Fourier mode — that often have a closed-form solution. This is the <strong>pseudo-spectral method</strong>, and the FFT makes it fast.</p>
+<p>Almost every measurement made near mains electricity picks up a steady hum at the power-line frequency — <strong>60 Hz</strong> in the Americas, 50 Hz across most of the rest of the world — plus its harmonics at 120, 180 Hz… It leaks in capacitively through cables and electrodes, and it is the bane of high-gain instruments: an <strong>ECG</strong> records millivolts from the heart, so a few millivolts of 60 Hz pickup can bury the trace. You can see it below as the fuzzy grey band riding on top of the heartbeat.</p>
+<p>The interference is almost the opposite of the light-pollution gradient in the <a href="../gallery/light_pollution.html">companion example</a>: there the contaminant was spread smoothly in <em>space</em>; here it is razor-sharp in <em>frequency</em>, a single spectral line (and its harmonics) sitting at a precisely known location. That is the ideal target for a <strong>notch filter</strong>.</p>
 </section>
 <section id="key-idea" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
-<p>Take the 2-D <strong>heat equation</strong> <span class="math inline">\partial_t T = \alpha \nabla^2 T</span>. Fourier-transform in space and the coupled PDE becomes, mode by mode,</p>
-<p><span class="math display">
-\frac{d\hat T(\mathbf k,t)}{dt} = -\alpha\,k^2\,\hat T(\mathbf k,t)
-\qquad\Longrightarrow\qquad
-\hat T(\mathbf k,t) = \hat T(\mathbf k,0)\,e^{-\alpha k^2 t}.
-</span></p>
-<p>Each mode simply decays exponentially, at a rate set by <span class="math inline">k^2</span> — so <strong>short-wavelength (high-<span class="math inline">k</span>) features die fastest</strong>, which is exactly why sharp edges blur first and the field relaxes toward smoothness. The whole solver is: FFT the initial condition, multiply by <span class="math inline">e^{-\alpha k^2 t}</span>, inverse-FFT. Crucially it is <strong>exact in time</strong> — you can jump straight to any <span class="math inline">t</span> with no time-stepping — whereas an explicit finite-difference scheme must crawl forward in steps small enough (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) to stay stable.</p>
+<p>A <strong>notch</strong> (or band-stop) filter is designed to have a gain of essentially zero in an extremely narrow band around one frequency, and a gain of one everywhere else. <code>scipy.signal.iirnotch(f0, Q, fs)</code> builds a second-order IIR notch: the <strong>quality factor</strong> <span class="math inline">Q = f_0/\Delta f</span> sets how narrow the notch is — a high <span class="math inline">Q</span> carves out a sliver just wide enough to swallow the 60 Hz line while leaving the neighbouring ECG frequencies (the QRS complex spreads up to ~40 Hz) untouched.</p>
+<p>Two practical points from <a href="../chap6.html">Chapter 6</a> matter here:</p>
+<ul>
+<li>Mains hum is not a pure sinusoid, so it also appears at <strong>harmonics</strong>. Cascade a notch at 60, 120, and 180 Hz to catch them all.</li>
+<li>An IIR notch has <strong>nonlinear phase</strong>, which would distort the sharp QRS edges if applied causally. Running it <strong>forward and backward</strong> with <code>filtfilt</code> cancels the phase entirely (zero-phase filtering), preserving the waveform’s timing — exactly the concern the <a href="../gallery/phase_distortion.html">linear-phase example</a> is about.</li>
+</ul>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.fft <span class="im">import</span> fft2, ifft2, fftfreq</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> iirnotch, filtfilt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>N, dx, alpha <span class="op">=</span> <span class="dv">128</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> dx<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> alpha)                          <span class="co"># finite-difference stability limit</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fftfreq(N, d<span class="op">=</span>dx)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>KX, KY <span class="op">=</span> np.meshgrid(k, k, indexing<span class="op">=</span><span class="st">'ij'</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>k2 <span class="op">=</span> KX<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> KY<span class="op">**</span><span class="dv">2</span>                                <span class="co"># Laplacian -&gt; -k^2</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>T0 <span class="op">=</span> np.zeros((N, N))<span class="op">;</span> T0[N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>, N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>] <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># a hot square block</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>T0hat <span class="op">=</span> fft2(T0)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>T_fd <span class="op">=</span> T0.copy()</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">400</span>):</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> i <span class="op">*</span> dt</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (1) FINITE DIFFERENCE — explicit 5-point Laplacian, many tiny stable steps</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    lap <span class="op">=</span> (np.roll(T_fd, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>           np.roll(T_fd, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>T_fd) <span class="op">/</span> dx<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    T_fd <span class="op">+=</span> alpha <span class="op">*</span> dt <span class="op">*</span> lap</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (2) SPECTRAL — exact solution at time t, in a single shot, no stability limit</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    T_spec <span class="op">=</span> np.real(ifft2(T0hat <span class="op">*</span> np.exp(<span class="op">-</span>alpha <span class="op">*</span> k2 <span class="op">*</span> t)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">500</span>                                     <span class="co"># ECG sample rate [Hz]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># noisy = clean ECG + 60/120/180 Hz mains hum</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>clean <span class="op">=</span> noisy.copy()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f0 <span class="kw">in</span> (<span class="dv">60</span>, <span class="dv">120</span>, <span class="dv">180</span>):                    <span class="co"># fundamental + harmonics</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    b, a <span class="op">=</span> iirnotch(f0, Q<span class="op">=</span><span class="dv">30</span>, fs<span class="op">=</span>fs)         <span class="co"># narrow band-stop, Q = f0/bandwidth</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    clean <span class="op">=</span> filtfilt(b, a, clean)            <span class="co"># zero-phase: no waveform distortion</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
 <div class="gallery-result">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../Figure/heat_diffusion.gif" class="img-fluid figure-img"></p>
-<figcaption>The 2-D heat equation solved two ways as a hot square block diffuses. Left: an explicit finite-difference scheme, crawling forward in many small time steps. Right: the Fourier/spectral solution, T̂(k,t) = T̂(k,0)·exp(−αk²t), evaluated directly. Both give the same diffusing field.</figcaption>
+<p><img src="../Figure/figure_mains_hum.png" class="img-fluid figure-img"></p>
+<figcaption>Three panels. (a) An ECG in the time domain: the grey trace carries a thick 60 Hz hum that obscures the P and T waves; the red trace, after notch filtering, shows a clean heartbeat. (b) Power spectra before (grey) and after (red): sharp interference lines at 60, 120 and 180 Hz drop by orders of magnitude while the broadband ECG content below 40 Hz is untouched. (c) The frequency response of a single 60 Hz notch (Q = 30) — a deep, narrow null.</figcaption>
 </figure>
 </div>
 </div>
-<p>The two panels are the same heat equation solved two ways. On the <strong>left</strong>, the classic <strong>finite-difference</strong> method: approximate the Laplacian with a 5-point stencil and step forward in time — but each step must be tiny (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) or the scheme goes unstable and blows up, so reaching a given time takes hundreds of steps. On the <strong>right</strong>, the <strong>spectral</strong> method: a single line, <span class="math inline">\hat T(\mathbf k,t)=\hat T(\mathbf k,0)\,e^{-\alpha k^2 t}</span>, jumps straight to any time with no stability limit and no accumulation of step-by-step error, because in Fourier space every mode evolves independently and <em>exactly</em>. The two tracks agree frame-for-frame — which is the point: the spectral method reaches the same answer, faster and exactly.</p>
-<p>That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in <span class="math inline">k</span>-space. The same trick — <span class="math inline">\nabla \to i\mathbf k</span> — solves Poisson’s equation (divide by <span class="math inline">-k^2</span>), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes. The heat equation is the <em>easiest</em> case because it has a real, decaying exponential per mode; the <a href="../gallery/spectral_em.html">electromagnetic-wave companion</a> shows what happens when that exponential becomes <strong>oscillatory</strong> — Maxwell’s curl equations solved the same spectral way.</p>
+<p>The time trace (a) tells the story at a glance: the raw signal’s heartbeat is smothered under 60 Hz fuzz, and after three cascaded notches the PQRST morphology — the small P wave, the tall R spike, the broad T wave — emerges cleanly. The spectrum (b) shows <em>why</em> it works and <em>why it is safe</em>: the interference is concentrated in three needle-thin lines exactly at the mains harmonics (dotted blue), and the notch response (c) is zero only in a narrow band around each. Everything the cardiologist cares about lives below ~40 Hz, far from the 60 Hz null, so it passes through unchanged.</p>
+<p>The trade-off is the same one that governs all filter design: a <strong>narrower</strong> notch (higher <span class="math inline">Q</span>) removes less of the surrounding signal but rings longer in time and is more sensitive to the interference drifting off exactly 60 Hz; a <strong>wider</strong> notch is more forgiving but eats more of the neighbouring spectrum. When the hum wanders — as real mains does — an adaptive notch that tracks the line frequency does better than a fixed one.</p>
 <hr>
-<p><em>See <a href="../chap4.html">Chapter 4</a> for the finite-difference comparison, Maxwell’s equations in <span class="math inline">k</span>-space, and stability of time-stepping schemes.</em></p>
+<p><em>See <a href="../chap6.html">Chapter 6</a> for IIR filter representations, zero-phase <code>filtfilt</code> filtering, and choosing a filter’s bandwidth and order.</em></p>
 
 
 </section>

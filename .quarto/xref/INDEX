@@ -265,5 +265,56 @@
   },
   "gallery/piano.qmd": {
     "piano.html": "794e4eea"
+  },
+  "chap_naming.qmd": {
+    "chap_naming.html": "c85e185c"
+  },
+  "gallery/seismometer.qmd": {
+    "seismometer.html": "f0f7458e"
+  },
+  "gallery/gravitational_waves.qmd": {
+    "gravitational_waves.html": "9184d7e6"
+  },
+  "gallery/cmb.qmd": {
+    "cmb.html": "5693d2fd"
+  },
+  "gallery/missing_fundamental.qmd": {
+    "missing_fundamental.html": "e46043aa"
+  },
+  "gallery/kalman_gps_imu.qmd": {
+    "kalman_gps_imu.html": "b957f32f"
+  },
+  "gallery/chorus_svd.qmd": {
+    "chorus_svd.html": "f7634591"
+  },
+  "gallery/airy_diffraction.qmd": {
+    "airy_diffraction.html": "662c8462"
+  },
+  "gallery/spectral_pde.qmd": {
+    "spectral_pde.html": "67e1c445"
+  },
+  "gallery/solar_wind.qmd": {
+    "solar_wind.html": "93b6906a"
+  },
+  "gallery/spectral_em.qmd": {
+    "spectral_em.html": "394610a3"
+  },
+  "gallery/fft_multiplication.qmd": {
+    "fft_multiplication.html": "8c74fa1c"
+  },
+  "gallery/light_pollution.qmd": {
+    "light_pollution.html": "53f8a0f9"
+  },
+  "gallery/mains_hum.qmd": {
+    "mains_hum.html": "17ec807c"
+  },
+  "gallery/hilbert_am.qmd": {
+    "hilbert_am.html": "3bdb60eb"
+  },
+  "gallery/phase_distortion.qmd": {
+    "phase_distortion.html": "7afb7b0b"
+  },
+  "gallery/decimation_alias.qmd": {
+    "decimation_alias.html": "020d908e"
   }
 }

@@ -1,0 +1,56 @@
+# Filtering Light Pollution from a Starfield
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Filter design in two dimensions — separating a smooth light-pollution gradient from point-like stars by where they live in the spatial-frequency plane.
+**Chapter:** [6 — Signal Processing](../chap6.qmd)
+
+---
+
+## Background
+
+Anyone who has pointed a camera at the night sky from a city knows the problem: instead of a black background peppered with stars, you get a bright, uneven wash of orange **skyglow** — sunlight's nighttime cousin, scattered back down by streetlights and haze. It swamps the faint stars and tilts the whole frame brighter on the side facing the city.
+
+The saving grace is that **skyglow and stars occupy completely different spatial scales.** Light pollution is a *smooth* gradient — it varies gently across the entire frame, so all of its energy sits at very **low spatial frequencies**. A star, by contrast, is a near-point source: a sharp spike a couple of pixels wide, which spreads its energy across **high spatial frequencies**. This is the two-dimensional version of the everyday filtering problem from [Chapter 6](../chap6.qmd) — a slow drift riding under a fast signal — and the same tool applies: build a filter that keeps one frequency band and rejects the other.
+
+## Key idea
+
+Take the 2-D FFT of the frame and the two components fall into different places: the skyglow piles up in a tight blob around the origin ($\mathbf k \approx 0$), while the stars scatter power out to the edges. So the **filter design is a high-pass**:
+
+1. Estimate the background by keeping only the low-frequency core — multiply the spectrum by a smooth Gaussian **low-pass** $e^{-k^2/2k_c^2}$ and transform back. That reconstructs the skyglow alone.
+2. **Subtract** it. What remains is the high-pass residual: stars on a flat, near-black sky.
+
+Choosing the cutoff $k_c$ is the whole craft, exactly as when picking a 1-D filter's corner frequency. Too high and you start eating the stars' wings and any real extended nebulosity; too low and the gradient leaks through. One subtlety carries over from 1-D filtering too: a periodic FFT treats opposite edges as neighbours, so a frame that is brighter on one side than the other has a discontinuity at the wrap-around — left unhandled it rings along the borders. Padding the image with a mirror reflection before transforming removes that seam, the 2-D analogue of windowing.
+
+## Code
+
+```python
+import numpy as np
+from scipy.ndimage import gaussian_filter
+
+# polluted = starfield  +  smooth skyglow gradient  +  noise   (a 512x512 frame)
+kc  = 0.010                                        # cutoff spatial frequency [cycles/pixel]
+pad = polluted.shape[0] // 2
+
+# reflect-pad so the periodic FFT sees no brightness jump at the edges (no ringing)
+P  = np.pad(polluted, pad, mode='reflect'); M = P.shape[0]
+kx = np.fft.fftfreq(M); KX, KY = np.meshgrid(kx, kx)
+lowpass = np.exp(-(KX**2 + KY**2) / (2 * kc**2))   # smooth 2-D low-pass = background model
+
+background = np.real(np.fft.ifft2(np.fft.fft2(P) * lowpass))[pad:-pad, pad:-pad]
+cleaned    = polluted - background                 # high-pass: skyglow removed, stars kept
+```
+
+## Result
+
+<div class="gallery-result">
+![Four panels. (a) A synthetic light-polluted frame: faint stars buried under a bright skyglow gradient from a city near one corner. (b) Its 2-D spatial-frequency spectrum (Hann-windowed for display) — the skyglow's energy is concentrated in the bright low-k core inside the dashed circle, while star energy fills the rest of the plane. (c) The low-pass reconstruction of that core: the smooth skyglow the filter identifies and removes. (d) The high-pass result — the same stars on a flat, dark sky.](../Figure/figure_light_pollution.png)
+</div>
+
+Panel (b) is why this works at all: the light pollution collapses into the bright core at the centre of the frequency plane, cleanly separated from the star field that fills the rest. The Gaussian low-pass (dashed circle) scoops out just that core to build the **skyglow model** in panel (c) — a smooth surface that traces the city-glow gradient and its corner hotspot, with no stars in it. Subtracting it leaves panel (d): the background flattens (its standard deviation drops about five-fold here) and stars that were invisible under the glow now stand out against a dark sky.
+
+The example also shows the method's honest limit. Genuinely *extended* structure — the faint patch of nebulosity in the lower-right — lives at low spatial frequencies too, so it is partly swept into the background model and dimmed along with the skyglow. That is the same trade-off a 1-D high-pass makes when a signal and its baseline drift overlap in frequency, and it is why astrophotographers reach for gentler cutoffs, masked background models, or wavelet-based tools when they want to preserve nebulosity. Choosing where to cut is the filter design.
+
+---
+
+*See [Chapter 6](../chap6.qmd) for FIR/IIR filter design, choosing a filter's cutoff and order, and the artefacts of over-aggressive filtering.*

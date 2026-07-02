@@ -38,7 +38,14 @@ project:
     - gallery/airy_diffraction.qmd
     - gallery/chorus_svd.qmd
     - gallery/spectral_pde.qmd
+    - gallery/spectral_em.qmd
+    - gallery/fft_multiplication.qmd
     - gallery/solar_wind.qmd
+    - gallery/light_pollution.qmd
+    - gallery/mains_hum.qmd
+    - gallery/hilbert_am.qmd
+    - gallery/phase_distortion.qmd
+    - gallery/decimation_alias.qmd
   resources:
     - .nojekyll
     # Figures and data live at project root; Quarto copies them into docs/

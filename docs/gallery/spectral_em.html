@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>spectral_pde – Practical Spectral Analysis</title>
+<title>spectral_em – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -510,7 +510,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#heat-conduction-solving-pdes-with-the-fft" id="toc-heat-conduction-solving-pdes-with-the-fft" class="nav-link active" data-scroll-target="#heat-conduction-solving-pdes-with-the-fft">Heat Conduction — Solving PDEs with the FFT</a>
+  <li><a href="#electromagnetic-waves-solved-with-the-fft" id="toc-electromagnetic-waves-solved-with-the-fft" class="nav-link active" data-scroll-target="#electromagnetic-waves-solved-with-the-fft">Electromagnetic Waves — Solved with the FFT</a>
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
@@ -527,67 +527,80 @@ window.Quarto = {
 
 
 
-<section id="heat-conduction-solving-pdes-with-the-fft" class="level1">
-<h1>Heat Conduction — Solving PDEs with the FFT</h1>
+<section id="electromagnetic-waves-solved-with-the-fft" class="level1">
+<h1>Electromagnetic Waves — Solved with the FFT</h1>
 <p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
-<p><strong>Topic:</strong> The pseudo-spectral method — turning a partial differential equation into one decoupled ODE per Fourier mode, and solving it exactly with the FFT. <strong>Chapter:</strong> <a href="../chap4.html">4 — More about FFT</a> <strong>Companion:</strong> <a href="../gallery/spectral_em.html">Electromagnetic Waves — Solved with the FFT</a></p>
+<p><strong>Topic:</strong> Pseudo-spectral time-domain solvers for Maxwell’s equations — replacing the curl operator with <span class="math inline">i\mathbf k\times</span>, and integrating each mode analytically. <strong>Chapter:</strong> <a href="../chap4.html">4 — More about FFT</a> <strong>Companion:</strong> <a href="../gallery/spectral_pde.html">Heat Conduction — Solving PDEs with the FFT</a></p>
 <hr>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Most physical fields — temperature, pressure, the electromagnetic field — obey <strong>partial differential equations</strong> involving spatial derivatives. In real space a derivative couples every grid point to its neighbours, which is what makes PDEs hard. But a derivative is <em>diagonal</em> in Fourier space: differentiating <span class="math inline">e^{ikx}</span> just multiplies it by <span class="math inline">ik</span>. So the Fourier transform turns</p>
+<p>The <a href="../gallery/spectral_pde.html">heat-equation companion</a> showed the <em>easy</em> face of the pseudo-spectral method: each Fourier mode of a <strong>diffusion</strong> problem simply decays, <span class="math inline">\hat T \propto e^{-\alpha k^2 t}</span>. Light is harder — it <strong>oscillates</strong> rather than decays — but the same idea carries over. In vacuum, Maxwell’s curl equations are</p>
 <p><span class="math display">
-\frac{\partial}{\partial x} \;\longrightarrow\; ik, \qquad \nabla^2 \;\longrightarrow\; -k^2,
+\frac{\partial \mathbf E}{\partial t} = c^2\,\nabla\times\mathbf B, \qquad
+\frac{\partial \mathbf B}{\partial t} = -\,\nabla\times\mathbf E .
 </span></p>
-<p>and a linear, constant-coefficient PDE collapses into a family of <strong>independent ordinary</strong> differential equations — one for each Fourier mode — that often have a closed-form solution. This is the <strong>pseudo-spectral method</strong>, and the FFT makes it fast.</p>
+<p>The obstacle is the <strong>curl</strong>: a spatial derivative that couples every grid point to its neighbours. But a derivative is diagonal in Fourier space — <span class="math inline">\nabla \to i\mathbf k</span> — so the curl becomes an ordinary cross product,</p>
+<p><span class="math display">
+\frac{\partial \hat{\mathbf E}}{\partial t} = i\,c^2\,\mathbf k\times\hat{\mathbf B}, \qquad
+\frac{\partial \hat{\mathbf B}}{\partial t} = -\,i\,\mathbf k\times\hat{\mathbf E},
+</span></p>
+<p>one small, decoupled linear system per wavevector <span class="math inline">\mathbf k</span>. Combining the two gives <span class="math inline">\partial_t^2\hat{\mathbf E} = -c^2k^2\,\hat{\mathbf E}</span> — a harmonic oscillator at frequency <span class="math inline">\omega = c\,k</span>, the exact dispersion relation of light.</p>
 </section>
 <section id="key-idea" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
-<p>Take the 2-D <strong>heat equation</strong> <span class="math inline">\partial_t T = \alpha \nabla^2 T</span>. Fourier-transform in space and the coupled PDE becomes, mode by mode,</p>
-<p><span class="math display">
-\frac{d\hat T(\mathbf k,t)}{dt} = -\alpha\,k^2\,\hat T(\mathbf k,t)
-\qquad\Longrightarrow\qquad
-\hat T(\mathbf k,t) = \hat T(\mathbf k,0)\,e^{-\alpha k^2 t}.
-</span></p>
-<p>Each mode simply decays exponentially, at a rate set by <span class="math inline">k^2</span> — so <strong>short-wavelength (high-<span class="math inline">k</span>) features die fastest</strong>, which is exactly why sharp edges blur first and the field relaxes toward smoothness. The whole solver is: FFT the initial condition, multiply by <span class="math inline">e^{-\alpha k^2 t}</span>, inverse-FFT. Crucially it is <strong>exact in time</strong> — you can jump straight to any <span class="math inline">t</span> with no time-stepping — whereas an explicit finite-difference scheme must crawl forward in steps small enough (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) to stay stable.</p>
+<p>How you turn spatial derivatives into numbers is the whole story:</p>
+<ul>
+<li><strong>FDTD</strong> (finite-difference time-domain, the classic Yee scheme) approximates <span class="math inline">\nabla\times</span> with nearest-neighbour differences. That stencil has the <em>wrong</em> dispersion relation — high-<span class="math inline">k</span> waves travel at slightly wrong speeds and directions — so a circular pulse develops <strong>grid-dispersion ripples</strong> and picks up the square grid’s four-fold anisotropy. It is also bound by the CFL limit <span class="math inline">c\,\Delta t \le \Delta x/\sqrt2</span>.</li>
+<li><strong>PSTD</strong> (pseudo-spectral time-domain) computes <span class="math inline">\nabla\times</span> <em>exactly</em> with an FFT (<span class="math inline">i\mathbf k\times</span>), keeping leapfrog time-stepping. Spatial dispersion vanishes — the ring stays clean and isotropic — and it needs far fewer points per wavelength.</li>
+<li><strong>PSATD</strong> (pseudo-spectral analytical time-domain) goes further and integrates each mode’s oscillation <strong>analytically in time</strong>, with <span class="math inline">\cos(ckt)</span> and <span class="math inline">\sin(ckt)/k</span> factors. Like <span class="math inline">e^{-\alpha k^2 t}</span> for heat, this is <em>exact for any step</em> — one shot jumps straight to time <span class="math inline">t</span> with no dispersion error at all.</li>
+</ul>
+<p>The demo below launches a single Gaussian <span class="math inline">E_z</span> pulse and lets it radiate. The dashed circle marks the true light-cone <span class="math inline">r = ct</span>; the question is which solver keeps the wavefront on it.</p>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.fft <span class="im">import</span> fft2, ifft2, fftfreq</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>N, dx, alpha <span class="op">=</span> <span class="dv">128</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> dx<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> alpha)                          <span class="co"># finite-difference stability limit</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fftfreq(N, d<span class="op">=</span>dx)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>KX, KY <span class="op">=</span> np.meshgrid(k, k, indexing<span class="op">=</span><span class="st">'ij'</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>k2 <span class="op">=</span> KX<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> KY<span class="op">**</span><span class="dv">2</span>                                <span class="co"># Laplacian -&gt; -k^2</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>T0 <span class="op">=</span> np.zeros((N, N))<span class="op">;</span> T0[N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>, N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>] <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># a hot square block</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>T0hat <span class="op">=</span> fft2(T0)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>T_fd <span class="op">=</span> T0.copy()</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">400</span>):</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> i <span class="op">*</span> dt</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (1) FINITE DIFFERENCE — explicit 5-point Laplacian, many tiny stable steps</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    lap <span class="op">=</span> (np.roll(T_fd, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>           np.roll(T_fd, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>T_fd) <span class="op">/</span> dx<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    T_fd <span class="op">+=</span> alpha <span class="op">*</span> dt <span class="op">*</span> lap</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (2) SPECTRAL — exact solution at time t, in a single shot, no stability limit</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    T_spec <span class="op">=</span> np.real(ifft2(T0hat <span class="op">*</span> np.exp(<span class="op">-</span>alpha <span class="op">*</span> k2 <span class="op">*</span> t)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>N, dx, c <span class="op">=</span> <span class="dv">128</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>kx <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fftfreq(N, d<span class="op">=</span>dx)<span class="op">;</span> ky <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fftfreq(N, d<span class="op">=</span>dx)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>KX, KY <span class="op">=</span> np.meshgrid(kx, ky, indexing<span class="op">=</span><span class="st">'ij'</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> np.sqrt(KX<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> KY<span class="op">**</span><span class="dv">2</span>)<span class="op">;</span> k[<span class="dv">0</span>, <span class="dv">0</span>] <span class="op">=</span> <span class="fl">1e-12</span>            <span class="co"># curl -&gt; i*k x  (·)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>X, Y <span class="op">=</span> np.ogrid[:N, :N]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Ez0 <span class="op">=</span> np.exp(<span class="op">-</span>((X <span class="op">-</span> N<span class="op">//</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> (Y <span class="op">-</span> N<span class="op">//</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> <span class="dv">2</span>)     <span class="co"># a point flash of light</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dt_fdtd <span class="op">=</span> dx <span class="op">/</span> c <span class="op">/</span> np.sqrt(<span class="dv">2</span>)                           <span class="co"># CFL stability limit</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>dt_spec <span class="op">=</span> np.sqrt(<span class="dv">2</span>)<span class="op">/</span>np.pi <span class="op">*</span> dx <span class="op">/</span> c                     <span class="co"># spectral: bigger steps allowed</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) FDTD — Yee leapfrog, finite-difference curl  -&gt;  numerical grid dispersion</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Ez, Hx, Hy <span class="op">=</span> Ez0.copy(), np.zeros((N,N)), np.zeros((N,N))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">int</span>(T<span class="op">/</span>dt_fdtd)):</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    Hx <span class="op">-=</span> dt_fdtd<span class="op">*</span>(np.roll(Ez,<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="op">-</span> Ez)<span class="op">;</span>  Hy <span class="op">+=</span> dt_fdtd<span class="op">*</span>(np.roll(Ez,<span class="op">-</span><span class="dv">1</span>,<span class="dv">0</span>) <span class="op">-</span> Ez)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    Ez <span class="op">+=</span> dt_fdtd<span class="op">*</span>((Hy <span class="op">-</span> np.roll(Hy,<span class="dv">1</span>,<span class="dv">0</span>)) <span class="op">-</span> (Hx <span class="op">-</span> np.roll(Hx,<span class="dv">1</span>,<span class="dv">1</span>)))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) PSTD — exact spatial curl via FFT, leapfrog in time  -&gt;  clean, isotropic ring</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>Ez, Hx, Hy <span class="op">=</span> Ez0.copy(), np.zeros((N,N)), np.zeros((N,N))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">int</span>(T<span class="op">/</span>dt_spec)):</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    Ezk <span class="op">=</span> fft2(Ez)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    Hx <span class="op">-=</span> dt_spec<span class="op">*</span>np.real(ifft2(<span class="ot">1j</span><span class="op">*</span>KY<span class="op">*</span>Ezk))<span class="op">;</span>  Hy <span class="op">+=</span> dt_spec<span class="op">*</span>np.real(ifft2(<span class="ot">1j</span><span class="op">*</span>KX<span class="op">*</span>Ezk))</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    Ez <span class="op">+=</span> dt_spec<span class="op">*</span>np.real(ifft2(<span class="ot">1j</span><span class="op">*</span>KX<span class="op">*</span>fft2(Hy) <span class="op">-</span> <span class="ot">1j</span><span class="op">*</span>KY<span class="op">*</span>fft2(Hx)))</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># (3) PSATD — analytic time integration of each mode  -&gt;  exact for ANY dt, one shot</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>Ez0k, Hx0k, Hy0k <span class="op">=</span> fft2(Ez0), fft2(np.zeros((N,N))), fft2(np.zeros((N,N)))</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> psatd(t):</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    C, S <span class="op">=</span> np.cos(c<span class="op">*</span>k<span class="op">*</span>t), np.sin(c<span class="op">*</span>k<span class="op">*</span>t)<span class="op">/</span>k</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.real(ifft2(C<span class="op">*</span>Ez0k <span class="op">+</span> <span class="ot">1j</span><span class="op">*</span>c<span class="op">*</span>S<span class="op">*</span>(KX<span class="op">*</span>Hy0k <span class="op">-</span> KY<span class="op">*</span>Hx0k)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
 <div class="gallery-result">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../Figure/heat_diffusion.gif" class="img-fluid figure-img"></p>
-<figcaption>The 2-D heat equation solved two ways as a hot square block diffuses. Left: an explicit finite-difference scheme, crawling forward in many small time steps. Right: the Fourier/spectral solution, T̂(k,t) = T̂(k,0)·exp(−αk²t), evaluated directly. Both give the same diffusing field.</figcaption>
-</figure>
+<p><img src="../Figure/unit_pulse.gif" width="100%"></p>
 </div>
-</div>
-<p>The two panels are the same heat equation solved two ways. On the <strong>left</strong>, the classic <strong>finite-difference</strong> method: approximate the Laplacian with a 5-point stencil and step forward in time — but each step must be tiny (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) or the scheme goes unstable and blows up, so reaching a given time takes hundreds of steps. On the <strong>right</strong>, the <strong>spectral</strong> method: a single line, <span class="math inline">\hat T(\mathbf k,t)=\hat T(\mathbf k,0)\,e^{-\alpha k^2 t}</span>, jumps straight to any time with no stability limit and no accumulation of step-by-step error, because in Fourier space every mode evolves independently and <em>exactly</em>. The two tracks agree frame-for-frame — which is the point: the spectral method reaches the same answer, faster and exactly.</p>
-<p>That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in <span class="math inline">k</span>-space. The same trick — <span class="math inline">\nabla \to i\mathbf k</span> — solves Poisson’s equation (divide by <span class="math inline">-k^2</span>), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes. The heat equation is the <em>easiest</em> case because it has a real, decaying exponential per mode; the <a href="../gallery/spectral_em.html">electromagnetic-wave companion</a> shows what happens when that exponential becomes <strong>oscillatory</strong> — Maxwell’s curl equations solved the same spectral way.</p>
+<p><em>A point flash of light spreads as an expanding ring; the dashed circle is the exact light-cone <span class="math inline">r = ct</span>. <strong>FDTD</strong> (left) develops trailing ripples and a squarish, grid-aligned wavefront — numerical dispersion from the finite-difference curl. <strong>PSTD</strong> (middle) computes the curl exactly with an FFT, so the ring stays smooth and round. <strong>PSATD</strong> (right) integrates each Fourier mode’s oscillation analytically in time and lands the wavefront exactly on the light-cone in a single step.</em></p>
+<p>The three panels solve the <em>same</em> Maxwell equations and differ only in how they evaluate the curl and march in time. FDTD’s nearest-neighbour stencil makes high-frequency components crawl at the wrong speed — the ring frays into ripples and inherits the grid’s four-fold symmetry. Replacing the stencil with the exact spectral derivative <span class="math inline">i\mathbf k\times</span> (PSTD) erases the spatial error; integrating the resulting <span class="math inline">\omega = ck</span> oscillation analytically (PSATD) erases the time-stepping error too, exactly as <span class="math inline">e^{-\alpha k^2 t}</span> did for heat. It is the same lesson in a different key: <strong>a spatially-coupled PDE becomes independent, exactly-solvable modes in <span class="math inline">k</span>-space</strong> — whether those modes decay (heat) or oscillate (light).</p>
+<p>The price is Fourier’s global reach: the FFT mixes information across the whole grid at once, which assumes periodic boundaries and is harder to parallelise on a GPU than a purely local finite-difference update — which is why FDTD, despite its dispersion, remains the workhorse for large-scale electromagnetic simulation.</p>
 <hr>
-<p><em>See <a href="../chap4.html">Chapter 4</a> for the finite-difference comparison, Maxwell’s equations in <span class="math inline">k</span>-space, and stability of time-stepping schemes.</em></p>
+<p><em>See <a href="../chap4.html">Chapter 4</a> for Maxwell’s equations in <span class="math inline">k</span>-space, the FDTD/PSTD/PSATD comparison, and the trade-off between spectral accuracy and parallel locality.</em></p>
 
 
 </section>

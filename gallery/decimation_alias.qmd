@@ -1,0 +1,51 @@
+# Downsampling Needs an Anti-Alias Filter
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Decimation done right — why you must low-pass *before* throwing samples away, and what happens when you don't.
+**Chapter:** [6 — Signal Processing](../chap6.qmd)
+
+---
+
+## Background
+
+Halving a signal's sample rate seems like it should be as simple as keeping every other sample. It is not. The [aliasing example](aliasing.qmd) showed that sampling too slowly makes high frequencies masquerade as low ones; **downsampling an already-sampled signal is exactly the same trap sprung a second time.** When you keep every $M$-th sample you drop the effective sample rate by $M$, which pulls the Nyquist frequency down by $M$ — and anything that was sitting above the *new* Nyquist folds back into the band as a spurious low-frequency ghost.
+
+The fix, and the reason `scipy.signal.decimate` exists as a dedicated function, is to **filter first**: remove everything above the new Nyquist frequency with a low-pass **anti-alias filter**, and only then discard samples.
+
+## Key idea
+
+Say a 2000 Hz recording contains a wanted 80 Hz tone and an unwanted 700 Hz component, and we want to decimate by $M=5$ to a 400 Hz rate (new Nyquist = 200 Hz).
+
+- **Naive** (`x[::5]`): the 700 Hz tone is above 200 Hz, so it aliases. Its apparent frequency folds to $|700 \bmod 400|$ reflected about Nyquist $= 100$ Hz — a phantom tone that did not exist in the signal and now sits right on top of the band you care about, impossible to remove after the fact.
+- **Proper** (`decimate`): a low-pass anti-alias filter first attenuates everything above 200 Hz — killing the 700 Hz component *while it can still be distinguished* — and only then keeps every fifth sample. The 80 Hz tone survives; the 700 Hz tone is gone cleanly, with no ghost.
+
+The lesson is the order of operations: **band-limit, then subsample.** Once the samples are taken, aliasing is irreversible.
+
+## Code
+
+```python
+import numpy as np
+from scipy.signal import decimate
+
+fs = 2000; t = np.arange(0, 3, 1/fs)
+x = np.sin(2*np.pi*80*t) + 0.85*np.sin(2*np.pi*700*t)   # keep 80 Hz; 700 Hz is too high
+
+M = 5                                # new rate 400 Hz -> new Nyquist 200 Hz
+x_naive = x[::M]                     # WRONG: 700 Hz folds to 100 Hz
+x_dec   = decimate(x, M, ftype='fir')   # RIGHT: anti-alias low-pass, then subsample
+```
+
+## Result
+
+<div class="gallery-result">
+![Three magnitude spectra. (a) The original 2000 Hz signal: a wanted line at 80 Hz and an unwanted one at 700 Hz. (b) After naive downsampling by 5: the 80 Hz line remains but a spurious line appears at 100 Hz — the 700 Hz component folded back below the new 200 Hz Nyquist. (c) After proper anti-aliased decimation: only the 80 Hz line survives; the 700 Hz component has been removed with no ghost.](../Figure/figure_decimation_alias.png)
+</div>
+
+The three spectra make the failure and the fix unmistakable. In (a) the two tones are cleanly separated at 80 and 700 Hz. Naive decimation (b) keeps the 80 Hz tone but, because 700 Hz now lies beyond the new 200 Hz Nyquist, folds it down to a **100 Hz alias** — a tone that was never in the signal, landing squarely in the passband where nothing can distinguish it from real data. Anti-aliased decimation (c) applies the low-pass first, so the 700 Hz energy is gone *before* subsampling and only the genuine 80 Hz tone remains.
+
+This is why every resampling routine — audio sample-rate conversion, image downscaling, sensor decimation — bundles an anti-alias filter, and why `x[::M]` is almost never the right way to reduce a sample rate. It is the same theorem as the [aliasing example](aliasing.qmd), now framed as a rule for processing: **you cannot un-fold an alias, so you must filter before you fold.**
+
+---
+
+*See [Chapter 6](../chap6.qmd) for decimation, interpolation, and multirate signal processing, and [Chapter 1](../chap1.qmd) for the sampling theorem behind aliasing.*

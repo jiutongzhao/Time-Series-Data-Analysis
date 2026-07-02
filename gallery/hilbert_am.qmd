@@ -1,0 +1,53 @@
+# AM Demodulation with the Hilbert Transform
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The analytic signal — using the Hilbert transform to pull the slowly-varying envelope out of a fast oscillating carrier.
+**Chapter:** [6 — Signal Processing](../chap6.qmd)
+
+---
+
+## Background
+
+An **amplitude-modulated (AM)** signal carries information in its *envelope*: a high-frequency carrier $\cos(2\pi f_c t)$ whose amplitude is swelled and shrunk by a slow message $m(t)$, giving $s(t) = m(t)\cos(2\pi f_c t)$. This is how AM radio works, but the same shape appears everywhere a slow process modulates a fast oscillation — the beating of two nearby tones, the amplitude of a vibrating machine part, the loudness contour of speech, the pulsing of a laser.
+
+The task of **demodulation** is to recover $m(t)$ from $s(t)$. You could rectify and low-pass filter (the cheap analog trick), but there is an exact, elegant tool from [Chapter 6](../chap6.qmd): the **Hilbert transform**.
+
+## Key idea
+
+A real signal $s(t)$ has a symmetric spectrum — every cosine is really two counter-rotating phasors, $e^{+i\omega t}$ and $e^{-i\omega t}$. The **Hilbert transform** builds the *analytic signal* $s_a(t) = s(t) + i\,\mathcal H\{s\}(t)$, which keeps only the positive-frequency half. Geometrically it turns the oscillation into a rotating vector, and the length of that vector is exactly the envelope:
+
+$$
+s_a(t) = m(t)\,e^{\,i2\pi f_c t}, \qquad |s_a(t)| = m(t).
+$$
+
+So the envelope falls straight out as the **magnitude of the analytic signal** — `np.abs(scipy.signal.hilbert(s))` — and, as a bonus, its **phase angle** gives the instantaneous phase and frequency. No rectifier, no carrier-tracking loop: one transform recovers the message.
+
+## Code
+
+```python
+import numpy as np
+from scipy.signal import hilbert
+
+fs = 4000; t = np.arange(0, 0.5, 1/fs)
+msg = 1.0 + 0.6*np.sin(2*np.pi*8*t) + 0.25*np.sin(2*np.pi*19*t + 0.7)   # slow message
+am  = msg * np.cos(2*np.pi*400*t)                                        # 400 Hz carrier
+
+analytic = hilbert(am)             # analytic signal (positive-frequency half)
+envelope = np.abs(analytic)        # |s_a| = the message, recovered exactly
+inst_freq = np.diff(np.unwrap(np.angle(analytic))) / (2*np.pi) * fs      # bonus: freq
+```
+
+## Result
+
+<div class="gallery-result">
+![Two panels. (a) The AM signal (grey) with its Hilbert envelope (red) laid over the true message (blue dashed); the envelope traces the modulation exactly, top and bottom. (b) The magnitude spectrum: a single carrier line at 400 Hz flanked by symmetric modulation sidebands at ±8 and ±19 Hz — the message frequencies shifted up to the carrier.](../Figure/figure_hilbert_am.png)
+</div>
+
+Panel (a) is the demodulation working: the red $|s_a|$ curve rides exactly along the peaks of the carrier and coincides with the true message $m(t)$ (blue dashed) to within the noise — a root-mean-square error of a fraction of a percent. What took a tuned analog receiver is three lines of code. Panel (b) explains the structure: modulating a carrier by $m(t)$ shifts the message's spectrum up to sit around $f_c$, producing the carrier line at 400 Hz plus a mirror-image pair of **sidebands** for each message tone (here at $400\pm8$ and $400\pm19$ Hz). The Hilbert transform's job is precisely to discard the negative-frequency mirror so that what remains, demodulated back down, is the message alone.
+
+The method's one requirement is a **separation of scales**: the envelope must vary slowly compared with the carrier (the spectrum must be *narrowband* around $f_c$). When that holds — as it does for AM radio, vibration envelopes, and beat patterns — the analytic-signal envelope is not an approximation but an exact identity.
+
+---
+
+*See [Chapter 6](../chap6.qmd) for the Hilbert transform, the analytic signal, and instantaneous amplitude, phase, and frequency.*

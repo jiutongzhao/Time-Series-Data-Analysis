@@ -1,9 +1,10 @@
-# Solving PDEs with the FFT
+# Heat Conduction — Solving PDEs with the FFT
 
 <a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
 
 **Topic:** The pseudo-spectral method — turning a partial differential equation into one decoupled ODE per Fourier mode, and solving it exactly with the FFT.
 **Chapter:** [4 — More about FFT](../chap4.qmd)
+**Companion:** [Electromagnetic Waves — Solved with the FFT](spectral_em.qmd)
 
 ---
 
@@ -63,7 +64,7 @@ for i in range(400):
 
 The two panels are the same heat equation solved two ways. On the **left**, the classic **finite-difference** method: approximate the Laplacian with a 5-point stencil and step forward in time — but each step must be tiny ($\Delta t < \Delta x^2/4\alpha$) or the scheme goes unstable and blows up, so reaching a given time takes hundreds of steps. On the **right**, the **spectral** method: a single line, $\hat T(\mathbf k,t)=\hat T(\mathbf k,0)\,e^{-\alpha k^2 t}$, jumps straight to any time with no stability limit and no accumulation of step-by-step error, because in Fourier space every mode evolves independently and *exactly*. The two tracks agree frame-for-frame — which is the point: the spectral method reaches the same answer, faster and exactly.
 
-That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in $k$-space. The same trick — $\nabla \to i\mathbf k$ — solves Poisson's equation (divide by $-k^2$), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes.
+That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in $k$-space. The same trick — $\nabla \to i\mathbf k$ — solves Poisson's equation (divide by $-k^2$), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes. The heat equation is the *easiest* case because it has a real, decaying exponential per mode; the [electromagnetic-wave companion](spectral_em.qmd) shows what happens when that exponential becomes **oscillatory** — Maxwell's curl equations solved the same spectral way.
 
 ---
 

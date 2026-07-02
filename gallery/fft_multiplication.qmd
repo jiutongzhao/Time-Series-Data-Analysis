@@ -1,0 +1,76 @@
+# Fast Multiplication with the FFT
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The convolution theorem as an algorithm — multiplying huge integers and polynomials in $\mathcal{O}(n\log n)$ instead of $\mathcal{O}(n^2)$.
+**Chapter:** [4 — More about FFT](../chap4.qmd)
+
+---
+
+## Background
+
+Multiplying two numbers is something you learned in grade school: line up the digits, multiply each pair, and add up the columns. For two $n$-digit numbers that is $n^2$ single-digit multiplications — **$\mathcal{O}(n^2)$**. Fine for $1234\times5678$; ruinous when the numbers have millions of digits, as they do in cryptography (RSA), computer algebra, and record-breaking computations of $\pi$.
+
+The key observation is that grade-school multiplication is a **convolution**. Write each number in a base $B$ as a list of digits — i.e. as the coefficients of a polynomial evaluated at $x=B$:
+
+$$
+1234 = 1\cdot10^3 + 2\cdot10^2 + 3\cdot10^1 + 4 \;\;\leftrightarrow\;\; a(x)=x^3+2x^2+3x+4 .
+$$
+
+Then the product's digit columns are exactly the **convolution** of the two digit sequences,
+
+$$
+c_k = \sum_{i+j=k} a_i\, b_j ,
+$$
+
+followed by carrying the overflow between columns. Polynomial multiplication *is* this convolution with no carry step at all. So "multiply two big numbers" and "multiply two polynomials" are the same problem: **convolve their coefficient sequences.**
+
+## Key idea
+
+And convolution is precisely what the FFT makes fast. The **convolution theorem** says convolution in the sample domain is *pointwise multiplication* in the frequency domain:
+
+$$
+a * b \;=\; \mathcal{F}^{-1}\!\big(\hat a \cdot \hat b\big).
+$$
+
+So instead of the $n^2$ pairwise products, transform both sequences ($\mathcal{O}(n\log n)$), multiply them elementwise ($\mathcal{O}(n)$), and transform back ($\mathcal{O}(n\log n)$). The whole multiply drops to **$\mathcal{O}(n\log n)$**. Add the carry pass and you have the heart of **Schönhage–Strassen**, the algorithm behind every big-integer library (GMP, Python's own `int` for very large values) and the multi-trillion-digit $\pi$ computations.
+
+The worked example below multiplies $1234\times5678$ by convolving the digit lists to $[5,16,34,60,61,52,32]$ and then carrying the tens, recovering $7\,006\,652$ — and the benchmark shows the FFT route overtaking schoolbook multiplication once the numbers pass a few hundred digits.
+
+## Code
+
+```python
+import numpy as np
+
+def fft_multiply(a, b, base=10):
+    """Multiply two digit lists (least-significant digit first) via the FFT."""
+    n = 1 << (len(a) + len(b) - 1).bit_length()      # zero-pad to a power of two
+    prod = np.fft.rfft(a, n) * np.fft.rfft(b, n)      # convolution theorem
+    c = np.fft.irfft(prod, n).round().astype(np.int64)
+    out, carry = [], 0                                # ripple the carries
+    for x in c:
+        x += carry; out.append(int(x % base)); carry = int(x // base)
+    while carry:
+        out.append(carry % base); carry //= base
+    return out                                        # least-significant digit first
+
+a = [4, 3, 2, 1]      # 1234, little-endian
+b = [8, 7, 6, 5]      # 5678
+digits = fft_multiply(a, b)                           # -> [2,5,6,6,0,0,7]
+value  = int(''.join(map(str, digits[::-1])))         # 7006652
+assert value == 1234 * 5678                           # exact, despite floating-point FFTs
+```
+
+## Result
+
+<div class="gallery-result">
+![Left: multiplying 1234 × 5678 by convolving their digit sequences gives [5, 16, 34, 60, 61, 52, 32]; carrying the tens between columns yields 7,006,652. Right: measured multiply time versus operand size — direct (schoolbook) convolution scales as O(n²) while the FFT-based multiply scales as O(n log n), the two crossing at a few hundred digits.](../Figure/figure_fft_multiplication.png)
+</div>
+
+The left panel is grade-school multiplication laid bare: each stem is one column sum $c_k=\sum_{i+j=k}a_ib_j$, the linear convolution of the two four-digit sequences. Values above 9 (like 61) are perfectly legal at this stage — the carry pass afterwards ripples the overflow leftward to produce the final decimal digits, $7\,006\,652$. Nothing here is approximate: even though the FFT works in floating point, the exact integer answer is recovered by rounding, because the true column sums are modest integers.
+
+The right panel is the payoff. Direct convolution (`np.convolve`, the schoolbook method) climbs along the $\mathcal{O}(n^2)$ reference slope; the FFT multiply (`fftconvolve`) follows the far gentler $\mathcal{O}(n\log n)$ slope. For small operands the FFT's transform overhead makes it *slower* — schoolbook wins below the crossover near $n\approx300$ — which is exactly why real libraries switch algorithms by size: schoolbook for small numbers, Karatsuba in the middle, and FFT-based Schönhage–Strassen only for the truly enormous. The same three lines of code that compute a spectrum turn out to be the fastest known way to multiply.
+
+---
+
+*See [Chapter 4](../chap4.qmd) for the convolution theorem, the Cooley–Tukey FFT, and Bluestein's algorithm — itself a multiplication-as-convolution trick that lets the FFT handle prime-length transforms.*

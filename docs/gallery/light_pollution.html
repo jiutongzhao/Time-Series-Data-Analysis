@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>spectral_pde – Practical Spectral Analysis</title>
+<title>light_pollution – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -510,7 +510,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#heat-conduction-solving-pdes-with-the-fft" id="toc-heat-conduction-solving-pdes-with-the-fft" class="nav-link active" data-scroll-target="#heat-conduction-solving-pdes-with-the-fft">Heat Conduction — Solving PDEs with the FFT</a>
+  <li><a href="#filtering-light-pollution-from-a-starfield" id="toc-filtering-light-pollution-from-a-starfield" class="nav-link active" data-scroll-target="#filtering-light-pollution-from-a-starfield">Filtering Light Pollution from a Starfield</a>
   <ul class="collapse">
   <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
@@ -527,67 +527,56 @@ window.Quarto = {
 
 
 
-<section id="heat-conduction-solving-pdes-with-the-fft" class="level1">
-<h1>Heat Conduction — Solving PDEs with the FFT</h1>
+<section id="filtering-light-pollution-from-a-starfield" class="level1">
+<h1>Filtering Light Pollution from a Starfield</h1>
 <p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
-<p><strong>Topic:</strong> The pseudo-spectral method — turning a partial differential equation into one decoupled ODE per Fourier mode, and solving it exactly with the FFT. <strong>Chapter:</strong> <a href="../chap4.html">4 — More about FFT</a> <strong>Companion:</strong> <a href="../gallery/spectral_em.html">Electromagnetic Waves — Solved with the FFT</a></p>
+<p><strong>Topic:</strong> Filter design in two dimensions — separating a smooth light-pollution gradient from point-like stars by where they live in the spatial-frequency plane. <strong>Chapter:</strong> <a href="../chap6.html">6 — Signal Processing</a></p>
 <hr>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Most physical fields — temperature, pressure, the electromagnetic field — obey <strong>partial differential equations</strong> involving spatial derivatives. In real space a derivative couples every grid point to its neighbours, which is what makes PDEs hard. But a derivative is <em>diagonal</em> in Fourier space: differentiating <span class="math inline">e^{ikx}</span> just multiplies it by <span class="math inline">ik</span>. So the Fourier transform turns</p>
-<p><span class="math display">
-\frac{\partial}{\partial x} \;\longrightarrow\; ik, \qquad \nabla^2 \;\longrightarrow\; -k^2,
-</span></p>
-<p>and a linear, constant-coefficient PDE collapses into a family of <strong>independent ordinary</strong> differential equations — one for each Fourier mode — that often have a closed-form solution. This is the <strong>pseudo-spectral method</strong>, and the FFT makes it fast.</p>
+<p>Anyone who has pointed a camera at the night sky from a city knows the problem: instead of a black background peppered with stars, you get a bright, uneven wash of orange <strong>skyglow</strong> — sunlight’s nighttime cousin, scattered back down by streetlights and haze. It swamps the faint stars and tilts the whole frame brighter on the side facing the city.</p>
+<p>The saving grace is that <strong>skyglow and stars occupy completely different spatial scales.</strong> Light pollution is a <em>smooth</em> gradient — it varies gently across the entire frame, so all of its energy sits at very <strong>low spatial frequencies</strong>. A star, by contrast, is a near-point source: a sharp spike a couple of pixels wide, which spreads its energy across <strong>high spatial frequencies</strong>. This is the two-dimensional version of the everyday filtering problem from <a href="../chap6.html">Chapter 6</a> — a slow drift riding under a fast signal — and the same tool applies: build a filter that keeps one frequency band and rejects the other.</p>
 </section>
 <section id="key-idea" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
-<p>Take the 2-D <strong>heat equation</strong> <span class="math inline">\partial_t T = \alpha \nabla^2 T</span>. Fourier-transform in space and the coupled PDE becomes, mode by mode,</p>
-<p><span class="math display">
-\frac{d\hat T(\mathbf k,t)}{dt} = -\alpha\,k^2\,\hat T(\mathbf k,t)
-\qquad\Longrightarrow\qquad
-\hat T(\mathbf k,t) = \hat T(\mathbf k,0)\,e^{-\alpha k^2 t}.
-</span></p>
-<p>Each mode simply decays exponentially, at a rate set by <span class="math inline">k^2</span> — so <strong>short-wavelength (high-<span class="math inline">k</span>) features die fastest</strong>, which is exactly why sharp edges blur first and the field relaxes toward smoothness. The whole solver is: FFT the initial condition, multiply by <span class="math inline">e^{-\alpha k^2 t}</span>, inverse-FFT. Crucially it is <strong>exact in time</strong> — you can jump straight to any <span class="math inline">t</span> with no time-stepping — whereas an explicit finite-difference scheme must crawl forward in steps small enough (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) to stay stable.</p>
+<p>Take the 2-D FFT of the frame and the two components fall into different places: the skyglow piles up in a tight blob around the origin (<span class="math inline">\mathbf k \approx 0</span>), while the stars scatter power out to the edges. So the <strong>filter design is a high-pass</strong>:</p>
+<ol type="1">
+<li>Estimate the background by keeping only the low-frequency core — multiply the spectrum by a smooth Gaussian <strong>low-pass</strong> <span class="math inline">e^{-k^2/2k_c^2}</span> and transform back. That reconstructs the skyglow alone.</li>
+<li><strong>Subtract</strong> it. What remains is the high-pass residual: stars on a flat, near-black sky.</li>
+</ol>
+<p>Choosing the cutoff <span class="math inline">k_c</span> is the whole craft, exactly as when picking a 1-D filter’s corner frequency. Too high and you start eating the stars’ wings and any real extended nebulosity; too low and the gradient leaks through. One subtlety carries over from 1-D filtering too: a periodic FFT treats opposite edges as neighbours, so a frame that is brighter on one side than the other has a discontinuity at the wrap-around — left unhandled it rings along the borders. Padding the image with a mirror reflection before transforming removes that seam, the 2-D analogue of windowing.</p>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.fft <span class="im">import</span> fft2, ifft2, fftfreq</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.ndimage <span class="im">import</span> gaussian_filter</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>N, dx, alpha <span class="op">=</span> <span class="dv">128</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> dx<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> alpha)                          <span class="co"># finite-difference stability limit</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fftfreq(N, d<span class="op">=</span>dx)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>KX, KY <span class="op">=</span> np.meshgrid(k, k, indexing<span class="op">=</span><span class="st">'ij'</span>)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>k2 <span class="op">=</span> KX<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> KY<span class="op">**</span><span class="dv">2</span>                                <span class="co"># Laplacian -&gt; -k^2</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>T0 <span class="op">=</span> np.zeros((N, N))<span class="op">;</span> T0[N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>, N<span class="op">//</span><span class="dv">4</span>:<span class="dv">3</span><span class="op">*</span>N<span class="op">//</span><span class="dv">4</span>] <span class="op">=</span> <span class="fl">1.0</span>   <span class="co"># a hot square block</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>T0hat <span class="op">=</span> fft2(T0)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>T_fd <span class="op">=</span> T0.copy()</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">400</span>):</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> i <span class="op">*</span> dt</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (1) FINITE DIFFERENCE — explicit 5-point Laplacian, many tiny stable steps</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    lap <span class="op">=</span> (np.roll(T_fd, <span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="op">+</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>           np.roll(T_fd, <span class="dv">1</span>, <span class="dv">1</span>) <span class="op">+</span> np.roll(T_fd, <span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="op">-</span> <span class="dv">4</span><span class="op">*</span>T_fd) <span class="op">/</span> dx<span class="op">**</span><span class="dv">2</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    T_fd <span class="op">+=</span> alpha <span class="op">*</span> dt <span class="op">*</span> lap</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (2) SPECTRAL — exact solution at time t, in a single shot, no stability limit</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    T_spec <span class="op">=</span> np.real(ifft2(T0hat <span class="op">*</span> np.exp(<span class="op">-</span>alpha <span class="op">*</span> k2 <span class="op">*</span> t)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># polluted = starfield  +  smooth skyglow gradient  +  noise   (a 512x512 frame)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>kc  <span class="op">=</span> <span class="fl">0.010</span>                                        <span class="co"># cutoff spatial frequency [cycles/pixel]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pad <span class="op">=</span> polluted.shape[<span class="dv">0</span>] <span class="op">//</span> <span class="dv">2</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># reflect-pad so the periodic FFT sees no brightness jump at the edges (no ringing)</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>P  <span class="op">=</span> np.pad(polluted, pad, mode<span class="op">=</span><span class="st">'reflect'</span>)<span class="op">;</span> M <span class="op">=</span> P.shape[<span class="dv">0</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>kx <span class="op">=</span> np.fft.fftfreq(M)<span class="op">;</span> KX, KY <span class="op">=</span> np.meshgrid(kx, kx)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>lowpass <span class="op">=</span> np.exp(<span class="op">-</span>(KX<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> KY<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> kc<span class="op">**</span><span class="dv">2</span>))   <span class="co"># smooth 2-D low-pass = background model</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>background <span class="op">=</span> np.real(np.fft.ifft2(np.fft.fft2(P) <span class="op">*</span> lowpass))[pad:<span class="op">-</span>pad, pad:<span class="op">-</span>pad]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>cleaned    <span class="op">=</span> polluted <span class="op">-</span> background                 <span class="co"># high-pass: skyglow removed, stars kept</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
 <div class="gallery-result">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../Figure/heat_diffusion.gif" class="img-fluid figure-img"></p>
-<figcaption>The 2-D heat equation solved two ways as a hot square block diffuses. Left: an explicit finite-difference scheme, crawling forward in many small time steps. Right: the Fourier/spectral solution, T̂(k,t) = T̂(k,0)·exp(−αk²t), evaluated directly. Both give the same diffusing field.</figcaption>
+<p><img src="../Figure/figure_light_pollution.png" class="img-fluid figure-img"></p>
+<figcaption>Four panels. (a) A synthetic light-polluted frame: faint stars buried under a bright skyglow gradient from a city near one corner. (b) Its 2-D spatial-frequency spectrum (Hann-windowed for display) — the skyglow’s energy is concentrated in the bright low-k core inside the dashed circle, while star energy fills the rest of the plane. (c) The low-pass reconstruction of that core: the smooth skyglow the filter identifies and removes. (d) The high-pass result — the same stars on a flat, dark sky.</figcaption>
 </figure>
 </div>
 </div>
-<p>The two panels are the same heat equation solved two ways. On the <strong>left</strong>, the classic <strong>finite-difference</strong> method: approximate the Laplacian with a 5-point stencil and step forward in time — but each step must be tiny (<span class="math inline">\Delta t &lt; \Delta x^2/4\alpha</span>) or the scheme goes unstable and blows up, so reaching a given time takes hundreds of steps. On the <strong>right</strong>, the <strong>spectral</strong> method: a single line, <span class="math inline">\hat T(\mathbf k,t)=\hat T(\mathbf k,0)\,e^{-\alpha k^2 t}</span>, jumps straight to any time with no stability limit and no accumulation of step-by-step error, because in Fourier space every mode evolves independently and <em>exactly</em>. The two tracks agree frame-for-frame — which is the point: the spectral method reaches the same answer, faster and exactly.</p>
-<p>That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in <span class="math inline">k</span>-space. The same trick — <span class="math inline">\nabla \to i\mathbf k</span> — solves Poisson’s equation (divide by <span class="math inline">-k^2</span>), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes. The heat equation is the <em>easiest</em> case because it has a real, decaying exponential per mode; the <a href="../gallery/spectral_em.html">electromagnetic-wave companion</a> shows what happens when that exponential becomes <strong>oscillatory</strong> — Maxwell’s curl equations solved the same spectral way.</p>
+<p>Panel (b) is why this works at all: the light pollution collapses into the bright core at the centre of the frequency plane, cleanly separated from the star field that fills the rest. The Gaussian low-pass (dashed circle) scoops out just that core to build the <strong>skyglow model</strong> in panel (c) — a smooth surface that traces the city-glow gradient and its corner hotspot, with no stars in it. Subtracting it leaves panel (d): the background flattens (its standard deviation drops about five-fold here) and stars that were invisible under the glow now stand out against a dark sky.</p>
+<p>The example also shows the method’s honest limit. Genuinely <em>extended</em> structure — the faint patch of nebulosity in the lower-right — lives at low spatial frequencies too, so it is partly swept into the background model and dimmed along with the skyglow. That is the same trade-off a 1-D high-pass makes when a signal and its baseline drift overlap in frequency, and it is why astrophotographers reach for gentler cutoffs, masked background models, or wavelet-based tools when they want to preserve nebulosity. Choosing where to cut is the filter design.</p>
 <hr>
-<p><em>See <a href="../chap4.html">Chapter 4</a> for the finite-difference comparison, Maxwell’s equations in <span class="math inline">k</span>-space, and stability of time-stepping schemes.</em></p>
+<p><em>See <a href="../chap6.html">Chapter 6</a> for FIR/IIR filter design, choosing a filter’s cutoff and order, and the artefacts of over-aggressive filtering.</em></p>
 
 
 </section>

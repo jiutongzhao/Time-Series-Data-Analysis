@@ -1,0 +1,90 @@
+# Electromagnetic Waves — Solved with the FFT
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Pseudo-spectral time-domain solvers for Maxwell's equations — replacing the curl operator with $i\mathbf k\times$, and integrating each mode analytically.
+**Chapter:** [4 — More about FFT](../chap4.qmd)
+**Companion:** [Heat Conduction — Solving PDEs with the FFT](spectral_pde.qmd)
+
+---
+
+## Background
+
+The [heat-equation companion](spectral_pde.qmd) showed the *easy* face of the pseudo-spectral method: each Fourier mode of a **diffusion** problem simply decays, $\hat T \propto e^{-\alpha k^2 t}$. Light is harder — it **oscillates** rather than decays — but the same idea carries over. In vacuum, Maxwell's curl equations are
+
+$$
+\frac{\partial \mathbf E}{\partial t} = c^2\,\nabla\times\mathbf B, \qquad
+\frac{\partial \mathbf B}{\partial t} = -\,\nabla\times\mathbf E .
+$$
+
+The obstacle is the **curl**: a spatial derivative that couples every grid point to its neighbours. But a derivative is diagonal in Fourier space — $\nabla \to i\mathbf k$ — so the curl becomes an ordinary cross product,
+
+$$
+\frac{\partial \hat{\mathbf E}}{\partial t} = i\,c^2\,\mathbf k\times\hat{\mathbf B}, \qquad
+\frac{\partial \hat{\mathbf B}}{\partial t} = -\,i\,\mathbf k\times\hat{\mathbf E},
+$$
+
+one small, decoupled linear system per wavevector $\mathbf k$. Combining the two gives $\partial_t^2\hat{\mathbf E} = -c^2k^2\,\hat{\mathbf E}$ — a harmonic oscillator at frequency $\omega = c\,k$, the exact dispersion relation of light.
+
+## Key idea
+
+How you turn spatial derivatives into numbers is the whole story:
+
+- **FDTD** (finite-difference time-domain, the classic Yee scheme) approximates $\nabla\times$ with nearest-neighbour differences. That stencil has the *wrong* dispersion relation — high-$k$ waves travel at slightly wrong speeds and directions — so a circular pulse develops **grid-dispersion ripples** and picks up the square grid's four-fold anisotropy. It is also bound by the CFL limit $c\,\Delta t \le \Delta x/\sqrt2$.
+- **PSTD** (pseudo-spectral time-domain) computes $\nabla\times$ *exactly* with an FFT ($i\mathbf k\times$), keeping leapfrog time-stepping. Spatial dispersion vanishes — the ring stays clean and isotropic — and it needs far fewer points per wavelength.
+- **PSATD** (pseudo-spectral analytical time-domain) goes further and integrates each mode's oscillation **analytically in time**, with $\cos(ckt)$ and $\sin(ckt)/k$ factors. Like $e^{-\alpha k^2 t}$ for heat, this is *exact for any step* — one shot jumps straight to time $t$ with no dispersion error at all.
+
+The demo below launches a single Gaussian $E_z$ pulse and lets it radiate. The dashed circle marks the true light-cone $r = ct$; the question is which solver keeps the wavefront on it.
+
+## Code
+
+```python
+import numpy as np
+from scipy.fft import fft2, ifft2, fftfreq
+
+N, dx, c = 128, 1.0, 1.0
+kx = 2*np.pi*fftfreq(N, d=dx); ky = 2*np.pi*fftfreq(N, d=dx)
+KX, KY = np.meshgrid(kx, ky, indexing='ij')
+k = np.sqrt(KX**2 + KY**2); k[0, 0] = 1e-12            # curl -> i*k x  (·)
+
+X, Y = np.ogrid[:N, :N]
+Ez0 = np.exp(-((X - N//2)**2 + (Y - N//2)**2) / 2)     # a point flash of light
+
+dt_fdtd = dx / c / np.sqrt(2)                           # CFL stability limit
+dt_spec = np.sqrt(2)/np.pi * dx / c                     # spectral: bigger steps allowed
+
+# (1) FDTD — Yee leapfrog, finite-difference curl  ->  numerical grid dispersion
+Ez, Hx, Hy = Ez0.copy(), np.zeros((N,N)), np.zeros((N,N))
+for _ in range(int(T/dt_fdtd)):
+    Hx -= dt_fdtd*(np.roll(Ez,-1,1) - Ez);  Hy += dt_fdtd*(np.roll(Ez,-1,0) - Ez)
+    Ez += dt_fdtd*((Hy - np.roll(Hy,1,0)) - (Hx - np.roll(Hx,1,1)))
+
+# (2) PSTD — exact spatial curl via FFT, leapfrog in time  ->  clean, isotropic ring
+Ez, Hx, Hy = Ez0.copy(), np.zeros((N,N)), np.zeros((N,N))
+for _ in range(int(T/dt_spec)):
+    Ezk = fft2(Ez)
+    Hx -= dt_spec*np.real(ifft2(1j*KY*Ezk));  Hy += dt_spec*np.real(ifft2(1j*KX*Ezk))
+    Ez += dt_spec*np.real(ifft2(1j*KX*fft2(Hy) - 1j*KY*fft2(Hx)))
+
+# (3) PSATD — analytic time integration of each mode  ->  exact for ANY dt, one shot
+Ez0k, Hx0k, Hy0k = fft2(Ez0), fft2(np.zeros((N,N))), fft2(np.zeros((N,N)))
+def psatd(t):
+    C, S = np.cos(c*k*t), np.sin(c*k*t)/k
+    return np.real(ifft2(C*Ez0k + 1j*c*S*(KX*Hy0k - KY*Hx0k)))
+```
+
+## Result
+
+<div class="gallery-result">
+<img src="../Figure/unit_pulse.gif" width="100%"/>
+</div>
+
+*A point flash of light spreads as an expanding ring; the dashed circle is the exact light-cone $r = ct$. **FDTD** (left) develops trailing ripples and a squarish, grid-aligned wavefront — numerical dispersion from the finite-difference curl. **PSTD** (middle) computes the curl exactly with an FFT, so the ring stays smooth and round. **PSATD** (right) integrates each Fourier mode's oscillation analytically in time and lands the wavefront exactly on the light-cone in a single step.*
+
+The three panels solve the *same* Maxwell equations and differ only in how they evaluate the curl and march in time. FDTD's nearest-neighbour stencil makes high-frequency components crawl at the wrong speed — the ring frays into ripples and inherits the grid's four-fold symmetry. Replacing the stencil with the exact spectral derivative $i\mathbf k\times$ (PSTD) erases the spatial error; integrating the resulting $\omega = ck$ oscillation analytically (PSATD) erases the time-stepping error too, exactly as $e^{-\alpha k^2 t}$ did for heat. It is the same lesson in a different key: **a spatially-coupled PDE becomes independent, exactly-solvable modes in $k$-space** — whether those modes decay (heat) or oscillate (light).
+
+The price is Fourier's global reach: the FFT mixes information across the whole grid at once, which assumes periodic boundaries and is harder to parallelise on a GPU than a purely local finite-difference update — which is why FDTD, despite its dispersion, remains the workhorse for large-scale electromagnetic simulation.
+
+---
+
+*See [Chapter 4](../chap4.qmd) for Maxwell's equations in $k$-space, the FDTD/PSTD/PSATD comparison, and the trade-off between spectral accuracy and parallel locality.*

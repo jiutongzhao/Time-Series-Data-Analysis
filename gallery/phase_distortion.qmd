@@ -1,0 +1,51 @@
+# Why Linear Phase Matters — FIR vs IIR
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Phase response and group delay — how two filters with the *same* magnitude response can treat a signal's shape completely differently.
+**Chapter:** [6 — Signal Processing](../chap6.qmd)
+
+---
+
+## Background
+
+When we design a filter we usually stare at its **magnitude** response — how much each frequency is passed or blocked. But a filter does a second thing that is easy to forget: it **delays** each frequency, by an amount set by its **phase** response. If different frequencies are delayed by different times, the components of a signal arrive out of step and its *shape* is mangled — even though every frequency has the "right" amplitude. This is **phase distortion**, and it is why the choice between an **FIR** and an **IIR** filter is not just about efficiency.
+
+## Key idea
+
+The relevant quantity is **group delay** — the time delay a filter imposes as a function of frequency, $\tau(\omega) = -\,d\phi/d\omega$.
+
+- A **symmetric FIR** filter has *exactly* **linear phase**: its group delay is a **constant** at all frequencies. Every component is held back by the same number of samples, so the output is the input **delayed but otherwise undistorted** — the waveform's shape is preserved perfectly. The cost is efficiency: many taps to get a sharp cutoff.
+- A causal **IIR** filter (Butterworth, Chebyshev, …) reaches the same magnitude response with far fewer coefficients, but its phase is **nonlinear** — group delay varies with frequency, peaking near the cutoff. Different frequencies are delayed by different amounts, so sharp edges **smear asymmetrically** and overshoot.
+
+The demo passes a **square wave** — all sharp edges, rich in harmonics — through a 45 Hz low-pass built both ways, and watches what happens to the edges.
+
+## Code
+
+```python
+import numpy as np
+from scipy.signal import butter, firwin, lfilter, group_delay
+
+fs, fc = 1000, 45
+x = ((np.arange(0, 1, 1/fs) % 0.2) < 0.1).astype(float)   # 5 Hz square wave
+
+b, a  = butter(6, fc, fs=fs);      y_iir = lfilter(b, a, x)     # IIR: nonlinear phase
+taps  = firwin(121, fc, fs=fs);    y_fir = lfilter(taps, 1, x)  # FIR: linear phase
+
+w_i, gd_i = group_delay((b, a), fs=fs)         # IIR group delay varies with frequency
+w_f, gd_f = group_delay((taps, 1), fs=fs)      # FIR group delay is flat (constant)
+```
+
+## Result
+
+<div class="gallery-result">
+![Two panels. (a) A square wave (grey) low-pass filtered two ways: the FIR output (blue, delay-compensated) rings symmetrically around each edge and keeps its shape; the causal IIR Butterworth output (red) has a fast rise but a lagging, asymmetric overshoot that distorts the edges. (b) Group delay versus frequency: the FIR is a flat constant line, while the IIR's delay rises to a hump near the 45 Hz cutoff and falls off beyond it.](../Figure/figure_phase_distortion.png)
+</div>
+
+Both filters have essentially the *same* magnitude response — a 45 Hz low-pass — yet panel (a) shows they treat the square wave very differently. The linear-phase **FIR** (blue) produces a symmetric result: the Gibbs ringing sits evenly on both sides of each edge, and once you account for its constant delay the pulse shape is faithfully preserved. The causal **IIR** (red) rises quickly but then overshoots and settles with the ringing trailing *after* the edge — an asymmetric distortion, because its group delay in panel (b) is not constant: components near the cutoff are held back ~23 samples while high frequencies pass almost immediately, so the edge's harmonics arrive scrambled in time.
+
+This is the crux of the FIR-versus-IIR decision. When the *shape* of the waveform carries meaning — an ECG's QRS complex, a communications pulse, anything you will measure timing or morphology from — **linear phase** is worth the extra taps. When only the spectral content matters, or when you can afford to filter offline, a cheap IIR run **forward-and-backward** (`filtfilt`) cancels its own phase and gives you the best of both: IIR efficiency with zero net phase distortion.
+
+---
+
+*See [Chapter 6](../chap6.qmd) for FIR and IIR filter design, phase and group-delay response, and zero-phase filtering.*

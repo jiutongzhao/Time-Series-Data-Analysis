@@ -13,7 +13,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="Figure/figure_nyfr.png" alt="Aliasing and the Nyquist Folding Receiver">
+<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing and the Nyquist Folding Receiver">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Aliasing &amp; the Nyquist Folding Receiver</div>
 <p class="gallery-card-desc">Undersampling folds every Nyquist zone onto the same baseband; a modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.</p>
@@ -79,7 +79,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/cmb.qmd">
-<img class="gallery-card-img" src="Figure/figure_cmb_timeline.jpg" alt="Cosmic Microwave Background angular power spectrum">
+<img class="gallery-card-img" src="Figure/figure_cmb_map.png" alt="Cosmic Microwave Background angular power spectrum">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Cosmic Microwave Background</div>
 <p class="gallery-card-desc">The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.</p>
@@ -101,11 +101,33 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/spectral_pde.qmd">
-<img class="gallery-card-img" src="Figure/heat_diffusion.gif" alt="Solving PDEs with the FFT">
+<img class="gallery-card-img" src="Figure/heat_diffusion.gif" alt="Heat conduction solved with the FFT">
 <div class="gallery-card-body">
-<div class="gallery-card-title">Solving PDEs with the FFT</div>
+<div class="gallery-card-title">Heat Conduction with the FFT</div>
 <p class="gallery-card-desc">In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.</p>
 <span class="gallery-card-tag">Ch.4 · Spectral Method</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/spectral_em.qmd">
+<img class="gallery-card-img" src="Figure/unit_pulse.gif" alt="Electromagnetic waves solved with the FFT">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Electromagnetic Waves with the FFT</div>
+<p class="gallery-card-desc">The same trick for light: the curl becomes i·k×, and each mode oscillates at ω=ck. Spectral solvers (PSTD/PSATD) keep the wavefront on the light-cone where finite differences ripple.</p>
+<span class="gallery-card-tag">Ch.4 · Spectral Method</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/fft_multiplication.qmd">
+<img class="gallery-card-img" src="Figure/figure_fft_multiplication.png" alt="Fast multiplication with the FFT">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Fast Multiplication with the FFT</div>
+<p class="gallery-card-desc">Multiplying two numbers is convolving their digits — so the convolution theorem multiplies million-digit integers and polynomials in O(n log n) instead of O(n²).</p>
+<span class="gallery-card-tag">Ch.4 · Convolution</span>
 </div>
 </a>
 </div>
@@ -117,6 +139,61 @@ Each card below links to a self-contained example: real data, working Python cod
 <div class="gallery-card-title">Solar-Wind Turbulence Spectrum</div>
 <p class="gallery-card-desc">The Welch method tames six decades of raw periodogram scatter into the turbulent cascade — f⁻¹ injection, f⁻⁵ᐟ³ Kolmogorov, f⁻²·⁸ dissipation.</p>
 <span class="gallery-card-tag">Ch.5 · Welch PSD</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/light_pollution.qmd">
+<img class="gallery-card-img" src="Figure/figure_light_pollution.png" alt="Filtering light pollution from a starfield">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Filtering Light Pollution</div>
+<p class="gallery-card-desc">Skyglow is a smooth low-frequency gradient; stars are high-frequency spikes. A 2-D high-pass filter models the city glow and subtracts it, restoring the stars.</p>
+<span class="gallery-card-tag">Ch.6 · Filter Design</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/mains_hum.qmd">
+<img class="gallery-card-img" src="Figure/figure_mains_hum.png" alt="Notch filtering 60 Hz mains hum from an ECG">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Notching Out 60 Hz Mains Hum</div>
+<p class="gallery-card-desc">Power-line interference is a razor-sharp spectral line. A cascade of high-Q notch filters removes 60 Hz and its harmonics from an ECG, leaving the heartbeat untouched.</p>
+<span class="gallery-card-tag">Ch.6 · Notch Filter</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/hilbert_am.qmd">
+<img class="gallery-card-img" src="Figure/figure_hilbert_am.png" alt="AM demodulation with the Hilbert transform">
+<div class="gallery-card-body">
+<div class="gallery-card-title">AM Demodulation (Hilbert)</div>
+<p class="gallery-card-desc">The analytic signal turns a modulated carrier into a rotating vector whose length is the envelope — recovering an AM message exactly, in one transform.</p>
+<span class="gallery-card-tag">Ch.6 · Hilbert Transform</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/phase_distortion.qmd">
+<img class="gallery-card-img" src="Figure/figure_phase_distortion.png" alt="FIR vs IIR phase distortion">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Why Linear Phase Matters</div>
+<p class="gallery-card-desc">Two filters, the same magnitude response: the linear-phase FIR preserves a pulse's shape while the causal IIR smears its edges — the story is in the group delay.</p>
+<span class="gallery-card-tag">Ch.6 · FIR vs IIR</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/decimation_alias.qmd">
+<img class="gallery-card-img" src="Figure/figure_decimation_alias.png" alt="Anti-alias filtering before decimation">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Downsampling Needs a Filter</div>
+<p class="gallery-card-desc">Keep every 5th sample and a 700 Hz tone folds to a phantom 100 Hz. Low-pass first — the anti-alias filter — and it vanishes cleanly. You can't un-fold an alias.</p>
+<span class="gallery-card-tag">Ch.6 · Decimation</span>
 </div>
 </a>
 </div>
