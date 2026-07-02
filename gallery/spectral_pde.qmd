@@ -1,0 +1,64 @@
+# Solving PDEs with the FFT
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The pseudo-spectral method — turning a partial differential equation into one decoupled ODE per Fourier mode, and solving it exactly with the FFT.
+**Chapter:** [4 — More about FFT](../chap4.qmd)
+
+---
+
+## Background
+
+Most physical fields — temperature, pressure, the electromagnetic field — obey **partial differential equations** involving spatial derivatives. In real space a derivative couples every grid point to its neighbours, which is what makes PDEs hard. But a derivative is *diagonal* in Fourier space: differentiating $e^{ikx}$ just multiplies it by $ik$. So the Fourier transform turns
+
+$$
+\frac{\partial}{\partial x} \;\longrightarrow\; ik, \qquad \nabla^2 \;\longrightarrow\; -k^2,
+$$
+
+and a linear, constant-coefficient PDE collapses into a family of **independent ordinary** differential equations — one for each Fourier mode — that often have a closed-form solution. This is the **pseudo-spectral method**, and the FFT makes it fast.
+
+## Key idea
+
+Take the 2-D **heat equation** $\partial_t T = \alpha \nabla^2 T$. Fourier-transform in space and the coupled PDE becomes, mode by mode,
+
+$$
+\frac{d\hat T(\mathbf k,t)}{dt} = -\alpha\,k^2\,\hat T(\mathbf k,t)
+\qquad\Longrightarrow\qquad
+\hat T(\mathbf k,t) = \hat T(\mathbf k,0)\,e^{-\alpha k^2 t}.
+$$
+
+Each mode simply decays exponentially, at a rate set by $k^2$ — so **short-wavelength (high-$k$) features die fastest**, which is exactly why sharp edges blur first and the field relaxes toward smoothness. The whole solver is: FFT the initial condition, multiply by $e^{-\alpha k^2 t}$, inverse-FFT. Crucially it is **exact in time** — you can jump straight to any $t$ with no time-stepping — whereas an explicit finite-difference scheme must crawl forward in steps small enough ($\Delta t < \Delta x^2/4\alpha$) to stay stable.
+
+## Code
+
+```python
+import numpy as np
+from scipy.fft import fft2, ifft2, fftfreq
+
+N, dx, alpha = 128, 1.0, 1.0
+k = 2*np.pi*fftfreq(N, d=dx)                      # wavenumbers
+KX, KY = np.meshgrid(k, k, indexing='ij')
+K2 = KX**2 + KY**2                                # Laplacian -> -k^2
+
+T0 = np.zeros((N, N)); T0[N//4:3*N//4, N//4:3*N//4] = 1.0   # a hot square block
+T0hat = fft2(T0)
+
+def solve(t):                                    # exact solution at any time t
+    return np.real(ifft2(T0hat * np.exp(-alpha * K2 * t)))
+
+T_early, T_late = solve(200), solve(800)         # no time-stepping needed
+```
+
+## Result
+
+<div class="gallery-result">
+![Solving the 2-D heat equation with the FFT. Top: the temperature field at t = 0, 200, 800 — a hot square relaxing to a smooth blob. Bottom: the radially-averaged Fourier spectrum |T̂(k,t)|; at t = 0 it spans all wavenumbers (the square's sharp edges are high-k), but each mode is multiplied by exp(−αk²t), so by t = 200 and 800 only the lowest wavenumbers survive — the high-k edge content dies first.](../Figure/figure_spectral_pde.png)
+</div>
+
+The two rows are the same computation seen in its two bases. In **real space** (top) the hot square softens: its corners and edges round off almost immediately, and the whole block spreads and fades toward a uniform temperature. In **Fourier space** (bottom) that is a single, trivial statement — every mode is just multiplied by $e^{-\alpha k^2 t}$. The initial square carries power across the entire spectrum (sharp edges need high wavenumbers), but the $k^2$ in the exponent means high-$k$ modes are erased far faster than low-$k$ ones, so the spectrum collapses toward $k=0$. Blurring of edges *is* the decay of high wavenumbers.
+
+That is the whole appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in $k$-space, solved exactly and without any stability constraint on the step size. The same trick — $\nabla \to i\mathbf k$ — solves Poisson's equation (divide by $-k^2$), advection, the wave equation, and, with a nonlinear term handled pseudo-spectrally, even Navier–Stokes.
+
+---
+
+*See [Chapter 4](../chap4.qmd) for the finite-difference comparison, Maxwell's equations in $k$-space, and stability of time-stepping schemes.*

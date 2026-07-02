@@ -89,12 +89,34 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/airy_diffraction.qmd">
+<img class="gallery-card-img" src="Figure/figure_airy_combined.png" alt="Airy diffraction pattern">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Airy Diffraction — Theory vs. Experiment</div>
+<p class="gallery-card-desc">The Hankel transform predicts a circular aperture's diffraction rings; a real red-laser-through-a-pinhole photo confirms them to a few percent.</p>
+<span class="gallery-card-tag">Ch.3 · Hankel Transform</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/aliasing.qmd">
 <img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Aliasing</div>
 <p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
 <span class="gallery-card-tag">Ch.4 · Nyquist</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/spectral_pde.qmd">
+<img class="gallery-card-img" src="Figure/figure_spectral_pde.png" alt="Solving PDEs with the FFT">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Solving PDEs with the FFT</div>
+<p class="gallery-card-desc">In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.</p>
+<span class="gallery-card-tag">Ch.4 · Spectral Method</span>
 </div>
 </a>
 </div>
@@ -150,6 +172,17 @@ Each card below links to a self-contained example: real data, working Python cod
 <div class="gallery-card-title">AO–Baltic Coherence</div>
 <p class="gallery-card-desc">Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.</p>
 <span class="gallery-card-tag">Ch.8 · Coherence</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/chorus_svd.qmd">
+<img class="gallery-card-img" src="Figure/figure_svd_erg.png" alt="Chorus wave SVD polarization">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Chorus-Wave Polarization (SVD)</div>
+<p class="gallery-card-desc">From one spacecraft's 3-axis magnetometer, an SVD of the spectral matrix recovers the wave vector and polarization of magnetospheric chorus — Maxwell meets spectra.</p>
+<span class="gallery-card-tag">Ch.8 · SVD</span>
 </div>
 </a>
 </div>

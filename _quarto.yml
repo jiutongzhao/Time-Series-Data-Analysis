@@ -35,7 +35,11 @@ project:
     - gallery/piano.qmd
     - gallery/missing_fundamental.qmd
     - gallery/kalman_gps_imu.qmd
+    - gallery/airy_diffraction.qmd
+    - gallery/chorus_svd.qmd
+    - gallery/spectral_pde.qmd
   resources:
+    - .nojekyll
     # Figures and data live at project root; Quarto copies them into docs/
     - Figure/
     - Data/indian_cuckoo_short.wav

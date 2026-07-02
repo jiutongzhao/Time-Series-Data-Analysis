@@ -1,0 +1,72 @@
+# Airy Diffraction — Theory vs. Experiment
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** The Hankel transform — the 2-D radial "spectrum" of a circular aperture, validated against a real laser-diffraction photograph.
+**Chapter:** [3 — Power Spectral Density](../chap3.qmd)
+
+---
+
+## Background
+
+When monochromatic light passes through a **circular aperture**, the far-field pattern is the 2-D Fourier transform of the aperture — and for a shape with **rotational symmetry** the 2-D transform collapses to a 1-D **Hankel transform** (a Fourier transform in the radial coordinate, with a Bessel-function kernel). The zeroth-order Hankel transform of a top-hat disk is the famous **Airy pattern**: a bright central disk ringed by fading concentric circles. It sets the diffraction limit of every telescope, microscope, and camera lens.
+
+This example takes the Hankel-transform *prediction* and holds it up against a real photograph of laser light through a pinhole.
+
+## Key idea
+
+Normalising the radial coordinate by the Airy radius $r_\text{Airy} = 1.22\,\lambda f/D$, the intensity profile is
+
+$$
+I(r) = \left[\frac{2 J_1(u)}{u}\right]^2, \qquad u = 1.22\,\pi\, \frac{r}{r_\text{Airy}},
+$$
+
+where $J_1$ is the first-order Bessel function. What theory pins down exactly is the **geometry**: the dark rings sit at the zeros of $J_1$, whose radii are in the fixed, parameter-free ratio $1 : 1.83 : 2.66 : 3.48 : \dots$ — independent of wavelength, aperture size, or distance. If a real diffraction pattern shows rings in *that* ratio, it is diffraction from a circular aperture, full stop.
+
+## Code
+
+```python
+import numpy as np
+from scipy.special import j1, jn_zeros
+from scipy.optimize import minimize
+from PIL import Image
+
+def airy(q):                                   # ideal Airy intensity, q = r / r_Airy
+    u = 1.22 * np.pi * q
+    return np.where(u == 0, 1.0, (2 * j1(u) / u)**2)
+
+zeros_q = jn_zeros(1, 6) / jn_zeros(1, 1)       # dark-ring radii, in units of r_Airy
+
+# --- EXPERIMENT: a real photo of a red laser through a 0.09 mm pinhole ---
+srgb_lin = lambda c: np.where(c/255 <= 0.04045, c/255/12.92, ((c/255 + 0.055)/1.055)**2.4)
+I = srgb_lin(np.asarray(Image.open('airy_experiment_pinhole.jpg').convert('RGB'))[:, :, 0])
+ys, xs = np.indices(I.shape)
+
+# the true centre is the one that makes the rings concentric = minimum azimuthal variance
+def azim_var(c):
+    r = np.hypot(xs - c[0], ys - c[1]).ravel(); m = r < 1400
+    b = (r[m] / 1400 * 180).astype(int); v = I.ravel()[m]
+    mean = np.bincount(b, v, 180) / np.maximum(np.bincount(b, None, 180), 1)
+    return np.nansum((v - mean[b])**2)
+cx, cy = minimize(azim_var, [I.shape[1]/2, I.shape[0]/2], method='Nelder-Mead').x
+
+# azimuthally average into a radial profile, then fit the single scale r_Airy to the dark rings
+r = np.hypot(xs - cx, ys - cy)
+bins = np.linspace(0, 1500, 751)
+prof = np.array([np.median(I[(r >= a) & (r < b)]) for a, b in zip(bins[:-1], bins[1:])])
+# dark-ring radii -> least-squares r_Airy against jn_zeros(1, k); compare prof to airy(rc / r_Airy)
+```
+
+## Result
+
+<div class="gallery-result">
+![The Airy pattern of a circular aperture. (a) the ideal pattern from the Hankel transform, [2J1(u)/u]², with the theoretical J1 zeros dashed; (b) a real red-laser photograph through a 0.09 mm pinhole (65 mm downstream), the same theoretical rings overlaid; (c) the azimuthally-averaged experimental profile tracking the simulated curve, dark rings at the parameter-free ratio 1 : 1.83 : 2.66.](../Figure/figure_airy_combined.png)
+</div>
+
+Panel **(a)** is pure theory — the squared Hankel transform of a disk. Panel **(b)** is a real photograph ([public domain](https://commons.wikimedia.org/wiki/File:Beugungsscheibchen.k.720.jpg), B. Bautsch) of red laser light through a 0.09 mm pinhole. The only free parameter recovered from the image is the overall scale $r_\text{Airy}$; everything else is fixed by the transform. The *same* dashed circles — the scaled zeros of $J_1$ — drop squarely into the dark gaps of both the simulation and the photograph, and panel **(c)** shows the measured radial profile following the ideal $[2J_1(u)/u]^2$ curve to within a few percent, with the first three dark rings landing at $1 : 1.83 : 2.66$. The fitted first null, $r_\text{Airy}\approx 0.53$ mm, matches $1.22\,\lambda f/D$ for a $\sim$600 nm laser and the quoted pinhole; the central Airy disk encloses 83.8 % of the diffracted energy.
+
+A small but nice piece of signal processing makes the comparison work: to average a real photo azimuthally you must first find the true centre, done here by **minimising the azimuthal variance** — the centre at which the rings are most perfectly concentric — after undoing the camera's sRGB gamma so the pixel values are linear in intensity.
+
+---
+
+*See [Chapter 3](../chap3.qmd) for the Hankel transform, its relation to the 2-D Fourier transform, and the quasi-discrete (QDHT) implementation.*
