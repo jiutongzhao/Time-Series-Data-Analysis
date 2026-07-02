@@ -90,11 +90,11 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="Figure/figure_nyfr.png" alt="Nyquist Folding Receiver">
+<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
 <div class="gallery-card-body">
-<div class="gallery-card-title">Aliasing &amp; the Nyquist Folding Receiver</div>
-<p class="gallery-card-desc">Every Nyquist zone folds to the same baseband — ambiguous. A modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.</p>
-<span class="gallery-card-tag">Ch.4 · Nyquist Folding</span>
+<div class="gallery-card-title">Aliasing</div>
+<p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
+<span class="gallery-card-tag">Ch.4 · Nyquist</span>
 </div>
 </a>
 </div>

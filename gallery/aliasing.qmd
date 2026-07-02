@@ -1,69 +1,73 @@
-# Aliasing & the Nyquist Folding Receiver
+# Aliasing
 
 <a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
 
-**Topic:** The Nyquist–Shannon sampling theorem — and how a *modulated* sample clock turns aliasing from a hazard into a wideband-receiver architecture.
+**Topic:** The Nyquist–Shannon sampling theorem — what happens when it is violated.
 **Chapter:** [4 — More about FFT](../chap4.qmd)
 
 ---
 
 ## Background
 
-Sampling converts a continuous signal into a discrete sequence. The **Nyquist theorem** says perfect reconstruction is possible only if the sampling rate exceeds twice the highest frequency, $f_s > 2f_\text{max}$. Violate it and high frequencies **fold back** to lower ones — **aliasing**. A sinusoid at $f_0$ sampled at $f_s$ is indistinguishable from one at
+Sampling converts a continuous signal into a discrete sequence. The **Nyquist theorem** states that perfect reconstruction is possible if and only if the sampling rate $f_s$ exceeds twice the signal's highest frequency: $f_s > 2f_\text{max}$. When this condition is violated, high-frequency components **fold back** into lower frequencies — a phenomenon called **aliasing**. The aliased frequency is not an artifact of the DFT; it is genuinely present in the sampled sequence and cannot be removed after the fact.
+
+## Key idea
+
+A sinusoid at frequency $f_0$ sampled at rate $f_s$ is indistinguishable from a sinusoid at the **aliased frequency**
 
 $$
-f_\text{alias} = \left| \left( f_0 + \tfrac{f_s}{2} \right) \bmod f_s - \tfrac{f_s}{2} \right|.
+f_\text{alias} = \left| \left( f_0 + \frac{f_s}{2} \right) \bmod f_s - \frac{f_s}{2} \right|
 $$
 
-For $f_0 = 1.2$ kHz and $f_s = 1$ kHz the spectrum reports **200 Hz**, though the signal was at 1.2 kHz:
-
-<div class="gallery-result">
-![A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz; at 3 kHz it is correct](../Figure/figure_aliasing.png)
-</div>
-
-But the deeper problem is **ambiguity**: a baseband tone at 200 Hz could equally have come from 1.2 kHz, 2.2 kHz, 3.2 kHz … — any **Nyquist zone** $n$ folds to the same place. Undersample a wide band and you cannot tell where a signal really was. Usually we forbid this with an anti-aliasing filter. The **Nyquist Folding Receiver (NYFR)** does the opposite — it *embraces* the folding and adds one trick to undo the ambiguity.
-
-## Key idea — tag each zone with a modulated clock
-
-A wideband receiver wants to watch many GHz but can only afford a slow ADC. The NYFR deliberately **undersamples** the whole band so every Nyquist zone folds down onto the first — and drives the sample-and-hold with a **phase-modulated clock** instead of a uniform one. If the sampling instants carry a small sinusoidal jitter $\delta t(k) = A_j \sin(2\pi f_m k / f_s)$, a tone at RF frequency $f_\text{RF}$ picks up an induced phase
-
-$$
-\phi(k) = 2\pi f_\text{RF}\,\delta t(k) = \underbrace{2\pi f_\text{RF} A_j}_{\text{FM index}}\,\sin\!\left(2\pi \tfrac{f_m}{f_s} k\right).
-$$
-
-The tone still lands at its baseband alias, but now wearing an **induced FM whose depth is proportional to $f_\text{RF}$** — i.e. to the Nyquist zone. Read the FM depth off a spectrogram and you recover which zone the signal came from, and hence its true frequency. One slow ADC, the whole band, ambiguity resolved.
+For $f_0 = 1.2$ kHz and $f_s = 1$ kHz: $f_\text{alias} = |1.2 - 1.0| = 0.2$ kHz. The spectrum reports a 200 Hz tone, though the physical signal was at 1.2 kHz.
 
 ## Code
 
 ```python
 import numpy as np
-from scipy import signal
+import matplotlib.pyplot as plt
 
-fs = 1.0                                   # normalised sample rate (freqs in units of fs)
-N, k = 6000, np.arange(6000)
-fm, Aj = 0.0005, 8.0                       # clock-modulation frequency and jitter amplitude
+f_true = 1200.0      # Hz — above Nyquist
+fs_bad  = 1000.0     # Hz — violates Nyquist
+fs_good = 3000.0     # Hz — satisfies Nyquist
 
-# three tones in Nyquist zones 1, 3, 5 — all fold to distinct baseband aliases
-tones = [(0.10, 1), (1.25, 3), (2.40, 5)]  # (f_RF in units of fs, zone)
+t_cont = np.linspace(0, 0.02, 10_000)
+x_cont = np.cos(2 * np.pi * f_true * t_cont)
 
-t_uniform = k / fs                                     # ordinary clock  -> plain aliasing
-t_nyfr    = k / fs + Aj*np.sin(2*np.pi*fm*k/fs)        # modulated clock -> zone tagging
-mix = lambda t: sum(np.cos(2*np.pi*f*t) for f, _ in tones)
+t_bad  = np.arange(0, 0.02, 1.0 / fs_bad)
+t_good = np.arange(0, 0.02, 1.0 / fs_good)
+x_bad  = np.cos(2 * np.pi * f_true * t_bad)
+x_good = np.cos(2 * np.pi * f_true * t_good)
 
-f, tt, S = signal.spectrogram(mix(t_nyfr), fs=fs, nperseg=128, noverlap=120, window='hann')
-# in S, each tone sits at its alias with a sinusoidal FM of depth 2*pi*f_RF*Aj*fm  ∝  zone
+def compute_spectrum(x, fs):
+    N = len(x)
+    X = np.fft.rfft(x) / N
+    f = np.fft.rfftfreq(N, d=1.0 / fs)
+    return f, np.abs(X)
+
+f_bad,  A_bad  = compute_spectrum(x_bad,  fs_bad)
+f_good, A_good = compute_spectrum(x_good, fs_good)
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+axes[0].stem(f_bad,  A_bad,  markerfmt='C1o', basefmt='k-')
+axes[0].set_title(f'fs = {int(fs_bad)} Hz (aliased)')
+axes[0].set_xlabel('Frequency (Hz)')
+axes[1].stem(f_good, A_good, markerfmt='C0o', basefmt='k-')
+axes[1].set_title(f'fs = {int(fs_good)} Hz (correct)')
+axes[1].set_xlabel('Frequency (Hz)')
+for ax in axes:
+    ax.set_ylabel('Amplitude')
+plt.tight_layout()
 ```
 
 ## Result
 
 <div class="gallery-result">
-![Nyquist Folding Receiver. (a) With a uniform clock, three tones from Nyquist zones 1, 3, 5 fold to flat baseband lines — you cannot tell which zone each came from. (b) With the modulated clock, the same three lines acquire a sinusoidal FM whose depth grows with the true RF frequency: zone 1 stays flat, zone 3 wiggles moderately, zone 5 swings widely — so the zone, and the real frequency, are recovered.](../Figure/figure_nyfr.png)
+![Aliasing demonstration: 1.2 kHz tone sampled at 1 kHz appears at 200 Hz](../Figure/figure_aliasing.png)
 </div>
 
-Both panels show the same three tones landing at baseband aliases **0.10, 0.25, 0.40 $f_s$**. Under a uniform clock (a) they are flat lines — a 0.40 $f_s$ line could be a zone-1 tone at 0.40 $f_s$, a zone-3 tone at 1.60 $f_s$, a zone-5 tone at 2.40 $f_s$, and so on; nothing distinguishes them. The modulated clock (b) breaks the tie: because the induced FM depth is $\propto f_\text{RF}$, the zone-5 tone swings roughly 24× wider than the zone-1 tone. Measuring that swing recovers the Nyquist zone and reconstructs the true RF frequency — the principle behind analog-to-information receivers that cover many GHz of spectrum with a single modest ADC.
-
-The lesson cuts both ways: aliasing is a hazard you normally filter out *before* sampling — but understood precisely, the same folding can be engineered into a feature.
+Left panel: sampling at 1 kHz places the 1.2 kHz tone at 200 Hz — a completely wrong frequency. Right panel: sampling at 3 kHz correctly identifies the 1.2 kHz component. Anti-aliasing low-pass filters must be applied *before* sampling to prevent the fold-back.
 
 ---
 
-*See [Chapter 4](../chap4.qmd) for the Nyquist theorem, folding diagrams, and anti-aliasing filter design.*
+*See [Chapter 4](../chap4.qmd) for the Nyquist theorem proof, folding diagrams, and anti-aliasing filter design.*
