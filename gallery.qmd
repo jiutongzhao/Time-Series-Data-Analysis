@@ -34,6 +34,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/missing_fundamental.qmd">
+<img class="gallery-card-img" src="Figure/figure_missing_fundamental.png" alt="The missing fundamental">
+<div class="gallery-card-body">
+<div class="gallery-card-title">The Missing Fundamental</div>
+<p class="gallery-card-desc">Delete a tone's fundamental and the pitch stays put — the waveform period and the cepstral peak both survive. With audio to hear it.</p>
+<span class="gallery-card-tag">Ch.2 · Cepstrum</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/gearbox.qmd">
 <img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
 <div class="gallery-card-body">

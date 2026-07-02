@@ -33,12 +33,16 @@ project:
     - gallery/aliasing.qmd
     - gallery/stft_cwt.qmd
     - gallery/piano.qmd
+    - gallery/missing_fundamental.qmd
   resources:
     # Figures and data live at project root; Quarto copies them into docs/
     - Figure/
     - Data/indian_cuckoo_short.wav
     - Data/gearbox_spectraquest.npz
     - Data/two_point_correlation_schematic.webm
+    - Data/missing_fundamental_full.wav
+    - Data/missing_fundamental_no_f1.wav
+    - Data/missing_fundamental_octave.wav
     - styles.css
     # figure_code_map.js is lazy-loaded on first figure click (figure_modal.js is inlined).
     - js/figure_code_map.js

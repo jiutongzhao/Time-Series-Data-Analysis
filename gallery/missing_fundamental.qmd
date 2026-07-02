@@ -1,0 +1,148 @@
+# The Missing Fundamental
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Pitch perception, harmonic structure, and the cepstrum — why a tone keeps its pitch even when its fundamental frequency is deleted.
+**Chapter:** [2 — Frequency Domain](../chap2.qmd)
+
+---
+
+## Background
+
+Play a middle C (C4) on a piano and you hear a pitch at its **fundamental**, $f_1 \approx 261.6$ Hz, coloured by a comb of harmonics $2f_1, 3f_1, 4f_1, \dots$. Now delete that fundamental entirely — remove all energy at $f_1$ and keep only the harmonics — and something surprising happens: **the pitch does not change.** You still hear the same C4. This is the **missing fundamental** (also called *residue pitch* or *virtual pitch*).
+
+It is not a laboratory curiosity — you hear it constantly:
+
+- A **telephone** passes only $\sim\!300$–$3400$ Hz, cutting the $\sim\!100$–$150$ Hz fundamental of a male voice, yet the voice keeps its pitch.
+- **Laptop and phone speakers** cannot physically move enough air to reproduce bass notes, but music still sounds like it has a bass line.
+- Pipe-organ builders exploit it deliberately (the *resultant bass*): two higher pipes create the sensation of a much lower note that no pipe actually sounds.
+
+## Key idea
+
+The pitch we perceive tracks the **periodicity** of the waveform, not the presence of energy at $f_1$. A harmonic complex built from partials at $2f_1, 3f_1, 4f_1,\dots$ is *still periodic with period $T = 1/f_1$* — the greatest common divisor of the partial frequencies is $f_1$, so the waveform repeats $f_1$ times a second whether or not the $f_1$ line is present. The **first figure** sets up three views of a **real C4 piano recording**: the *waveform* repeating on its period $T=1/f_1 \approx 3.8$ ms, the *FFT magnitude* as a comb of harmonics, and the *cepstrum*.
+
+The frequency domain says the same thing in a dual way. The harmonics are **equally spaced by $f_1$**, and that spacing is what encodes the pitch. The **cepstrum** — the spectrum of the log-spectrum (see [Chapter 2](../chap2.qmd)) — converts a periodic *comb* of harmonics into a single peak at **quefrency $1/f_1$**. Because deleting a spectral line barely changes the *spacing* of the rest, this cepstral peak (and the perceived pitch) is robust to removing the fundamental — the reason cepstral pitch estimation works even on telephone speech.
+
+The **second figure** settles the natural objection with an **ideal sawtooth** at the same C4 pitch — synthetic rather than recorded, so the partials sit at exact integer multiples of $f_1$ with clean $1/n$ amplitudes and "delete the fundamental" and "shift up an octave" are surgically precise. When we delete $f_1$, the lowest surviving partial sits at $2f_1 \approx 523$ Hz — *exactly the fundamental of C5, one octave up*. So why isn't the fundamental-removed tone simply heard as C5? Because pitch follows the **spacing** of the harmonics, not the lowest frequency present: the $f_1$-removed sawtooth still has partials every $262$ Hz ($523, 785, 1047,\dots$), whereas a genuine C5 has partials every $523$ Hz ($523, 1047, 1570,\dots$). Same lowest frequency, different comb — and the ear tracks the comb. (The tell-tale is the partial at $785$ Hz — the odd multiple $3f_1$ — present when $f_1$ is merely removed but absent one octave up.)
+
+## Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.io.wavfile import read, write as wavwrite
+
+BLUE, RED, GREEN, INK, GREY = '#0d49fb', '#e6091c', '#0a9a4a', '#222222', '#888888'
+
+# ── real C4 recording (figure 1) ────────────────────────────────────────────
+def load(name):
+    fs, w = read(name)
+    x = w[:, 0].astype(float) if w.ndim > 1 else w.astype(float)
+    return fs, x / np.max(np.abs(x))
+fs, c4 = load('Data/piano_middle_c.wav')
+f1 = 261.63                                   # C4 (middle C) fundamental
+
+# ── ideal (band-limited) sawtooth at C4 pitch (figure 2) ────────────────────
+dur, N = 2.0, 40
+ts = np.arange(int(fs * dur)) / fs
+def saw(f0, nmin=1):
+    y = np.zeros_like(ts)
+    for n in range(nmin, N + 1):
+        if n * f0 < 0.45 * fs:
+            y += np.sin(2 * np.pi * n * f0 * ts) / n
+    return y
+saw_full = saw(f1, 1)          # f1, 2f1, 3f1, ...
+saw_nof1 = saw(f1, 2)          # fundamental removed: 2f1, 3f1, ...
+saw_oct  = saw(2 * f1, 1)      # one octave up (C5): 2f1, 4f1, ...
+
+# ── audio: sawtooth trio (mono int16, normalised, 10 ms fades) ──────────────
+def save_wav(name, y):
+    y = y / np.max(np.abs(y)); k = int(0.01*fs); r = np.ones_like(y)
+    r[:k] = np.linspace(0,1,k); r[-k:] = np.linspace(1,0,k)
+    wavwrite(name, fs, (y*r*0.9*32767).astype(np.int16))
+save_wav('missing_fundamental_full.wav',   saw_full)
+save_wav('missing_fundamental_no_f1.wav',  saw_nof1)
+save_wav('missing_fundamental_octave.wav', saw_oct)
+
+# ── analysis helpers (steady segment) ───────────────────────────────────────
+i0, L = int(0.3*fs), 16384; win = np.hanning(L)
+def spectrum(y):  s = y[i0:i0+L]*win; return np.fft.rfftfreq(L,1/fs), np.abs(np.fft.rfft(s))**2
+def magnitude(y): s = y[i0:i0+L]*win; return np.fft.rfftfreq(L,1/fs), np.abs(np.fft.rfft(s))
+def cepstrum(y):
+    mag = np.abs(np.fft.rfft(y[i0:i0+L]*win)); logX = np.log(mag + 0.01*mag.max())
+    c = np.fft.irfft(logX); return np.arange(c.size)/fs, c
+
+# ── FIGURE 1 — real C4 waveform | FFT magnitude | cepstrum ──────────────────
+T = 1/f1; t = np.arange(c4.size)/fs
+fig, ax = plt.subplots(1, 3, figsize=(11.2, 3.3), layout='constrained')
+tw0 = 0.50; twin = (t >= tw0) & (t < tw0 + 0.02)
+ax[0].plot((t[twin]-tw0)*1e3, c4[twin], color=INK, lw=1.0)
+ax[0].set_title('waveform', fontstyle='italic')
+ax[0].set_xlabel('time [ms]'); ax[0].set_ylabel('intensity [arb.]'); ax[0].set_xlim(0, 20)
+f, Mg = magnitude(c4); ax[1].plot(f, Mg/Mg.max(), color=INK, lw=0.9)
+ax[1].axvline(f1, color=BLUE, ls='--', lw=1.0); ax[1].set_xlim(0,1600); ax[1].set_ylim(0,1.1)
+ax[1].set_title('FFT magnitude', fontstyle='italic'); ax[1].set_xlabel('frequency [Hz]')
+ax[1].set_ylabel('magnitude [arb.]')
+ax[1].text(0.62,0.6,'fundamental\n+ harmonics', transform=ax[1].transAxes, ha='center', fontsize=9)
+q, c = cepstrum(c4); m = (q > 1.5e-3) & (q < 0.011)
+ax[2].plot(q[m]*1e3, c[m], color=INK, lw=0.9)
+ax[2].axvline(T*1e3, color=BLUE, ls='--', lw=1.0); ax[2].set_xlim(1.5,11)
+ax[2].set_title('cepstrum', fontstyle='italic'); ax[2].set_xlabel('quefrency [ms]')
+ax[2].set_ylabel('amplitude [arb.]'); ax[2].text(T*1e3+0.3, ax[2].get_ylim()[1]*0.8, '$1/f_1$', color=BLUE)
+fig.suptitle('Middle C (C4) — waveform, spectrum, cepstrum',
+             fontsize=14, fontweight='bold', fontstyle='italic', color=INK)
+plt.savefig('figure_missing_fundamental.png', dpi=200, bbox_inches='tight')
+
+# ── FIGURE 2 — sawtooth full | f1 removed | one octave up (each normalised) ─
+plt.close('all')
+fig, ax = plt.subplots(1, 3, figsize=(11.2, 3.4), layout='constrained')
+panels = [('sawtooth $f_1$ (C4)',         saw_full, f1,   BLUE,  'spacing 262 Hz'),
+          ('sawtooth — $f_1$ removed',    saw_nof1, f1,   RED,   'spacing 262 Hz'),
+          ('sawtooth — one octave up',    saw_oct,  2*f1, GREEN, 'spacing 523 Hz')]
+for j,(label,y,fp,col,sp) in enumerate(panels):
+    f, P = spectrum(y); ax[j].plot(f, P/P.max(), color=col, lw=1.0)
+    ax[j].axvline(fp, color=GREY, ls='--', lw=0.8)
+    ax[j].set_xlim(0,2600); ax[j].set_ylim(0, 1.1)
+    ax[j].set_title(label); ax[j].set_xlabel('frequency [Hz]')
+    ax[j].text(0.5,0.97,sp, transform=ax[j].transAxes, ha='center', va='top', fontsize=8, color=GREY)
+    ax[j].text(0.93,0.86,'♫', transform=ax[j].transAxes, ha='center', fontsize=15, color=col)
+ax[0].set_ylabel('power [norm.]')
+fig.suptitle('Same lowest frequency, different pitch — sawtooth without $f_1$  vs  a one-octave-up sawtooth',
+             fontsize=12.5, fontweight='bold', fontstyle='italic', color=INK)
+plt.savefig('figure_missing_fundamental_compare.png', dpi=200, bbox_inches='tight')
+```
+
+## Result
+
+A real middle C (C4) in three views — the waveform (period $T=1/f_1 \approx 3.8$ ms), the FFT magnitude (fundamental + harmonic comb), and the cepstrum (a single rahmonic peak at quefrency $1/f_1$):
+
+<div class="gallery-result">
+![Real C4 piano note: waveform, FFT magnitude, and cepstrum. The cepstrum turns the harmonic comb into one peak at quefrency $1/f_1$ (its slight shift below the dashed line reflects the piano's mild inharmonicity — see the [inharmonicity example](piano.qmd)).](../Figure/figure_missing_fundamental.png)
+</div>
+
+Now switch to an **ideal sawtooth at the same C4 pitch**, delete its fundamental, and set the result beside a sawtooth **one octave up (C5)**. Both have their lowest energy at $2f_1 \approx 523$ Hz, but the $f_1$-removed sawtooth keeps a $262$ Hz comb (so it is still heard as C4) while the octave-up sawtooth has a $523$ Hz comb:
+
+<div class="gallery-result">
+![Left: complete C4 sawtooth, comb spaced by $262$ Hz. Middle: fundamental removed — its lowest partial is now at $2f_1 \approx 523$ Hz, the same as C5, but the harmonics stay spaced by $262$ Hz. Right: a sawtooth one octave up (C5), spaced by $523$ Hz. The give-away is the partial at $785$ Hz ($3f_1$): present when $f_1$ is merely removed, absent one octave up. Same lowest frequency, different comb — and the ear follows the comb, so the middle panel is still heard as C4.](../Figure/figure_missing_fundamental_compare.png)
+</div>
+
+**Listen for yourself** — the first two are the *same* pitch (C4) even though the fundamental is gone from the second; the third is a genuine C5, an octave higher:
+
+<table class="mf-audio" style="width:100%; border:none; text-align:center;">
+<tr>
+  <td style="border:none;"><b>sawtooth — C4</b><br><small>$f_1 \approx 262$ Hz</small></td>
+  <td style="border:none;"><b>fundamental removed</b><br><small>only $\geq 2f_1$ · still C4</small></td>
+  <td style="border:none;"><b>one octave up</b><br><small>genuine C5 ($2f_1 \approx 523$ Hz)</small></td>
+</tr>
+<tr>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:240px;"><source src="../Data/missing_fundamental_full.wav" type="audio/wav"></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:240px;"><source src="../Data/missing_fundamental_no_f1.wav" type="audio/wav"></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:240px;"><source src="../Data/missing_fundamental_octave.wav" type="audio/wav"></audio></td>
+</tr>
+</table>
+
+The fundamental-removed sawtooth sounds thinner but keeps the pitch of C4 — your auditory system reconstructs the fundamental from the *spacing* of the surviving harmonics, which is why it is not heard as the C5 that shares its lowest frequency. The cepstrum does the same job mathematically: a single rahmonic peak at $1/f_1$, robust to a missing spectral line. It is the audible counterpart of the [piano-cepstrum example](piano.qmd) and the [Chapter 2](../chap2.qmd) treatment of the cepstrum as a "spectrum of a spectrum".
+
+---
+
+*See [Chapter 2 — Cepstrum](../chap2.qmd) for how the log-spectrum turns a harmonic comb into a single quefrency peak, and the [Piano String Inharmonicity](piano.qmd) example for the same tone analysed for stiffness.*
