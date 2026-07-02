@@ -516,6 +516,7 @@ window.Quarto = {
   <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
   <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
   <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result">Result</a></li>
+  <li><a href="#healthy-vs.-faulty-the-fault-as-a-taller-rahmonic" id="toc-healthy-vs.-faulty-the-fault-as-a-taller-rahmonic" class="nav-link" data-scroll-target="#healthy-vs.-faulty-the-fault-as-a-taller-rahmonic">Healthy vs.&nbsp;faulty: the fault as a taller rahmonic</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -592,6 +593,53 @@ c_\text{liftered}[\tau] = c[\tau] \cdot w[\tau], \quad w[\tau] = \begin{cases} 0
 </div>
 </div>
 <p>The cepstrum peak at a quefrency corresponding to the ball-pass outer-race frequency is clearly visible, even though the individual sidebands in the power spectrum are hard to count by eye. Liftering above the structural quefrency leaves only the fault signature.</p>
+</section>
+<section id="healthy-vs.-faulty-the-fault-as-a-taller-rahmonic" class="level2">
+<h2 class="anchored" data-anchor-id="healthy-vs.-faulty-the-fault-as-a-taller-rahmonic">Healthy vs.&nbsp;faulty: the fault as a taller rahmonic</h2>
+<p>The clearest way to <em>see</em> a fault is to overlay the healthy and faulty recordings. Using the <a href="https://github.com/jiutongzhao/Time-Series-Data-Analysis/blob/main/Data/gearbox_spectraquest.npz">SpectraQuest gear-box dataset</a> shipped with this book (<span class="math inline">f_s = 66.7</span> kHz), the fault modulates the gear mesh at the shaft rotation rate (<span class="math inline">f_\text{shaft}\approx 77</span> Hz), sprinkling a family of sidebands spaced <span class="math inline">77</span> Hz apart around the mesh harmonics. In the power spectrum (left) the faulty trace sits well above the healthy one and grows a forest of extra sideband peaks; the cepstrum (right) collapses that whole comb into a single <strong>rahmonic</strong> at quefrency <span class="math inline">1/f_\text{shaft}\approx 12.9</span> ms — which stands markedly taller for the faulty gear precisely because it carries more sidebands.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy <span class="im">import</span> signal</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> np.load(<span class="st">'Data/gearbox_spectraquest.npz'</span>, allow_pickle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="bu">int</span>(d[<span class="st">'fs'</span>])<span class="op">;</span> healthy <span class="op">=</span> d[<span class="st">'healthy'</span>].astype(<span class="bu">float</span>)<span class="op">;</span> broken <span class="op">=</span> d[<span class="st">'broken'</span>].astype(<span class="bu">float</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyse(x):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    f, P <span class="op">=</span> signal.welch(x, fs<span class="op">=</span>fs, nperseg<span class="op">=</span><span class="dv">8192</span>, scaling<span class="op">=</span><span class="st">'density'</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> np.fft.irfft(np.log(P <span class="op">+</span> <span class="fl">1e-30</span>)).real          <span class="co"># real cepstrum</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> np.arange(c.size) <span class="op">/</span> fs                         <span class="co"># quefrency [s]</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> f, P, q, c</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>fh, Ph, qh, ch <span class="op">=</span> analyse(healthy)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>fb, Pb, qb, cb <span class="op">=</span> analyse(broken)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>q_shaft <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> <span class="fl">77.3</span>                                     <span class="co"># shaft-rate quefrency (~12.9 ms)</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">11.2</span>, <span class="fl">3.6</span>), layout<span class="op">=</span><span class="st">'constrained'</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>band <span class="op">=</span> (fh <span class="op">&gt;</span> <span class="dv">3500</span>) <span class="op">&amp;</span> (fh <span class="op">&lt;</span> <span class="dv">6500</span>)                       <span class="co"># zoom on a mesh-harmonic band</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].semilogy(fh[band], Ph[band], lw<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'healthy'</span>, zorder<span class="op">=</span><span class="dv">3</span>)  <span class="co"># healthy on top</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].semilogy(fb[band], Pb[band], lw<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'faulty'</span>,  zorder<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">'frequency [Hz]'</span>)<span class="op">;</span> ax[<span class="dv">0</span>].set_ylabel(<span class="st">'PSD [arb.]'</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">'power spectrum — mesh sidebands'</span>)<span class="op">;</span> ax[<span class="dv">0</span>].legend()</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> (qh <span class="op">&gt;</span> <span class="fl">1.2e-3</span>) <span class="op">&amp;</span> (qh <span class="op">&lt;</span> <span class="fl">0.022</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(qh[m]<span class="op">*</span><span class="fl">1e3</span>, ch[m], lw<span class="op">=</span><span class="fl">0.9</span>, label<span class="op">=</span><span class="st">'healthy'</span>, zorder<span class="op">=</span><span class="dv">3</span>)  <span class="co"># healthy on top</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(qb[m]<span class="op">*</span><span class="fl">1e3</span>, cb[m], lw<span class="op">=</span><span class="fl">0.9</span>, label<span class="op">=</span><span class="st">'faulty'</span>,  zorder<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> (<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>):</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].axvline(k<span class="op">*</span>q_shaft<span class="op">*</span><span class="fl">1e3</span>, ls<span class="op">=</span><span class="st">':'</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'0.5'</span>)  <span class="co"># shaft rahmonics</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">'quefrency [ms]'</span>)<span class="op">;</span> ax[<span class="dv">1</span>].set_ylabel(<span class="st">'cepstrum amplitude [arb.]'</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">'cepstrum — shaft-rate rahmonic'</span>)<span class="op">;</span> ax[<span class="dv">1</span>].legend()</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>plt.savefig(<span class="st">'figure_gearbox_cepstrum_compare.png'</span>, dpi<span class="op">=</span><span class="dv">200</span>, bbox_inches<span class="op">=</span><span class="st">'tight'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="gallery-result">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Figure/figure_gearbox_cepstrum_compare.png" class="img-fluid figure-img"></p>
+<figcaption>Healthy (blue) vs.&nbsp;faulty (red) gear-box vibration. Left: in a mesh-harmonic band the faulty spectrum lifts above the healthy one and grows extra sidebands spaced at the shaft rate. Right: the cepstrum turns that sideband comb into one rahmonic at <span class="math inline">1/f_\text{shaft}\approx 12.9</span> ms (and its multiples at 6.5 and 19.4 ms) — taller for the faulty gear because it has more sidebands to accumulate.</figcaption>
+</figure>
+</div>
+</div>
+<p>A single scalar — the height of the shaft-rate rahmonic — thus separates a healthy gear from a faulty one, without having to count sidebands by eye. This mirrors the classic comparison in Siemens’ <a href="https://community.sw.siemens.com/s/article/Cepstrum-Analysis"><em>Cepstrum Analysis</em></a> tutorial (their Figure 11), reproduced here from this book’s own SpectraQuest data.</p>
 <hr>
 <p><em>See <a href="../chap2.html">Chapter 2</a> for the cepstrum definition, liftering, and connection to homomorphic signal processing.</em></p>
 
