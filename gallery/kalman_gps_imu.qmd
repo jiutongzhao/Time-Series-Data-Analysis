@@ -90,13 +90,16 @@ fdt = 0.01; FT = np.arange(0, st[-1] + dt, fdt)
 psi = np.concatenate(([0], np.cumsum((slope*np.interp(FT, gz_t, gz) + icpt)[:-1]) * fdt))
 dyaw = np.diff(np.interp(T, FT, psi), prepend=0.0)
 
-def kalman(use_gyro=True, qa=3.0, sig=8.0, outage=None):
+def kalman(qa=1.0, sig=12.0, outage=None, coast_in_outage=False):
+    # gyro steering is always on; coast_in_outage freezes the heading ONLY during the
+    # blackout, so the dead-reckon and coast branches share an identical history up to it.
     x = np.array([sE[0], sN[0], 0., 0.]);  P = np.diag([100., 100, 9, 9])
     gi = 0; track = []
     for k, tk in enumerate(T):
+        in_out = outage and outage[0] <= tk <= outage[1]
         c, s = np.cos(dyaw[k]), np.sin(dyaw[k])
-        R = np.array([[c, s], [-s, c]]) if use_gyro else np.eye(2)   # rotate velocity by Δψ
-        Fm = np.eye(4); Fm[0, 2] = Fm[1, 3] = dt; Fm[2:, 2:] = R
+        R = np.eye(2) if (coast_in_outage and in_out) else np.array([[c, s], [-s, c]])
+        Fm = np.eye(4); Fm[0, 2] = Fm[1, 3] = dt; Fm[2:, 2:] = R   # rotate velocity by Δψ
         G = np.array([[dt*dt/2, 0], [0, dt*dt/2], [dt, 0], [0, dt]])
         x = Fm @ x;  P = Fm @ P @ Fm.T + G @ np.diag([qa**2, qa**2]) @ G.T   # predict
         while gi < len(st) and st[gi] <= tk + dt/2:                          # fold in SPP fixes
@@ -112,20 +115,22 @@ def kalman(use_gyro=True, qa=3.0, sig=8.0, outage=None):
         track.append(x.copy())
     return np.array(track)
 
-fused = kalman()                                    # fuse everything
-gyro  = kalman(use_gyro=True,  outage=OUT)          # gyro dead-reckoning through the dropout
-coast = kalman(use_gyro=False, outage=OUT)          # constant-velocity coast, no IMU
+fused = kalman()                                        # fuse everything
+gyro  = kalman(outage=OUT)                              # keep gyro-steering through the dropout
+coast = kalman(outage=OUT, coast_in_outage=True)        # freeze heading during the dropout
 ```
 
 ## Result
 
 <div class="gallery-result">
-![From raw pseudoranges to a clean track. (a) The raw single-point-positioning fixes (red dots) scatter around the road; the Kalman-fused track (blue) is smooth, laid over the real street map. Boxes *b* and *c* mark the two zooms. (b) Street-level zoom: the raw SPP fixes bounce ±10–20 m off the road while the fused track stays on it. (c) A simulated 10 s GPS outage through an 83° bend: with the gyroscope the filter dead-reckons around the corner and stays on the road (blue), while a plain constant-velocity coast (grey) drives straight off the hillside.](../Figure/figure_kalman_gps_imu.png)
+![From raw pseudoranges to a clean track. (a) The raw single-point-positioning fixes (red dots) scatter around the road; the Kalman-fused track (blue) is smooth, laid over the real street map. Boxes *b* and *c* mark the two zooms. (b) Street-level zoom: the raw SPP fixes bounce ±10–20 m off the road while the fused track threads a smooth line down it. (c) A simulated 10 s GPS outage through an 83° bend: keeping the gyroscope, the filter dead-reckons around the corner and stays on the road (blue), while freezing the heading (grey) sends it straight off the hillside.](../Figure/figure_kalman_gps_imu.png)
 </div>
 
-Now that the input is genuinely raw, the filter has real work to do. With GNSS present (a, b) the fused track sits a median **5 m** off the raw fixes — it is actively pulling the scatter back onto the road and interpolating the sparse one-per-second fixes into a continuous 4 Hz line. The dramatic gain is the **10 s outage** (c): withholding every fix across an 83° bend, the gyro-steered filter rounds the corner and finishes **≈ 19 m** from truth, while the identical filter *without* the gyro coasts straight ahead and ends **≈ 161 m** off — out on the hillside. That is the tunnel/underpass problem, and it is why phones fuse GNSS with their IMU.
+Now that the input is genuinely raw, the filter has real work to do. With GNSS present (a, b) the fused track is pulled a median **9 m** off the raw fixes — smoothing the ±10–20 m scatter into a continuous line that stays on the road. The decisive gain is the **10 s outage** (c): withholding every fix across an 83° bend, the gyro-steered filter rounds the corner and finishes **≈ 35 m** from truth, while the same filter with its heading *frozen* coasts straight and ends **≈ 107 m** off — out on the hillside.
 
-A few honest caveats. This is a single-frequency solution with no ionosphere or troposphere correction, so the raw scatter is larger than a survey receiver's — which only makes the filtering more visible. The gyro was calibrated once against the SPP course, and only heading *changes* are integrated (a scale-and-bias fit, not a magnetometer heading). The outage is *simulated* by hiding good fixes, which lets us score the dead-reckoning against known truth. And dead reckoning is a loan, not a gift: the error in (c) keeps growing, so the trick buys tens of seconds of graceful coasting — enough to cross a bridge — not minutes.
+**What the gyroscope does and doesn't do.** A gyro measures only turn *rate* — it carries no absolute position, so it cannot beat GNSS accuracy while satellites are in view; panels (a, b) are as accurate as the pseudoranges allow, no better. Its value is twofold. During the outage (c) it is decisive — without heading, the dead-reckoned track cannot turn. And even with GNSS present it earns its keep indirectly: because the *prediction* now curves with the road, the filter can be trusted enough to smooth hard through bends without cutting the corner. That trust is a genuine tradeoff — dialling the smoothing up (lower process noise) tightens the line in (b) but makes the velocity, and hence the dead reckoning in (c), a little laggier; the settings here (`qa=1`) sit deliberately in the middle.
+
+A few honest caveats. This is a single-frequency solution with no ionosphere or troposphere correction, so the raw scatter is larger than a survey receiver's — which only makes the filtering more visible. The gyro was calibrated once against the SPP course, and only heading *changes* are integrated (a scale-and-bias fit, not a magnetometer heading). The outage is *simulated* by hiding good fixes, which lets us score the dead-reckoning against known truth. And dead reckoning is a loan, not a gift: the error keeps growing, so the trick buys tens of seconds of graceful coasting — enough to cross a bridge — not minutes.
 
 ---
 
