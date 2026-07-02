@@ -89,6 +89,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/aliasing.qmd">
+<img class="gallery-card-img" src="Figure/figure_nyfr.png" alt="Nyquist Folding Receiver">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Aliasing &amp; the Nyquist Folding Receiver</div>
+<p class="gallery-card-desc">Every Nyquist zone folds to the same baseband — ambiguous. A modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.</p>
+<span class="gallery-card-tag">Ch.4 · Nyquist Folding</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/cuckoo.qmd">
 <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
 <div class="gallery-card-body">
