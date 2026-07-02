@@ -520,6 +520,9 @@ fig.savefig(save_path + 'figure_airy_combined.png', dpi=200)
 ```
 
 :::
+<p align = 'center'>
+<i>The Airy pattern of a circular aperture. <b>(a)</b> the ideal pattern simulated from $[2J_1(u)/u]^2$; <b>(b)</b> a red-laser photograph through a $0.09$ mm pinhole shown in its original colour, with the theoretical $J_1$ zeros (cyan dashed) falling in the dark rings; <b>(c)</b> the azimuthally-averaged radial profile tracking the simulation. The dark-ring radius ratios $1:1.83:2.66$ are the parameter-free fingerprint of circular-aperture diffraction.</i>
+</p>
 
 ---
 
