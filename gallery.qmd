@@ -89,28 +89,6 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
-<a href="gallery/windowing.qmd">
-<img class="gallery-card-img" src="Figure/figure_dft_spectral_leakage_window.png" alt="Spectral leakage and windowing">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Spectral Leakage &amp; Windowing</div>
-<p class="gallery-card-desc">Side-by-side comparison of rectangular, Hann, and Kaiser windows — quantifying the leakage–resolution trade-off.</p>
-<span class="gallery-card-tag">Ch.4 · Windowing</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing demonstration">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Aliasing</div>
-<p class="gallery-card-desc">A 1.2 kHz tone sampled at 1 kHz appears at 200 Hz — the classic Nyquist violation made visible in the spectrum.</p>
-<span class="gallery-card-tag">Ch.4 · Nyquist</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
 <a href="gallery/cuckoo.qmd">
 <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
 <div class="gallery-card-body">
@@ -150,17 +128,6 @@ Each card below links to a self-contained example: real data, working Python cod
 <div class="gallery-card-title">DWT Image Compression</div>
 <p class="gallery-card-desc">Keep only the largest wavelet coefficients and a 256 KB image shrinks to 47, 14, even 4 KB — degrading gracefully, blurring rather than blocking.</p>
 <span class="gallery-card-tag">Ch.7 · DWT</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/stft_cwt.qmd">
-<img class="gallery-card-img" src="Figure/figure_stft_vs_cwt.png" alt="STFT vs CWT comparison">
-<div class="gallery-card-body">
-<div class="gallery-card-title">STFT vs. CWT</div>
-<p class="gallery-card-desc">Fixed-window STFT versus adaptive-scale CWT on a chirp — demonstrating the Heisenberg uncertainty trade-off.</p>
-<span class="gallery-card-tag">Ch.7 · STFT vs CWT</span>
 </div>
 </a>
 </div>
