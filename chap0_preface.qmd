@@ -42,26 +42,26 @@ Below are representative spectral‑analysis results that we will showcase, so y
 
 ::: {.panel-tabset}
 
-## Indian Cuckoo
+### Indian Cuckoo
 <p align = 'center'><img src="Figure/figure_indian_cuckoo_with_bird.png" width="100%"/></p>
 <p align = 'center'><audio id="audio" controls="" preload="none">
-  <source id="mp3" src="Data/indian_cuckoo_short.wav">
+  <source id="mp3" src="Data/indian_cuckoo_short.wav" />
 </audio></p>
 <p align = 'center'><i>(Above): The Time Series of the Voice of Indian Cuckoo; (Bottom) Its Time-Frequency Spectrogram.</i></p>
 
-## Sunspot Number
+### Sunspot Number
 <img src="Figure/figure_sunspot.png" width="100%"/>
 <p align='center'><i>(Above): The Time Series of a Sunspot number; (Bottom) Its Frequency Spectrogram.</i></p>
 
-## AO-Baltic Coherence
+### AO-Baltic Coherence
 <img src="Figure/figure_ao_baltic_truncated.png" width="100%"/>
 <p align='center'><i>(Above): The Time Series of the Arctic Oscillation and Baltic indices; (Bottom) Their Coherence Spectrogram.</i></p>
 
-## Mode Decomposition
+### Mode Decomposition
 <img src="Figure/figure_seismic_waves.png" width="100%"/>
 <p align='center'><i>(Above): A seismic waveform; (Bottom) Its decomposition into oscillation modes.</i></p>
 
-## Chorus Wave SVD Analysis
+### Chorus Wave SVD Analysis
 <p align='center'><img src="Figure/figure_svd_erg.png" width="100%"/></p>
 <p align='center'><i>SVD-based wave analysis of magnetospheric chorus waves observed by ERG / Arase.</i></p>
 
