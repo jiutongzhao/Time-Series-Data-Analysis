@@ -34,11 +34,13 @@ project:
     - gallery/stft_cwt.qmd
     - gallery/piano.qmd
     - gallery/missing_fundamental.qmd
+    - gallery/kalman_gps_imu.qmd
   resources:
     # Figures and data live at project root; Quarto copies them into docs/
     - Figure/
     - Data/indian_cuckoo_short.wav
     - Data/gearbox_spectraquest.npz
+    - Data/kalman_gps_imu.npz
     - Data/two_point_correlation_schematic.webm
     - Data/missing_fundamental_full.wav
     - Data/missing_fundamental_no_f1.wav

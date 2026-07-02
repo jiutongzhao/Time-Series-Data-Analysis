@@ -1,0 +1,95 @@
+# GPS + IMU Sensor Fusion
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Kalman filtering — fusing a noisy, absolute position sensor (GPS) with a smooth, high-rate motion sensor (a phone gyroscope) so the track survives a signal dropout.
+**Chapter:** [6 — Processing of the Signal](../chap6.qmd)
+
+---
+
+## Background
+
+Two sensors, two complementary weaknesses. **GPS** gives an *absolute* position but it is noisy (metres) and it drops out under bridges, in tunnels, and beside tall buildings. An **IMU** — here just the phone's **gyroscope** — is quiet and fast (100 Hz) and never loses signal, but it measures only *rates*: integrate it and the answer drifts without bound.
+
+A **Kalman filter** is the standard way to get the best of both. It carries a running estimate of the vehicle state and its uncertainty, *predicts* forward with the gyro between GPS fixes, and *corrects* toward each GPS fix in proportion to how much it trusts the fix versus the prediction. When GPS is healthy the track is simply smoothed; when GPS vanishes the filter coasts on the gyro-steered model — and that is where the IMU earns its keep.
+
+The data is a real **3.4 km drive through the Berkeley hills**, logged with Google's *GnssLogger* app: 1 Hz GPS fixes (3.8 m accuracy) and a 100 Hz gyroscope, phone lying flat on the dash.
+
+## Key idea
+
+The state is position and velocity in a local east–north (ENU) frame,
+
+$$
+\mathbf{x} = \begin{bmatrix} E & N & v_E & v_N \end{bmatrix}^\mathsf{T}.
+$$
+
+**Predict.** A constant-velocity model advances position by $\mathbf{v}\,\Delta t$. The twist is that the velocity *direction* is rotated by the heading change $\Delta\psi$ measured by the gyroscope — so on a bend the predicted velocity turns with the car instead of flying off along a straight line:
+
+$$
+\mathbf{x}_{k}^{-} = F_k\,\mathbf{x}_{k-1}, \qquad
+F_k = \begin{bmatrix} 1 & 0 & \Delta t & 0 \\ 0 & 1 & 0 & \Delta t \\ 0 & 0 & \cos\Delta\psi_k & \sin\Delta\psi_k \\ 0 & 0 & -\sin\Delta\psi_k & \cos\Delta\psi_k \end{bmatrix},
+\qquad \Delta\psi_k = \int_{t_{k-1}}^{t_k}\!\dot\psi\,dt .
+$$
+
+Only the *change* in heading is used, so the arbitrary yaw origin cancels and the gyro bias/scale is calibrated once against the GPS course. Feeding the accelerometer as a control input was tried and abandoned — double-integrating acceleration drifts far too fast.
+
+**Update.** Each GPS fix corrects the position states through the standard Kalman gain, with the measurement noise set from the fix's own reported accuracy. A **normalised-innovation (NIS) $\chi^2$ gate** rejects any fix whose disagreement with the prediction is wildly implausible — the filter's defence against multipath.
+
+## Code
+
+```python
+import numpy as np
+
+d = np.load('Data/kalman_gps_imu.npz')
+gt, E, N, gacc = d['gt'], d['E'], d['N'], d['gacc']      # GPS: time, east, north, accuracy
+gz_t, gz       = d['gz_time'], d['gz']                   # gyro: time, vertical-axis rate
+slope, icpt    = float(d['slope']), float(d['icpt'])     # gyro→heading-rate calibration
+OUT            = tuple(d['outage'])                      # (t0, t1) of the simulated dropout
+
+# --- heading change per step: integrate the gyro on a fine grid (coarse sampling aliases turns) ---
+dt = 0.25;  T = np.arange(0, gt[-1] + dt, dt)
+fdt = 0.01; FT = np.arange(0, gt[-1] + dt, fdt)
+psi = np.concatenate(([0], np.cumsum((slope*np.interp(FT, gz_t, gz) + icpt)[:-1]) * fdt))
+dyaw = np.diff(np.interp(T, FT, psi), prepend=0.0)
+
+def kalman(use_gyro=True, qa=4.0, outage=None):
+    x = np.array([E[0], N[0], 0., 0.]);  P = np.diag([25., 25, 4, 4])
+    gi = 0; track = []
+    for k, tk in enumerate(T):
+        c, s = np.cos(dyaw[k]), np.sin(dyaw[k])
+        R = np.array([[c, s], [-s, c]]) if use_gyro else np.eye(2)   # rotate velocity by Δψ
+        F = np.eye(4); F[0, 2] = F[1, 3] = dt; F[2:, 2:] = R
+        G = np.array([[dt*dt/2, 0], [0, dt*dt/2], [dt, 0], [0, dt]])
+        x = F @ x;  P = F @ P @ F.T + G @ np.diag([qa**2, qa**2]) @ G.T   # predict
+        while gi < len(gt) and gt[gi] <= tk + dt/2:                       # fold in GPS fixes
+            if gt[gi] > tk - dt/2:
+                blocked = outage and outage[0] <= gt[gi] <= outage[1]     # simulated dropout
+                H = np.array([[1, 0, 0, 0], [0, 1., 0, 0]])
+                Rm = np.diag([max(gacc[gi], 5.)**2] * 2)
+                y = np.array([E[gi], N[gi]]) - H @ x
+                S = H @ P @ H.T + Rm
+                if not (blocked or y @ np.linalg.solve(S, y) > 13.8):     # NIS χ² gate
+                    K = P @ H.T @ np.linalg.inv(S)
+                    x = x + K @ y;  P = (np.eye(4) - K @ H) @ P
+            gi += 1
+        track.append(x.copy())
+    return np.array(track)
+
+fused = kalman()                                    # full fusion (all GPS available)
+gyro  = kalman(use_gyro=True,  outage=OUT)          # gyro dead-reckoning through the dropout
+coast = kalman(use_gyro=False, outage=OUT)          # constant-velocity coast, no IMU
+```
+
+## Result
+
+<div class="gallery-result">
+![GPS + IMU fusion on a 3.4 km Berkeley-hills drive. (a) The Kalman-fused track (blue) laid over the raw 1 Hz GPS (grey) on the real street map. (b) A simulated 10 s GPS outage through a sharp bend: with the gyroscope the filter dead-reckons around the corner and stays on the road (blue), while a plain constant-velocity coast (red) drives straight off the block. (c) Position error during the outage — the gyro holds ~30 m while the coast blows out past 120 m. (d) The filter's speed estimate tracks the GPS-reported speed throughout.](../Figure/figure_kalman_gps_imu.png)
+</div>
+
+The four panels tell the whole story. With GPS present (a, d) the filter mostly **smooths** the 1 Hz jitter and hands back a clean position *and velocity*. The value of the IMU only becomes visible when GPS is taken away (b, c): withholding every fix for 10 s across a sharp bend, the gyro-steered filter rounds the corner and finishes **≈ 30 m** from truth, whereas the identical filter *without* the gyro coasts straight ahead and ends **≈ 124 m** off — out in the next block. That four-fold gap is exactly the tunnel/underpass problem car navigation solves this way.
+
+A few honest caveats. The gyroscope's vertical axis was calibrated once against the GPS course-over-ground (the phone lay flat, so its yaw rate ≈ the vehicle's), and only heading *changes* are integrated, so the calibration is a single scale-and-bias fit rather than a magnetometer heading. The outage is *simulated* by hiding otherwise-good fixes, which lets us score the dead-reckoning against known truth. And dead reckoning is a loan, not a gift: the error in (c) keeps growing, so the trick buys tens of seconds of graceful coasting — enough to cross a bridge — not minutes.
+
+---
+
+*See [Chapter 6](../chap6.qmd) for filtering fundamentals. The map tiles are © OpenStreetMap contributors, © CARTO; the processed drive is shipped as [`Data/kalman_gps_imu.npz`](https://github.com/jiutongzhao/Time-Series-Data-Analysis/blob/main/Data/kalman_gps_imu.npz).*
