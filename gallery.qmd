@@ -112,7 +112,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/spectral_pde.qmd">
-<img class="gallery-card-img" src="Figure/figure_spectral_pde.png" alt="Solving PDEs with the FFT">
+<img class="gallery-card-img" src="Figure/heat_diffusion.gif" alt="Solving PDEs with the FFT">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Solving PDEs with the FFT</div>
 <p class="gallery-card-desc">In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.</p>

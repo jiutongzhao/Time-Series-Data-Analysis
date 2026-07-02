@@ -36,28 +36,34 @@ import numpy as np
 from scipy.fft import fft2, ifft2, fftfreq
 
 N, dx, alpha = 128, 1.0, 1.0
-k = 2*np.pi*fftfreq(N, d=dx)                      # wavenumbers
+dt = dx**2 / (4 * alpha)                          # finite-difference stability limit
+k = 2*np.pi*fftfreq(N, d=dx)
 KX, KY = np.meshgrid(k, k, indexing='ij')
-K2 = KX**2 + KY**2                                # Laplacian -> -k^2
+k2 = KX**2 + KY**2                                # Laplacian -> -k^2
 
 T0 = np.zeros((N, N)); T0[N//4:3*N//4, N//4:3*N//4] = 1.0   # a hot square block
 T0hat = fft2(T0)
+T_fd = T0.copy()
 
-def solve(t):                                    # exact solution at any time t
-    return np.real(ifft2(T0hat * np.exp(-alpha * K2 * t)))
-
-T_early, T_late = solve(200), solve(800)         # no time-stepping needed
+for i in range(400):
+    t = i * dt
+    # (1) FINITE DIFFERENCE — explicit 5-point Laplacian, many tiny stable steps
+    lap = (np.roll(T_fd, 1, 0) + np.roll(T_fd, -1, 0) +
+           np.roll(T_fd, 1, 1) + np.roll(T_fd, -1, 1) - 4*T_fd) / dx**2
+    T_fd += alpha * dt * lap
+    # (2) SPECTRAL — exact solution at time t, in a single shot, no stability limit
+    T_spec = np.real(ifft2(T0hat * np.exp(-alpha * k2 * t)))
 ```
 
 ## Result
 
 <div class="gallery-result">
-![Solving the 2-D heat equation with the FFT. Top: the temperature field at t = 0, 200, 800 — a hot square relaxing to a smooth blob. Bottom: the radially-averaged Fourier spectrum |T̂(k,t)|; at t = 0 it spans all wavenumbers (the square's sharp edges are high-k), but each mode is multiplied by exp(−αk²t), so by t = 200 and 800 only the lowest wavenumbers survive — the high-k edge content dies first.](../Figure/figure_spectral_pde.png)
+![The 2-D heat equation solved two ways as a hot square block diffuses. Left: an explicit finite-difference scheme, crawling forward in many small time steps. Right: the Fourier/spectral solution, T̂(k,t) = T̂(k,0)·exp(−αk²t), evaluated directly. Both give the same diffusing field.](../Figure/heat_diffusion.gif)
 </div>
 
-The two rows are the same computation seen in its two bases. In **real space** (top) the hot square softens: its corners and edges round off almost immediately, and the whole block spreads and fades toward a uniform temperature. In **Fourier space** (bottom) that is a single, trivial statement — every mode is just multiplied by $e^{-\alpha k^2 t}$. The initial square carries power across the entire spectrum (sharp edges need high wavenumbers), but the $k^2$ in the exponent means high-$k$ modes are erased far faster than low-$k$ ones, so the spectrum collapses toward $k=0$. Blurring of edges *is* the decay of high wavenumbers.
+The two panels are the same heat equation solved two ways. On the **left**, the classic **finite-difference** method: approximate the Laplacian with a 5-point stencil and step forward in time — but each step must be tiny ($\Delta t < \Delta x^2/4\alpha$) or the scheme goes unstable and blows up, so reaching a given time takes hundreds of steps. On the **right**, the **spectral** method: a single line, $\hat T(\mathbf k,t)=\hat T(\mathbf k,0)\,e^{-\alpha k^2 t}$, jumps straight to any time with no stability limit and no accumulation of step-by-step error, because in Fourier space every mode evolves independently and *exactly*. The two tracks agree frame-for-frame — which is the point: the spectral method reaches the same answer, faster and exactly.
 
-That is the whole appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in $k$-space, solved exactly and without any stability constraint on the step size. The same trick — $\nabla \to i\mathbf k$ — solves Poisson's equation (divide by $-k^2$), advection, the wave equation, and, with a nonlinear term handled pseudo-spectrally, even Navier–Stokes.
+That is the appeal of spectral methods: a hard, spatially-coupled PDE becomes pointwise multiplication in $k$-space. The same trick — $\nabla \to i\mathbf k$ — solves Poisson's equation (divide by $-k^2$), advection, the wave equation, and, with the nonlinear term handled pseudo-spectrally, even Navier–Stokes.
 
 ---
 
