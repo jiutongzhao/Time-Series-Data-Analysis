@@ -148,7 +148,7 @@ Each card below links to a self-contained example: real data, working Python cod
 <img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
 <div class="gallery-card-body">
 <div class="gallery-card-title">DWT Image Compression</div>
-<p class="gallery-card-desc">Wavelet-domain hard-thresholding compresses a grayscale image by 10× with minimal perceptual loss.</p>
+<p class="gallery-card-desc">Keep only the largest wavelet coefficients and a 256 KB image shrinks to 47, 14, even 4 KB — degrading gracefully, blurring rather than blocking.</p>
 <span class="gallery-card-tag">Ch.7 · DWT</span>
 </div>
 </a>

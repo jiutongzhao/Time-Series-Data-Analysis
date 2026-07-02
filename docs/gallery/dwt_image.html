@@ -530,72 +530,45 @@ window.Quarto = {
 <section id="dwt-image-compression" class="level1">
 <h1>DWT Image Compression</h1>
 <p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
-<p><strong>Topic:</strong> Discrete Wavelet Transform — multi-resolution decomposition applied to image compression. <strong>Chapter:</strong> <a href="../chap7.html">7 — Time-Frequency Analysis</a></p>
+<p><strong>Topic:</strong> Discrete Wavelet Transform — multi-resolution image compression by nonlinear coefficient thresholding. <strong>Chapter:</strong> <a href="../chap7.html">7 — Time-Frequency Analysis</a></p>
 <hr>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>JPEG 2000 and many modern image codecs are based on the <strong>Discrete Wavelet Transform (DWT)</strong>. Unlike the DCT used in JPEG, the DWT produces a multi-resolution representation: a coarse approximation (low-frequency subband) plus detail coefficients at multiple scales and orientations. Most of the image energy concentrates in a small fraction of large-magnitude coefficients, making aggressive thresholding possible with minimal perceptual loss.</p>
+<p>Image compression works because natural images are <em>sparse</em> in the right basis: a handful of coefficients carry almost all the energy, and the rest can be thrown away. The <strong>Discrete Wavelet Transform (DWT)</strong> — the engine behind <strong>JPEG 2000</strong> — transforms the whole image into a multi-resolution pyramid where this is dramatically true. Keep only the largest coefficients, invert the transform, and you have a compressed image whose quality degrades <em>gracefully</em> as you keep fewer and fewer.</p>
 </section>
 <section id="key-idea" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
-<p>The 2-D DWT applies a pair of filters (low-pass <span class="math inline">h</span> and high-pass <span class="math inline">g</span>) along rows and then columns, producing four subbands at each level:</p>
-<ul>
-<li><strong>LL</strong> — approximation (smooth, low-frequency content)</li>
-<li><strong>LH</strong> — horizontal edges</li>
-<li><strong>HL</strong> — vertical edges</li>
-<li><strong>HH</strong> — diagonal detail</li>
-</ul>
-<p>After <span class="math inline">J</span> levels the transform is inverted. Hard thresholding retains only coefficients whose magnitude exceeds a threshold <span class="math inline">\lambda</span>:</p>
+<p>The 2-D DWT applies a low-pass / high-pass filter pair along rows then columns, producing four subbands per level — <strong>LL</strong> (approximation), <strong>LH / HL / HH</strong> (horizontal / vertical / diagonal detail) — and recurses on the LL band. Compression is <strong>nonlinear approximation</strong>: keep only the largest-magnitude coefficients and zero the rest,</p>
 <p><span class="math display">
-c_\lambda[k] = \begin{cases} c[k] &amp; |c[k]| \geq \lambda \\ 0 &amp; |c[k]| &lt; \lambda \end{cases}
+c_\lambda[k] = \begin{cases} c[k] &amp; |c[k]| \geq \lambda \\ 0 &amp; |c[k]| &lt; \lambda \end{cases},
 </span></p>
-<p>The compression ratio is the fraction of coefficients set to zero.</p>
+<p>choosing the threshold <span class="math inline">\lambda</span> so that only a small fraction of coefficients survive. Because wavelet coefficients are localised in space <em>and</em> scale, an edge is captured by a few coefficients near it — so even at high compression the error is a gentle blur (plus faint ringing), not the 8×8 tiling that block-DCT codecs like JPEG suffer.</p>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skimage <span class="im">import</span> data, color</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> color.rgb2gray(data.astronaut())   <span class="co"># 512×512 grayscale</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>wavelet <span class="op">=</span> <span class="st">'db4'</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>level <span class="op">=</span> <span class="dv">5</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward DWT</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>coeffs <span class="op">=</span> pywt.wavedec2(img, wavelet<span class="op">=</span>wavelet, level<span class="op">=</span>level)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Hard threshold: keep only the top 10 % of coefficient energy</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>all_coeffs <span class="op">=</span> np.concatenate([c.ravel() <span class="cf">for</span> c <span class="kw">in</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                              [coeffs[<span class="dv">0</span>]] <span class="op">+</span> [x <span class="cf">for</span> tup <span class="kw">in</span> coeffs[<span class="dv">1</span>:] <span class="cf">for</span> x <span class="kw">in</span> tup]])</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> np.percentile(np.<span class="bu">abs</span>(all_coeffs), <span class="dv">90</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hard_threshold(arr, thr):</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> arr.copy()</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    out[np.<span class="bu">abs</span>(out) <span class="op">&lt;</span> thr] <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>coeffs_thr <span class="op">=</span> [hard_threshold(coeffs[<span class="dv">0</span>], threshold)]</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> detail_tuple <span class="kw">in</span> coeffs[<span class="dv">1</span>:]:</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    coeffs_thr.append(<span class="bu">tuple</span>(hard_threshold(c, threshold) <span class="cf">for</span> c <span class="kw">in</span> detail_tuple))</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Inverse DWT</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>img_rec <span class="op">=</span> pywt.waverec2(coeffs_thr, wavelet<span class="op">=</span>wavelet)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>img_rec <span class="op">=</span> np.clip(img_rec[:img.shape[<span class="dv">0</span>], :img.shape[<span class="dv">1</span>]], <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>cr <span class="op">=</span> <span class="dv">100</span> <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> np.count_nonzero(np.concatenate(</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    [c.ravel() <span class="cf">for</span> c <span class="kw">in</span> [coeffs_thr[<span class="dv">0</span>]] <span class="op">+</span> [x <span class="cf">for</span> t <span class="kw">in</span> coeffs_thr[<span class="dv">1</span>:] <span class="cf">for</span> x <span class="kw">in</span> t]]</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>)) <span class="op">/</span> <span class="bu">len</span>(all_coeffs))</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">'Original'</span>)</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].imshow(img_rec, cmap<span class="op">=</span><span class="st">'gray'</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="ss">f'DWT compressed — </span><span class="sc">{</span>cr<span class="sc">:.0f}</span><span class="ss"> % zeroed'</span>)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">'off'</span>)</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pywt, zlib</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> skimage <span class="im">import</span> data</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> data.camera().astype(<span class="bu">float</span>) <span class="op">/</span> <span class="fl">255.0</span>            <span class="co"># 512×512 grayscale in [0,1]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>H, W <span class="op">=</span> img.shape</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> H <span class="op">*</span> W                                          <span class="co"># uncompressed 8-bpp size = 256 KB</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>coeffs <span class="op">=</span> pywt.wavedec2(img, <span class="st">'db4'</span>, level<span class="op">=</span><span class="dv">5</span>)          <span class="co"># transform the whole image</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>arr, slices <span class="op">=</span> pywt.coeffs_to_array(coeffs)           <span class="co"># all subbands in one array</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compress(keep):                                  <span class="co"># keep = fraction of coefficients retained</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    thr <span class="op">=</span> np.percentile(np.<span class="bu">abs</span>(arr), <span class="dv">100</span><span class="op">*</span>(<span class="dv">1</span> <span class="op">-</span> keep))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    kept <span class="op">=</span> np.where(np.<span class="bu">abs</span>(arr) <span class="op">&gt;=</span> thr, arr, <span class="fl">0.0</span>)     <span class="co"># hard-threshold: drop the small coefficients</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> <span class="dv">2047</span> <span class="op">/</span> np.<span class="bu">abs</span>(kept).<span class="bu">max</span>()                 <span class="co"># 12-bit quantise the survivors</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> np.<span class="bu">round</span>(kept <span class="op">*</span> scale).astype(np.int16)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    nbytes <span class="op">=</span> <span class="bu">len</span>(zlib.compress(q.tobytes(), <span class="dv">9</span>))       <span class="co"># entropy-code the sparse coefficient array</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    rec <span class="op">=</span> pywt.waverec2(pywt.array_to_coeffs(q<span class="op">/</span>scale, slices, <span class="st">'wavedec2'</span>), <span class="st">'db4'</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.clip(rec[:H, :W], <span class="dv">0</span>, <span class="dv">1</span>), nbytes</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> keep <span class="kw">in</span> (<span class="fl">0.10</span>, <span class="fl">0.02</span>, <span class="fl">0.005</span>):</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    rec, nbytes <span class="op">=</span> compress(keep)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'keep </span><span class="sc">{</span><span class="dv">100</span><span class="op">*</span>keep<span class="sc">:4.1f}</span><span class="ss">%   </span><span class="sc">{</span>nbytes<span class="op">/</span><span class="dv">1024</span><span class="sc">:5.1f}</span><span class="ss"> KB   </span><span class="sc">{</span>raw<span class="op">/</span>nbytes<span class="sc">:.0f}</span><span class="ss">x smaller'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="result" class="level2">
 <h2 class="anchored" data-anchor-id="result">Result</h2>
@@ -603,13 +576,14 @@ c_\lambda[k] = \begin{cases} c[k] &amp; |c[k]| \geq \lambda \\ 0 &amp; |c[k]| &l
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../Figure/figure_dwt_image_compression.png" class="img-fluid figure-img"></p>
-<figcaption>DWT image compression: original vs 90% thresholded reconstruction</figcaption>
+<figcaption>Wavelet image compression at three sizes. The original (512×512, 8 bpp — 256 KB) followed by db4-wavelet reconstructions keeping 10 %, 2 %, and 0.5 % of the coefficients, stored at 47 KB, 14 KB, and 4.3 KB. Quality degrades gracefully: the 47 KB version is indistinguishable, 14 KB softens slightly, and even the 4.3 KB version stays fully recognisable, blurring and faintly ringing rather than breaking into blocks.</figcaption>
 </figure>
 </div>
 </div>
-<p>With 90 % of wavelet coefficients zeroed out the reconstructed image retains sharp edges and smooth gradients. The visible degradation is limited to fine texture in high-contrast regions, demonstrating the energy compaction property of the wavelet basis.</p>
+<p>The raw image is <strong>256 KB</strong> (512×512 pixels at 8 bits each). Keeping the largest <strong>10 %</strong> of the wavelet coefficients stores it in <strong>47 KB</strong> — <strong>5× smaller</strong>, and visually indistinguishable, because almost all the image’s energy lives in that top tenth. Keep 2 % and it drops to <strong>14 KB</strong> (<strong>19×</strong>), softening only in the fine texture of grass and buildings. Push to 0.5 % — one coefficient in two hundred — and it fits in <strong>4.3 KB</strong> (<strong>60×</strong>); the image finally degrades visibly, but notice <em>how</em>: it blurs and rings gently around edges while staying perfectly recognisable, with none of the abrupt 8×8 tiling that a block-DCT codec (JPEG) shows at the same size. That localisation-in-scale is exactly why wavelet coders like JPEG 2000 and the Mars-rover ICER codec hold up so well at aggressive compression.</p>
+<p>The sizes here are real: the surviving coefficients are 12-bit quantised and entropy-coded (<code>zlib</code>), and each image shown is decoded back from exactly those bytes. A production codec (bit-plane coding, a perceptual quantisation matrix) would do better still — but the energy-compaction story this isolates is the heart of why the DWT compresses so well.</p>
 <hr>
-<p><em>See <a href="../chap7.html">Chapter 7</a> for the DWT filter-bank construction, Mallat algorithm, and wavelet family selection.</em></p>
+<p><em>See <a href="../chap7.html">Chapter 7</a> for the DWT filter-bank construction, the Mallat algorithm, and wavelet-family selection.</em></p>
 
 
 </section>
