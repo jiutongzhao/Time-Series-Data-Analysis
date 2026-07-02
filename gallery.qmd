@@ -49,7 +49,7 @@ Each card below links to a self-contained example: real data, working Python cod
 <img class="gallery-card-img" src="Figure/figure_kalman_gps_imu.png" alt="GPS + IMU Kalman filter sensor fusion">
 <div class="gallery-card-body">
 <div class="gallery-card-title">GPS + IMU Sensor Fusion</div>
-<p class="gallery-card-desc">Compute a position from raw GNSS pseudoranges, then Kalman-fuse it with a phone gyroscope — smoothing the scatter and dead-reckoning through a 10 s outage.</p>
+<p class="gallery-card-desc">A Kalman filter fuses GPS with a phone gyroscope; blank a 12 s "tunnel" and the gyro dead-reckons around a 100° bend while a no-IMU coast drives off the hillside.</p>
 <span class="gallery-card-tag">Ch.6 · Kalman Filter</span>
 </div>
 </a>
