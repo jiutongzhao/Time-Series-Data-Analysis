@@ -368,12 +368,44 @@ plt.show()
     The coherence  between two white noise signals after smoothing.
 </p>
 
-The coherence between noises is still non-zero event after smoothing. A common way for checking the coherence is to compare it with a threshold, which can be determined by numerical experiments (e.g., input two white noises and check the distributions of their coherence). 
+The coherence between noises is still non-zero event after smoothing. A common way for checking the coherence is to compare it with a threshold, which can be determined by numerical experiments (e.g., input two white noises and check the distributions of their coherence).
 
 
 ```python
 coherence_xy = np.abs(spec_sm[:, :, 0, 1]) ** 2 / (spec_sm[:, :, 0, 0] * spec_sm[:, :, 1, 1])
 ```
+
+### Application: Hearing Direction with Two Channels (ITD & ILD)
+
+Your two ears are a two-channel array, and your brain runs cross-spectral analysis on them constantly. A source at azimuth $\theta$ reaches the nearer ear first — the ***interaural time difference*** $\tau(\theta) \approx 0.66\,\mathrm{ms}\cdot\sin\theta$ — and the head's acoustic shadow makes it louder on that side (the ***interaural level difference***). In cross-spectral language, a pure delay is a **phase of the cross-spectrum growing linearly with frequency**,
+
+$$
+\arg\left(S_L S_R^*\right) = 2\pi f\,\tau(\theta),
+$$
+
+so the direction can be read straight off the phase-difference spectrum: its slope is the delay, its sign is the side. Rayleigh's *duplex theory* splits the work — below ~1.5 kHz the phase is unambiguous and **ITD dominates**; above, the phase wraps (spatial aliasing) but the head shadow is strong, and **ILD takes over**.
+
+The demo below imprints a *known* walking trajectory onto a mono voice recording (time-varying fractional delay + level difference + head-shadow low-pass), then analyses the two channels as STFT difference spectra. **Wear headphones.** As the speaker walks, the intensity-difference spectrum flips between "louder in L" and "louder in R", while the phase-difference spectrum shows arch-shaped $2\pi f\tau$ fringes whose density tracks $|\theta|$. Between the dashed lines the ITD is switched **off** mid-sentence (only the level difference remains) — listen for the image flattening toward the ears, and low frequencies losing their direction, exactly where duplex theory says the phase cue was doing the work:
+
+<div style="text-align:center;">
+<video controls preload="metadata" style="width:100%;">
+<source src="Data/binaural_walking_speaker.mp4" type="video/mp4" />
+</video>
+</div>
+
+```python
+tau = 0.66e-3*np.sin(theta)                          # ITD for trajectory theta(t)
+delay = lambda x, d: np.interp(t - d, t, x)          # time-varying fractional delay
+L = 10**(-4*np.sin(theta)/20) * delay(mono, +tau/2)  # ILD gain + delayed copies
+R = 10**(+4*np.sin(theta)/20) * delay(mono, -tau/2)
+
+_, _, SL = sig.stft(L, fs, nperseg=4096, noverlap=4096-2205)
+_, _, SR = sig.stft(R, fs, nperseg=4096, noverlap=4096-2205)
+level_dB  = 20*np.log10(np.abs(SL)/np.abs(SR))       # ILD spectrum
+phase_deg = np.angle(SL*np.conj(SR), deg=True)       # ITD spectrum: 2*pi*f*tau
+```
+
+One caveat completes the physics: two omnidirectional channels can **never distinguish front from back** — every ITD/ILD pair is shared by a mirror position (the *cone of confusion*). Ears break the tie with direction-dependent pinna filtering and head movements; a fixed two-microphone array cannot. See the [gallery example](gallery/sound_localization.qmd) for the full construction and the self-check that recovers the trajectory from the audio.
 
 ### Advanced Usage: Combine the Spectrum with Maxwell's Equation
 
