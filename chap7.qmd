@@ -155,7 +155,7 @@ The red hashed region indicates the ***<u>cone of influence (COI)</u>***, which 
 
 ### Application: Recovering the Signal from a Spectrogram (Phase Retrieval)
 
-A spectrogram plots only $|S(f,t)|$ — the STFT **magnitude**. The phase is discarded, and with it, apparently, the waveform. But an STFT with overlapping windows is **redundant**: at 75 % overlap every sample is described by four different frames, so the magnitude alone holds roughly *four numbers per signal sample*. Neighbouring frames must agree about the samples they share, and essentially only one phase assignment lets them — the redundancy carries the phase in disguise.
+A spectrogram plots only $|S(f,t)|$ — the STFT **magnitude**. The phase is discarded, and with it, apparently, the waveform. But an STFT with overlapping windows is **redundant**: every sample is described by several frames, so the magnitude alone holds more numbers than the signal has samples. Neighbouring frames must agree about the samples they share, and essentially only one phase assignment lets them — the redundancy carries the phase in disguise. The demo below works at **50 % overlap**, barely *two* numbers per sample, to show the recovery succeeding even at half the usual redundancy.
 
 The ***Griffin–Lim algorithm*** recovers it by alternating two projections: enforce **consistency** (inverse-transform, then forward-transform — snap to something a real signal could produce), then restore the **given magnitudes** (keep only the negotiated phase). Started from *random phase*, a couple hundred rounds turn noise-phase garbage back into intelligible speech:
 
@@ -171,13 +171,13 @@ The ***Griffin–Lim algorithm*** recovers it by alternating two projections: en
 ```python
 import numpy as np, scipy.signal as sig
 
-nper, hop = 1024, 256                      # 75% overlap -> ~4x redundancy
+nper, hop = 1024, 512                      # 50% overlap -> only ~2x redundancy
 nov = nper - hop
 _, _, S = sig.stft(y, fs, nperseg=nper, noverlap=nov)
 A = np.abs(S)                              # the spectrogram: magnitude ONLY
 
 X = A * np.exp(2j*np.pi*np.random.rand(*A.shape))     # start from random phase
-for k in range(200):                                  # Griffin-Lim iterations
+for k in range(300):                                  # Griffin-Lim iterations
     _, x  = sig.istft(X, fs, nperseg=nper, noverlap=nov)   # -> signal domain
     _, _, Sx = sig.stft(x, fs, nperseg=nper, noverlap=nov) # -> a CONSISTENT stft
     X = A * np.exp(1j * np.angle(Sx))                 # keep our magnitude
@@ -186,7 +186,7 @@ _, x_rec = sig.istft(X, fs, nperseg=nper, noverlap=nov)    # recovered speech
 
 :::
 <p align = 'center'>
-    Speech recovered from a magnitude-only spectrogram. Overlap is what makes it work: without redundancy (right curve), any phase is self-consistent and the iteration never improves.
+    Speech recovered from a magnitude-only spectrogram at 50 % overlap: the waveform at iteration 10 is still noisy; by iteration 300 the frames have negotiated a consistent phase. Overlap is what makes it work — with disjoint frames, any phase is self-consistent and the iteration never improves.
 </p>
 
 Listen to the convergence — all four clips share the *same* magnitude spectrogram and differ only in phase:
@@ -196,7 +196,7 @@ Listen to the convergence — all four clips share the *same* magnitude spectrog
   <td style="border:none;"><b>original</b></td>
   <td style="border:none;"><b>iteration 1</b><br><small>random phase</small></td>
   <td style="border:none;"><b>iteration 5</b></td>
-  <td style="border:none;"><b>iteration 200</b><br><small>recovered</small></td>
+  <td style="border:none;"><b>iteration 300</b><br><small>recovered</small></td>
 </tr>
 <tr>
   <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>

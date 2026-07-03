@@ -693,7 +693,7 @@ The STFT spectra of a signal that consists of a growing wave, a chriping wave, a
 <p>The red hashed region indicates the <strong><em><u>cone of influence (COI)</u></em></strong>, which represents the area where edge effects may distort the <em>STFT</em> results due to the finite length of the signal and windowing. The <em>COI</em> is typically defined as half the window length on either side of the time axis, beyond which the <em>STFT</em> results should be interpreted with caution. The affected results is sensitive to the padding method and therefore more subjective. Thus they are often masked out in visualizations to highlight the reliable region of the time-frequency representation.</p>
 <section id="application-recovering-the-signal-from-a-spectrogram-phase-retrieval" class="level3">
 <h3 class="anchored" data-anchor-id="application-recovering-the-signal-from-a-spectrogram-phase-retrieval">Application: Recovering the Signal from a Spectrogram (Phase Retrieval)</h3>
-<p>A spectrogram plots only <span class="math inline">|S(f,t)|</span> — the STFT <strong>magnitude</strong>. The phase is discarded, and with it, apparently, the waveform. But an STFT with overlapping windows is <strong>redundant</strong>: at 75 % overlap every sample is described by four different frames, so the magnitude alone holds roughly <em>four numbers per signal sample</em>. Neighbouring frames must agree about the samples they share, and essentially only one phase assignment lets them — the redundancy carries the phase in disguise.</p>
+<p>A spectrogram plots only <span class="math inline">|S(f,t)|</span> — the STFT <strong>magnitude</strong>. The phase is discarded, and with it, apparently, the waveform. But an STFT with overlapping windows is <strong>redundant</strong>: every sample is described by several frames, so the magnitude alone holds more numbers than the signal has samples. Neighbouring frames must agree about the samples they share, and essentially only one phase assignment lets them — the redundancy carries the phase in disguise. The demo below works at <strong>50 % overlap</strong>, barely <em>two</em> numbers per sample, to show the recovery succeeding even at half the usual redundancy.</p>
 <p>The <strong><em>Griffin–Lim algorithm</em></strong> recovers it by alternating two projections: enforce <strong>consistency</strong> (inverse-transform, then forward-transform — snap to something a real signal could produce), then restore the <strong>given magnitudes</strong> (keep only the negotiated phase). Started from <em>random phase</em>, a couple hundred rounds turn noise-phase garbage back into intelligible speech:</p>
 <!-- fig-tabset:figure_griffin_lim.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -705,13 +705,13 @@ The STFT spectra of a signal that consists of a growing wave, a chriping wave, a
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, scipy.signal <span class="im">as</span> sig</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>nper, hop <span class="op">=</span> <span class="dv">1024</span>, <span class="dv">256</span>                      <span class="co"># 75% overlap -&gt; ~4x redundancy</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>nper, hop <span class="op">=</span> <span class="dv">1024</span>, <span class="dv">512</span>                      <span class="co"># 50% overlap -&gt; only ~2x redundancy</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>nov <span class="op">=</span> nper <span class="op">-</span> hop</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>_, _, S <span class="op">=</span> sig.stft(y, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.<span class="bu">abs</span>(S)                              <span class="co"># the spectrogram: magnitude ONLY</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">2j</span><span class="op">*</span>np.pi<span class="op">*</span>np.random.rand(<span class="op">*</span>A.shape))     <span class="co"># start from random phase</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">200</span>):                                  <span class="co"># Griffin-Lim iterations</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">300</span>):                                  <span class="co"># Griffin-Lim iterations</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    _, x  <span class="op">=</span> sig.istft(X, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)   <span class="co"># -&gt; signal domain</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    _, _, Sx <span class="op">=</span> sig.stft(x, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov) <span class="co"># -&gt; a CONSISTENT stft</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">1j</span> <span class="op">*</span> np.angle(Sx))                 <span class="co"># keep our magnitude</span></span>
@@ -720,7 +720,7 @@ The STFT spectra of a signal that consists of a growing wave, a chriping wave, a
 </div>
 </div>
 <p align="center">
-Speech recovered from a magnitude-only spectrogram. Overlap is what makes it work: without redundancy (right curve), any phase is self-consistent and the iteration never improves.
+Speech recovered from a magnitude-only spectrogram at 50 % overlap: the waveform at iteration 10 is still noisy; by iteration 300 the frames have negotiated a consistent phase. Overlap is what makes it work — with disjoint frames, any phase is self-consistent and the iteration never improves.
 </p>
 <p>Listen to the convergence — all four clips share the <em>same</em> magnitude spectrogram and differ only in phase:</p>
 <table style="width:100%; border:none; text-align:center;">
@@ -735,7 +735,7 @@ Speech recovered from a magnitude-only spectrogram. Overlap is what makes it wor
 <b>iteration 5</b>
 </td>
 <td style="border:none;">
-<b>iteration 200</b><br><small>recovered</small>
+<b>iteration 300</b><br><small>recovered</small>
 </td>
 </tr>
 <tr>

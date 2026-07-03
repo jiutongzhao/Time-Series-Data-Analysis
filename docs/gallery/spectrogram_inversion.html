@@ -545,19 +545,19 @@ window.Quarto = {
 <li><strong>Magnitude projection</strong>: <span class="math inline">X \leftarrow A\,e^{\,i\angle X}</span> — keep the <em>given</em> spectrogram magnitudes <span class="math inline">A</span>, keep only the phase from step 1.</li>
 </ol>
 <p>Start from <strong>random phase</strong> and iterate. Each round the frames negotiate their shared samples a little better; after a couple hundred rounds, out comes intelligible speech from what began as pure noise-phase garbage.</p>
-<p>The demo runs this on a 2.4 s catchphrase — Roman Reigns’ <em>“Acknowledge me!”</em> (WWE), shouted over a live crowd — three ways: 75 % overlap, 50 %, and <strong>no overlap</strong>. The failure case is the whole lesson: with disjoint frames there is nothing to negotiate, <em>any</em> phase is self-consistent, and the iteration fixes nothing.</p>
+<p>The demo runs this on a 2.4 s catchphrase — Roman Reigns’ <em>“Acknowledge me!”</em> (WWE), shouted over a live crowd — and makes the problem deliberately hard: only <strong>50 % overlap</strong>, barely <em>two</em> numbers per signal sample, half the redundancy a typical analysis would use. (The two limits frame the difficulty: at 75 % overlap the reconstruction is almost easy; with <strong>no</strong> overlap it is impossible — disjoint frames have nothing to negotiate, <em>any</em> phase is self-consistent, and the iteration fixes nothing.)</p>
 </section>
 <section id="code" class="level2">
 <h2 class="anchored" data-anchor-id="code">Code</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, scipy.signal <span class="im">as</span> sig</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>nper, hop <span class="op">=</span> <span class="dv">1024</span>, <span class="dv">256</span>                      <span class="co"># 75% overlap -&gt; ~4x redundancy</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>nper, hop <span class="op">=</span> <span class="dv">1024</span>, <span class="dv">512</span>                      <span class="co"># 50% overlap -&gt; only ~2x redundancy</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>nov <span class="op">=</span> nper <span class="op">-</span> hop</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>_, _, S <span class="op">=</span> sig.stft(y, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.<span class="bu">abs</span>(S)                              <span class="co"># the spectrogram: magnitude ONLY</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">2j</span><span class="op">*</span>np.pi<span class="op">*</span>np.random.rand(<span class="op">*</span>A.shape))     <span class="co"># start from random phase</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">200</span>):                                  <span class="co"># Griffin-Lim iterations</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">300</span>):                                  <span class="co"># Griffin-Lim iterations</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    _, x  <span class="op">=</span> sig.istft(X, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)   <span class="co"># -&gt; signal domain</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    _, _, Sx <span class="op">=</span> sig.stft(x, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov) <span class="co"># -&gt; a CONSISTENT stft</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">1j</span> <span class="op">*</span> np.angle(Sx))                 <span class="co"># keep our magnitude,</span></span>
@@ -570,11 +570,11 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../Figure/figure_griffin_lim.png" class="img-fluid figure-img"></p>
-<figcaption>Four panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input. (b) The magnitude of the reconstruction after 200 Griffin–Lim iterations: indistinguishable. (c) Reconstruction error versus iteration for three overlaps: 75% converges steadily, 50% stalls higher, and no-overlap never improves — without redundancy every phase is “consistent” and the iteration has nothing to grip. (d) 200 ms of the reconstructed waveforms at the loudest vowel: the 75%-overlap result is periodic and smooth; the no-overlap result is disorganised, with phase breaking at every frame boundary.</figcaption>
+<figcaption>Two panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input; the phase is gone. (b) 200 ms of the reconstructed waveform at the loudest vowel: at iteration 10 the frames have not yet agreed and the waveform is still noisy; by iteration 300 a clean periodic voiced waveform has emerged from what began as random phase.</figcaption>
 </figure>
 </div>
 </div>
-<p><strong>Hear the algorithm converge</strong> — <em>“Acknowledge me!”</em>, resynthesised from the <em>same</em> magnitude spectrogram (75 % overlap), differing only in phase:</p>
+<p><strong>Hear the algorithm converge</strong> — <em>“Acknowledge me!”</em>, resynthesised from the <em>same</em> magnitude spectrogram (50 % overlap), differing only in phase:</p>
 <table class="mf-audio" style="width:100%; border:none; text-align:center;">
 <tbody><tr>
 <td style="border:none;">
@@ -587,7 +587,7 @@ window.Quarto = {
 <b>iteration 5</b><br><small>converging</small>
 </td>
 <td style="border:none;">
-<b>iteration 200</b><br><small>recovered</small>
+<b>iteration 300</b><br><small>recovered</small>
 </td>
 </tr>
 <tr>
@@ -613,8 +613,8 @@ window.Quarto = {
 </td>
 </tr>
 </tbody></table>
-<p>Iteration 1 is what “a spectrogram with random phase” sounds like: the right energy at the right times and frequencies, but smeared and watery — the shout dissolved into fog. By iteration 5 the words are back; by 200 the clip is close to the original, with a faint characteristic “phasiness”. (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)</p>
-<p>Three honest notes. The recovered waveform is <strong>not sample-identical</strong> to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (d) compares reconstructions rather than overlaying the original; what is recovered is the <em>sound</em>. Convergence is slow (<span class="math inline">1/k</span>-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 75 % overlap the magnitude STFT holds ~4 numbers per signal sample, at 0 % overlap ~1 — and phase retrieval works precisely when that count exceeds one.</p>
+<p>Iteration 1 is what “a spectrogram with random phase” sounds like: the right energy at the right times and frequencies, but smeared and watery — the shout dissolved into fog. By iteration 5 the words are back; by 300 the clip is close to the original, with a residual “phasiness” that is the audible price of working at half redundancy — rerun the same code at 75 % overlap and it largely disappears. (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)</p>
+<p>Three honest notes. The recovered waveform is <strong>not sample-identical</strong> to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (b) compares two iterates rather than overlaying the original; what is recovered is the <em>sound</em>. Convergence is slow (<span class="math inline">1/k</span>-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 50 % overlap the magnitude STFT holds ~2 numbers per signal sample, at 75 % ~4, at 0 % ~1 — and phase retrieval works precisely when that count exceeds one.</p>
 <hr>
 <p><em>See <a href="../chap7.html">Chapter 7</a> for the STFT, windows and overlap, and the <a href="../gallery/missing_fundamental.html">missing fundamental example</a> for another case where redundancy in a spectrum carries more than it seems.</em></p>
 
