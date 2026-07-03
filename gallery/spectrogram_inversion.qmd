@@ -22,7 +22,7 @@ Not every array of numbers is a valid STFT. A valid one is **consistent**: inver
 
 Start from **random phase** and iterate. Each round the frames negotiate their shared samples a little better; after a couple hundred rounds, out comes intelligible speech from what began as pure noise-phase garbage.
 
-The demo runs this on 10 s of a voice recording three ways — 75 % overlap, 50 %, and **no overlap** — because the failure case is the whole lesson: with disjoint frames there is nothing to negotiate, *any* phase is self-consistent, and the iteration fixes nothing.
+The demo runs this on a 2.4 s catchphrase — Roman Reigns' *"Acknowledge me!"* (WWE), shouted over a live crowd — three ways: 75 % overlap, 50 %, and **no overlap**. The failure case is the whole lesson: with disjoint frames there is nothing to negotiate, *any* phase is self-consistent, and the iteration fixes nothing.
 
 ## Code
 
@@ -46,29 +46,27 @@ _, x_rec = sig.istft(X, fs, nperseg=nper, noverlap=nov)    # recovered speech
 ## Result
 
 <div class="gallery-result">
-![Four panels. (a) The given magnitude spectrogram of 10 s of speech — the only input. (b) The magnitude of the reconstruction after 200 Griffin–Lim iterations: indistinguishable. (c) Reconstruction error versus iteration for three overlaps: 75% converges steadily, 50% more slowly, and no-overlap never improves — without redundancy every phase is "consistent" and the iteration has nothing to grip. (d) 200 ms of the reconstructed waveforms: the 75%-overlap result is a clean periodic voiced waveform; the no-overlap result is disorganised, with phase breaking at every frame boundary.](../Figure/figure_griffin_lim.png)
+![Four panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input. (b) The magnitude of the reconstruction after 200 Griffin–Lim iterations: indistinguishable. (c) Reconstruction error versus iteration for three overlaps: 75% converges steadily, 50% stalls higher, and no-overlap never improves — without redundancy every phase is "consistent" and the iteration has nothing to grip. (d) 200 ms of the reconstructed waveforms at the loudest vowel: the 75%-overlap result is periodic and smooth; the no-overlap result is disorganised, with phase breaking at every frame boundary.](../Figure/figure_griffin_lim.png)
 </div>
 
-**Hear the algorithm converge** — all four clips are resynthesised from the *same* magnitude spectrogram, differing only in phase:
+**Hear the algorithm converge** — *"Acknowledge me!"*, resynthesised from the *same* magnitude spectrogram (75 % overlap), differing only in phase:
 
 <table class="mf-audio" style="width:100%; border:none; text-align:center;">
 <tr>
-  <td style="border:none;"><b>original</b><br><small>the 10 s source</small></td>
+  <td style="border:none;"><b>original</b><br><small>the 2.4 s source</small></td>
   <td style="border:none;"><b>iteration 1</b><br><small>random phase</small></td>
   <td style="border:none;"><b>iteration 5</b><br><small>converging</small></td>
   <td style="border:none;"><b>iteration 200</b><br><small>recovered</small></td>
-  <td style="border:none;"><b>no overlap</b><br><small>200 iter · fails</small></td>
 </tr>
 <tr>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_iter1.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_iter5.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_recon.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_no_overlap.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="../Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="../Data/griffin_lim_iter1.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="../Data/griffin_lim_iter5.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="../Data/griffin_lim_recon.wav" type="audio/wav" /></audio></td>
 </tr>
 </table>
 
-Iteration 1 is what "a spectrogram with random phase" sounds like: the right energy at the right times and frequencies, but smeared and watery — you can almost follow the words through the fog. By iteration 5 the speech is intelligible; by 200 it is close to the original, with a faint characteristic "phasiness". The no-overlap clip never gets past the fog, no matter how long it iterates — same magnitudes, no redundancy, no recovery.
+Iteration 1 is what "a spectrogram with random phase" sounds like: the right energy at the right times and frequencies, but smeared and watery — the shout dissolved into fog. By iteration 5 the words are back; by 200 the clip is close to the original, with a faint characteristic "phasiness". (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)
 
 Three honest notes. The recovered waveform is **not sample-identical** to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (d) compares reconstructions rather than overlaying the original; what is recovered is the *sound*. Convergence is slow ($1/k$-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 75 % overlap the magnitude STFT holds ~4 numbers per signal sample, at 0 % overlap ~1 — and phase retrieval works precisely when that count exceeds one.
 
