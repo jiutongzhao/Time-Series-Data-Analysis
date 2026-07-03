@@ -10,6 +10,8 @@ Data/orpheus.mp4
 *.wav
 !Data/griffin_lim_*.wav
 !docs/Data/griffin_lim_*.wav
+!Data/triad_*.wav
+!docs/Data/triad_*.wav
 *.cdf
 *.csv
 *.mp3
