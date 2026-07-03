@@ -537,11 +537,16 @@ signals = {name: sum(tone(semi(k)) for k in steps)
 #   3*f_C = 784.9 Hz   vs  2*f_G  = 784.0 Hz   ->  0.9 Hz   slow beat  (maj, min)
 #   3*f_C = 784.9 Hz   vs  2*f_Gb = 740.0 Hz   -> 44.9 Hz   roughness  (dim)
 #   3*f_C = 784.9 Hz   vs  2*f_G# = 830.6 Hz   -> 45.7 Hz   roughness  (aug)
+
+# isolate the colliding pair to SEE its beat: band-pass around the collision
+import scipy.signal
+bp = {name: scipy.signal.filtfilt(*scipy.signal.butter(4, [700, 865],
+            btype='band', fs=fs), y) for name, y in signals.items()}
 ```
 
 :::
 <p align = 'center'>
-    Top: waveform and envelope of each triad — the major chord's envelope undulates at the slow 0.9 Hz beat of its near-pure fifth, while the diminished and augmented chords ripple rapidly. Bottom: the same 700–865 Hz spectral window for all four — in the major and minor chords two harmonics almost merge into one line; in the diminished and augmented chords they stand ~45 Hz apart.
+    The same 700–865 Hz band of each chord, seen in both domains. Top: the band-passed waveform — in the major and minor triads the colliding pair beats once per second, a single wave packet longer than the panel; in the diminished and augmented triads the packets shrink to ~22 ms, repeating 45 times a second. Bottom: the band's spectrum — two lines almost merged (slow beat) versus two lines ~45 Hz apart (roughness). The packet length in time is exactly the inverse of the line spacing in frequency.
 </p>
 
 Listen to the four — same root, same synthesis, only the intervals differ. The beating you hear *is* the spectral spacing in the bottom row:

@@ -1027,12 +1027,17 @@ f_s &gt; 2f_{max}
 <span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># where the harmonics collide:</span></span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   3*f_C = 784.9 Hz   vs  2*f_G  = 784.0 Hz   -&gt;  0.9 Hz   slow beat  (maj, min)</span></span>
 <span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#   3*f_C = 784.9 Hz   vs  2*f_Gb = 740.0 Hz   -&gt; 44.9 Hz   roughness  (dim)</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   3*f_C = 784.9 Hz   vs  2*f_G# = 830.6 Hz   -&gt; 45.7 Hz   roughness  (aug)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   3*f_C = 784.9 Hz   vs  2*f_G# = 830.6 Hz   -&gt; 45.7 Hz   roughness  (aug)</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co"># isolate the colliding pair to SEE its beat: band-pass around the collision</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>bp <span class="op">=</span> {name: scipy.signal.filtfilt(<span class="op">*</span>scipy.signal.butter(<span class="dv">4</span>, [<span class="dv">700</span>, <span class="dv">865</span>],</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>            btype<span class="op">=</span><span class="st">'band'</span>, fs<span class="op">=</span>fs), y) <span class="cf">for</span> name, y <span class="kw">in</span> signals.items()}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
 <p align="center">
-Top: waveform and envelope of each triad — the major chord’s envelope undulates at the slow 0.9 Hz beat of its near-pure fifth, while the diminished and augmented chords ripple rapidly. Bottom: the same 700–865 Hz spectral window for all four — in the major and minor chords two harmonics almost merge into one line; in the diminished and augmented chords they stand ~45 Hz apart.
+The same 700–865 Hz band of each chord, seen in both domains. Top: the band-passed waveform — in the major and minor triads the colliding pair beats once per second, a single wave packet longer than the panel; in the diminished and augmented triads the packets shrink to ~22 ms, repeating 45 times a second. Bottom: the band’s spectrum — two lines almost merged (slow beat) versus two lines ~45 Hz apart (roughness). The packet length in time is exactly the inverse of the line spacing in frequency.
 </p>
 <p>Listen to the four — same root, same synthesis, only the intervals differ. The beating you hear <em>is</em> the spectral spacing in the bottom row:</p>
 <table style="width:100%; border:none; text-align:center;">
