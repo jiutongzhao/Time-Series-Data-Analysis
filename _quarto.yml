@@ -46,6 +46,7 @@ project:
     - gallery/hilbert_am.qmd
     - gallery/phase_distortion.qmd
     - gallery/decimation_alias.qmd
+    - gallery/sound_localization.qmd
   resources:
     - .nojekyll
     # Figures and data live at project root; Quarto copies them into docs/
@@ -54,6 +55,7 @@ project:
     - Data/gearbox_spectraquest.npz
     - Data/kalman_gps_imu.npz
     - Data/two_point_correlation_schematic.webm
+    - Data/binaural_walking_speaker.mp4
     - Data/missing_fundamental_full.wav
     - Data/missing_fundamental_no_f1.wav
     - Data/missing_fundamental_octave.wav

@@ -264,4 +264,15 @@ Each card below links to a self-contained example: real data, working Python cod
 </a>
 </div>
 
+<div class="gallery-card">
+<a href="gallery/sound_localization.qmd">
+<img class="gallery-card-img" src="Figure/figure_binaural_localization.png" alt="Binaural sound localization demo">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Hearing Direction (ITD &amp; ILD)</div>
+<p class="gallery-card-desc">A voice walks left↔right in your headphones: inter-channel time and intensity differences, shown as STFT difference spectra — with an A/B test that switches the phase cue off mid-sentence.</p>
+<span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span>
+</div>
+</a>
+</div>
+
 :::
