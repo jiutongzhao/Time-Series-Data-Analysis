@@ -1,0 +1,77 @@
+# Recovering Speech from a Spectrogram
+
+<a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
+
+**Topic:** Phase retrieval — the STFT's overlap makes a magnitude-only spectrogram *redundant*, and the Griffin–Lim algorithm exploits that redundancy to resynthesise the waveform, phase and all.
+**Chapter:** [7 — Time-Frequency Analysis](../chap7.qmd)
+
+---
+
+## Background
+
+A spectrogram shows $|S(f,t)|$ — the **magnitude** of the STFT. The **phase** is thrown away, and with it, apparently, the waveform: you cannot invert a magnitude alone, since infinitely many signals share it… for a *single* window. This "phase problem" is famous well beyond audio — X-ray crystallography faces exactly it (detectors record only $|\mathcal F\{\rho\}|^2$ of the electron density), and half of structural biology hangs on working around it.
+
+But the STFT has a loophole: **overlap**. With a hop of a quarter window, every sample of the signal is described by *four* different frames. A magnitude-only STFT then contains about **4× more numbers than the signal has samples** — it is massively redundant, and the redundancy carries phase information in disguise: neighbouring frames must agree about the samples they share, and only (nearly) one phase assignment lets them.
+
+## Key idea
+
+Not every array of numbers is a valid STFT. A valid one is **consistent**: inverse-transform it, forward-transform the result, and you get the same coefficients back. The **Griffin–Lim algorithm** (1984) finds the signal by alternating between the two constraints we have:
+
+1. **Consistency projection**: $x \leftarrow \mathrm{ISTFT}(X)$, then $X \leftarrow \mathrm{STFT}(x)$ — snap to something a real signal could produce;
+2. **Magnitude projection**: $X \leftarrow A\,e^{\,i\angle X}$ — keep the *given* spectrogram magnitudes $A$, keep only the phase from step 1.
+
+Start from **random phase** and iterate. Each round the frames negotiate their shared samples a little better; after a couple hundred rounds, out comes intelligible speech from what began as pure noise-phase garbage.
+
+The demo runs this on 10 s of a voice recording three ways — 75 % overlap, 50 %, and **no overlap** — because the failure case is the whole lesson: with disjoint frames there is nothing to negotiate, *any* phase is self-consistent, and the iteration fixes nothing.
+
+## Code
+
+```python
+import numpy as np, scipy.signal as sig
+
+nper, hop = 1024, 256                      # 75% overlap -> ~4x redundancy
+nov = nper - hop
+_, _, S = sig.stft(y, fs, nperseg=nper, noverlap=nov)
+A = np.abs(S)                              # the spectrogram: magnitude ONLY
+
+X = A * np.exp(2j*np.pi*np.random.rand(*A.shape))     # start from random phase
+for k in range(200):                                  # Griffin-Lim iterations
+    _, x  = sig.istft(X, fs, nperseg=nper, noverlap=nov)   # -> signal domain
+    _, _, Sx = sig.stft(x, fs, nperseg=nper, noverlap=nov) # -> a CONSISTENT stft
+    X = A * np.exp(1j * np.angle(Sx))                 # keep our magnitude,
+                                                      # adopt the negotiated phase
+_, x_rec = sig.istft(X, fs, nperseg=nper, noverlap=nov)    # recovered speech
+```
+
+## Result
+
+<div class="gallery-result">
+![Four panels. (a) The given magnitude spectrogram of 10 s of speech — the only input. (b) The magnitude of the reconstruction after 200 Griffin–Lim iterations: indistinguishable. (c) Reconstruction error versus iteration for three overlaps: 75% converges steadily, 50% more slowly, and no-overlap never improves — without redundancy every phase is "consistent" and the iteration has nothing to grip. (d) 200 ms of the reconstructed waveforms: the 75%-overlap result is a clean periodic voiced waveform; the no-overlap result is disorganised, with phase breaking at every frame boundary.](../Figure/figure_griffin_lim.png)
+</div>
+
+**Hear the algorithm converge** — all four clips are resynthesised from the *same* magnitude spectrogram, differing only in phase:
+
+<table class="mf-audio" style="width:100%; border:none; text-align:center;">
+<tr>
+  <td style="border:none;"><b>original</b><br><small>the 10 s source</small></td>
+  <td style="border:none;"><b>iteration 1</b><br><small>random phase</small></td>
+  <td style="border:none;"><b>iteration 5</b><br><small>converging</small></td>
+  <td style="border:none;"><b>iteration 200</b><br><small>recovered</small></td>
+  <td style="border:none;"><b>no overlap</b><br><small>200 iter · fails</small></td>
+</tr>
+<tr>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_iter1.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_iter5.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_recon.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:170px;"><source src="../Data/griffin_lim_no_overlap.wav" type="audio/wav" /></audio></td>
+</tr>
+</table>
+
+Iteration 1 is what "a spectrogram with random phase" sounds like: the right energy at the right times and frequencies, but smeared and watery — you can almost follow the words through the fog. By iteration 5 the speech is intelligible; by 200 it is close to the original, with a faint characteristic "phasiness". The no-overlap clip never gets past the fog, no matter how long it iterates — same magnitudes, no redundancy, no recovery.
+
+Three honest notes. The recovered waveform is **not sample-identical** to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (d) compares reconstructions rather than overlaying the original; what is recovered is the *sound*. Convergence is slow ($1/k$-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 75 % overlap the magnitude STFT holds ~4 numbers per signal sample, at 0 % overlap ~1 — and phase retrieval works precisely when that count exceeds one.
+
+---
+
+*See [Chapter 7](../chap7.qmd) for the STFT, windows and overlap, and the [missing fundamental example](missing_fundamental.qmd) for another case where redundancy in a spectrum carries more than it seems.*

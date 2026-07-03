@@ -243,6 +243,17 @@ Each card below links to a self-contained example: real data, working Python cod
 </div>
 
 <div class="gallery-card">
+<a href="gallery/spectrogram_inversion.qmd">
+<img class="gallery-card-img" src="Figure/figure_griffin_lim.png" alt="Recovering speech from a spectrogram">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Recovering Speech from a Spectrogram</div>
+<p class="gallery-card-desc">A spectrogram discards the phase — yet overlapping frames make it redundant, and Griffin–Lim iterations resynthesise the voice from magnitude alone. With audio at 1, 5, and 200 iterations.</p>
+<span class="gallery-card-tag">Ch.7 · Phase Retrieval</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
 <a href="gallery/coherence.qmd">
 <img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
 <div class="gallery-card-body">

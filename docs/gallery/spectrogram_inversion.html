@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Gallery – Practical Spectral Analysis</title>
+<title>spectrogram_inversion – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,30 +23,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -137,8 +172,51 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -310,11 +388,11 @@ document.addEventListener('DOMContentLoaded', function () {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Practical Spectral Analysis</span>
     </a>
   </div>
@@ -329,75 +407,75 @@ document.addEventListener('DOMContentLoaded', function () {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gallery.html">Gallery</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./gallery.html" class="sidebar-item-text sidebar-link active">
+  <a href="../gallery.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Gallery</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap1.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap4.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap6.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
@@ -406,19 +484,19 @@ document.addEventListener('DOMContentLoaded', function () {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_naming.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_naming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Naming Convention</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -427,361 +505,130 @@ document.addEventListener('DOMContentLoaded', function () {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#recovering-speech-from-a-spectrogram" id="toc-recovering-speech-from-a-spectrogram" class="nav-link active" data-scroll-target="#recovering-speech-from-a-spectrogram">Recovering Speech from a Spectrogram</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#key-idea" id="toc-key-idea" class="nav-link" data-scroll-target="#key-idea">Key idea</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
+  <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result">Result</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Gallery</h1>
-<p class="subtitle lead">Applied spectral analysis — end-to-end examples</p>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta column-page-right">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
+<section id="recovering-speech-from-a-spectrogram" class="level1">
+<h1>Recovering Speech from a Spectrogram</h1>
+<p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
+<p><strong>Topic:</strong> Phase retrieval — the STFT’s overlap makes a magnitude-only spectrogram <em>redundant</em>, and the Griffin–Lim algorithm exploits that redundancy to resynthesise the waveform, phase and all. <strong>Chapter:</strong> <a href="../chap7.html">7 — Time-Frequency Analysis</a></p>
+<hr>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>A spectrogram shows <span class="math inline">|S(f,t)|</span> — the <strong>magnitude</strong> of the STFT. The <strong>phase</strong> is thrown away, and with it, apparently, the waveform: you cannot invert a magnitude alone, since infinitely many signals share it… for a <em>single</em> window. This “phase problem” is famous well beyond audio — X-ray crystallography faces exactly it (detectors record only <span class="math inline">|\mathcal F\{\rho\}|^2</span> of the electron density), and half of structural biology hangs on working around it.</p>
+<p>But the STFT has a loophole: <strong>overlap</strong>. With a hop of a quarter window, every sample of the signal is described by <em>four</em> different frames. A magnitude-only STFT then contains about <strong>4× more numbers than the signal has samples</strong> — it is massively redundant, and the redundancy carries phase information in disguise: neighbouring frames must agree about the samples they share, and only (nearly) one phase assignment lets them.</p>
+</section>
+<section id="key-idea" class="level2">
+<h2 class="anchored" data-anchor-id="key-idea">Key idea</h2>
+<p>Not every array of numbers is a valid STFT. A valid one is <strong>consistent</strong>: inverse-transform it, forward-transform the result, and you get the same coefficients back. The <strong>Griffin–Lim algorithm</strong> (1984) finds the signal by alternating between the two constraints we have:</p>
+<ol type="1">
+<li><strong>Consistency projection</strong>: <span class="math inline">x \leftarrow \mathrm{ISTFT}(X)</span>, then <span class="math inline">X \leftarrow \mathrm{STFT}(x)</span> — snap to something a real signal could produce;</li>
+<li><strong>Magnitude projection</strong>: <span class="math inline">X \leftarrow A\,e^{\,i\angle X}</span> — keep the <em>given</em> spectrogram magnitudes <span class="math inline">A</span>, keep only the phase from step 1.</li>
+</ol>
+<p>Start from <strong>random phase</strong> and iterate. Each round the frames negotiate their shared samples a little better; after a couple hundred rounds, out comes intelligible speech from what began as pure noise-phase garbage.</p>
+<p>The demo runs this on 10 s of a voice recording three ways — 75 % overlap, 50 %, and <strong>no overlap</strong> — because the failure case is the whole lesson: with disjoint frames there is nothing to negotiate, <em>any</em> phase is self-consistent, and the iteration fixes nothing.</p>
+</section>
+<section id="code" class="level2">
+<h2 class="anchored" data-anchor-id="code">Code</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np, scipy.signal <span class="im">as</span> sig</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>nper, hop <span class="op">=</span> <span class="dv">1024</span>, <span class="dv">256</span>                      <span class="co"># 75% overlap -&gt; ~4x redundancy</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>nov <span class="op">=</span> nper <span class="op">-</span> hop</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>_, _, S <span class="op">=</span> sig.stft(y, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.<span class="bu">abs</span>(S)                              <span class="co"># the spectrogram: magnitude ONLY</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">2j</span><span class="op">*</span>np.pi<span class="op">*</span>np.random.rand(<span class="op">*</span>A.shape))     <span class="co"># start from random phase</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">200</span>):                                  <span class="co"># Griffin-Lim iterations</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    _, x  <span class="op">=</span> sig.istft(X, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)   <span class="co"># -&gt; signal domain</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    _, _, Sx <span class="op">=</span> sig.stft(x, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov) <span class="co"># -&gt; a CONSISTENT stft</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> A <span class="op">*</span> np.exp(<span class="ot">1j</span> <span class="op">*</span> np.angle(Sx))                 <span class="co"># keep our magnitude,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                                                      <span class="co"># adopt the negotiated phase</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>_, x_rec <span class="op">=</span> sig.istft(X, fs, nperseg<span class="op">=</span>nper, noverlap<span class="op">=</span>nov)    <span class="co"># recovered speech</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="result" class="level2">
+<h2 class="anchored" data-anchor-id="result">Result</h2>
+<div class="gallery-result">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Figure/figure_griffin_lim.png" class="img-fluid figure-img"></p>
+<figcaption>Four panels. (a) The given magnitude spectrogram of 10 s of speech — the only input. (b) The magnitude of the reconstruction after 200 Griffin–Lim iterations: indistinguishable. (c) Reconstruction error versus iteration for three overlaps: 75% converges steadily, 50% more slowly, and no-overlap never improves — without redundancy every phase is “consistent” and the iteration has nothing to grip. (d) 200 ms of the reconstructed waveforms: the 75%-overlap result is a clean periodic voiced waveform; the no-overlap result is disorganised, with phase breaking at every frame boundary.</figcaption>
+</figure>
+</div>
+</div>
+<p><strong>Hear the algorithm converge</strong> — all four clips are resynthesised from the <em>same</em> magnitude spectrogram, differing only in phase:</p>
+<table class="mf-audio" style="width:100%; border:none; text-align:center;">
+<tbody><tr>
+<td style="border:none;">
+<b>original</b><br><small>the 10 s source</small>
+</td>
+<td style="border:none;">
+<b>iteration 1</b><br><small>random phase</small>
+</td>
+<td style="border:none;">
+<b>iteration 5</b><br><small>converging</small>
+</td>
+<td style="border:none;">
+<b>iteration 200</b><br><small>recovered</small>
+</td>
+<td style="border:none;">
+<b>no overlap</b><br><small>200 iter · fails</small>
+</td>
+</tr>
+<tr>
+<td style="border:none;">
+<audio controls="" preload="none" style="width:100%; max-width:170px;">
+<source src="../Data/griffin_lim_original.wav" type="audio/wav">
+</audio>
+</td>
+<td style="border:none;">
+<audio controls="" preload="none" style="width:100%; max-width:170px;">
+<source src="../Data/griffin_lim_iter1.wav" type="audio/wav">
+</audio>
+</td>
+<td style="border:none;">
+<audio controls="" preload="none" style="width:100%; max-width:170px;">
+<source src="../Data/griffin_lim_iter5.wav" type="audio/wav">
+</audio>
+</td>
+<td style="border:none;">
+<audio controls="" preload="none" style="width:100%; max-width:170px;">
+<source src="../Data/griffin_lim_recon.wav" type="audio/wav">
+</audio>
+</td>
+<td style="border:none;">
+<audio controls="" preload="none" style="width:100%; max-width:170px;">
+<source src="../Data/griffin_lim_no_overlap.wav" type="audio/wav">
+</audio>
+</td>
+</tr>
+</tbody></table>
+<p>Iteration 1 is what “a spectrogram with random phase” sounds like: the right energy at the right times and frequencies, but smeared and watery — you can almost follow the words through the fog. By iteration 5 the speech is intelligible; by 200 it is close to the original, with a faint characteristic “phasiness”. The no-overlap clip never gets past the fog, no matter how long it iterates — same magnitudes, no redundancy, no recovery.</p>
+<p>Three honest notes. The recovered waveform is <strong>not sample-identical</strong> to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (d) compares reconstructions rather than overlaying the original; what is recovered is the <em>sound</em>. Convergence is slow (<span class="math inline">1/k</span>-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 75 % overlap the magnitude STFT holds ~4 numbers per signal sample, at 0 % overlap ~1 — and phase retrieval works precisely when that count exceeds one.</p>
+<hr>
+<p><em>See <a href="../chap7.html">Chapter 7</a> for the STFT, windows and overlap, and the <a href="../gallery/missing_fundamental.html">missing fundamental example</a> for another case where redundancy in a spectrum carries more than it seems.</em></p>
 
 
-<p>Each card below links to a self-contained example: real data, working Python code, and the resulting figure. Click through for the full derivation and implementation.</p>
-<div class="gallery-grid">
-<div class="gallery-card">
-<a href="./gallery/aliasing.html"> <img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing and the Nyquist Folding Receiver">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Aliasing &amp; the Nyquist Folding Receiver
-</div>
-<p class="gallery-card-desc">
-Undersampling folds every Nyquist zone onto the same baseband; a modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.
-</p>
-<p><span class="gallery-card-tag">Ch.1 · Sampling</span></p>
-</div>
-</a><p><a href="./gallery/aliasing.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/exoplanet.html"> <img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Exoplanet 51 Peg b
-</div>
-<p class="gallery-card-desc">
-Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Lomb–Scargle</span></p>
-</div>
-</a><p><a href="./gallery/exoplanet.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/piano.html"> <img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Piano String Inharmonicity
-</div>
-<p class="gallery-card-desc">
-Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Peak Detection</span></p>
-</div>
-</a><p><a href="./gallery/piano.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/missing_fundamental.html"> <img class="gallery-card-img" src="Figure/figure_missing_fundamental.png" alt="The missing fundamental">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-The Missing Fundamental
-</div>
-<p class="gallery-card-desc">
-Delete a tone’s fundamental and the pitch stays put — the waveform period and the cepstral peak both survive. With audio to hear it.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Cepstrum</span></p>
-</div>
-</a><p><a href="./gallery/missing_fundamental.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gearbox.html"> <img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gear-Box Fault Detection
-</div>
-<p class="gallery-card-desc">
-Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Cepstrum</span></p>
-</div>
-</a><p><a href="./gallery/gearbox.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/sunspot.html"> <img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Sunspot Cycle
-</div>
-<p class="gallery-card-desc">
-Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Welch PSD</span></p>
-</div>
-</a><p><a href="./gallery/sunspot.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/cmb.html"> <img class="gallery-card-img" src="Figure/figure_cmb_map.png" alt="Cosmic Microwave Background angular power spectrum">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Cosmic Microwave Background
-</div>
-<p class="gallery-card-desc">
-The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span></p>
-</div>
-</a><p><a href="./gallery/cmb.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/airy_diffraction.html"> <img class="gallery-card-img" src="Figure/figure_airy_combined.png" alt="Airy diffraction pattern">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Airy Diffraction — Theory vs.&nbsp;Experiment
-</div>
-<p class="gallery-card-desc">
-The Hankel transform predicts a circular aperture’s diffraction rings; a real red-laser-through-a-pinhole photo confirms them to a few percent.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Hankel Transform</span></p>
-</div>
-</a><p><a href="./gallery/airy_diffraction.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectral_pde.html"> <img class="gallery-card-img" src="Figure/heat_diffusion.gif" alt="Heat conduction solved with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Heat Conduction with the FFT
-</div>
-<p class="gallery-card-desc">
-In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Spectral Method</span></p>
-</div>
-</a><p><a href="./gallery/spectral_pde.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectral_em.html"> <img class="gallery-card-img" src="Figure/unit_pulse.gif" alt="Electromagnetic waves solved with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Electromagnetic Waves with the FFT
-</div>
-<p class="gallery-card-desc">
-The same trick for light: the curl becomes i·k×, and each mode oscillates at ω=ck. Spectral solvers (PSTD/PSATD) keep the wavefront on the light-cone where finite differences ripple.
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Spectral Method</span></p>
-</div>
-</a><p><a href="./gallery/spectral_em.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/fft_multiplication.html"> <img class="gallery-card-img" src="Figure/figure_fft_multiplication.png" alt="Fast multiplication with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Fast Multiplication with the FFT
-</div>
-<p class="gallery-card-desc">
-Multiplying two numbers is convolving their digits — so the convolution theorem multiplies million-digit integers and polynomials in O(n log n) instead of O(n²).
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Convolution</span></p>
-</div>
-</a><p><a href="./gallery/fft_multiplication.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/solar_wind.html"> <img class="gallery-card-img" src="Figure/figure_solar_wind_turbulence.png" alt="Solar wind turbulence spectrum">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Solar-Wind Turbulence Spectrum
-</div>
-<p class="gallery-card-desc">
-The Welch method tames six decades of raw periodogram scatter into the turbulent cascade — f⁻¹ injection, f⁻⁵ᐟ³ Kolmogorov, f⁻²·⁸ dissipation.
-</p>
-<p><span class="gallery-card-tag">Ch.5 · Welch PSD</span></p>
-</div>
-</a><p><a href="./gallery/solar_wind.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/light_pollution.html"> <img class="gallery-card-img" src="Figure/figure_light_pollution.png" alt="Filtering light pollution from a starfield">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Filtering Light Pollution
-</div>
-<p class="gallery-card-desc">
-Skyglow is a smooth low-frequency gradient; stars are high-frequency spikes. A 2-D high-pass filter models the city glow and subtracts it, restoring the stars.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Filter Design</span></p>
-</div>
-</a><p><a href="./gallery/light_pollution.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/mains_hum.html"> <img class="gallery-card-img" src="Figure/figure_mains_hum.png" alt="Notch filtering 60 Hz mains hum from an ECG">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Notching Out 60 Hz Mains Hum
-</div>
-<p class="gallery-card-desc">
-Power-line interference is a razor-sharp spectral line. A cascade of high-Q notch filters removes 60 Hz and its harmonics from an ECG, leaving the heartbeat untouched.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Notch Filter</span></p>
-</div>
-</a><p><a href="./gallery/mains_hum.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/hilbert_am.html"> <img class="gallery-card-img" src="Figure/figure_hilbert_am.png" alt="AM demodulation with the Hilbert transform">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AM Demodulation (Hilbert)
-</div>
-<p class="gallery-card-desc">
-The analytic signal turns a modulated carrier into a rotating vector whose length is the envelope — recovering an AM message exactly, in one transform.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Hilbert Transform</span></p>
-</div>
-</a><p><a href="./gallery/hilbert_am.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/phase_distortion.html"> <img class="gallery-card-img" src="Figure/figure_phase_distortion.png" alt="FIR vs IIR phase distortion">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Why Linear Phase Matters
-</div>
-<p class="gallery-card-desc">
-Two filters, the same magnitude response: the linear-phase FIR preserves a pulse’s shape while the causal IIR smears its edges — the story is in the group delay.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · FIR vs IIR</span></p>
-</div>
-</a><p><a href="./gallery/phase_distortion.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/decimation_alias.html"> <img class="gallery-card-img" src="Figure/figure_decimation_alias.png" alt="Anti-alias filtering before decimation">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Downsampling Needs a Filter
-</div>
-<p class="gallery-card-desc">
-Keep every 5th sample and a 700 Hz tone folds to a phantom 100 Hz. Low-pass first — the anti-alias filter — and it vanishes cleanly. You can’t un-fold an alias.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Decimation</span></p>
-</div>
-</a><p><a href="./gallery/decimation_alias.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/cuckoo.html"> <img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Indian Cuckoo Song
-</div>
-<p class="gallery-card-desc">
-STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · STFT</span></p>
-</div>
-</a><p><a href="./gallery/cuckoo.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/seismometer.html"> <img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Earthquake Seismogram
-</div>
-<p class="gallery-card-desc">
-Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
-</div>
-</a><p><a href="./gallery/seismometer.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gravitational_waves.html"> <img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gravitational Waves (GW150914)
-</div>
-<p class="gallery-card-desc">
-Morlet-wavelet Q-scan of LIGO’s first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · CWT</span></p>
-</div>
-</a><p><a href="./gallery/gravitational_waves.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/dwt_image.html"> <img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-DWT Image Compression
-</div>
-<p class="gallery-card-desc">
-Keep only the largest wavelet coefficients and a 256 KB image shrinks to 47, 14, even 4 KB — degrading gracefully, blurring rather than blocking.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
-</div>
-</a><p><a href="./gallery/dwt_image.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectrogram_inversion.html"> <img class="gallery-card-img" src="Figure/figure_griffin_lim.png" alt="Recovering speech from a spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Recovering Speech from a Spectrogram
-</div>
-<p class="gallery-card-desc">
-A spectrogram discards the phase — yet overlapping frames make it redundant, and Griffin–Lim iterations resynthesise the voice from magnitude alone. With audio at 1, 5, and 200 iterations.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · Phase Retrieval</span></p>
-</div>
-</a><p><a href="./gallery/spectrogram_inversion.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/coherence.html"> <img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AO–Baltic Coherence
-</div>
-<p class="gallery-card-desc">
-Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · Coherence</span></p>
-</div>
-</a><p><a href="./gallery/coherence.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/chorus_svd.html"> <img class="gallery-card-img" src="Figure/figure_svd_erg.png" alt="Chorus wave SVD polarization">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Chorus-Wave Polarization (SVD)
-</div>
-<p class="gallery-card-desc">
-From one spacecraft’s 3-axis magnetometer, an SVD of the spectral matrix recovers the wave vector and polarization of magnetospheric chorus — Maxwell meets spectra.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · SVD</span></p>
-</div>
-</a><p><a href="./gallery/chorus_svd.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/sound_localization.html"> <img class="gallery-card-img" src="Figure/figure_binaural_localization.png" alt="Binaural sound localization demo">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Hearing Direction (ITD &amp; ILD)
-</div>
-<p class="gallery-card-desc">
-A voice walks left↔︎right in your headphones: inter-channel time and intensity differences, shown as STFT difference spectra — with an A/B test that switches the phase cue off mid-sentence.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span></p>
-</div>
-</a><p><a href="./gallery/sound_localization.html"></a></p>
-</div>
-</div>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1374,5 +1221,5 @@ document.addEventListener("dblclick", function (e) {
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

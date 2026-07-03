@@ -8,6 +8,8 @@ Data/orpheus.mp4
 !Data/binaural_walking_speaker.mp4
 !docs/Data/binaural_walking_speaker.mp4
 *.wav
+!Data/griffin_lim_*.wav
+!docs/Data/griffin_lim_*.wav
 *.cdf
 *.csv
 *.mp3
