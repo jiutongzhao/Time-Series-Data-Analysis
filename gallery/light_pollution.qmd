@@ -9,7 +9,9 @@
 
 ## Background
 
-Anyone who has pointed a camera at the night sky from a city knows the problem: instead of a black background peppered with stars, you get a bright, uneven wash of orange **skyglow** — sunlight's nighttime cousin, scattered back down by streetlights and haze. It swamps the faint stars and tilts the whole frame brighter on the side facing the city.
+Anyone who has pointed a camera at the night sky knows the problem: instead of a black background peppered with stars, the frame carries a bright, uneven wash of **skyglow** — streetlight scattered back down by haze, plus the atmosphere's own airglow — brightest toward the horizon. It swamps the faint stars and tilts the whole frame.
+
+The data here is a **real photograph**: [*Night Sky Over the Maple Trees*](https://commons.wikimedia.org/wiki/File:Night_Sky_Over_the_Maple_Trees.jpg) (Mmfgh, Wikimedia Commons, CC BY 4.0), a wide-field exposure over the Vermont Appalachians. Even at this dark site, the horizon glow sweeps a strong brightness gradient across the bottom of the frame — the working example below is a tree-free sky crop, converted to luminance.
 
 The saving grace is that **skyglow and stars occupy completely different spatial scales.** Light pollution is a *smooth* gradient — it varies gently across the entire frame, so all of its energy sits at very **low spatial frequencies**. A star, by contrast, is a near-point source: a sharp spike a couple of pixels wide, which spreads its energy across **high spatial frequencies**. This is the two-dimensional version of the everyday filtering problem from [Chapter 6](../chap6.qmd) — a slow drift riding under a fast signal — and the same tool applies: build a filter that keeps one frequency band and rejects the other.
 
@@ -28,8 +30,13 @@ Choosing the cutoff $k_c$ is the whole craft, exactly as when picking a 1-D filt
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
-# polluted = starfield  +  smooth skyglow gradient  +  noise   (a 512x512 frame)
-kc  = 0.010                                        # cutoff spatial frequency [cycles/pixel]
+from PIL import Image
+# real photo: "Night Sky Over the Maple Trees" (Mmfgh, Wikimedia Commons, CC BY 4.0)
+im = Image.open('Night_Sky_Over_the_Maple_Trees.jpg').convert('L')
+polluted = np.asarray(im.crop((1350, 100, 3800, 2550))                # sky-only crop
+                        .resize((1024, 1024), Image.LANCZOS), float) / 255.0
+
+kc  = 0.008                                        # cutoff spatial frequency [cycles/pixel]
 pad = polluted.shape[0] // 2
 
 # reflect-pad so the periodic FFT sees no brightness jump at the edges (no ringing)
@@ -44,12 +51,12 @@ cleaned    = polluted - background                 # high-pass: skyglow removed,
 ## Result
 
 <div class="gallery-result">
-![Four panels. (a) A synthetic light-polluted frame: faint stars buried under a bright skyglow gradient from a city near one corner. (b) Its 2-D spatial-frequency spectrum (Hann-windowed for display) — the skyglow's energy is concentrated in the bright low-k core inside the dashed circle, while star energy fills the rest of the plane. (c) The low-pass reconstruction of that core: the smooth skyglow the filter identifies and removes. (d) The high-pass result — the same stars on a flat, dark sky.](../Figure/figure_light_pollution.png)
+![Four panels. (a) The real night-sky crop: thousands of stars and the Milky Way band, riding on a glow gradient that brightens toward the horizon at the bottom. (b) Its 2-D spatial-frequency spectrum (Hann-windowed for display) — the glow's energy is concentrated in the bright low-k core inside the dashed circle, while star energy fills the rest of the plane. (c) The low-pass reconstruction of that core: the smooth skyglow model the filter removes — note it has also absorbed the Milky Way's large-scale luminosity. (d) The high-pass result — the same stars on a flat, dark sky.](../Figure/figure_light_pollution.png)
 </div>
 
-Panel (b) is why this works at all: the light pollution collapses into the bright core at the centre of the frequency plane, cleanly separated from the star field that fills the rest. The Gaussian low-pass (dashed circle) scoops out just that core to build the **skyglow model** in panel (c) — a smooth surface that traces the city-glow gradient and its corner hotspot, with no stars in it. Subtracting it leaves panel (d): the background flattens (its standard deviation drops about five-fold here) and stars that were invisible under the glow now stand out against a dark sky.
+Panel (b) is why this works at all: the glow collapses into the bright core at the centre of the frequency plane, cleanly separated from the star field that fills the rest. The Gaussian low-pass (dashed circle) scoops out just that core to build the **skyglow model** in panel (c) — a smooth surface tracing the horizon glow, with no stars in it. Subtracting it leaves panel (d): the coarse background brightness swing drops from 0.19 to 0.03 (six-fold flatter), and the star field stands on a uniform dark sky from corner to corner.
 
-The example also shows the method's honest limit. Genuinely *extended* structure — the faint patch of nebulosity in the lower-right — lives at low spatial frequencies too, so it is partly swept into the background model and dimmed along with the skyglow. That is the same trade-off a 1-D high-pass makes when a signal and its baseline drift overlap in frequency, and it is why astrophotographers reach for gentler cutoffs, masked background models, or wavelet-based tools when they want to preserve nebulosity. Choosing where to cut is the filter design.
+The real photo also demonstrates the method's honest limit better than any synthetic test could. The **Milky Way** is genuinely *extended* structure — its cloud-like luminosity lives at the same low spatial frequencies as the glow, so panel (c) shows the background model swallowing it, and in panel (d) the galactic band survives only through its fine-grained star clouds while its diffuse light is dimmed. That is the same trade-off a 1-D high-pass makes when a signal and its baseline drift overlap in frequency, and it is exactly why astrophotographers reach for gentler cutoffs, masked background models (mask the Milky Way before fitting), or wavelet-based tools when they want to keep the nebulosity. Choosing where to cut is the filter design.
 
 ---
 
