@@ -570,7 +570,7 @@ window.Quarto = {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../Figure/figure_griffin_lim.png" class="img-fluid figure-img"></p>
-<figcaption>Two panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input; the phase is gone. (b) 200 ms of the reconstructed waveform at the loudest vowel: at iteration 10 the frames have not yet agreed and the waveform is still noisy; by iteration 300 a clean periodic voiced waveform has emerged from what began as random phase.</figcaption>
+<figcaption>Two panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input; the phase is gone. The dashed lines mark the 200 ms window expanded below. (b) The waveform in that window: the original on top; at iteration 10 the frames have not yet agreed and the reconstruction is still noisy; by iteration 300 a clean periodic voiced waveform has emerged from what began as random phase, visibly matching the original’s structure.</figcaption>
 </figure>
 </div>
 </div>
@@ -581,40 +581,24 @@ window.Quarto = {
 <b>original</b><br><small>the 2.4 s source</small>
 </td>
 <td style="border:none;">
-<b>iteration 1</b><br><small>random phase</small>
-</td>
-<td style="border:none;">
-<b>iteration 5</b><br><small>converging</small>
-</td>
-<td style="border:none;">
-<b>iteration 300</b><br><small>recovered</small>
+<b>iteration 300</b><br><small>recovered from magnitude alone</small>
 </td>
 </tr>
 <tr>
 <td style="border:none;">
-<audio controls="" preload="none" style="width:100%; max-width:200px;">
+<audio controls="" preload="none" style="width:100%; max-width:260px;">
 <source src="../Data/griffin_lim_original.wav" type="audio/wav">
 </audio>
 </td>
 <td style="border:none;">
-<audio controls="" preload="none" style="width:100%; max-width:200px;">
-<source src="../Data/griffin_lim_iter1.wav" type="audio/wav">
-</audio>
-</td>
-<td style="border:none;">
-<audio controls="" preload="none" style="width:100%; max-width:200px;">
-<source src="../Data/griffin_lim_iter5.wav" type="audio/wav">
-</audio>
-</td>
-<td style="border:none;">
-<audio controls="" preload="none" style="width:100%; max-width:200px;">
+<audio controls="" preload="none" style="width:100%; max-width:260px;">
 <source src="../Data/griffin_lim_recon.wav" type="audio/wav">
 </audio>
 </td>
 </tr>
 </tbody></table>
-<p>Iteration 1 is what “a spectrogram with random phase” sounds like: the right energy at the right times and frequencies, but smeared and watery — the shout dissolved into fog. By iteration 5 the words are back; by 300 the clip is close to the original, with a residual “phasiness” that is the audible price of working at half redundancy — rerun the same code at 75 % overlap and it largely disappears. (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)</p>
-<p>Three honest notes. The recovered waveform is <strong>not sample-identical</strong> to the original — a global sign and small per-band phase rotations remain unconstrained, which is why panel (b) compares two iterates rather than overlaying the original; what is recovered is the <em>sound</em>. Convergence is slow (<span class="math inline">1/k</span>-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 50 % overlap the magnitude STFT holds ~2 numbers per signal sample, at 75 % ~4, at 0 % ~1 — and phase retrieval works precisely when that count exceeds one.</p>
+<p>The reconstruction carries the words, the shout, and the crowd — everything — with a residual “phasiness” that is the audible price of working at half redundancy: rerun the same code at 75 % overlap and it largely disappears. (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)</p>
+<p>Three honest notes. The recovered waveform is <strong>not sample-identical</strong> to the original — a global sign and small per-band phase rotations remain unconstrained, as a close look at panel (b) shows; what is recovered is the <em>sound</em>. Convergence is slow (<span class="math inline">1/k</span>-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 50 % overlap the magnitude STFT holds ~2 numbers per signal sample, at 75 % ~4, at 0 % ~1 — and phase retrieval works precisely when that count exceeds one.</p>
 <hr>
 <p><em>See <a href="../chap7.html">Chapter 7</a> for the STFT, windows and overlap, and the <a href="../gallery/missing_fundamental.html">missing fundamental example</a> for another case where redundancy in a spectrum carries more than it seems.</em></p>
 

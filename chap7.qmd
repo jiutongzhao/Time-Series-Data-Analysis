@@ -189,20 +189,16 @@ _, x_rec = sig.istft(X, fs, nperseg=nper, noverlap=nov)    # recovered speech
     Speech recovered from a magnitude-only spectrogram at 50 % overlap: the waveform at iteration 10 is still noisy; by iteration 300 the frames have negotiated a consistent phase. Overlap is what makes it work — with disjoint frames, any phase is self-consistent and the iteration never improves.
 </p>
 
-Listen to the convergence — all four clips share the *same* magnitude spectrogram and differ only in phase:
+Listen — both clips share the *same* magnitude spectrogram and differ only in phase:
 
 <table style="width:100%; border:none; text-align:center;">
 <tr>
   <td style="border:none;"><b>original</b></td>
-  <td style="border:none;"><b>iteration 1</b><br><small>random phase</small></td>
-  <td style="border:none;"><b>iteration 5</b></td>
-  <td style="border:none;"><b>iteration 300</b><br><small>recovered</small></td>
+  <td style="border:none;"><b>iteration 300</b><br><small>recovered from magnitude alone</small></td>
 </tr>
 <tr>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="Data/griffin_lim_iter1.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="Data/griffin_lim_iter5.wav" type="audio/wav" /></audio></td>
-  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:200px;"><source src="Data/griffin_lim_recon.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:260px;"><source src="Data/griffin_lim_original.wav" type="audio/wav" /></audio></td>
+  <td style="border:none;"><audio controls preload="none" style="width:100%; max-width:260px;"><source src="Data/griffin_lim_recon.wav" type="audio/wav" /></audio></td>
 </tr>
 </table>
 

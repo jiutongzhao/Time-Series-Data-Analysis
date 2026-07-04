@@ -58,8 +58,6 @@ project:
     - Data/two_point_correlation_schematic.webm
     - Data/binaural_walking_speaker.mp4
     - Data/griffin_lim_original.wav
-    - Data/griffin_lim_iter1.wav
-    - Data/griffin_lim_iter5.wav
     - Data/griffin_lim_recon.wav
     - Data/missing_fundamental_full.wav
     - Data/missing_fundamental_no_f1.wav
