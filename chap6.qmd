@@ -514,6 +514,92 @@ plt.show()
 
 
 
+## [Nonlinear Filters](https://en.wikipedia.org/wiki/Median_filter): Median & Bilateral [`scipy.signal.medfilt`]
+
+Every filter so far — moving average, Butterworth, FIR — is a **convolution**: the output is a weighted sum of inputs, the weights never change, and the whole operation is characterized by a single transfer function $H(f)$. Linearity is what makes the frequency-domain picture work, but it also imposes a hard limitation: **a convolution cannot distinguish a feature you want from noise that lives at the same frequencies.** A sharp step and an impulsive spike are both broadband; any linear low-pass that suppresses the spike must also round off the step.
+
+**Nonlinear filters** escape this trade-off by letting the operation depend on the data itself. The price is that superposition fails — $\mathcal{F}\{x_1 + x_2\} \neq \mathcal{F}\{x_1\} + \mathcal{F}\{x_2\}$ — so there is no transfer function, no frequency response, and no `sosfreqz` plot to draw. Each nonlinear filter must be understood by what it does to *features* rather than to *frequencies*.
+
+### Median Filter [`scipy.signal.medfilt`]
+
+The **<u>*median filter*</u>** replaces each sample with the median of its neighborhood:
+
+$$
+y_n = \operatorname{median}\left( x_{n-k}, \ldots, x_n, \ldots, x_{n+k} \right)
+$$
+
+Two properties make it the standard tool for **despiking**:
+
+- **Outliers are annihilated, not smeared.** A spike occupying fewer than half the window never becomes the median — it simply vanishes. A moving average of the same length would smear the spike into a bump $2k+1$ samples wide (panel b vs. panel c below).
+- **Edges survive.** Around a step, the window is dominated by one plateau or the other, so the output jumps cleanly from level to level. A moving average instead draws a ramp of length $2k+1$ across the step.
+
+The rule of thumb: choose the window a bit longer than **twice the widest spike** you need to remove, but shorter than the narrowest real feature you need to keep. Median filtering is the standard first pass on particle-instrument and telemetry data, where single-point glitches (cosmic-ray hits, bit errors) are common; the 2-D version (`scipy.ndimage.median_filter`) is the classic remedy for salt-and-pepper noise in images.
+
+### Bilateral Filter
+
+The **<u>*bilateral filter*</u>** is a Gaussian smoother that refuses to average across an edge. It weights neighbors by *two* Gaussians — one in time (or space), one in **intensity**:
+
+$$
+y_n = \frac{\sum_m w_{nm}\, x_m}{\sum_m w_{nm}}, \qquad
+w_{nm} = \underbrace{e^{-\frac{(n-m)^2}{2\sigma_t^2}}}_{\text{near in time}}\ \cdot\ \underbrace{e^{-\frac{(x_n - x_m)^2}{2\sigma_I^2}}}_{\text{similar in value}}
+$$
+
+Samples on the far side of a step differ from $x_n$ by much more than $\sigma_I$, so their weight collapses and the filter smooths each plateau *separately* — noise is suppressed while the step stays sharp (panel d). As $\sigma_I \to \infty$ the intensity kernel goes flat and the filter degrades gracefully into an ordinary Gaussian smoother. This edge-preserving behavior is why the bilateral filter (and its fast approximations) sits inside virtually every smartphone camera pipeline for denoising and tone mapping.
+
+Note the honest caveat in panel (d): to a bilateral filter, **an impulsive spike looks exactly like a tiny edge** — it is far from its neighbors in intensity, so they receive no weight and the spike is faithfully *preserved*. Real pipelines therefore compose the two nonlinear filters: **median first** to kill outliers, **bilateral second** to smooth the noise without blurring the edges.
+
+<!-- fig-tabset:figure_nonlinear_filters.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_nonlinear_filters.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal
+
+rng = np.random.default_rng(3)
+N = 800
+t = np.arange(N) / N
+
+# a signal with sharp edges, a smooth bump, noise, and impulsive spikes
+clean = np.zeros(N)
+clean[(t >= 0.10) & (t < 0.32)] = 1.0
+clean[(t >= 0.32) & (t < 0.55)] = 0.35
+m = (t >= 0.60) & (t < 0.90)
+clean[m] = 0.9 * np.sin(np.pi * (t[m] - 0.60) / 0.30) ** 2
+noisy = clean + 0.05 * rng.standard_normal(N)
+spikes_at = rng.choice(N, 9, replace=False)
+noisy[spikes_at] += rng.choice([-1, 1], 9) * rng.uniform(0.6, 1.1, 9)
+
+k = 15                                                 # window length [samples]
+y_ma  = np.convolve(noisy, np.ones(k) / k, mode='same')    # moving average (linear)
+y_med = scipy.signal.medfilt(noisy, k)                     # median (nonlinear)
+
+def bilateral_1d(x, W=20, sig_t=8.0, sig_i=0.12):
+    """edge-preserving bilateral filter: Gaussian in time AND in intensity."""
+    pad = np.pad(x, W, mode='reflect')
+    idx = np.arange(-W, W + 1)
+    wt = np.exp(-idx**2 / (2 * sig_t**2))                  # domain (time) kernel
+    win = np.lib.stride_tricks.sliding_window_view(pad, 2 * W + 1)
+    wi = np.exp(-(win - x[:, None])**2 / (2 * sig_i**2))   # range (intensity) kernel
+    w = wt[None, :] * wi
+    return (w * win).sum(axis=1) / w.sum(axis=1)
+
+y_bil = bilateral_1d(noisy)
+
+for y, name in [(y_ma, 'moving average'), (y_med, 'median'), (y_bil, 'bilateral')]:
+    print(f'{name:>15s}  rms vs clean: {np.sqrt(np.mean((y - clean)**2)):.3f}')
+```
+
+:::
+
+On this test signal the RMS error against the true signal is **0.055** for the moving average, **0.018** for the median, and **0.085** for the bilateral filter — but the single number hides the story. The bilateral's error is inflated almost entirely by the nine preserved spikes; on the spike-free samples it is the smoothest of the three. The median wins here because the test signal is exactly its home turf: piecewise-flat levels contaminated by outliers.
+
 ## [Hilbert Transform](https://en.wikipedia.org/wiki/Hilbert_transform) [`scipy.signal.hilbert`]
 
 The **<u>*Hilbert transform*</u>** is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.
