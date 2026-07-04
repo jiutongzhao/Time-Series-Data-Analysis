@@ -46,6 +46,7 @@ project:
     - gallery/hilbert_am.qmd
     - gallery/phase_distortion.qmd
     - gallery/decimation_alias.qmd
+    - gallery/gps_acquisition.qmd
     - gallery/sound_localization.qmd
     - gallery/spectrogram_inversion.qmd
   resources:

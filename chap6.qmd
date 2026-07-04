@@ -261,6 +261,7 @@ The following table summarizes common digital filter types, their implementation
 | Elliptic       | `ellip`                   | Fastest cutoff, both ripples | Selective, small band     |
 | Bessel         | `bessel`                  | Linear phase, slow rolloff   | Transient preservation    |
 | Median         | `medfilt`, `medfilt1d`    | Nonlinear, preserves edges   | Spike removal             |
+| Matched        | `correlate`               | Correlates with a template   | Weak-signal detection     |
 
 ::: {.callout-tip}
 ## Which filter should I pick?
@@ -280,6 +281,8 @@ Decide along three axes — **phase**, **transition sharpness**, and **causality
    - Offline / latency tolerable → **FIR + `filtfilt`** for a clean zero-phase result.
 
 **Special case:** impulsive spikes / outliers (salt-and-pepper) are not a frequency-band problem — use the nonlinear **median** filter, which removes spikes without smearing genuine edges.
+
+**Special case:** you know the *exact waveform* you are looking for and only need to detect it / time it — no band-selection filter is optimal; use the **matched filter** (correlate with the template, below).
 
 The catch with sharper magnitude responses (Chebyshev, elliptic) is increasingly nonlinear phase and ringing near edges, so the axis-1 question always wins over axis-2.
 :::
@@ -513,6 +516,90 @@ plt.show()
 
 
 
+
+## [Matched Filter](https://en.wikipedia.org/wiki/Matched_filter) [`scipy.signal.correlate`]
+
+All the filters above are designed from one piece of prior knowledge: *which frequency band the signal occupies*. The **<u>*matched filter*</u>** answers a different question: **you know the exact waveform** $s[n]$ you are looking for — a radar echo, a spreading code, a gravitational-wave chirp — and want to decide *whether* and *when* it occurs inside a noisy record. For that task, no band-selection filter is optimal.
+
+Among all linear filters, the one that maximizes the output signal-to-noise ratio at the moment of decision (for additive white noise) has the impulse response
+
+$$
+h[n] = s^*[N - n],
+$$
+
+the **time-reversed, conjugated template** (the proof is one line of Cauchy–Schwarz). Convolving with a time-reversed template is the same thing as **correlating with the template itself** — so in practice the matched filter is simply
+
+$$
+y[k] = \sum_n x[n]\, s^*[n-k] \quad\Longrightarrow\quad \texttt{scipy.signal.correlate(x, s)},
+$$
+
+the cross-correlation of the data with the known waveform, evaluated at every candidate arrival time $k$. This is the same correlation function introduced in [Chapter 3](chap3.qmd) — used not to *describe* a signal, but to *find* one.
+
+### Processing Gain
+
+The remarkable property of the matched filter is that its output SNR depends **only on the template's energy**, $E = \sum |s[n]|^2$, not on its shape:
+
+$$
+\mathrm{SNR}_\text{out} = \frac{2E}{N_0},
+$$
+
+where $N_0$ is the noise power spectral density. Compared to the best band-pass filter (which keeps the whole band $B$ and therefore all the noise inside it), correlating over a template of duration $T$ improves the SNR by the **time–bandwidth product**:
+
+$$
+G \approx 10\log_{10}(BT)\ \text{dB}.
+$$
+
+A band-pass filter cannot exceed $BT \approx 1$ — this factor is exactly what coherent knowledge of the waveform buys. Make the template longer or wider-band and the gain grows without bound: with $BT = 450$ in the demo below, a chirp buried at $-15$ dB pops out at $+12$ dB; GPS receivers routinely dig signals out from **20 dB below the noise floor**.
+
+Two practical notes:
+
+- **Colored noise:** the derivation above assumes white noise. If the noise is colored, first **whiten** it — divide the spectrum by the noise PSD estimated as in [Chapter 5](chap5.qmd) — then match. This whitened matched filter, $y \propto \int \frac{\tilde{x}(f)\, \tilde{s}^*(f)}{S_n(f)}\, e^{2\pi i f t}\, df$, is literally how LIGO found GW150914 (see the [gravitational-wave example](gallery/gravitational_waves.qmd)).
+- **Unknown parameters:** if the template has unknown parameters (Doppler shift, chirp mass...), you must correlate against a **bank of templates** and search the parameter space — see the [GPS acquisition example](gallery/gps_acquisition.qmd), where the search runs over code phase × Doppler.
+
+<!-- fig-tabset:figure_matched_filter.png -->
+::: {.panel-tabset}
+
+### Figure
+
+<img src="Figure/figure_matched_filter.png" width="100%"/>
+
+### Code
+
+```python
+import numpy as np
+import scipy.signal
+
+rng = np.random.default_rng(11)
+
+fs = 1000.0
+T  = 3.0                                   # template duration [s]
+B  = (20, 170)                             # chirp band [Hz]  ->  BT = 450
+tt = np.arange(int(T * fs)) / fs
+template = scipy.signal.windows.tukey(tt.size, 0.1) \
+         * scipy.signal.chirp(tt, B[0], T, B[1])
+
+dur = 12.0
+t   = np.arange(int(dur * fs)) / fs
+tau = 5.4                                  # true arrival time [s]
+amp = 0.25                                 # deeply buried: SNR ~ -15 dB
+x   = rng.standard_normal(t.size)          # white noise, sigma = 1
+i0  = int(tau * fs)
+x[i0:i0 + template.size] += amp * template
+
+# attempt 1: band-pass over the chirp band — keeps ALL the in-band noise
+sos  = scipy.signal.butter(5, B, btype='bandpass', output='sos', fs=fs)
+x_bp = scipy.signal.sosfiltfilt(sos, x)
+
+# attempt 2: matched filter — correlate with the known template
+mf  = scipy.signal.correlate(x, template, mode='valid') / np.sum(template**2)
+tmf = np.arange(mf.size) / fs              # candidate arrival times
+
+print(f'estimated arrival: {tmf[np.argmax(mf)]:.3f} s  (true: {tau} s)')
+```
+
+:::
+
+The band-pass attempt (panel c) fails for a fundamental reason: the chirp's own band is 150 Hz wide, so the filter must keep 150 Hz worth of noise — and the pulse stays buried. The matched filter (panel d) instead asks, at every shift, "does the data *look like the template* here?", accumulating evidence coherently over all $BT = 450$ independent degrees of freedom. The noise, having no reason to imitate a 3-second chirp, averages toward zero; the true alignment survives as a sharp spike at exactly $5.400$ s.
 
 ## [Nonlinear Filters](https://en.wikipedia.org/wiki/Median_filter): Median & Bilateral [`scipy.signal.medfilt`]
 

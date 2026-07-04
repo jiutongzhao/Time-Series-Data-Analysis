@@ -525,6 +525,10 @@ window.Quarto = {
   <li><a href="#frequency-response-and-interpretation" id="toc-frequency-response-and-interpretation" class="nav-link" data-scroll-target="#frequency-response-and-interpretation">Frequency Response and Interpretation</a></li>
   <li><a href="#artifacts-from-over-narrow-filters" id="toc-artifacts-from-over-narrow-filters" class="nav-link" data-scroll-target="#artifacts-from-over-narrow-filters">Artifacts from Over-narrow Filters</a></li>
   </ul></li>
+  <li><a href="#matched-filter-scipy.signal.correlate" id="toc-matched-filter-scipy.signal.correlate" class="nav-link" data-scroll-target="#matched-filter-scipy.signal.correlate">Matched Filter [<code>scipy.signal.correlate</code>]</a>
+  <ul class="collapse">
+  <li><a href="#processing-gain" id="toc-processing-gain" class="nav-link" data-scroll-target="#processing-gain">Processing Gain</a></li>
+  </ul></li>
   <li><a href="#nonlinear-filters-median-bilateral-scipy.signal.medfilt" id="toc-nonlinear-filters-median-bilateral-scipy.signal.medfilt" class="nav-link" data-scroll-target="#nonlinear-filters-median-bilateral-scipy.signal.medfilt">Nonlinear Filters: Median &amp; Bilateral [<code>scipy.signal.medfilt</code>]</a>
   <ul class="collapse">
   <li><a href="#median-filter-scipy.signal.medfilt" id="toc-median-filter-scipy.signal.medfilt" class="nav-link" data-scroll-target="#median-filter-scipy.signal.medfilt">Median Filter [<code>scipy.signal.medfilt</code>]</a></li>
@@ -864,6 +868,12 @@ y[n]= \frac{1}{2M + 1} \sum_{k=-M}^{M} x[n-k]
 <td>Nonlinear, preserves edges</td>
 <td>Spike removal</td>
 </tr>
+<tr class="odd">
+<td>Matched</td>
+<td><code>correlate</code></td>
+<td>Correlates with a template</td>
+<td>Weak-signal detection</td>
+</tr>
 </tbody>
 </table>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -897,6 +907,7 @@ y[n]= \frac{1}{2M + 1} \sum_{k=-M}^{M} x[n-k]
 </ul></li>
 </ol>
 <p><strong>Special case:</strong> impulsive spikes / outliers (salt-and-pepper) are not a frequency-band problem — use the nonlinear <strong>median</strong> filter, which removes spikes without smearing genuine edges.</p>
+<p><strong>Special case:</strong> you know the <em>exact waveform</em> you are looking for and only need to detect it / time it — no band-selection filter is optimal; use the <strong>matched filter</strong> (correlate with the template, below).</p>
 <p>The catch with sharper magnitude responses (Chebyshev, elliptic) is increasingly nonlinear phase and ringing near edges, so the axis-1 question always wins over axis-2.</p>
 </div>
 </div>
@@ -1113,6 +1124,77 @@ y[n]= \frac{1}{2M + 1} \sum_{k=-M}^{M} x[n-k]
 </div>
 </section>
 </section>
+<section id="matched-filter-scipy.signal.correlate" class="level2">
+<h2 class="anchored" data-anchor-id="matched-filter-scipy.signal.correlate"><a href="https://en.wikipedia.org/wiki/Matched_filter">Matched Filter</a> [<code>scipy.signal.correlate</code>]</h2>
+<p>All the filters above are designed from one piece of prior knowledge: <em>which frequency band the signal occupies</em>. The <strong><u><em>matched filter</em></u></strong> answers a different question: <strong>you know the exact waveform</strong> <span class="math inline">s[n]</span> you are looking for — a radar echo, a spreading code, a gravitational-wave chirp — and want to decide <em>whether</em> and <em>when</em> it occurs inside a noisy record. For that task, no band-selection filter is optimal.</p>
+<p>Among all linear filters, the one that maximizes the output signal-to-noise ratio at the moment of decision (for additive white noise) has the impulse response</p>
+<p><span class="math display">
+h[n] = s^*[N - n],
+</span></p>
+<p>the <strong>time-reversed, conjugated template</strong> (the proof is one line of Cauchy–Schwarz). Convolving with a time-reversed template is the same thing as <strong>correlating with the template itself</strong> — so in practice the matched filter is simply</p>
+<p><span class="math display">
+y[k] = \sum_n x[n]\, s^*[n-k] \quad\Longrightarrow\quad \texttt{scipy.signal.correlate(x, s)},
+</span></p>
+<p>the cross-correlation of the data with the known waveform, evaluated at every candidate arrival time <span class="math inline">k</span>. This is the same correlation function introduced in <a href="./chap3.html">Chapter 3</a> — used not to <em>describe</em> a signal, but to <em>find</em> one.</p>
+<section id="processing-gain" class="level3">
+<h3 class="anchored" data-anchor-id="processing-gain">Processing Gain</h3>
+<p>The remarkable property of the matched filter is that its output SNR depends <strong>only on the template’s energy</strong>, <span class="math inline">E = \sum |s[n]|^2</span>, not on its shape:</p>
+<p><span class="math display">
+\mathrm{SNR}_\text{out} = \frac{2E}{N_0},
+</span></p>
+<p>where <span class="math inline">N_0</span> is the noise power spectral density. Compared to the best band-pass filter (which keeps the whole band <span class="math inline">B</span> and therefore all the noise inside it), correlating over a template of duration <span class="math inline">T</span> improves the SNR by the <strong>time–bandwidth product</strong>:</p>
+<p><span class="math display">
+G \approx 10\log_{10}(BT)\ \text{dB}.
+</span></p>
+<p>A band-pass filter cannot exceed <span class="math inline">BT \approx 1</span> — this factor is exactly what coherent knowledge of the waveform buys. Make the template longer or wider-band and the gain grows without bound: with <span class="math inline">BT = 450</span> in the demo below, a chirp buried at <span class="math inline">-15</span> dB pops out at <span class="math inline">+12</span> dB; GPS receivers routinely dig signals out from <strong>20 dB below the noise floor</strong>.</p>
+<p>Two practical notes:</p>
+<ul>
+<li><strong>Colored noise:</strong> the derivation above assumes white noise. If the noise is colored, first <strong>whiten</strong> it — divide the spectrum by the noise PSD estimated as in <a href="./chap5.html">Chapter 5</a> — then match. This whitened matched filter, <span class="math inline">y \propto \int \frac{\tilde{x}(f)\, \tilde{s}^*(f)}{S_n(f)}\, e^{2\pi i f t}\, df</span>, is literally how LIGO found GW150914 (see the <a href="./gallery/gravitational_waves.html">gravitational-wave example</a>).</li>
+<li><strong>Unknown parameters:</strong> if the template has unknown parameters (Doppler shift, chirp mass…), you must correlate against a <strong>bank of templates</strong> and search the parameter space — see the <a href="./gallery/gps_acquisition.html">GPS acquisition example</a>, where the search runs over code phase × Doppler.</li>
+</ul>
+<!-- fig-tabset:figure_matched_filter.png -->
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<p><img src="Figure/figure_matched_filter.png" width="100%"></p>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">11</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="fl">1000.0</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>T  <span class="op">=</span> <span class="fl">3.0</span>                                   <span class="co"># template duration [s]</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>B  <span class="op">=</span> (<span class="dv">20</span>, <span class="dv">170</span>)                             <span class="co"># chirp band [Hz]  -&gt;  BT = 450</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>tt <span class="op">=</span> np.arange(<span class="bu">int</span>(T <span class="op">*</span> fs)) <span class="op">/</span> fs</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>template <span class="op">=</span> scipy.signal.windows.tukey(tt.size, <span class="fl">0.1</span>) <span class="op">\</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>         <span class="op">*</span> scipy.signal.chirp(tt, B[<span class="dv">0</span>], T, B[<span class="dv">1</span>])</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>dur <span class="op">=</span> <span class="fl">12.0</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>t   <span class="op">=</span> np.arange(<span class="bu">int</span>(dur <span class="op">*</span> fs)) <span class="op">/</span> fs</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="fl">5.4</span>                                  <span class="co"># true arrival time [s]</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>amp <span class="op">=</span> <span class="fl">0.25</span>                                 <span class="co"># deeply buried: SNR ~ -15 dB</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>x   <span class="op">=</span> rng.standard_normal(t.size)          <span class="co"># white noise, sigma = 1</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>i0  <span class="op">=</span> <span class="bu">int</span>(tau <span class="op">*</span> fs)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>x[i0:i0 <span class="op">+</span> template.size] <span class="op">+=</span> amp <span class="op">*</span> template</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co"># attempt 1: band-pass over the chirp band — keeps ALL the in-band noise</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>sos  <span class="op">=</span> scipy.signal.butter(<span class="dv">5</span>, B, btype<span class="op">=</span><span class="st">'bandpass'</span>, output<span class="op">=</span><span class="st">'sos'</span>, fs<span class="op">=</span>fs)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>x_bp <span class="op">=</span> scipy.signal.sosfiltfilt(sos, x)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># attempt 2: matched filter — correlate with the known template</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>mf  <span class="op">=</span> scipy.signal.correlate(x, template, mode<span class="op">=</span><span class="st">'valid'</span>) <span class="op">/</span> np.<span class="bu">sum</span>(template<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>tmf <span class="op">=</span> np.arange(mf.size) <span class="op">/</span> fs              <span class="co"># candidate arrival times</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'estimated arrival: </span><span class="sc">{</span>tmf[np.argmax(mf)]<span class="sc">:.3f}</span><span class="ss"> s  (true: </span><span class="sc">{</span>tau<span class="sc">}</span><span class="ss"> s)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p>The band-pass attempt (panel c) fails for a fundamental reason: the chirp’s own band is 150 Hz wide, so the filter must keep 150 Hz worth of noise — and the pulse stays buried. The matched filter (panel d) instead asks, at every shift, “does the data <em>look like the template</em> here?”, accumulating evidence coherently over all <span class="math inline">BT = 450</span> independent degrees of freedom. The noise, having no reason to imitate a 3-second chirp, averages toward zero; the true alignment survives as a sharp spike at exactly <span class="math inline">5.400</span> s.</p>
+</section>
+</section>
 <section id="nonlinear-filters-median-bilateral-scipy.signal.medfilt" class="level2">
 <h2 class="anchored" data-anchor-id="nonlinear-filters-median-bilateral-scipy.signal.medfilt"><a href="https://en.wikipedia.org/wiki/Median_filter">Nonlinear Filters</a>: Median &amp; Bilateral [<code>scipy.signal.medfilt</code>]</h2>
 <p>Every filter so far — moving average, Butterworth, FIR — is a <strong>convolution</strong>: the output is a weighted sum of inputs, the weights never change, and the whole operation is characterized by a single transfer function <span class="math inline">H(f)</span>. Linearity is what makes the frequency-domain picture work, but it also imposes a hard limitation: <strong>a convolution cannot distinguish a feature you want from noise that lives at the same frequencies.</strong> A sharp step and an impulsive spike are both broadband; any linear low-pass that suppresses the spike must also round off the step.</p>
@@ -1141,48 +1223,48 @@ w_{nm} = \underbrace{e^{-\frac{(n-m)^2}{2\sigma_t^2}}}_{\text{near in time}}\ \c
 <p>Note the honest caveat in panel (d): to a bilateral filter, <strong>an impulsive spike looks exactly like a tiny edge</strong> — it is far from its neighbors in intensity, so they receive no weight and the spike is faithfully <em>preserved</em>. Real pipelines therefore compose the two nonlinear filters: <strong>median first</strong> to kill outliers, <strong>bilateral second</strong> to smooth the noise without blurring the edges.</p>
 <!-- fig-tabset:figure_nonlinear_filters.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false" href="">Code</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <p><img src="Figure/figure_nonlinear_filters.png" width="100%"></p>
 </div>
-<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">800</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(N) <span class="op">/</span> N</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># a signal with sharp edges, a smooth bump, noise, and impulsive spikes</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>clean <span class="op">=</span> np.zeros(N)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>clean[(t <span class="op">&gt;=</span> <span class="fl">0.10</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.32</span>)] <span class="op">=</span> <span class="fl">1.0</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>clean[(t <span class="op">&gt;=</span> <span class="fl">0.32</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.55</span>)] <span class="op">=</span> <span class="fl">0.35</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> (t <span class="op">&gt;=</span> <span class="fl">0.60</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.90</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>clean[m] <span class="op">=</span> <span class="fl">0.9</span> <span class="op">*</span> np.sin(np.pi <span class="op">*</span> (t[m] <span class="op">-</span> <span class="fl">0.60</span>) <span class="op">/</span> <span class="fl">0.30</span>) <span class="op">**</span> <span class="dv">2</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>noisy <span class="op">=</span> clean <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> rng.standard_normal(N)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>spikes_at <span class="op">=</span> rng.choice(N, <span class="dv">9</span>, replace<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>noisy[spikes_at] <span class="op">+=</span> rng.choice([<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>], <span class="dv">9</span>) <span class="op">*</span> rng.uniform(<span class="fl">0.6</span>, <span class="fl">1.1</span>, <span class="dv">9</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">15</span>                                                 <span class="co"># window length [samples]</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>y_ma  <span class="op">=</span> np.convolve(noisy, np.ones(k) <span class="op">/</span> k, mode<span class="op">=</span><span class="st">'same'</span>)    <span class="co"># moving average (linear)</span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>y_med <span class="op">=</span> scipy.signal.medfilt(noisy, k)                     <span class="co"># median (nonlinear)</span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bilateral_1d(x, W<span class="op">=</span><span class="dv">20</span>, sig_t<span class="op">=</span><span class="fl">8.0</span>, sig_i<span class="op">=</span><span class="fl">0.12</span>):</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""edge-preserving bilateral filter: Gaussian in time AND in intensity."""</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    pad <span class="op">=</span> np.pad(x, W, mode<span class="op">=</span><span class="st">'reflect'</span>)</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.arange(<span class="op">-</span>W, W <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    wt <span class="op">=</span> np.exp(<span class="op">-</span>idx<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sig_t<span class="op">**</span><span class="dv">2</span>))                  <span class="co"># domain (time) kernel</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    win <span class="op">=</span> np.lib.stride_tricks.sliding_window_view(pad, <span class="dv">2</span> <span class="op">*</span> W <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    wi <span class="op">=</span> np.exp(<span class="op">-</span>(win <span class="op">-</span> x[:, <span class="va">None</span>])<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sig_i<span class="op">**</span><span class="dv">2</span>))   <span class="co"># range (intensity) kernel</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> wt[<span class="va">None</span>, :] <span class="op">*</span> wi</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (w <span class="op">*</span> win).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> w.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>y_bil <span class="op">=</span> bilateral_1d(noisy)</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y, name <span class="kw">in</span> [(y_ma, <span class="st">'moving average'</span>), (y_med, <span class="st">'median'</span>), (y_bil, <span class="st">'bilateral'</span>)]:</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>name<span class="sc">:&gt;15s}</span><span class="ss">  rms vs clean: </span><span class="sc">{</span>np<span class="sc">.</span>sqrt(np.mean((y <span class="op">-</span> clean)<span class="op">**</span><span class="dv">2</span>))<span class="sc">:.3f}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">3</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">800</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(N) <span class="op">/</span> N</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># a signal with sharp edges, a smooth bump, noise, and impulsive spikes</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>clean <span class="op">=</span> np.zeros(N)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>clean[(t <span class="op">&gt;=</span> <span class="fl">0.10</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.32</span>)] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>clean[(t <span class="op">&gt;=</span> <span class="fl">0.32</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.55</span>)] <span class="op">=</span> <span class="fl">0.35</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> (t <span class="op">&gt;=</span> <span class="fl">0.60</span>) <span class="op">&amp;</span> (t <span class="op">&lt;</span> <span class="fl">0.90</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>clean[m] <span class="op">=</span> <span class="fl">0.9</span> <span class="op">*</span> np.sin(np.pi <span class="op">*</span> (t[m] <span class="op">-</span> <span class="fl">0.60</span>) <span class="op">/</span> <span class="fl">0.30</span>) <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>noisy <span class="op">=</span> clean <span class="op">+</span> <span class="fl">0.05</span> <span class="op">*</span> rng.standard_normal(N)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>spikes_at <span class="op">=</span> rng.choice(N, <span class="dv">9</span>, replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>noisy[spikes_at] <span class="op">+=</span> rng.choice([<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>], <span class="dv">9</span>) <span class="op">*</span> rng.uniform(<span class="fl">0.6</span>, <span class="fl">1.1</span>, <span class="dv">9</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">15</span>                                                 <span class="co"># window length [samples]</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>y_ma  <span class="op">=</span> np.convolve(noisy, np.ones(k) <span class="op">/</span> k, mode<span class="op">=</span><span class="st">'same'</span>)    <span class="co"># moving average (linear)</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>y_med <span class="op">=</span> scipy.signal.medfilt(noisy, k)                     <span class="co"># median (nonlinear)</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bilateral_1d(x, W<span class="op">=</span><span class="dv">20</span>, sig_t<span class="op">=</span><span class="fl">8.0</span>, sig_i<span class="op">=</span><span class="fl">0.12</span>):</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""edge-preserving bilateral filter: Gaussian in time AND in intensity."""</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    pad <span class="op">=</span> np.pad(x, W, mode<span class="op">=</span><span class="st">'reflect'</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.arange(<span class="op">-</span>W, W <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    wt <span class="op">=</span> np.exp(<span class="op">-</span>idx<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sig_t<span class="op">**</span><span class="dv">2</span>))                  <span class="co"># domain (time) kernel</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    win <span class="op">=</span> np.lib.stride_tricks.sliding_window_view(pad, <span class="dv">2</span> <span class="op">*</span> W <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    wi <span class="op">=</span> np.exp(<span class="op">-</span>(win <span class="op">-</span> x[:, <span class="va">None</span>])<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> sig_i<span class="op">**</span><span class="dv">2</span>))   <span class="co"># range (intensity) kernel</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> wt[<span class="va">None</span>, :] <span class="op">*</span> wi</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (w <span class="op">*</span> win).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> w.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>y_bil <span class="op">=</span> bilateral_1d(noisy)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y, name <span class="kw">in</span> [(y_ma, <span class="st">'moving average'</span>), (y_med, <span class="st">'median'</span>), (y_bil, <span class="st">'bilateral'</span>)]:</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f'</span><span class="sc">{</span>name<span class="sc">:&gt;15s}</span><span class="ss">  rms vs clean: </span><span class="sc">{</span>np<span class="sc">.</span>sqrt(np.mean((y <span class="op">-</span> clean)<span class="op">**</span><span class="dv">2</span>))<span class="sc">:.3f}</span><span class="ss">'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -1194,58 +1276,58 @@ w_{nm} = \underbrace{e^{-\frac{(n-m)^2}{2\sigma_t^2}}}_{\text{near in time}}\ \c
 <p>The <strong><u><em>Hilbert transform</em></u></strong> is a fundamental tool for analyzing the instantaneous amplitude and phase of a signal. By constructing the analytic signal, it enables us to extract the envelope and instantaneous frequency, which are essential in the study of modulated waves and transient phenomena. This section demonstrates how to implement the Hilbert transform in Python and interpret its results in both physical and engineering contexts.</p>
 <!-- fig-tabset:figure_hilbert.png -->
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Code</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">Figure</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <p><img src="Figure/figure_hilbert.png" width="100%"></p>
 </div>
-<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_short)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>omega <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">8.0</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span> <span class="op">**</span> <span class="dv">7</span>, endpoint<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega <span class="op">*</span> t) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> np.hanning(t.size)) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko-'</span>)</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).real, <span class="st">'r--'</span>, label <span class="op">=</span> <span class="st">'Real'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).imag, <span class="st">'b--'</span>, label <span class="op">=</span> <span class="st">'Imaginary'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, label <span class="op">=</span> <span class="st">'Magnitude'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="op">-</span>np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="op">-</span><span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> [ax1]:</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="st">'on'</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, loc <span class="op">=</span> <span class="st">'upper center'</span>, ncol <span class="op">=</span> <span class="dv">3</span>, bbox_to_anchor <span class="op">=</span> (<span class="fl">0.5</span>, <span class="fl">1.17</span>))</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Hilbert Transform'</span>, y <span class="op">=</span> <span class="fl">1.09</span>, <span class="op">**</span>title_font)</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_hilbert'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.signal</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scienceplots</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.style.use([<span class="st">'science'</span>, <span class="st">'nature'</span>, <span class="st">'notebook'</span>, <span class="st">'grid'</span>, <span class="st">'high-vis'</span>])</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib ipympl</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>plt.close()</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>figsize_short)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ax1 <span class="op">=</span> plt.subplot(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>omega <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> <span class="fl">8.0</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span> <span class="op">**</span> <span class="dv">7</span>, endpoint<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> t[<span class="dv">1</span>] <span class="op">-</span> t[<span class="dv">0</span>]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>fs <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> dt</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.sin(omega <span class="op">*</span> t) <span class="op">*</span> (<span class="fl">0.1</span> <span class="op">+</span> np.hanning(t.size)) <span class="op">+</span> np.random.randn(t.size) <span class="op">*</span> <span class="fl">0.0</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, sig, <span class="st">'ko-'</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).real, <span class="st">'r--'</span>, label <span class="op">=</span> <span class="st">'Real'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, scipy.signal.hilbert(sig).imag, <span class="st">'b--'</span>, label <span class="op">=</span> <span class="st">'Imaginary'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, label <span class="op">=</span> <span class="st">'Magnitude'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>ax1.plot(t, <span class="op">-</span>np.<span class="bu">abs</span>(scipy.signal.hilbert(sig)), <span class="st">'k--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ax1.set_xlim(<span class="op">-</span><span class="fl">0.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> [ax1]:</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    ax.grid(<span class="st">'on'</span>, linestyle <span class="op">=</span> <span class="st">'--'</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>ax1.legend(frameon <span class="op">=</span> <span class="va">False</span>, loc <span class="op">=</span> <span class="st">'upper center'</span>, ncol <span class="op">=</span> <span class="dv">3</span>, bbox_to_anchor <span class="op">=</span> (<span class="fl">0.5</span>, <span class="fl">1.17</span>))</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>ax1.set_xlabel(<span class="st">'Time [s]'</span>)</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>ax1.set_ylabel(<span class="st">'Intensity [Arb]'</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>ax1.set_title(<span class="st">'Hilbert Transform'</span>, y <span class="op">=</span> <span class="fl">1.09</span>, <span class="op">**</span>title_font)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>plt.savefig(save_path <span class="op">+</span> <span class="st">'figure_hilbert'</span> <span class="op">+</span> <span class="st">'.png'</span>,bbox_inches<span class="op">=</span><span class="st">'tight'</span>,dpi<span class="op">=</span><span class="dv">300</span>)</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>signal_ht <span class="op">=</span> scipy.signal.hilbert(signal)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>signal_ht.real, sighal_ht.imag, np.<span class="bu">abs</span>(signal_ht)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The real, imaginary part and the envelope</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>signal_ht <span class="op">=</span> scipy.signal.hilbert(signal)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>signal_ht.real, sighal_ht.imag, np.<span class="bu">abs</span>(signal_ht)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The real, imaginary part and the envelope</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div style="page-break-after: always;">
 
 </div>

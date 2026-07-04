@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Gallery – Practical Spectral Analysis</title>
+<title>gps_acquisition – Practical Spectral Analysis</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,30 +23,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-23bbe8b5e4efc1e257f6d59dce478b08.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-acf12a64177840b8d86f2d4f01b2e9fb.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-9af65cab8fb96e69f8b069e28b16098a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-cf1915e4e995a44bd09b7055fbd38b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -137,8 +172,51 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
 
-<link rel="stylesheet" href="styles.css">
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -310,11 +388,11 @@ document.addEventListener('DOMContentLoaded', function () {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo light-content">
-    <img src="./Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo light-content">
+    <img src="../Figure/figure_icon.png" alt="" class="navbar-logo dark-content">
     </a>
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Practical Spectral Analysis</span>
     </a>
   </div>
@@ -329,75 +407,75 @@ document.addEventListener('DOMContentLoaded', function () {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gallery.html">Gallery</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap0_preface.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap0_preface.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./gallery.html" class="sidebar-item-text sidebar-link active">
+  <a href="../gallery.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Gallery</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap1.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">1. Data Initialization</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap2.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap2.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">2. Frequency Domain</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap3.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap3.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">3. Power Spectral Density</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap4.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap4.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">4. More about FFT</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap5.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap5.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">5. Noise</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap6.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap6.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">6. Signal Processing</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap7.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap7.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">7. Time-Frequency Analysis</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap8.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap8.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">8. Multi-Channel Signals</span></a>
   </div>
 </li>
@@ -406,19 +484,19 @@ document.addEventListener('DOMContentLoaded', function () {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap10_appendix.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap10_appendix.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Appendix</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_naming.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_naming.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Naming Convention</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chap_todo.html" class="sidebar-item-text sidebar-link">
+  <a href="../chap_todo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Changelog</span></a>
   </div>
 </li>
@@ -427,374 +505,117 @@ document.addEventListener('DOMContentLoaded', function () {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#gps-acquisition-matched-filtering-20-db-below-the-noise" id="toc-gps-acquisition-matched-filtering-20-db-below-the-noise" class="nav-link active" data-scroll-target="#gps-acquisition-matched-filtering-20-db-below-the-noise">GPS Acquisition: Matched Filtering 20 dB Below the Noise</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">Background</a></li>
+  <li><a href="#key-idea-correlate-against-everything-coherently" id="toc-key-idea-correlate-against-everything-coherently" class="nav-link" data-scroll-target="#key-idea-correlate-against-everything-coherently">Key idea — correlate against everything, coherently</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
+  <li><a href="#result" id="toc-result" class="nav-link" data-scroll-target="#result">Result</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content column-page-right" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Gallery</h1>
-<p class="subtitle lead">Applied spectral analysis — end-to-end examples</p>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
 
-<div class="quarto-title-meta column-page-right">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
+<section id="gps-acquisition-matched-filtering-20-db-below-the-noise" class="level1">
+<h1>GPS Acquisition: Matched Filtering 20 dB Below the Noise</h1>
+<p><a class="gallery-back" href="../gallery.html">← Back to Gallery</a></p>
+<p><strong>Topic:</strong> The matched filter as a detection engine — how a receiver finds a signal whose power is one hundred times weaker than the noise, by correlating against a known code. <strong>Chapter:</strong> <a href="../chap6.html">6 — Signal Processing</a></p>
+<hr>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>A GPS satellite transmits about as much power as a light bulb, from 20,000 km away. By the time the signal reaches your phone it is roughly <span class="math inline">-130</span> dBm — about <strong>20 dB <em>below</em> the thermal noise floor</strong> of the receiver itself. On a spectrum analyzer there is nothing to see: the signal is invisible in time, invisible in frequency.</p>
+<p>And yet a phone finds it in milliseconds. It can do so because it knows <em>exactly what to look for</em>. Each satellite continuously repeats its own <strong>C/A code</strong> — a pseudo-random sequence of 1023 “chips” (±1 values) clocked at 1.023 MHz, so the code repeats every millisecond. The codes are <strong>Gold codes</strong>, generated by two 10-stage linear-feedback shift registers; they are engineered so that each code correlates strongly with itself at zero lag and only weakly with <em>any</em> shift of itself or of any other satellite’s code. That property lets all satellites share the same carrier frequency (code-division multiple access) — and it makes each code a perfect <strong>matched-filter template</strong>.</p>
+<p>The receiver’s problem, called <strong>acquisition</strong>, is a two-dimensional template search:</p>
+<ul>
+<li><strong>Code phase</strong> — where within the 1023-chip period the code starts (this is the ranging measurement: 1 chip ≈ 293 m of distance);</li>
+<li><strong>Doppler shift</strong> — satellite motion (±4 km/s along the line of sight) offsets the carrier by up to ±5 kHz, and an unknown Doppler decorrelates the template within a fraction of a millisecond.</li>
+</ul>
+</section>
+<section id="key-idea-correlate-against-everything-coherently" class="level2">
+<h2 class="anchored" data-anchor-id="key-idea-correlate-against-everything-coherently">Key idea — correlate against everything, coherently</h2>
+<p>The matched filter says: correlate the received data <span class="math inline">x[n]</span> with the known template, at every candidate alignment. Because the C/A code is periodic, the correlation over all 1023 code phases can be computed at once with an FFT (circular correlation):</p>
+<p><span class="math display">
+r[k] = \operatorname{IFFT}\!\left\{ \operatorname{FFT}\{x \cdot e^{-2\pi i f_d t}\} \cdot \operatorname{FFT}\{c\}^* \right\},
+</span></p>
+<p>repeated for each Doppler guess <span class="math inline">f_d</span>. One millisecond of coherent correlation accumulates <span class="math inline">N = 4092</span> samples, for a processing gain of <span class="math inline">10\log_{10} N \approx 36</span> dB — turning a <span class="math inline">-20</span> dB signal into a <span class="math inline">+16</span> dB detection. Summing the correlation <em>power</em> over 10 consecutive code periods (non-coherent integration) then steadies the noise floor, so the peak stands out unambiguously.</p>
+<p>The signal that “does not exist” appears as a single hot cell in the (code phase × Doppler) plane — and its coordinates <em>are</em> the measurements: the code phase is the pseudorange, the Doppler is the range rate. Running the same data against all 32 satellite codes reveals which satellites are overhead.</p>
+</section>
+<section id="code" class="level2">
+<h2 class="anchored" data-anchor-id="code">Code</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ── C/A Gold code: two 10-stage LFSRs, PRN-specific G2 taps ────────────────</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>G2_TAPS <span class="op">=</span> {<span class="dv">7</span>: (<span class="dv">1</span>, <span class="dv">8</span>), <span class="dv">13</span>: (<span class="dv">6</span>, <span class="dv">7</span>), <span class="dv">29</span>: (<span class="dv">1</span>, <span class="dv">6</span>)}          <span class="co"># (full table: 32 PRNs)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ca_code(prn):</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""1023-chip C/A Gold code of a GPS satellite, values +-1."""</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    g1 <span class="op">=</span> np.ones(<span class="dv">10</span>, <span class="bu">int</span>)<span class="op">;</span> g2 <span class="op">=</span> np.ones(<span class="dv">10</span>, <span class="bu">int</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    t1, t2 <span class="op">=</span> G2_TAPS[prn]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    code <span class="op">=</span> np.empty(<span class="dv">1023</span>, <span class="bu">int</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1023</span>):</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        code[i] <span class="op">=</span> g1[<span class="dv">9</span>] <span class="op">^</span> (g2[t1<span class="op">-</span><span class="dv">1</span>] <span class="op">^</span> g2[t2<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        g1 <span class="op">=</span> np.r_[g1[<span class="dv">2</span>] <span class="op">^</span> g1[<span class="dv">9</span>], g1[:<span class="dv">9</span>]]</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        g2 <span class="op">=</span> np.r_[g2[<span class="dv">1</span>] <span class="op">^</span> g2[<span class="dv">2</span>] <span class="op">^</span> g2[<span class="dv">5</span>] <span class="op">^</span> g2[<span class="dv">7</span>] <span class="op">^</span> g2[<span class="dv">8</span>] <span class="op">^</span> g2[<span class="dv">9</span>], g2[:<span class="dv">9</span>]]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>code                                  <span class="co"># 0/1 -&gt; +1/-1</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ── simulate 10 ms of complex-baseband I/Q signal ───────────────────────────</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>fs, Nc, M <span class="op">=</span> <span class="fl">4.092e6</span>, <span class="dv">4092</span>, <span class="dv">10</span>                          <span class="co"># 4 smp/chip, 10 periods</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>N  <span class="op">=</span> Nc <span class="op">*</span> M</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>t  <span class="op">=</span> np.arange(N) <span class="op">/</span> fs</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>chips <span class="op">=</span> (np.arange(N) <span class="op">*</span> <span class="fl">1.023e6</span> <span class="op">/</span> fs).astype(<span class="bu">int</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> (rng.standard_normal(N) <span class="op">+</span> <span class="ot">1j</span><span class="op">*</span>rng.standard_normal(N)) <span class="op">/</span> np.sqrt(<span class="dv">2</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> prn, phase_chips, fd <span class="kw">in</span> [(<span class="dv">7</span>, <span class="fl">350.25</span>, <span class="op">+</span><span class="fl">2350.0</span>), (<span class="dv">13</span>, <span class="fl">701.5</span>, <span class="op">-</span><span class="fl">1200.0</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                             (<span class="dv">29</span>, <span class="fl">120.75</span>, <span class="op">+</span><span class="fl">3900.0</span>)]:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    code <span class="op">=</span> np.roll(ca_code(prn)[chips <span class="op">%</span> <span class="dv">1023</span>], <span class="bu">int</span>(<span class="bu">round</span>(phase_chips<span class="op">*</span><span class="dv">4</span>)))</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    x   <span class="op">+=</span> <span class="fl">0.1</span> <span class="op">*</span> code <span class="op">*</span> np.exp(<span class="ot">1j</span><span class="op">*</span>(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>fd<span class="op">*</span>t <span class="op">+</span> rng.uniform(<span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>np.pi)))</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># amplitude 0.1 vs noise sigma 1  -&gt;  SNR = -20 dB per satellite</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># ── acquisition: FFT circular correlation over code phase x Doppler ────────</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> acquire(prn, dopplers<span class="op">=</span>np.arange(<span class="op">-</span><span class="dv">5000</span>, <span class="dv">5001</span>, <span class="fl">250.0</span>)):</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    CF   <span class="op">=</span> np.conj(np.fft.fft(ca_code(prn)[chips[:Nc] <span class="op">%</span> <span class="dv">1023</span>]))</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    surf <span class="op">=</span> np.zeros((dopplers.size, Nc))</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, fd <span class="kw">in</span> <span class="bu">enumerate</span>(dopplers):</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        base    <span class="op">=</span> (x <span class="op">*</span> np.exp(<span class="op">-</span><span class="ot">2j</span><span class="op">*</span>np.pi<span class="op">*</span>fd<span class="op">*</span>t)).reshape(M, Nc)   <span class="co"># Doppler wipe-off</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        surf[i] <span class="op">=</span> (np.<span class="bu">abs</span>(np.fft.ifft(np.fft.fft(base, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">*</span> CF,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>                                      axis<span class="op">=</span><span class="dv">1</span>))<span class="op">**</span><span class="dv">2</span>).<span class="bu">sum</span>(<span class="dv">0</span>)       <span class="co"># non-coherent sum</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> surf                                        <span class="co"># peak -&gt; (Doppler, code phase)</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>surf <span class="op">=</span> acquire(<span class="dv">7</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>i, j <span class="op">=</span> np.unravel_index(surf.argmax(), surf.shape)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'PRN 7: code phase </span><span class="sc">{</span>j<span class="op">/</span><span class="dv">4</span><span class="sc">:.2f}</span><span class="ss"> chips, Doppler </span><span class="sc">{</span>np<span class="sc">.</span>arange(<span class="op">-</span><span class="dv">5000</span>,<span class="dv">5001</span>,<span class="fl">250.</span>)[i]<span class="sc">:+.0f}</span><span class="ss"> Hz'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="result" class="level2">
+<h2 class="anchored" data-anchor-id="result">Result</h2>
+<div class="gallery-result">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Figure/figure_gps_acquisition.png" class="img-fluid figure-img"></p>
+<figcaption>GPS acquisition. (a) 200 µs of the received baseband signal — three satellites are present at −20 dB each, and the trace is indistinguishable from pure noise. (b) The acquisition surface for PRN 7: correlating against every code phase (1023 chips) and Doppler bin (±5 kHz) concentrates the signal’s energy into one cell, at code phase 350.25 chips and Doppler +2350 Hz — exactly the simulated values. (c) Repeating the search with each of the 32 satellite codes: only PRN 7, 13, and 29 — the three actually present — rise above the detection threshold.</figcaption>
+</figure>
+</div>
+</div>
+<p>Panel (a) is the honest starting point: with three satellites <em>simultaneously present</em>, the record looks like — and for any frequency-domain method, <em>is</em> — pure noise. No band-pass filter can help, because the C/A signal’s 2 MHz band is precisely where the noise is.</p>
+<p>The matched filter wins by brute coherence. Every one of the 40,920 samples contributes its tiny vote, and only the correct (code phase, Doppler) hypothesis lets the votes add in phase: <span class="math inline">10\log_{10}(4092) \approx 36</span> dB of processing gain per millisecond, before non-coherent averaging. The Gold codes’ low cross-correlation keeps the other two satellites — each just as strong as PRN 7 — from contaminating the search, which is what lets all GPS satellites broadcast on the same frequency forever.</p>
+<p>The same principle, scaled up, runs NASA’s <strong>Deep Space Network</strong>: an uplink pseudo-noise ranging code correlated over <em>minutes</em> of integration measures the distance to Voyager 1 — twenty-five billion kilometres away, transmitting 23 watts — to a precision of a few metres. And with the template generalized from a code to a relativity-predicted chirp, it is also how LIGO pulled <a href="../gallery/gravitational_waves.html">GW150914</a> out of its noise floor. Knowing what you are looking for is worth 30 dB.</p>
+<hr>
+<p><em>See <a href="../chap6.html">Chapter 6</a> for the matched filter — the SNR-optimal derivation, processing gain, and whitening for colored noise.</em></p>
 
 
-<p>Each card below links to a self-contained example: real data, working Python code, and the resulting figure. Click through for the full derivation and implementation.</p>
-<div class="gallery-grid">
-<div class="gallery-card">
-<a href="./gallery/aliasing.html"> <img class="gallery-card-img" src="Figure/covers/aliasing.png" alt="Aliasing and the Nyquist Folding Receiver">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Aliasing &amp; the Nyquist Folding Receiver
-</div>
-<p class="gallery-card-desc">
-Undersampling folds every Nyquist zone onto the same baseband; a modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.
-</p>
-<p><span class="gallery-card-tag">Ch.1 · Sampling</span></p>
-</div>
-</a><p><a href="./gallery/aliasing.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/exoplanet.html"> <img class="gallery-card-img" src="Figure/covers/exoplanet.png" alt="Lomb-Scargle periodogram 51 Peg b">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Exoplanet 51 Peg b
-</div>
-<p class="gallery-card-desc">
-Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Lomb–Scargle</span></p>
-</div>
-</a><p><a href="./gallery/exoplanet.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/piano.html"> <img class="gallery-card-img" src="Figure/covers/piano.png" alt="Piano string inharmonicity">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Piano String Inharmonicity
-</div>
-<p class="gallery-card-desc">
-Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Peak Detection</span></p>
-</div>
-</a><p><a href="./gallery/piano.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/missing_fundamental.html"> <img class="gallery-card-img" src="Figure/covers/missing_fundamental.png" alt="The missing fundamental">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-The Missing Fundamental
-</div>
-<p class="gallery-card-desc">
-Delete a tone’s fundamental and the pitch stays put — the waveform period and the cepstral peak both survive. With audio to hear it.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Cepstrum</span></p>
-</div>
-</a><p><a href="./gallery/missing_fundamental.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gearbox.html"> <img class="gallery-card-img" src="Figure/covers/gearbox.png" alt="Cepstrum gear-box fault">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gear-Box Fault Detection
-</div>
-<p class="gallery-card-desc">
-Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.
-</p>
-<p><span class="gallery-card-tag">Ch.2 · Cepstrum</span></p>
-</div>
-</a><p><a href="./gallery/gearbox.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/sunspot.html"> <img class="gallery-card-img" src="Figure/covers/sunspot.png" alt="Sunspot cycle PSD">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Sunspot Cycle
-</div>
-<p class="gallery-card-desc">
-Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Welch PSD</span></p>
-</div>
-</a><p><a href="./gallery/sunspot.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/cmb.html"> <img class="gallery-card-img" src="Figure/covers/cmb.png" alt="Cosmic Microwave Background angular power spectrum">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Cosmic Microwave Background
-</div>
-<p class="gallery-card-desc">
-The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span></p>
-</div>
-</a><p><a href="./gallery/cmb.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/airy_diffraction.html"> <img class="gallery-card-img" src="Figure/covers/airy_diffraction.png" alt="Airy diffraction pattern">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Airy Diffraction — Theory vs.&nbsp;Experiment
-</div>
-<p class="gallery-card-desc">
-The Hankel transform predicts a circular aperture’s diffraction rings; a real red-laser-through-a-pinhole photo confirms them to a few percent.
-</p>
-<p><span class="gallery-card-tag">Ch.3 · Hankel Transform</span></p>
-</div>
-</a><p><a href="./gallery/airy_diffraction.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectral_pde.html"> <img class="gallery-card-img" src="Figure/covers/spectral_pde.gif" alt="Heat conduction solved with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Heat Conduction with the FFT
-</div>
-<p class="gallery-card-desc">
-In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Spectral Method</span></p>
-</div>
-</a><p><a href="./gallery/spectral_pde.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectral_em.html"> <img class="gallery-card-img" src="Figure/covers/spectral_em.gif" alt="Electromagnetic waves solved with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Electromagnetic Waves with the FFT
-</div>
-<p class="gallery-card-desc">
-The same trick for light: the curl becomes i·k×, and each mode oscillates at ω=ck. Spectral solvers (PSTD/PSATD) keep the wavefront on the light-cone where finite differences ripple.
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Spectral Method</span></p>
-</div>
-</a><p><a href="./gallery/spectral_em.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/fft_multiplication.html"> <img class="gallery-card-img" src="Figure/covers/fft_multiplication.png" alt="Fast multiplication with the FFT">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Fast Multiplication with the FFT
-</div>
-<p class="gallery-card-desc">
-Multiplying two numbers is convolving their digits — so the convolution theorem multiplies million-digit integers and polynomials in O(n log n) instead of O(n²).
-</p>
-<p><span class="gallery-card-tag">Ch.4 · Convolution</span></p>
-</div>
-</a><p><a href="./gallery/fft_multiplication.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/solar_wind.html"> <img class="gallery-card-img" src="Figure/covers/solar_wind.png" alt="Solar wind turbulence spectrum">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Solar-Wind Turbulence Spectrum
-</div>
-<p class="gallery-card-desc">
-The Welch method tames six decades of raw periodogram scatter into the turbulent cascade — f⁻¹ injection, f⁻⁵ᐟ³ Kolmogorov, f⁻²·⁸ dissipation.
-</p>
-<p><span class="gallery-card-tag">Ch.5 · Welch PSD</span></p>
-</div>
-</a><p><a href="./gallery/solar_wind.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/light_pollution.html"> <img class="gallery-card-img" src="Figure/covers/light_pollution.png" alt="Filtering light pollution from a starfield">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Filtering Light Pollution
-</div>
-<p class="gallery-card-desc">
-Skyglow is a smooth low-frequency gradient; stars are high-frequency spikes. A 2-D high-pass filter models the city glow and subtracts it, restoring the stars.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Filter Design</span></p>
-</div>
-</a><p><a href="./gallery/light_pollution.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/mains_hum.html"> <img class="gallery-card-img" src="Figure/covers/mains_hum.png" alt="Notch filtering 60 Hz mains hum from an ECG">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Notching Out 60 Hz Mains Hum
-</div>
-<p class="gallery-card-desc">
-Power-line interference is a razor-sharp spectral line. A cascade of high-Q notch filters removes 60 Hz and its harmonics from an ECG, leaving the heartbeat untouched.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Notch Filter</span></p>
-</div>
-</a><p><a href="./gallery/mains_hum.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/hilbert_am.html"> <img class="gallery-card-img" src="Figure/covers/hilbert_am.png" alt="AM demodulation with the Hilbert transform">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AM Demodulation (Hilbert)
-</div>
-<p class="gallery-card-desc">
-The analytic signal turns a modulated carrier into a rotating vector whose length is the envelope — recovering an AM message exactly, in one transform.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Hilbert Transform</span></p>
-</div>
-</a><p><a href="./gallery/hilbert_am.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/phase_distortion.html"> <img class="gallery-card-img" src="Figure/covers/phase_distortion.png" alt="FIR vs IIR phase distortion">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Why Linear Phase Matters
-</div>
-<p class="gallery-card-desc">
-Two filters, the same magnitude response: the linear-phase FIR preserves a pulse’s shape while the causal IIR smears its edges — the story is in the group delay.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · FIR vs IIR</span></p>
-</div>
-</a><p><a href="./gallery/phase_distortion.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/decimation_alias.html"> <img class="gallery-card-img" src="Figure/covers/decimation_alias.png" alt="Anti-alias filtering before decimation">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Downsampling Needs a Filter
-</div>
-<p class="gallery-card-desc">
-Keep every 5th sample and a 700 Hz tone folds to a phantom 100 Hz. Low-pass first — the anti-alias filter — and it vanishes cleanly. You can’t un-fold an alias.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Decimation</span></p>
-</div>
-</a><p><a href="./gallery/decimation_alias.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gps_acquisition.html"> <img class="gallery-card-img" src="Figure/covers/gps_acquisition.png" alt="GPS C/A code acquisition search">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-GPS: Hearing Below the Noise
-</div>
-<p class="gallery-card-desc">
-A satellite signal 20 dB under the noise floor is invisible to any spectrum — but correlating with its Gold code lights up one cell in the code-phase × Doppler plane.
-</p>
-<p><span class="gallery-card-tag">Ch.6 · Matched Filter</span></p>
-</div>
-</a><p><a href="./gallery/gps_acquisition.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/cuckoo.html"> <img class="gallery-card-img" src="Figure/covers/cuckoo.png" alt="Indian Cuckoo spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Indian Cuckoo Song
-</div>
-<p class="gallery-card-desc">
-STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · STFT</span></p>
-</div>
-</a><p><a href="./gallery/cuckoo.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/seismometer.html"> <img class="gallery-card-img" src="Figure/covers/seismometer.png" alt="Earthquake seismogram wavelet decomposition">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Earthquake Seismogram
-</div>
-<p class="gallery-card-desc">
-Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
-</div>
-</a><p><a href="./gallery/seismometer.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/gravitational_waves.html"> <img class="gallery-card-img" src="Figure/covers/gravitational_waves.png" alt="GW150914 wavelet Q-scan">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Gravitational Waves (GW150914)
-</div>
-<p class="gallery-card-desc">
-Morlet-wavelet Q-scan of LIGO’s first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · CWT</span></p>
-</div>
-</a><p><a href="./gallery/gravitational_waves.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/dwt_image.html"> <img class="gallery-card-img" src="Figure/covers/dwt_image.png" alt="DWT image compression">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-DWT Image Compression
-</div>
-<p class="gallery-card-desc">
-Keep only the largest wavelet coefficients and a 256 KB image shrinks to 47, 14, even 4 KB — degrading gracefully, blurring rather than blocking.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · DWT</span></p>
-</div>
-</a><p><a href="./gallery/dwt_image.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/spectrogram_inversion.html"> <img class="gallery-card-img" src="Figure/covers/spectrogram_inversion.png" alt="Recovering speech from a spectrogram">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Recovering Speech from a Spectrogram
-</div>
-<p class="gallery-card-desc">
-A spectrogram discards the phase — yet overlapping frames make it redundant, and Griffin–Lim iterations resynthesise “Acknowledge me!” from magnitude alone — listen to the original next to the recovery.
-</p>
-<p><span class="gallery-card-tag">Ch.7 · Phase Retrieval</span></p>
-</div>
-</a><p><a href="./gallery/spectrogram_inversion.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/coherence.html"> <img class="gallery-card-img" src="Figure/covers/coherence.png" alt="AO-Baltic coherence">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-AO–Baltic Coherence
-</div>
-<p class="gallery-card-desc">
-Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · Coherence</span></p>
-</div>
-</a><p><a href="./gallery/coherence.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/chorus_svd.html"> <img class="gallery-card-img" src="Figure/covers/chorus_svd.png" alt="Chorus wave SVD polarization">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Chorus-Wave Polarization (SVD)
-</div>
-<p class="gallery-card-desc">
-From one spacecraft’s 3-axis magnetometer, an SVD of the spectral matrix recovers the wave vector and polarization of magnetospheric chorus — Maxwell meets spectra.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · SVD</span></p>
-</div>
-</a><p><a href="./gallery/chorus_svd.html"></a></p>
-</div>
-<div class="gallery-card">
-<a href="./gallery/sound_localization.html"> <img class="gallery-card-img" src="Figure/covers/sound_localization.png" alt="Binaural sound localization demo">
-<div class="gallery-card-body">
-<div class="gallery-card-title">
-Hearing Direction (ITD &amp; ILD)
-</div>
-<p class="gallery-card-desc">
-A voice walks left↔︎right in your headphones: inter-channel time and intensity differences, shown as STFT difference spectra — with an A/B test that switches the phase cue off mid-sentence.
-</p>
-<p><span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span></p>
-</div>
-</a><p><a href="./gallery/sound_localization.html"></a></p>
-</div>
-</div>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1387,5 +1208,5 @@ document.addEventListener("dblclick", function (e) {
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
