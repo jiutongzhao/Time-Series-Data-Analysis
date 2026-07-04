@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Jiutong Zhao">
 
 <title>Practical Spectral Analysis with Python – Practical Spectral Analysis</title>
 <style>
@@ -330,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Practical Spectral Analysis with Python</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -428,123 +427,146 @@ document.addEventListener('DOMContentLoaded', function () {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#welcome" id="toc-welcome" class="nav-link active" data-scroll-target="#welcome">Welcome</a></li>
-  <li><a href="#featured-examples" id="toc-featured-examples" class="nav-link" data-scroll-target="#featured-examples">Featured Examples</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content column-body" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Practical Spectral Analysis with Python</h1>
-<p class="subtitle lead">A practical guide to understanding and processing signals</p>
+
+
+
+<style>
+/* landing page only: widen the reading column so the grids can breathe */
+main.content { max-width: 62rem; }
+</style>
+<div class="hero">
+<img src="Figure/figure_icon.png" class="hero-logo" alt="logo">
+<h1 class="hero-title">
+Practical Spectral Analysis<br><span class="hero-accent">with Python</span>
+</h1>
+<p class="hero-tag">
+See it. Hear it. Compute it. A hands-on guide to signals and spectra — every concept demonstrated on real data, every figure backed by runnable code.
+</p>
+<div class="hero-actions">
+<p><a class="hero-btn hero-btn-primary" href="./chap0_preface.html">Start reading →</a> <a class="hero-btn hero-btn-ghost" href="./gallery.html">Browse the gallery</a></p>
 </div>
-
-
-
-<div class="quarto-title-meta column-body">
-
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Jiutong Zhao </p>
-          </div>
-  </div>
-    
-  
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">July 2, 2026</p>
-    </div>
-  </div>
-    
-  </div>
-  
-
-
-</header>
-
-
-<section id="welcome" class="level2">
-<h2 class="anchored" data-anchor-id="welcome">Welcome</h2>
-<p>This document serves as a practical guide to spectral analysis, driven by two key observations:</p>
-<ul>
-<li><p><strong>The Utility of Spectral Analysis</strong>: Signals are omnipresent in daily life—they can be seen, heard, or felt, like a whistling sound. While the variations in a signal might be intuitively perceived, precisely describing them can be challenging. Even when a raw time series hints at waveform and frequency, deeper aspects such as harmonics often remain elusive. Processing such signals is fundamental across diverse fields, including physics, engineering, and data science. Through effective spectral analysis, crucial information—like the chirping signature of a bird’s song—can be readily extracted.</p></li>
-<li><p><strong>The Need for a Practical Handbook</strong>: Traditional spectral analysis textbooks can be daunting, often spanning hundreds of pages and demanding a robust mathematical background. Concepts like “compact support,” while mathematically rigorous, frequently prove irrelevant for practical research and can consume valuable time and patience. Furthermore, these theoretical texts rarely provide practical Python implementations.</p></li>
-</ul>
-<p>This guide aims to bridge that gap by offering a <strong>practical approach</strong> to spectral analysis. It focuses on essential concepts and real-world applications, designed for readers with a basic understanding of Python and signal processing.</p>
-<hr>
+<p class="hero-meta">
+Jiutong Zhao · open source · content CC BY 4.0 · code MIT
+</p>
+</div>
+<div class="stat-strip">
+<div class="stat">
+<span class="stat-num">8</span><span class="stat-label">chapters</span>
+</div>
+<div class="stat">
+<span class="stat-num">25</span><span class="stat-label">worked examples</span>
+</div>
+<div class="stat">
+<span class="stat-num">120+</span><span class="stat-label">figures with code</span>
+</div>
+<div class="stat">
+<span class="stat-num">▶</span><span class="stat-label">audio · video · animation</span>
+</div>
+</div>
+<section id="why-this-guide" class="level2">
+<h2 class="anchored" data-anchor-id="why-this-guide">Why this guide</h2>
+<p>Signals are everywhere — heard in a bird’s song, felt in an earthquake, recorded by a spacecraft. Describing <em>what</em> they do precisely is what spectral analysis is for. Yet the classic textbooks demand hundreds of pages of measure theory before the first periodogram, and rarely show a line of code. This guide inverts that: <strong>essential concepts, real datasets, and working Python, from the first page</strong>.</p>
+<div class="feat-grid">
+<div class="feat-card">
+<div class="feat-icon">
+&lt;/&gt;
+</div>
+<div class="feat-title">
+Code-first
+</div>
+<p class="feat-desc">
+Every figure is reproducible — click any plot to see the exact source that made it, or open the companion notebooks.
+</p>
+</div>
+<div class="feat-card">
+<div class="feat-icon">
+∿
+</div>
+<div class="feat-title">
+Real data
+</div>
+<p class="feat-desc">
+LIGO strain, CMB sky maps, Arase spacecraft waveforms, earthquakes, sunspots, piano strings, bird song — not toy sinusoids.
+</p>
+</div>
+<div class="feat-card">
+<div class="feat-icon">
+♪
+</div>
+<div class="feat-title">
+Ears-on
+</div>
+<p class="feat-desc">
+Hear the missing fundamental, a voice rebuilt from a magnitude-only spectrogram, and a speaker walking through your headphones.
+</p>
+</div>
+</div>
 </section>
-<section id="featured-examples" class="level2">
-<h2 class="anchored" data-anchor-id="featured-examples">Featured Examples</h2>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Indian Cuckoo</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Sunspot Number</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">AO-Baltic Coherence</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Mode Decomposition</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false" href="">Chorus Wave SVD Analysis</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-6" role="tab" aria-controls="tabset-1-6" aria-selected="false" href="">Getting Started</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-7-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-7" role="tab" aria-controls="tabset-1-7" aria-selected="false" href="">About This Project</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p align="center">
-<img src="Figure/figure_indian_cuckoo_with_bird.png" width="100%" alt="Indian Cuckoo spectrogram">
-</p>
-<p>The time series of the voice of Indian Cuckoo and its time-frequency spectrogram.</p>
-<p align="center">
-<audio controls="" style="width: 100%; max-width: 500px;">
-<source src="Data/indian_cuckoo_short.wav" type="audio/wav">
-Your browser does not support the audio element. </audio>
-</p>
+<section id="the-chapters" class="level2">
+<h2 class="anchored" data-anchor-id="the-chapters">The chapters</h2>
+<div class="chap-grid">
+<p><a class="chap-card" href="./chap1.html"><span class="chap-num">1</span><span class="chap-name">Data Initialization</span><span class="chap-desc">sampling, aliasing &amp; the Nyquist theorem, timestamps</span></a> <a class="chap-card" href="./chap2.html"><span class="chap-num">2</span><span class="chap-name">Frequency Domain</span><span class="chap-desc">the DFT, spectral peaks, Lomb–Scargle, the cepstrum</span></a> <a class="chap-card" href="./chap3.html"><span class="chap-num">3</span><span class="chap-name">Power Spectral Density</span><span class="chap-desc">Welch’s method, Wiener–Khinchin, windowing</span></a> <a class="chap-card" href="./chap4.html"><span class="chap-num">4</span><span class="chap-name">More about FFT</span><span class="chap-desc">fast algorithms, convolution, solving PDEs spectrally</span></a> <a class="chap-card" href="./chap5.html"><span class="chap-num">5</span><span class="chap-name">Noise</span><span class="chap-desc">white to red: coloured noise, power laws, significance</span></a> <a class="chap-card" href="./chap6.html"><span class="chap-num">6</span><span class="chap-name">Signal Processing</span><span class="chap-desc">filter design, Hilbert transform, decimation</span></a> <a class="chap-card" href="./chap7.html"><span class="chap-num">7</span><span class="chap-name">Time-Frequency Analysis</span><span class="chap-desc">STFT, wavelets, phase retrieval, DWT denoising</span></a> <a class="chap-card" href="./chap8.html"><span class="chap-num">8</span><span class="chap-name">Multi-Channel Signals</span><span class="chap-desc">coherence, cross-spectral phase, SVD wave analysis</span></a> <a class="chap-card" href="./chap10_appendix.html"><span class="chap-num">A</span><span class="chap-name">Appendix &amp; Reference</span><span class="chap-desc">naming conventions, cheat sheets, further reading</span></a></p>
 </div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<p align="center">
-<img src="Figure/figure_sunspot.png" width="100%" alt="Sunspot number spectrogram">
+</section>
+<section id="from-the-gallery" class="level2">
+<h2 class="anchored" data-anchor-id="from-the-gallery">From the gallery</h2>
+<p>Three of the twenty-five end-to-end examples — real data, working code, and the resulting figure:</p>
+<div class="gallery-grid">
+<div class="gallery-card">
+<a href="./gallery/gravitational_waves.html"> <img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Gravitational Waves (GW150914)
+</div>
+<p class="gallery-card-desc">
+Morlet-wavelet Q-scan of LIGO’s first detection — the black-hole inspiral chirp, with a 3σ significance contour.
 </p>
-<p>The time series of sunspot numbers and its frequency spectrogram, showing periodic patterns in solar activity.</p>
+<p><span class="gallery-card-tag">Ch.7 · CWT</span></p>
 </div>
-<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
-<p align="center">
-<img src="Figure/figure_ao_baltic_truncated.png" width="100%" alt="AO-Baltic coherence analysis">
+</a><p><a href="./gallery/gravitational_waves.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/cmb.html"> <img class="gallery-card-img" src="Figure/figure_cmb_map.png" alt="Cosmic Microwave Background">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Cosmic Microwave Background
+</div>
+<p class="gallery-card-desc">
+The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.
 </p>
-<p>Analysis of the Arctic Oscillation and Baltic index coherence in climate data.</p>
+<p><span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span></p>
 </div>
-<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
-<p align="center">
-<img src="Figure/figure_seismic_waves.png" width="100%" alt="Seismic wave mode decomposition">
+</a><p><a href="./gallery/cmb.html"></a></p>
+</div>
+<div class="gallery-card">
+<a href="./gallery/sound_localization.html"> <img class="gallery-card-img" src="Figure/figure_binaural_localization.png" alt="Binaural sound localization">
+<div class="gallery-card-body">
+<div class="gallery-card-title">
+Hearing Direction (ITD &amp; ILD)
+</div>
+<p class="gallery-card-desc">
+A voice walks left↔︎right in your headphones while STFT difference spectra show the time and intensity cues your brain is using.
 </p>
-<p>Decomposition of seismic wave data into different modes of oscillation.</p>
+<p><span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span></p>
 </div>
-<div id="tabset-1-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-5-tab">
-<p align="center">
-<img src="Figure/figure_svd_erg.png" width="100%" alt="Chorus wave SVD analysis">
+</a><p><a href="./gallery/sound_localization.html"></a></p>
+</div>
+</div>
+<p class="gallery-more">
+<a href="./gallery.html">Browse all 25 examples →</a>
 </p>
-<p>Singular Value Decomposition analysis of chorus wave data from magnetospheric observations.</p>
-<p>:::</p>
-<hr>
-</div>
-<div id="tabset-1-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-6-tab">
-<p>Ready to dive in? Start with the <a href="docs/chap0_preface.qmd">Preface</a> to understand the fundamentals of spectral analysis.</p>
-<p>The guide is organized into several sections:</p>
-<ul>
-<li><strong>Getting Started</strong>: Introduction and foundational concepts</li>
-<li><strong>Core Concepts</strong>: Basic principles of spectral analysis</li>
-<li><strong>Advanced Topics</strong>: More sophisticated signal processing techniques</li>
-<li><strong>Reference</strong>: Appendices and additional resources</li>
-</ul>
-<hr>
-</div>
-<div id="tabset-1-7" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-7-tab">
-<p>This is an interactive, practical guide that combines theoretical concepts with real-world Python implementations. All code examples are executable and designed to work with standard Python libraries.</p>
-<p><strong>Last updated</strong>: <code>r format(Sys.Date(), '%Y-%m-%d')</code></p>
+</section>
+<section id="how-to-read-this-book" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-read-this-book">How to read this book</h2>
+<p>Each chapter pairs prose and mathematics with executable Python. Figures are interactive — <strong>click any figure to view the code that generated it</strong>. Examples that make sound come with the audio embedded, so you can verify claims with your own ears. If you want to run things yourself, the companion Jupyter notebooks contain every figure-generating cell, using only standard libraries: <code>numpy</code>, <code>scipy</code>, <code>matplotlib</code>, <code>pywavelets</code>, and friends.</p>
+<p>New here? Begin with the <a href="./chap0_preface.html">Preface</a> for the roadmap, or jump straight into <a href="./chap1.html">Chapter 1</a> — the sampling theorem is where every measured signal begins.</p>
 
 
-</div>
-</div>
-</div>
 </section>
 
 </main> <!-- /main -->

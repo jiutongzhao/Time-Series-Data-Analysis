@@ -679,9 +679,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Practical Spectral Analysis with Python",
+    "title": "\nPractical Spectral Analysiswith Python\n",
     "section": "",
-    "text": "This document serves as a practical guide to spectral analysis, driven by two key observations:\n\nThe Utility of Spectral Analysis: Signals are omnipresent in daily life—they can be seen, heard, or felt, like a whistling sound. While the variations in a signal might be intuitively perceived, precisely describing them can be challenging. Even when a raw time series hints at waveform and frequency, deeper aspects such as harmonics often remain elusive. Processing such signals is fundamental across diverse fields, including physics, engineering, and data science. Through effective spectral analysis, crucial information—like the chirping signature of a bird’s song—can be readily extracted.\nThe Need for a Practical Handbook: Traditional spectral analysis textbooks can be daunting, often spanning hundreds of pages and demanding a robust mathematical background. Concepts like “compact support,” while mathematically rigorous, frequently prove irrelevant for practical research and can consume valuable time and patience. Furthermore, these theoretical texts rarely provide practical Python implementations.\n\nThis guide aims to bridge that gap by offering a practical approach to spectral analysis. It focuses on essential concepts and real-world applications, designed for readers with a basic understanding of Python and signal processing."
+    "text": "See it. Hear it. Compute it. A hands-on guide to signals and spectra — every concept demonstrated on real data, every figure backed by runnable code.\n\n\nStart reading → Browse the gallery\n\n\nJiutong Zhao · open source · content CC BY 4.0 · code MIT"
   },
   {
     "objectID": "index.html#welcome",
@@ -1720,5 +1720,33 @@
     "title": "Recovering Speech from a Spectrogram",
     "section": "",
     "text": "Two panels. (a) The given magnitude spectrogram of the 2.4 s shout — the only input; the phase is gone. The dashed lines mark the 200 ms window expanded below. (b) The waveform in that window: the original on top; at iteration 10 the frames have not yet agreed and the reconstruction is still noisy; by iteration 300 a clean periodic voiced waveform has emerged from what began as random phase, visibly matching the original’s structure.\n\n\n\nHear the algorithm converge — “Acknowledge me!”, resynthesised from the same magnitude spectrogram (50 % overlap), differing only in phase:\n\n\n\noriginalthe 2.4 s source\n\n\niteration 300recovered from magnitude alone\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe reconstruction carries the words, the shout, and the crowd — everything — with a residual “phasiness” that is the audible price of working at half redundancy: rerun the same code at 75 % overlap and it largely disappears. (Audio: a 2.4 s quotation from a WWE broadcast, used here for demonstration.)\nThree honest notes. The recovered waveform is not sample-identical to the original — a global sign and small per-band phase rotations remain unconstrained, as a close look at panel (b) shows; what is recovered is the sound. Convergence is slow (1/k-ish), and modern text-to-speech long ago replaced Griffin–Lim with neural vocoders — but every one of them still learns to solve exactly this problem: spectrogram in, phase out. And the redundancy bookkeeping is worth stating plainly: at 50 % overlap the magnitude STFT holds ~2 numbers per signal sample, at 75 % ~4, at 0 % ~1 — and phase retrieval works precisely when that count exceeds one.\n\nSee Chapter 7 for the STFT, windows and overlap, and the missing fundamental example for another case where redundancy in a spectrum carries more than it seems."
+  },
+  {
+    "objectID": "index.html#why-this-guide",
+    "href": "index.html#why-this-guide",
+    "title": "\nPractical Spectral Analysiswith Python\n",
+    "section": "Why this guide",
+    "text": "Why this guide\nSignals are everywhere — heard in a bird’s song, felt in an earthquake, recorded by a spacecraft. Describing what they do precisely is what spectral analysis is for. Yet the classic textbooks demand hundreds of pages of measure theory before the first periodogram, and rarely show a line of code. This guide inverts that: essential concepts, real datasets, and working Python, from the first page.\n\n\n\n&lt;/&gt;\n\n\nCode-first\n\n\nEvery figure is reproducible — click any plot to see the exact source that made it, or open the companion notebooks.\n\n\n\n\n∿\n\n\nReal data\n\n\nLIGO strain, CMB sky maps, Arase spacecraft waveforms, earthquakes, sunspots, piano strings, bird song — not toy sinusoids.\n\n\n\n\n♪\n\n\nEars-on\n\n\nHear the missing fundamental, a voice rebuilt from a magnitude-only spectrogram, and a speaker walking through your headphones."
+  },
+  {
+    "objectID": "index.html#the-chapters",
+    "href": "index.html#the-chapters",
+    "title": "\nPractical Spectral Analysiswith Python\n",
+    "section": "The chapters",
+    "text": "The chapters\n\n1Data Initializationsampling, aliasing & the Nyquist theorem, timestamps 2Frequency Domainthe DFT, spectral peaks, Lomb–Scargle, the cepstrum 3Power Spectral DensityWelch’s method, Wiener–Khinchin, windowing 4More about FFTfast algorithms, convolution, solving PDEs spectrally 5Noisewhite to red: coloured noise, power laws, significance 6Signal Processingfilter design, Hilbert transform, decimation 7Time-Frequency AnalysisSTFT, wavelets, phase retrieval, DWT denoising 8Multi-Channel Signalscoherence, cross-spectral phase, SVD wave analysis AAppendix & Referencenaming conventions, cheat sheets, further reading"
+  },
+  {
+    "objectID": "index.html#from-the-gallery",
+    "href": "index.html#from-the-gallery",
+    "title": "\nPractical Spectral Analysiswith Python\n",
+    "section": "From the gallery",
+    "text": "From the gallery\nThree of the twenty-five end-to-end examples — real data, working code, and the resulting figure:\n\n\n \n\n\nGravitational Waves (GW150914)\n\n\nMorlet-wavelet Q-scan of LIGO’s first detection — the black-hole inspiral chirp, with a 3σ significance contour.\n\nCh.7 · CWT\n\n\n\n\n \n\n\nCosmic Microwave Background\n\n\nThe Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.\n\nCh.3 · Angular Power Spectrum\n\n\n\n\n \n\n\nHearing Direction (ITD & ILD)\n\n\nA voice walks left↔︎right in your headphones while STFT difference spectra show the time and intensity cues your brain is using.\n\nCh.8 · Cross-Spectral Phase\n\n\n\n\n\nBrowse all 25 examples →"
+  },
+  {
+    "objectID": "index.html#how-to-read-this-book",
+    "href": "index.html#how-to-read-this-book",
+    "title": "\nPractical Spectral Analysiswith Python\n",
+    "section": "How to read this book",
+    "text": "How to read this book\nEach chapter pairs prose and mathematics with executable Python. Figures are interactive — click any figure to view the code that generated it. Examples that make sound come with the audio embedded, so you can verify claims with your own ears. If you want to run things yourself, the companion Jupyter notebooks contain every figure-generating cell, using only standard libraries: numpy, scipy, matplotlib, pywavelets, and friends.\nNew here? Begin with the Preface for the roadmap, or jump straight into Chapter 1 — the sampling theorem is where every measured signal begins."
   }
 ]
