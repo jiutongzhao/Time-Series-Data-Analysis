@@ -547,7 +547,16 @@ f_\text{alias} = \left| \left( f_0 + \tfrac{f_s}{2} \right) \bmod f_s - \tfrac{f
 </figure>
 </div>
 </div>
-<p>But the deeper problem is <strong>ambiguity</strong>: a baseband tone at 200 Hz could equally have come from 1.2 kHz, 2.2 kHz, 3.2 kHz … — any <strong>Nyquist zone</strong> <span class="math inline">n</span> folds to the same place. Undersample a wide band and you cannot tell where a signal really was. Usually we forbid this with an anti-aliasing filter. The <strong>Nyquist Folding Receiver (NYFR)</strong> does the opposite — it <em>embraces</em> the folding and adds one trick to undo the ambiguity.</p>
+<p>But the deeper problem is <strong>ambiguity</strong> — any <strong>Nyquist zone</strong> folds to the same place. Sample at 20 Hz, and a 3 Hz tone and a 17 Hz tone produce <em>literally identical</em> samples; so do 6 Hz and 26 Hz:</p>
+<div class="gallery-result">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Figure/figure_aliasing_folding.png" class="img-fluid figure-img"></p>
+<figcaption>Four different tones — 3, 17, 6, and 26 Hz — sampled at 20 Hz. Each column yields exactly the same red sample sequence: from the samples alone, the zones are indistinguishable.</figcaption>
+</figure>
+</div>
+</div>
+<p>Undersample a wide band and you cannot tell where a signal really was. Usually we forbid this with an anti-aliasing filter. The <strong>Nyquist Folding Receiver (NYFR)</strong> does the opposite — it <em>embraces</em> the folding and adds one trick to undo the ambiguity.</p>
 </section>
 <section id="key-idea-tag-each-zone-with-a-modulated-clock" class="level2">
 <h2 class="anchored" data-anchor-id="key-idea-tag-each-zone-with-a-modulated-clock">Key idea — tag each zone with a modulated clock</h2>

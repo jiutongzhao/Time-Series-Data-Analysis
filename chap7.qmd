@@ -191,7 +191,7 @@ _, x_rec = sig.istft(X, fs, nperseg=nper, noverlap=nov)    # recovered speech
 
 Listen — both clips share the *same* magnitude spectrogram and differ only in phase:
 
-<table style="width:100%; border:none; text-align:center;">
+<table class="mf-audio" style="width:100%; border:none; text-align:center;">
 <tr>
   <td style="border:none;"><b>original</b></td>
   <td style="border:none;"><b>iteration 300</b><br><small>recovered from magnitude alone</small></td>
