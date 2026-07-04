@@ -51,6 +51,49 @@ Signals are everywhere — heard in a bird's song, felt in an earthquake, record
 </div>
 </div>
 
+## From the gallery
+
+Three of the twenty-five end-to-end examples — real data, working code, and the resulting figure:
+
+::: {.gallery-grid}
+
+<div class="gallery-card">
+<a href="gallery/gravitational_waves.qmd">
+<img class="gallery-card-img" src="Figure/covers/gravitational_waves.png" alt="GW150914 wavelet Q-scan">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Gravitational Waves (GW150914)</div>
+<p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with a 3σ significance contour.</p>
+<span class="gallery-card-tag">Ch.7 · CWT</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/cmb.qmd">
+<img class="gallery-card-img" src="Figure/covers/cmb.png" alt="Cosmic Microwave Background">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Cosmic Microwave Background</div>
+<p class="gallery-card-desc">The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.</p>
+<span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span>
+</div>
+</a>
+</div>
+
+<div class="gallery-card">
+<a href="gallery/sound_localization.qmd">
+<img class="gallery-card-img" src="Figure/covers/sound_localization.png" alt="Binaural sound localization">
+<div class="gallery-card-body">
+<div class="gallery-card-title">Hearing Direction (ITD &amp; ILD)</div>
+<p class="gallery-card-desc">A voice walks left↔right in your headphones while STFT difference spectra show the time and intensity cues your brain is using.</p>
+<span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span>
+</div>
+</a>
+</div>
+
+:::
+
+<p class="gallery-more"><a href="gallery.qmd">Browse all 25 examples →</a></p>
+
 ## The chapters
 
 <div class="chap-grid">
@@ -64,49 +107,6 @@ Signals are everywhere — heard in a bird's song, felt in an earthquake, record
 <a class="chap-card" href="chap8.qmd"><span class="chap-num">8</span><span class="chap-name">Multi-Channel Signals</span><span class="chap-desc">coherence, cross-spectral phase, SVD wave analysis</span></a>
 <a class="chap-card" href="chap10_appendix.qmd"><span class="chap-num">A</span><span class="chap-name">Appendix &amp; Reference</span><span class="chap-desc">naming conventions, cheat sheets, further reading</span></a>
 </div>
-
-## From the gallery
-
-Three of the twenty-five end-to-end examples — real data, working code, and the resulting figure:
-
-::: {.gallery-grid}
-
-<div class="gallery-card">
-<a href="gallery/gravitational_waves.qmd">
-<img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Gravitational Waves (GW150914)</div>
-<p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with a 3σ significance contour.</p>
-<span class="gallery-card-tag">Ch.7 · CWT</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/cmb.qmd">
-<img class="gallery-card-img" src="Figure/figure_cmb_map.png" alt="Cosmic Microwave Background">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Cosmic Microwave Background</div>
-<p class="gallery-card-desc">The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.</p>
-<span class="gallery-card-tag">Ch.3 · Angular Power Spectrum</span>
-</div>
-</a>
-</div>
-
-<div class="gallery-card">
-<a href="gallery/sound_localization.qmd">
-<img class="gallery-card-img" src="Figure/figure_binaural_localization.png" alt="Binaural sound localization">
-<div class="gallery-card-body">
-<div class="gallery-card-title">Hearing Direction (ITD &amp; ILD)</div>
-<p class="gallery-card-desc">A voice walks left↔right in your headphones while STFT difference spectra show the time and intensity cues your brain is using.</p>
-<span class="gallery-card-tag">Ch.8 · Cross-Spectral Phase</span>
-</div>
-</a>
-</div>
-
-:::
-
-<p class="gallery-more"><a href="gallery.qmd">Browse all 25 examples →</a></p>
 
 ## How to read this book
 

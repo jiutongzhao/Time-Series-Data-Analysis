@@ -13,7 +13,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/aliasing.qmd">
-<img class="gallery-card-img" src="Figure/figure_aliasing.png" alt="Aliasing and the Nyquist Folding Receiver">
+<img class="gallery-card-img" src="Figure/covers/aliasing.png" alt="Aliasing and the Nyquist Folding Receiver">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Aliasing &amp; the Nyquist Folding Receiver</div>
 <p class="gallery-card-desc">Undersampling folds every Nyquist zone onto the same baseband; a modulated sample clock tags each zone by its FM depth, turning aliasing into a wideband receiver.</p>
@@ -24,7 +24,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/exoplanet.qmd">
-<img class="gallery-card-img" src="Figure/figure_lombscargle_51Pegasib.png" alt="Lomb-Scargle periodogram 51 Peg b">
+<img class="gallery-card-img" src="Figure/covers/exoplanet.png" alt="Lomb-Scargle periodogram 51 Peg b">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Exoplanet 51 Peg b</div>
 <p class="gallery-card-desc">Lomb–Scargle periodogram on unevenly sampled radial-velocity data, recovering the 4.23-day orbital period.</p>
@@ -35,7 +35,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/piano.qmd">
-<img class="gallery-card-img" src="Figure/figure_piano_harmonic.png" alt="Piano string inharmonicity">
+<img class="gallery-card-img" src="Figure/covers/piano.png" alt="Piano string inharmonicity">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Piano String Inharmonicity</div>
 <p class="gallery-card-desc">Spectral peak detection reveals how bending stiffness stretches piano overtones sharp — and why tuners apply octave stretch.</p>
@@ -46,7 +46,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/missing_fundamental.qmd">
-<img class="gallery-card-img" src="Figure/figure_missing_fundamental.png" alt="The missing fundamental">
+<img class="gallery-card-img" src="Figure/covers/missing_fundamental.png" alt="The missing fundamental">
 <div class="gallery-card-body">
 <div class="gallery-card-title">The Missing Fundamental</div>
 <p class="gallery-card-desc">Delete a tone's fundamental and the pitch stays put — the waveform period and the cepstral peak both survive. With audio to hear it.</p>
@@ -57,7 +57,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/gearbox.qmd">
-<img class="gallery-card-img" src="Figure/figure_cepstrum.png" alt="Cepstrum gear-box fault">
+<img class="gallery-card-img" src="Figure/covers/gearbox.png" alt="Cepstrum gear-box fault">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Gear-Box Fault Detection</div>
 <p class="gallery-card-desc">Cepstrum analysis separates the gear-mesh harmonic family from background noise, localising a bearing defect.</p>
@@ -68,7 +68,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/sunspot.qmd">
-<img class="gallery-card-img" src="Figure/figure_sunspot.png" alt="Sunspot cycle PSD">
+<img class="gallery-card-img" src="Figure/covers/sunspot.png" alt="Sunspot cycle PSD">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Sunspot Cycle</div>
 <p class="gallery-card-desc">Welch PSD of 300 years of sunspot numbers — pinpointing the 11-year solar cycle and its harmonics.</p>
@@ -79,7 +79,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/cmb.qmd">
-<img class="gallery-card-img" src="Figure/figure_cmb_map.png" alt="Cosmic Microwave Background angular power spectrum">
+<img class="gallery-card-img" src="Figure/covers/cmb.png" alt="Cosmic Microwave Background angular power spectrum">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Cosmic Microwave Background</div>
 <p class="gallery-card-desc">The Wiener–Khinchin theorem on the sphere: recovering the CMB acoustic-peak power spectrum from the oldest light in the Universe.</p>
@@ -90,7 +90,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/airy_diffraction.qmd">
-<img class="gallery-card-img" src="Figure/figure_airy_combined.png" alt="Airy diffraction pattern">
+<img class="gallery-card-img" src="Figure/covers/airy_diffraction.png" alt="Airy diffraction pattern">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Airy Diffraction — Theory vs. Experiment</div>
 <p class="gallery-card-desc">The Hankel transform predicts a circular aperture's diffraction rings; a real red-laser-through-a-pinhole photo confirms them to a few percent.</p>
@@ -123,7 +123,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/fft_multiplication.qmd">
-<img class="gallery-card-img" src="Figure/figure_fft_multiplication.png" alt="Fast multiplication with the FFT">
+<img class="gallery-card-img" src="Figure/covers/fft_multiplication.png" alt="Fast multiplication with the FFT">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Fast Multiplication with the FFT</div>
 <p class="gallery-card-desc">Multiplying two numbers is convolving their digits — so the convolution theorem multiplies million-digit integers and polynomials in O(n log n) instead of O(n²).</p>
@@ -134,7 +134,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/solar_wind.qmd">
-<img class="gallery-card-img" src="Figure/figure_solar_wind_turbulence.png" alt="Solar wind turbulence spectrum">
+<img class="gallery-card-img" src="Figure/covers/solar_wind.png" alt="Solar wind turbulence spectrum">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Solar-Wind Turbulence Spectrum</div>
 <p class="gallery-card-desc">The Welch method tames six decades of raw periodogram scatter into the turbulent cascade — f⁻¹ injection, f⁻⁵ᐟ³ Kolmogorov, f⁻²·⁸ dissipation.</p>
@@ -145,7 +145,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/light_pollution.qmd">
-<img class="gallery-card-img" src="Figure/figure_light_pollution.png" alt="Filtering light pollution from a starfield">
+<img class="gallery-card-img" src="Figure/covers/light_pollution.png" alt="Filtering light pollution from a starfield">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Filtering Light Pollution</div>
 <p class="gallery-card-desc">Skyglow is a smooth low-frequency gradient; stars are high-frequency spikes. A 2-D high-pass filter models the city glow and subtracts it, restoring the stars.</p>
@@ -156,7 +156,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/mains_hum.qmd">
-<img class="gallery-card-img" src="Figure/figure_mains_hum.png" alt="Notch filtering 60 Hz mains hum from an ECG">
+<img class="gallery-card-img" src="Figure/covers/mains_hum.png" alt="Notch filtering 60 Hz mains hum from an ECG">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Notching Out 60 Hz Mains Hum</div>
 <p class="gallery-card-desc">Power-line interference is a razor-sharp spectral line. A cascade of high-Q notch filters removes 60 Hz and its harmonics from an ECG, leaving the heartbeat untouched.</p>
@@ -167,7 +167,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/hilbert_am.qmd">
-<img class="gallery-card-img" src="Figure/figure_hilbert_am.png" alt="AM demodulation with the Hilbert transform">
+<img class="gallery-card-img" src="Figure/covers/hilbert_am.png" alt="AM demodulation with the Hilbert transform">
 <div class="gallery-card-body">
 <div class="gallery-card-title">AM Demodulation (Hilbert)</div>
 <p class="gallery-card-desc">The analytic signal turns a modulated carrier into a rotating vector whose length is the envelope — recovering an AM message exactly, in one transform.</p>
@@ -178,7 +178,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/phase_distortion.qmd">
-<img class="gallery-card-img" src="Figure/figure_phase_distortion.png" alt="FIR vs IIR phase distortion">
+<img class="gallery-card-img" src="Figure/covers/phase_distortion.png" alt="FIR vs IIR phase distortion">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Why Linear Phase Matters</div>
 <p class="gallery-card-desc">Two filters, the same magnitude response: the linear-phase FIR preserves a pulse's shape while the causal IIR smears its edges — the story is in the group delay.</p>
@@ -189,7 +189,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/decimation_alias.qmd">
-<img class="gallery-card-img" src="Figure/figure_decimation_alias.png" alt="Anti-alias filtering before decimation">
+<img class="gallery-card-img" src="Figure/covers/decimation_alias.png" alt="Anti-alias filtering before decimation">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Downsampling Needs a Filter</div>
 <p class="gallery-card-desc">Keep every 5th sample and a 700 Hz tone folds to a phantom 100 Hz. Low-pass first — the anti-alias filter — and it vanishes cleanly. You can't un-fold an alias.</p>
@@ -200,7 +200,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/cuckoo.qmd">
-<img class="gallery-card-img" src="Figure/figure_indian_cuckoo_with_bird.png" alt="Indian Cuckoo spectrogram">
+<img class="gallery-card-img" src="Figure/covers/cuckoo.png" alt="Indian Cuckoo spectrogram">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Indian Cuckoo Song</div>
 <p class="gallery-card-desc">STFT spectrogram of a bird call — revealing four-note phrase structure invisible in the raw waveform.</p>
@@ -211,7 +211,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/seismometer.qmd">
-<img class="gallery-card-img" src="Figure/figure_seismic_waves.png" alt="Earthquake seismogram wavelet decomposition">
+<img class="gallery-card-img" src="Figure/covers/seismometer.png" alt="Earthquake seismogram wavelet decomposition">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Earthquake Seismogram</div>
 <p class="gallery-card-desc">Discrete wavelet decomposition of the 2008 Wenchuan earthquake — sorting P, S, and surface waves into octave frequency bands.</p>
@@ -222,7 +222,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/gravitational_waves.qmd">
-<img class="gallery-card-img" src="Figure/figure_ligo_gw150914.png" alt="GW150914 wavelet Q-scan">
+<img class="gallery-card-img" src="Figure/covers/gravitational_waves.png" alt="GW150914 wavelet Q-scan">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Gravitational Waves (GW150914)</div>
 <p class="gallery-card-desc">Morlet-wavelet Q-scan of LIGO's first detection — the black-hole inspiral chirp, with an AR(1) 99.7% (3σ) significance contour.</p>
@@ -233,7 +233,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/dwt_image.qmd">
-<img class="gallery-card-img" src="Figure/figure_dwt_image_compression.png" alt="DWT image compression">
+<img class="gallery-card-img" src="Figure/covers/dwt_image.png" alt="DWT image compression">
 <div class="gallery-card-body">
 <div class="gallery-card-title">DWT Image Compression</div>
 <p class="gallery-card-desc">Keep only the largest wavelet coefficients and a 256 KB image shrinks to 47, 14, even 4 KB — degrading gracefully, blurring rather than blocking.</p>
@@ -244,10 +244,10 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/spectrogram_inversion.qmd">
-<img class="gallery-card-img" src="Figure/figure_griffin_lim.png" alt="Recovering speech from a spectrogram">
+<img class="gallery-card-img" src="Figure/covers/spectrogram_inversion.png" alt="Recovering speech from a spectrogram">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Recovering Speech from a Spectrogram</div>
-<p class="gallery-card-desc">A spectrogram discards the phase — yet overlapping frames make it redundant, and Griffin–Lim iterations resynthesise "Acknowledge me!" from magnitude alone. Audio at 1, 5, and 200 iterations.</p>
+<p class="gallery-card-desc">A spectrogram discards the phase — yet overlapping frames make it redundant, and Griffin–Lim iterations resynthesise "Acknowledge me!" from magnitude alone — listen to the original next to the recovery.</p>
 <span class="gallery-card-tag">Ch.7 · Phase Retrieval</span>
 </div>
 </a>
@@ -255,7 +255,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/coherence.qmd">
-<img class="gallery-card-img" src="Figure/figure_ao_baltic_truncated.png" alt="AO-Baltic coherence">
+<img class="gallery-card-img" src="Figure/covers/coherence.png" alt="AO-Baltic coherence">
 <div class="gallery-card-body">
 <div class="gallery-card-title">AO–Baltic Coherence</div>
 <p class="gallery-card-desc">Cross-spectral coherence between the Arctic Oscillation and Baltic Sea ice extent, identifying coupled climate modes.</p>
@@ -266,7 +266,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/chorus_svd.qmd">
-<img class="gallery-card-img" src="Figure/figure_svd_erg.png" alt="Chorus wave SVD polarization">
+<img class="gallery-card-img" src="Figure/covers/chorus_svd.png" alt="Chorus wave SVD polarization">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Chorus-Wave Polarization (SVD)</div>
 <p class="gallery-card-desc">From one spacecraft's 3-axis magnetometer, an SVD of the spectral matrix recovers the wave vector and polarization of magnetospheric chorus — Maxwell meets spectra.</p>
@@ -277,7 +277,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/sound_localization.qmd">
-<img class="gallery-card-img" src="Figure/figure_binaural_localization.png" alt="Binaural sound localization demo">
+<img class="gallery-card-img" src="Figure/covers/sound_localization.png" alt="Binaural sound localization demo">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Hearing Direction (ITD &amp; ILD)</div>
 <p class="gallery-card-desc">A voice walks left↔right in your headphones: inter-channel time and intensity differences, shown as STFT difference spectra — with an A/B test that switches the phase cue off mid-sentence.</p>
