@@ -101,7 +101,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/spectral_pde.qmd">
-<img class="gallery-card-img" src="Figure/heat_diffusion.gif" alt="Heat conduction solved with the FFT">
+<img class="gallery-card-img" src="Figure/covers/spectral_pde.gif" alt="Heat conduction solved with the FFT">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Heat Conduction with the FFT</div>
 <p class="gallery-card-desc">In Fourier space the Laplacian becomes −k², so the heat equation turns into one exponentially-decaying ODE per mode — solved exactly, with no time-stepping.</p>
@@ -112,7 +112,7 @@ Each card below links to a self-contained example: real data, working Python cod
 
 <div class="gallery-card">
 <a href="gallery/spectral_em.qmd">
-<img class="gallery-card-img" src="Figure/unit_pulse.gif" alt="Electromagnetic waves solved with the FFT">
+<img class="gallery-card-img" src="Figure/covers/spectral_em.gif" alt="Electromagnetic waves solved with the FFT">
 <div class="gallery-card-body">
 <div class="gallery-card-title">Electromagnetic Waves with the FFT</div>
 <p class="gallery-card-desc">The same trick for light: the curl becomes i·k×, and each mode oscillates at ω=ck. Spectral solvers (PSTD/PSATD) keep the wavefront on the light-cone where finite differences ripple.</p>
