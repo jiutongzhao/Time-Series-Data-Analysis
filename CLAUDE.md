@@ -44,7 +44,7 @@ The `.qmd` files pull code snippets from the notebooks into collapsible tabs (`#
 - `docs/Figure/` — all PNG/SVG figures referenced by `.qmd` files (canonical location, ~120 files)
 - `docs/Data/` — audio/video/data files used in chapter content
 - `Figure/` — older root-level copies; prefer `docs/Figure/` for new content
-- `_includes/` — HTML snippets injected into every page (`mermaid-init.html`, `figure-modal-scripts.html`)
+- `_includes/` — HTML snippets injected into every page (`mermaid-init.html`, `figure-lightbox.html` — click-to-zoom lightbox with a lazy-loaded "view code" panel driven by `js/figure_code_map.js`)
 - `styles.css` — custom CSS (loaded via `_quarto.yml`)
 
 All asset paths in `.qmd` files use `docs/Figure/` and `docs/Data/` (relative to project root), not `../Figure/`.

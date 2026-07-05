@@ -395,154 +395,104 @@ li { margin-bottom: 0.35em; }
   h1, h2, h3 { page-break-after: avoid; }
 }
 
-/* ---- 16. Click-to-show-code modal ----------------------------------- */
+/* ---- 16. Figure lightbox (click to zoom) ----------------------------- */
 
-img.fig-clickable {
-  cursor: zoom-in;
-  position: relative;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, outline 0.18s ease;
-  outline: 1px dashed transparent;
-  outline-offset: 4px;
-}
-img.fig-clickable:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(31, 95, 166, 0.22);
-  outline-color: var(--accent);
-}
-img.fig-clickable-empty {
-  /* slightly subdued affordance for figures without code source */
-  cursor: help;
-}
-img.fig-clickable-empty:hover {
-  outline-color: var(--muted);
-  box-shadow: 0 4px 14px rgba(90, 100, 112, 0.18);
-}
+main img.lb-zoomable { cursor: zoom-in; }
 
-/* a "</>" badge floats over each clickable figure to make the affordance
-   visible without hover (works because Quarto wraps figures in <figure>
-   or <p>); we add it via ::after on the parent. */
-.quarto-figure:has(> img.fig-clickable),
-p:has(> img.fig-clickable),
-figure:has(> img.fig-clickable),
-.fig-img-wrapper:has(> img.fig-clickable) {
-  position: relative;
-}
-.quarto-figure:has(> img.fig-clickable)::after,
-p:has(> img.fig-clickable)::after,
-figure:has(> img.fig-clickable)::after {
-  content: "</>  view code";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #fff;
-  background: var(--accent);
-  padding: 0.18em 0.55em;
-  border-radius: 4px;
-  opacity: 0.85;
-  pointer-events: none;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-}
-.quarto-figure:has(> img.fig-clickable-empty)::after,
-p:has(> img.fig-clickable-empty)::after,
-figure:has(> img.fig-clickable-empty)::after {
-  content: "</>  no source";
-  background: var(--muted);
-  opacity: 0.7;
-}
-
-.fig-code-modal {
+.lb-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-sans);
-}
-.fig-code-modal.hidden { display: none; }
-
-.fig-code-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 22, 35, 0.55);
-  backdrop-filter: blur(2px);
-}
-
-.fig-code-panel {
-  position: relative;
-  width: min(900px, 92vw);
-  max-height: 88vh;
+  background: rgba(10, 14, 22, 0.93);
   display: flex;
   flex-direction: column;
-  background: var(--bs-body-bg, #fff);
-  color: var(--bs-body-color, #222);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.35);
-  overflow: hidden;
+  touch-action: none;
 }
+.lb-overlay.hidden { display: none; }
 
-.fig-code-header {
+.lb-toolbar {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.7em 1em;
-  border-bottom: 1px solid var(--rule);
-  background: var(--bg-soft);
+  gap: 0.8em;
+  padding: 0.55em 1em;
+  font-family: var(--font-sans);
+  background: rgba(0, 0, 0, 0.35);
 }
-.fig-code-meta { display: flex; flex-direction: column; gap: 0.1em; }
-.fig-code-figname {
-  font-weight: 600;
-  font-size: 0.95rem;
-  font-family: var(--font-mono);
-  color: var(--accent-strong);
+.lb-caption {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: #b8c2d0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.fig-code-source {
-  font-size: 0.78rem;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-}
-
-.fig-code-actions { display: flex; gap: 0.5em; }
-.fig-code-actions button {
+.lb-hint { font-size: 0.75rem; color: #7e8aa0; }
+.lb-btn {
   font-family: var(--font-sans);
   font-size: 0.85rem;
-  border: 1px solid var(--rule);
-  background: transparent;
-  border-radius: 5px;
-  padding: 0.25em 0.7em;
-  color: var(--bs-body-color, inherit);
+  font-weight: 600;
+  color: #dfe5ee;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  padding: 0.3em 0.8em;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
 }
-.fig-code-actions button:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-}
-.fig-code-actions .fig-code-close {
-  font-size: 1.4rem;
-  line-height: 1;
-  padding: 0 0.55em;
-  border-color: transparent;
-}
+.lb-btn:hover { background: rgba(255, 255, 255, 0.18); }
+.lb-close { font-size: 1.1rem; line-height: 1; padding: 0.25em 0.55em; }
 
-.fig-code-body {
-  margin: 0;
-  padding: 1em 1.2em;
-  overflow: auto;
-  background: var(--bg-soft);
+.lb-stage {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.lb-stage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  max-width: none;               /* undo the theme's responsive-img cap */
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: zoom-in;
+}
+.lb-stage img.lb-dragging { cursor: grabbing; }
+
+.lb-code {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(13, 17, 26, 0.97);
+}
+.lb-code.hidden { display: none; }
+.lb-code-src {
+  padding: 0.55em 1.3em;
   font-family: var(--font-mono);
-  font-size: 0.88rem;
+  font-size: 0.78rem;
+  color: #8fa0b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.lb-code pre {
+  flex: 1;
+  margin: 0;
+  padding: 1em 1.4em;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
   line-height: 1.55;
-  white-space: pre;
+  color: #dce6f2;
+  background: transparent;
   border: none;
   border-radius: 0;
 }
-.fig-code-body code { background: transparent; padding: 0; color: inherit; }
+.lb-code pre code { background: transparent; padding: 0; color: inherit; }
+
+@media (max-width: 700px) {
+  .lb-hint { display: none; }
+}
 
 /* ---- 17. Wide table overflow handling ------------------------------- */
 /*

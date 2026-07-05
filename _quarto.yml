@@ -125,7 +125,8 @@ format:
       - file: _includes/fonts.html
       - file: _includes/navbar-python.html
     include-after-body:
-      file: _includes/mermaid-init.html
+      - file: _includes/mermaid-init.html
+      - file: _includes/figure-lightbox.html
     toc: true
     toc-depth: 3
     toc-location: right
