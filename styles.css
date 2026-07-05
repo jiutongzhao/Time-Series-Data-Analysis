@@ -1,0 +1,859 @@
+/* =========================================================================
+   Practical Spectral Analysis — custom styles on top of `cosmo` / `darkly`.
+   Designed to read like a typeset technical book: serif body for prose,
+   monospace with tabular figures for code, generous line-height, narrow
+   measure for comfort, and quiet tasteful colour.
+   ========================================================================= */
+
+/* ---- 1. Design tokens ------------------------------------------------- */
+
+:root {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, "Menlo", "Consolas", monospace;
+
+  --accent: #1f5fa6;          /* deep ink blue */
+  --accent-soft: #eaf1f9;     /* tint for active rows / callouts */
+  --accent-strong: #133f70;
+  --rule: #e3e6ea;
+  --muted: #5a6470;
+  --bg-soft: #f7f8fa;
+
+  --measure: 72ch;            /* comfortable reading width */
+  --line-height: 1.7;
+}
+
+body.quarto-dark {
+  --accent: #6aa9e6;
+  --accent-soft: #1d2a3d;
+  --accent-strong: #b9d6f4;
+  --rule: #2a2f37;
+  --muted: #9aa3ad;
+  --bg-soft: #1a1d22;
+}
+
+/* ---- 2. Body & headings ---------------------------------------------- */
+
+body {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: var(--line-height);
+  font-feature-settings: "kern", "liga", "calt", "onum";
+}
+
+main {
+  max-width: var(--measure);
+  margin-inline: auto;        /* centre the reading column inside its (wider) grid cell */
+}
+
+main p, main li, main blockquote {
+  hyphens: auto;
+}
+
+h1, h2, h3, h4, h5, h6,
+.navbar, .sidebar, .toc-active, .quarto-title-meta,
+.callout-title, .panel-tabset, .nav-link, .btn, button {
+  font-family: var(--font-sans);
+  font-feature-settings: "kern", "liga", "ss01", "tnum";
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4 {
+  margin-top: 1.6em;
+  margin-bottom: 0.55em;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h1.title, h1 {
+  font-size: 2.1rem;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.45em;
+  margin-top: 0.2em;
+}
+
+h2 {
+  font-size: 1.55rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.35em;
+}
+
+h3 { font-size: 1.25rem; color: var(--accent); }
+h4 { font-size: 1.07rem; color: var(--accent); font-weight: 600; }
+
+/* Lead paragraph just below the title */
+.quarto-title + .quarto-title-meta + p:first-of-type {
+  font-size: 1.15rem;
+  color: var(--muted);
+  font-family: var(--font-sans);
+}
+
+/* ---- 3. Inline & block code ------------------------------------------ */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  font-feature-settings: "calt" 0;
+  background: var(--bg-soft);
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+  color: #b53356;
+}
+body.quarto-dark code { color: #ff8da1; }
+
+pre, .sourceCode {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-soft) !important;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1em 1.1em;
+  line-height: 1.55;
+  overflow-x: auto;
+}
+
+pre code {
+  background: transparent !important;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Quarto code-copy button */
+.code-copy-button {
+  opacity: 0.4;
+  transition: opacity 0.15s ease-in;
+}
+pre:hover .code-copy-button { opacity: 1; }
+
+/* ---- 4. Math display ------------------------------------------------- */
+
+.katex-display {
+  margin: 1.4em 0;
+  padding: 0.6em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ---- 5. Tables ------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+table thead th {
+  background: var(--bg-soft);
+  border-bottom: 2px solid var(--accent);
+  text-align: left;
+  font-weight: 600;
+  color: var(--accent-strong);
+  padding: 0.6em 0.8em;
+}
+
+table tbody td {
+  padding: 0.55em 0.8em;
+  border-bottom: 1px solid var(--rule);
+}
+
+table tbody tr:hover { background: var(--accent-soft); }
+
+/* Utility: keep the first column on a single line (no wrapping) */
+.nowrap-1st td:first-child,
+.nowrap-1st th:first-child { white-space: nowrap; }
+
+/* ---- 6. Links -------------------------------------------------------- */
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s, border-bottom-color 0.15s;
+}
+a:hover {
+  color: var(--accent-strong);
+  border-bottom-color: var(--accent-strong);
+}
+
+/* ---- 7. Figures, blockquotes, lists ---------------------------------- */
+
+figure, p > img {
+  margin: 1.6em auto;
+  text-align: center;
+}
+img { max-width: 100%; height: auto; border-radius: 4px; }
+
+figure figcaption,
+.figure-caption {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+blockquote {
+  border-left: 3px solid var(--accent);
+  background: var(--bg-soft);
+  padding: 0.7em 1.2em;
+  margin: 1.4em 0;
+  color: var(--muted);
+  font-style: normal;
+  border-radius: 0 6px 6px 0;
+  text-align: left;
+}
+blockquote p { margin: 0.4em 0; }
+
+ul, ol { padding-left: 1.5em; }
+li { margin-bottom: 0.35em; }
+
+/* ---- 8. Quarto callouts --------------------------------------------- */
+
+.callout {
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  padding: 0.9em 1.1em;
+  margin: 1.5em 0;
+}
+.callout-title {
+  font-weight: 600;
+  margin-bottom: 0.3em;
+}
+.callout.callout-style-default > .callout-header { background: transparent; }
+.callout-note { border-left-color: #1f5fa6; }
+.callout-tip { border-left-color: #2e7d32; }
+.callout-warning { border-left-color: #c97a00; }
+.callout-caution { border-left-color: #c62828; }
+
+/* ---- 9. Panel tabs --------------------------------------------------- */
+
+.panel-tabset > .nav-tabs {
+  border-bottom: 2px solid var(--rule);
+  margin-bottom: 1em;
+  gap: 0.5em;
+}
+.panel-tabset > .nav-tabs .nav-link {
+  font-family: var(--font-sans);
+  color: var(--muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.55em 1em;
+  font-weight: 500;
+  background: transparent !important;
+  transition: color 0.15s, border-bottom-color 0.15s;
+}
+.panel-tabset > .nav-tabs .nav-link.active {
+  color: var(--accent-strong);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---- 10. Navbar ------------------------------------------------------ */
+
+.navbar {
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-sans);
+  backdrop-filter: blur(8px);
+}
+.navbar-brand,
+.navbar-brand a {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.navbar-brand img.navbar-logo {
+  height: 26px;
+  margin-right: 0.55em;
+}
+
+/* ---- 11. Sidebar ---------------------------------------------------- */
+
+.sidebar-navigation {
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  border-right: 1px solid var(--rule);
+  padding-top: 1.2em;
+}
+
+.sidebar-section,
+.sidebar-item-section {
+  margin-top: 1.1em;
+}
+.sidebar-section .sidebar-section-title,
+.sidebar-item-section > .sidebar-item-text {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0 0 0.35em 0.5em;
+}
+
+.sidebar-item .sidebar-item-text {
+  padding: 0.32em 0.7em;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  color: var(--bs-body-color);
+}
+.sidebar-item .sidebar-item-text:hover {
+  background: var(--bg-soft);
+  color: var(--accent-strong);
+}
+.sidebar-item.active > .sidebar-item-text,
+.sidebar-item .active {
+  color: var(--accent-strong) !important;
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---- 12. TOC (right column) ----------------------------------------- */
+
+#TOC, .quarto-secondary-nav, nav#TOC {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+}
+#TOC > h2, .quarto-secondary-nav .toc-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--muted);
+  border: none;
+  padding: 0;
+}
+#TOC ul a, .quarto-secondary-nav a {
+  color: var(--muted);
+  border-left: 2px solid transparent;
+  padding-left: 0.6em;
+}
+#TOC ul a:hover, .quarto-secondary-nav a:hover {
+  color: var(--accent-strong);
+  border-bottom: none;
+}
+#TOC ul a.active, .quarto-secondary-nav .active {
+  color: var(--accent-strong);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---- 13. Footer ----------------------------------------------------- */
+
+.page-footer, footer {
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-top: 4em;
+  padding-top: 1.4em;
+}
+
+/* ---- 14. Centred layout --------------------------------------------- */
+/* Cap the whole layout grid (sidebar + body + TOC) and centre it, so on wide
+   screens the navigation + content block sits in the middle of the viewport
+   with even margins on both sides (PyData / asdf-astropy style) instead of
+   being anchored to the left. */
+@media (min-width: 1200px) {
+  .quarto-container.page-columns {
+    max-width: 1400px;
+    margin-inline: auto;
+  }
+}
+
+/* ---- 15. Responsive niceties ---------------------------------------- */
+
+@media (max-width: 992px) {
+  body { font-size: 16px; }
+  h1, h1.title { font-size: 1.7rem; }
+  h2 { font-size: 1.35rem; }
+  main { max-width: 100%; padding-inline: 0.75em; }
+}
+
+/* Phones: tighter type/padding, and keep wide content inside the viewport */
+@media (max-width: 576px) {
+  body { font-size: 15px; }
+  h1, h1.title { font-size: 1.4rem; }
+  h2 { font-size: 1.2rem; }
+  main { padding-inline: 0.55em; }
+  main img, .panel-tabset, .cell-output-display img { max-width: 100%; height: auto; }
+  pre, .sourceCode { font-size: 0.8rem; }
+  table { font-size: 0.85rem; }
+}
+
+/* ---- 15. Print ------------------------------------------------------ */
+
+@media print {
+  .navbar, .sidebar, .quarto-secondary-nav,
+  .page-footer, footer, .code-copy-button { display: none !important; }
+  body { font-size: 12pt; }
+  pre, code { font-size: 9.5pt; }
+  a { color: #000; border-bottom: none; }
+  h1, h2, h3 { page-break-after: avoid; }
+}
+
+/* ---- 16. Figure lightbox (click to zoom) ----------------------------- */
+
+main img.lb-zoomable { cursor: zoom-in; }
+
+.lb-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(10, 14, 22, 0.93);
+  display: flex;
+  flex-direction: column;
+  touch-action: none;
+}
+.lb-overlay.hidden { display: none; }
+
+.lb-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.55em 1em;
+  font-family: var(--font-sans);
+  background: rgba(0, 0, 0, 0.35);
+}
+.lb-caption {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: #b8c2d0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-hint { font-size: 0.75rem; color: #7e8aa0; }
+.lb-btn {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #dfe5ee;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  padding: 0.3em 0.8em;
+  cursor: pointer;
+}
+.lb-btn:hover { background: rgba(255, 255, 255, 0.18); }
+.lb-close { font-size: 1.1rem; line-height: 1; padding: 0.25em 0.55em; }
+
+.lb-stage {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.lb-stage img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  max-width: none;               /* undo the theme's responsive-img cap */
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: zoom-in;
+}
+.lb-stage img.lb-dragging { cursor: grabbing; }
+
+.lb-code {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(13, 17, 26, 0.97);
+}
+.lb-code.hidden { display: none; }
+.lb-code-src {
+  padding: 0.55em 1.3em;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #8fa0b8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.lb-code pre {
+  flex: 1;
+  margin: 0;
+  padding: 1em 1.4em;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #dce6f2;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+.lb-code pre code { background: transparent; padding: 0; color: inherit; }
+
+@media (max-width: 700px) {
+  .lb-hint { display: none; }
+}
+
+/* ---- 17. Wide table overflow handling ------------------------------- */
+/*
+   Without these rules, the CSS-grid main column expands to fit any wide
+   table, pushing past its own boundary and visually overlapping the
+   right-hand TOC.  Two pieces:
+     1) `min-width: 0` on the main column lets the grid actually shrink
+        to its allotted width instead of growing to fit children.
+     2) Wrap each table in a horizontally-scrollable container (Quarto
+        already adds .table-responsive on most tables; we additionally
+        cap raw HTML <table> tags too).
+*/
+main, .quarto-document-content,
+#quarto-content > main,
+.content > .body,
+.column-body, .column-main, .column-page-inset, .column-screen-inset,
+.column-page-inset-right, .column-page-inset-left, .column-page-right,
+.column-page-left, .column-page {
+  min-width: 0;
+}
+
+/* Tables that are about to spill horizontally get a scroll container. */
+main table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Quarto wraps some tables in .table-responsive already - keep that working. */
+main .table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Audio tables: the display:block fallback above collapses <audio> players
+   to their minimum size; give these tables a real fixed-column layout. */
+main table.mf-audio {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+main table.mf-audio td { border: none; }
+main audio { width: 100%; max-width: 100%; }
+@media (max-width: 700px) {
+  /* stack the players vertically on phones instead of squeezing them */
+  main table.mf-audio,
+  main table.mf-audio tbody,
+  main table.mf-audio tr,
+  main table.mf-audio td { display: block; width: 100%; }
+}
+
+/* Long words / inline code in narrow columns shouldn't push the layout. */
+main p, main li, main blockquote { overflow-wrap: anywhere; }
+main pre { white-space: pre; }   /* keep code intact, just scroll inside */
+
+/* ---- 18. Gallery -------------------------------------------------------- */
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* gallery has no right TOC → fixed 3 columns */
+  gap: 1.4rem;
+  margin: 2em 0;
+}
+
+@media (max-width: 900px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.gallery-card {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bs-body-bg, #fff);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+.gallery-card:hover {
+  box-shadow: 0 8px 28px rgba(31, 95, 166, 0.18);
+  transform: translateY(-2px);
+}
+
+.gallery-card a {
+  display: block;
+  text-decoration: none;
+  border-bottom: none;
+  color: inherit;
+}
+.gallery-card a:hover { border-bottom: none; }
+
+.gallery-card-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 0;
+  display: block;
+}
+
+.gallery-card-body {
+  padding: 0.75em 1em 0.85em;
+}
+
+.gallery-card-title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  margin-bottom: 0.3em;
+  line-height: 1.3;
+}
+
+.gallery-card-desc {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.gallery-card-tag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 3px;
+  padding: 0.12em 0.45em;
+  margin-top: 0.5em;
+}
+
+.gallery-back {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  margin-bottom: 1.5em;
+  display: inline-block;
+  color: var(--muted);
+}
+.gallery-back:hover { color: var(--accent-strong); border-bottom: none; }
+
+.gallery-result {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.5em;
+  background: var(--bg-soft);
+  margin: 1.2em 0;
+}
+.gallery-result img { border-radius: 4px; margin: 0; }
+
+@media (max-width: 600px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- 19. Landing page ------------------------------------------------ */
+
+.hero {
+  text-align: center;
+  padding: 2.6em 0 1.2em;
+}
+.hero-logo {
+  height: 72px;
+  margin-bottom: 0.8em;
+}
+.hero-title {
+  font-family: var(--font-sans);
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  border: none;
+  margin: 0 0 0.35em;
+  padding: 0;
+}
+.hero-accent {
+  background: linear-gradient(90deg, var(--accent), #3f8fd2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.hero-tag {
+  font-family: var(--font-sans);
+  font-size: 1.08rem;
+  color: var(--muted);
+  max-width: 46ch;
+  margin: 0 auto 1.4em;
+  line-height: 1.55;
+}
+.hero-actions {
+  display: flex;
+  gap: 0.8em;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.1em;
+}
+.hero-btn {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.98rem;
+  padding: 0.6em 1.5em;
+  border-radius: 8px;
+  border-bottom: none !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+}
+.hero-btn-primary {
+  background: var(--accent);
+  color: #fff !important;
+  box-shadow: 0 3px 14px rgba(31, 95, 166, 0.35);
+}
+.hero-btn-primary:hover {
+  background: var(--accent-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(31, 95, 166, 0.42);
+}
+body.quarto-dark .hero-btn-primary { color: #0d1117 !important; }
+.hero-btn-ghost {
+  border: 1.5px solid var(--rule);
+  color: var(--accent-strong) !important;
+  background: transparent;
+}
+.hero-btn-ghost:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+}
+.hero-meta {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8em;
+  margin: 1.6em 0 0.5em;
+  padding: 1.1em 0.5em;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.stat { text-align: center; }
+.stat-num {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.15;
+}
+.stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1em;
+  margin: 1.8em 0;
+}
+.feat-card {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.1em 1.15em 1em;
+  background: var(--bs-body-bg, #fff);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+.feat-card:hover {
+  box-shadow: 0 8px 26px rgba(31, 95, 166, 0.15);
+  transform: translateY(-2px);
+}
+.feat-icon {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.35em;
+}
+.feat-title {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.02rem;
+  margin-bottom: 0.3em;
+}
+.feat-desc {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.chap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8em;
+  margin: 1.6em 0 2em;
+}
+/* Pandoc wraps the inline <a> cards in a <p>; make it transparent to the grid */
+.chap-grid > p { display: contents; }
+.chap-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.7em;
+  align-items: baseline;
+  padding: 0.8em 0.95em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  border-bottom-width: 1px !important;
+  color: inherit !important;
+  background: var(--bs-body-bg, #fff);
+  transition: box-shadow 0.16s ease, transform 0.16s ease, border-color 0.16s;
+}
+.chap-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgba(31, 95, 166, 0.14);
+  transform: translateY(-2px);
+}
+.chap-num {
+  grid-row: 1 / span 2;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  opacity: 0.85;
+}
+.chap-name {
+  font-family: var(--font-sans);
+  font-weight: 650;
+  font-size: 0.95rem;
+  color: var(--accent-strong);
+  line-height: 1.25;
+}
+.chap-desc {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.gallery-more {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  margin-top: -0.4em;
+}
+
+@media (max-width: 900px) {
+  .hero-title { font-size: 2rem; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .chap-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+  .stat-strip { grid-template-columns: repeat(2, 1fr); row-gap: 1em; }
+  .chap-grid { grid-template-columns: 1fr; }
+}
