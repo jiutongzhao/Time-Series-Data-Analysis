@@ -1,8 +1,8 @@
-# Hearing Direction — ITD, ILD, and a Walking Speaker
+# Hearing Direction — ITD, ILD, and the Pinna Cue
 
 <a class="gallery-back" href="../gallery.qmd">← Back to Gallery</a>
 
-**Topic:** Two-channel (stereo) signal analysis — how inter-channel **time** and **intensity** differences encode a sound source's direction, synthesised, visualised as STFT difference spectra, and put to a listening test.
+**Topic:** Two-channel (stereo) signal analysis — how inter-channel **time** and **intensity** differences encode a sound source's direction, why they cannot tell front from back, and the **monaural spectral cue** that can. Synthesised, visualised, and put to a listening test.
 **Chapter:** [8 — Multi-Channel Signals](../chap8.qmd)
 
 ---
@@ -11,27 +11,27 @@
 
 You can close your eyes and still point at whoever is speaking. Your auditory system does it with just **two channels** — the two ears — by comparing them:
 
-- **ITD (interaural time difference).** A source off to one side is closer to one ear; the sound arrives there first. The head is ~21 cm around, so the delay reaches at most $\tau_{max} \approx 0.66$ ms at $\pm90°$: $\tau(\theta) \approx \tau_{max}\sin\theta$. In the frequency domain a pure delay is a **phase difference growing linearly with frequency**, $\Delta\phi = 2\pi f\,\tau$.
+- **ITD (interaural time difference).** A source off to one side is closer to one ear; the sound arrives there first. The head is ~21 cm around, so the delay reaches at most $\tau_{max} \approx 0.66$ ms at $\pm90°$: $\tau(\varphi) \approx \tau_{max}\sin\varphi$. In the frequency domain a pure delay is a **phase difference growing linearly with frequency**, $\Delta\phi = 2\pi f\,\tau$.
 - **ILD (interaural level difference).** The head casts an acoustic shadow: the far ear hears the source quieter and duller (high frequencies attenuate most).
 
 Rayleigh's classic **duplex theory** says the two cues split the spectrum: below ~1.5 kHz the wavelength is too long for a head shadow but the phase is unambiguous, so **ITD dominates**; above it the phase wraps (spatial aliasing) but the shadow is strong, so **ILD takes over**.
 
-This example *synthesises* those cues — imprinting a known, moving direction onto a mono voice recording — and then *analyses* them back out of the two channels, with a built-in listening experiment.
+But look at the geometry: $\sin\varphi = \sin(180°-\varphi)$. A source 30° to the right *in front* and one 30° to the right *behind* produce **exactly the same ITD and the same ILD** — and so does every mirror pair. This is the **cone of confusion**: interaural comparisons alone can never tell front from back. The tiebreaker is not interaural at all. The outer ear — the **pinna** — is a direction-dependent acoustic filter: sound arriving from behind diffracts around the folded cartilage and loses treble, while frontal sound enters unobstructed. This **monaural spectral cue** (plus small head movements) is how you know the voice is behind you.
+
+This example *synthesises* all three cues — imprinting a known, orbiting trajectory onto a mono voice recording — and then *analyses* them back out of the two channels, with a built-in listening experiment.
 
 ## Key idea
 
-**Synthesis.** Take a mono speech recording and a target trajectory $\theta(t)$ (here: the speaker walks left ↔ right, one pass every 22 s). Apply to the two output channels:
+**Synthesis.** Take a mono speech recording and a target trajectory: here the speaker **circles the listener** — front → right → back → left — once every 25 s. Apply:
 
 1. a **time-varying fractional delay** $\pm\tau(t)/2$ (the ITD) — implemented by resampling with `np.interp`;
-2. **opposite gains** $\mp 4\,\text{dB}\cdot\sin\theta$ (the broadband ILD);
-3. a **head-shadow filter** — the far ear gets a low-passed mix, so the shadowed side sounds duller.
+2. **opposite gains** $\mp 4\,\text{dB}\cdot\sin\varphi$ (the broadband ILD);
+3. a **head-shadow filter** — the far ear gets a low-passed mix, so the shadowed side sounds duller;
+4. a **pinna cue** — a rear high-shelf: everything above 4 kHz is attenuated by up to ~11 dB, scaled by the rear factor $r = (1-\cos\varphi)/2$ (0 in front, 1 straight behind), applied to *both* ears. A cartoon of the real pinna response, but it carries the right information.
 
-**Analysis.** Compute the STFT of both channels and compare them bin by bin:
+**Analysis.** Compute the STFT of both channels and compare them bin by bin. The **intensity-difference spectrum** $20\log_{10}(|S_L|/|S_R|)$ and the **phase-difference spectrum** $\arg(S_L S_R^*)$ both oscillate with $\sin\varphi$ — and are, by construction, *identical* for the front and back halves of the orbit. The pinna cue is invisible in any interaural difference: it lives in the **single-channel spectrogram**, as a high-frequency dimming at every rear pass.
 
-- the **intensity-difference spectrum** $20\log_{10}(|S_L|/|S_R|)$ flips sign as the speaker crosses the midline;
-- the **phase-difference spectrum** $\arg(S_L S_R^*)$ shows the delay directly: at each instant the phase grows linearly with frequency and wraps at $\pm180°$, producing arch-shaped fringes whose density is proportional to $|\tau(t)|$ — the direction, read off a single picture.
-
-**The experiment.** Between **60.5 s and 137.5 s** the ITD is switched **off** (the ILD stays on). The switch-off happens exactly when the speaker is at the **far left** — the moment the phase cue is strongest — and mid-sentence, so nothing else changes; the switch-on lands at the **far right**, also mid-sentence. Listen on headphones: does the motion survive on intensity alone?
+**The experiment.** For exactly one revolution — **100 s to 125 s** — the pinna cue is switched **off** (ITD and ILD stay on). Both switches happen while the speaker passes the **front**, where the rear factor is zero and the filter is the identity — so the transition itself is seamless and inaudible; only the *rear half* of that revolution differs. Listen on headphones: during the OFF revolution, can you still tell when the voice is behind you — or does it seem to swing left–right in front of you?
 
 ## Code
 
@@ -41,46 +41,52 @@ import numpy as np, soundfile as sf, scipy.signal as sig
 mono, fs = sf.read('speech.wav')                    # a mono voice recording
 N = len(mono); t = np.arange(N)/fs
 
-theta = np.deg2rad(90)*np.sin(2*np.pi*t/22)         # walking trajectory
-tau   = 0.66e-3*np.sin(theta)                       # ITD, right ear leads for theta>0
-tau  *= ~((t >= 60.5) & (t < 137.5))                # A/B test: ITD off mid-file
+phi  = 2*np.pi*t/25                                 # orbit: one revolution / 25 s
+rear = (1 - np.cos(phi))/2                          # 0 in front .. 1 straight behind
+rear *= ~((t >= 100) & (t < 125))                   # A/B test: pinna cue off, one rev
 
+# pinna cue: rear high-shelf (-11 dB above 4 kHz straight behind)
+low4 = sig.filtfilt(*sig.butter(4, 4000, fs=fs), mono)
+src  = (low4 + (1 - 0.72*rear)*(mono - low4)) * 10**(-1.5*rear/20)
+
+tau   = 0.66e-3*np.sin(phi)                         # ITD, right ear leads for phi>0
 delay = lambda x, d: np.interp(t - d, t, x)         # time-varying fractional delay
-mono_lp = sig.filtfilt(*sig.butter(1, 1200, fs=fs), mono)   # head-shadow version
+src_lp = sig.filtfilt(*sig.butter(1, 1200, fs=fs), src)      # head-shadow version
 
-s = np.sin(theta)
+s = np.sin(phi)
 shadowL, shadowR = 0.55*np.clip(+s, 0, 1), 0.55*np.clip(-s, 0, 1)
-L = 10**(-4*s/20) * ((1-shadowL)*delay(mono, +tau/2) + shadowL*delay(mono_lp, +tau/2))
-R = 10**(+4*s/20) * ((1-shadowR)*delay(mono, -tau/2) + shadowR*delay(mono_lp, -tau/2))
+L = 10**(-4*s/20) * ((1-shadowL)*delay(src, +tau/2) + shadowL*delay(src_lp, +tau/2))
+R = 10**(+4*s/20) * ((1-shadowR)*delay(src, -tau/2) + shadowR*delay(src_lp, -tau/2))
 
-# analysis: STFT difference spectra
+# analysis: interaural difference spectra + one monaural spectrogram
 f, tt, SL = sig.stft(L, fs, nperseg=4096, noverlap=4096-2205)
 _,  _, SR = sig.stft(R, fs, nperseg=4096, noverlap=4096-2205)
-level_dB  = 20*np.log10(np.abs(SL)/np.abs(SR))      # ILD spectrum
-phase_deg = np.angle(SL*np.conj(SR), deg=True)      # ITD spectrum: 2*pi*f*tau, wrapped
+level_dB  = 20*np.log10(np.abs(SL)/np.abs(SR))      # ILD spectrum  (front = back)
+phase_deg = np.angle(SL*np.conj(SR), deg=True)      # ITD spectrum  (front = back)
+spg_dB    = 20*np.log10(np.abs(SL))                 # pinna cue: highs dim behind
 ```
 
 ## Result
 
-Put on headphones and watch the speaker walk:
+Put on headphones and follow the orbit:
 
 <div class="gallery-result">
 <video controls preload="metadata" style="width:100%;">
-<source src="../Data/binaural_walking_speaker.mp4" type="video/mp4" />
+<source src="../Data/binaural_orbiting_speaker.mp4" type="video/mp4" />
 </video>
 </div>
 
-*Top: the walking trajectory. Middle: the STFT intensity-difference spectrum — red columns (L louder) alternate with blue (R louder) as the speaker crosses. Bottom: the phase-difference spectrum — the arch-shaped fringes are $\Delta\phi = 2\pi f\tau(t)$ wrapping at ±180°; the arches are densest when the speaker is at ±90° and vanish when the ITD is switched off between the dashed lines.*
+*Top: the orbit. Second row: the STFT intensity-difference spectrum — red columns (L louder) alternate with blue (R louder) once per revolution. Third row: the phase-difference spectrum — arch-shaped $2\pi f\tau$ fringes wrapping at ±180°. Bottom: the left-channel spectrogram — the high band dims at every rear pass (▼), except between the dashed lines, where the pinna cue is switched off.*
 
-The two spectra are the two localisation cues, made visible. The **phase panel** is the richer one: at any instant, reading the fringe spacing vertically gives the delay ($\Delta\phi = 2\pi f\tau$, so one full wrap every $1/\tau$ Hz), and its sign gives the side — a complete direction estimate from a single column of pixels. It also shows *why high-frequency phase is useless for localisation*: by a few kHz the fringes wrap several times, and which wrap you are on is ambiguous — the spatial-aliasing limit that duplex theory is about.
+Watch the two *difference* spectra through one full revolution: they rise and fall with $\sin\varphi$ and **repeat exactly** on the front and back halves — a moving picture of the cone of confusion. If these two panels were all you had (and for a fixed pair of omnidirectional microphones, they are), the back half of the orbit would be a mirror of the front half. The **spectrogram panel** holds the missing bit of information, and it is *monaural*: a broad high-frequency dip marching in step with the rear passes.
 
-In the **ITD-off section** the phase spectrum collapses to zero while the intensity stripes march on unchanged. On headphones, most listeners find the voice still moves left–right — a ±4 dB swing is enough to drag the image — but it flattens and loses its "out there" quality, sticking closer to the ears; the low-frequency part of the voice in particular stops carrying direction, exactly as duplex theory predicts. The switch is placed mid-sentence at the trajectory extremes ($\theta = -90°$ off, $+90°$ on), where the missing cue is most audible.
+On headphones the effect is easy to test on yourself. With the pinna cue on, most listeners hear the voice pass *behind the head* — duller, slightly farther — once per revolution. In the OFF revolution the interaural cues still swing exactly as before, but the front/back distinction evaporates: the voice typically collapses to a left–right sweep in front of you (front is the brain's default when the spectrum doesn't say otherwise), or wanders unstably. That instability is the cone of confusion, experienced live.
 
 <div class="gallery-result">
-![Self-check: the designed ITD τ(t) (line) against the delay recovered from the rendered stereo file by windowed cross-correlation (dots) — including the gated-off section. Median error 1.8 μs, about 1/12 of a sample.](../Figure/figure_binaural_check.png)
+![Self-check, three recoveries from the rendered stereo file. Top: the designed orbit. Middle: the ITD recovered by windowed cross-correlation lies on the designed curve (median error 9 μs), and is a pure sine — blind to front vs. back by symmetry. Bottom: the pinna cue recovered as the near ear's high-band gain relative to the source: ~11 dB dips centred on every rear pass, and a flat line through the switched-off revolution.](../Figure/figure_binaural_check.png)
 </div>
 
-One honest limitation belongs in any two-channel localisation story: with two omnidirectional channels, **front and back are indistinguishable** — every ITD/ILD pair is shared by a mirror position behind you (the *cone of confusion*). Real ears break the tie with direction-dependent pinna filtering and with head movements; a fixed two-microphone array cannot. That is why this demo's trajectory — and any two-channel direction finder — lives on the frontal arc $|\theta| \le 90°$.
+Two honest notes. First, the real pinna response is far richer than a shelf — it imprints individual, elevation-dependent notches (typically 6–10 kHz) that let you localise *up and down* as well; ours is the simplest filter that carries front/back information. Second, real listeners also break the cone of confusion by **moving their heads** — a few degrees of rotation changes the ITD in opposite directions for front and back sources — a cue no fixed recording can provide. Headphone renderings that track head motion (as VR audio does) are convincing for exactly this reason.
 
 ---
 

@@ -5,8 +5,8 @@ docs/Data/erg_pwe_wfc_l2_e_waveform_wp65khz_sgi_2017033102_v03_01.cdf
 Data/orpheus.mp4
 *.mp4
 *.mp4
-!Data/binaural_walking_speaker.mp4
-!docs/Data/binaural_walking_speaker.mp4
+!Data/binaural_orbiting_speaker.mp4
+!docs/Data/binaural_orbiting_speaker.mp4
 *.wav
 !Data/griffin_lim_*.wav
 !docs/Data/griffin_lim_*.wav

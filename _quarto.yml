@@ -57,7 +57,7 @@ project:
     - Data/gearbox_spectraquest.npz
     - Data/kalman_gps_imu.npz
     - Data/two_point_correlation_schematic.webm
-    - Data/binaural_walking_speaker.mp4
+    - Data/binaural_orbiting_speaker.mp4
     - Data/griffin_lim_original.wav
     - Data/griffin_lim_recon.wav
     - Data/missing_fundamental_full.wav
